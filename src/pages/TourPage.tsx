@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
 import { AddPlayerModal } from "../components/AddPlayerModal";
 import { PlayerCard } from "../components/PlayerCard";
+import { PlayerScorecard } from "../components/PlayerScorecard";
 import { CreateTeamModal } from "../components/CreateTeamModal";
 import { TeamCard } from "../components/TeamCard";
 import { CreateRoundModal } from "../components/CreateRoundModal";
@@ -16,6 +17,11 @@ export const TourPage = () => {
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [showCreateRound, setShowCreateRound] = useState(false);
+  const [expandedPlayer, setExpandedPlayer] = useState<string | null>(null);
+
+  const handlePlayerToggle = (playerId: string) => {
+    setExpandedPlayer(expandedPlayer === playerId ? null : playerId);
+  };
 
   if (isLoading) {
     return (
@@ -165,7 +171,7 @@ export const TourPage = () => {
           </div>
         </div>
 
-        {/* Players Section */}
+        {/* Players Section with Scorecards */}
         <div className="card mb-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="section-header">
@@ -205,7 +211,7 @@ export const TourPage = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 715.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
               </div>
@@ -223,13 +229,14 @@ export const TourPage = () => {
               </button>
             </div>
           ) : (
-            <div className="grid gap-4">
+            <div className="space-y-4">
               {tour.players.map((player) => (
-                <PlayerCard
+                <PlayerScorecard
                   key={player.id}
                   player={player}
                   tour={tour}
-                  showTeamInfo={tour.format !== "individual"}
+                  isExpanded={expandedPlayer === player.id}
+                  onToggle={() => handlePlayerToggle(player.id)}
                 />
               ))}
             </div>
@@ -277,7 +284,7 @@ export const TourPage = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 715.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 616 0zm6 3a2 2 0 11-4 0 2 2 0 414 0zM7 10a2 2 0 11-4 0 2 2 0 414 0z"
                     />
                   </svg>
                 </div>

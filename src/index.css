@@ -428,3 +428,27 @@ button:focus {
     background-position: 200% 0;
   }
 }
+
+.hole-button {
+  @apply relative flex flex-col items-center justify-center rounded-xl border-2 font-semibold transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg outline-none cursor-pointer;
+}
+
+.hole-current {
+  @apply bg-emerald-600 text-white border-emerald-700 shadow-xl scale-110 ring-4 ring-emerald-300 ring-opacity-50;
+}
+
+.hole-current:hover {
+  @apply bg-emerald-700 border-emerald-800 shadow-2xl scale-[1.15] ring-4 ring-emerald-200;
+}
+
+.hole-current:focus {
+  @apply bg-emerald-700 border-emerald-800 shadow-2xl scale-[1.15] ring-4 ring-emerald-200;
+}
+
+.hole-completed {
+  @apply bg-emerald-100 text-emerald-800 border-emerald-400 hover:bg-emerald-200 hover:border-emerald-500 hover:scale-105 focus:bg-emerald-200 focus:border-emerald-500 focus:scale-105 focus:ring-4 focus:ring-emerald-200;
+}
+
+.hole-pending {
+  @apply bg-white text-slate-600 border-slate-400 hover:bg-slate-50 hover:border-slate-500 hover:text-slate-700 hover:scale-105 focus:bg-slate-50 focus:border-slate-500 focus:text-slate-700 focus:scale-105 focus:ring-4 focus:ring-slate-200;
+}
