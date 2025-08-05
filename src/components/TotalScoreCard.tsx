@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Player, Round } from "../types";
 import { storage } from "../lib/storage";
 
@@ -17,9 +17,17 @@ export const TotalScoreCard = ({
 }: TotalScoreCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [inputScore, setInputScore] = useState(currentTotalScore.toString());
+  const [inputMode, setInputMode] = useState<"total" | "relative">("total");
+  const [relativeScore, setRelativeScore] = useState("0");
 
   const totalPar = storage.getTotalPar(round);
   const scoreToPar = currentTotalScore - totalPar;
+
+  // Update input values when props change
+  useEffect(() => {
+    setInputScore(currentTotalScore.toString());
+    setRelativeScore(scoreToPar.toString());
+  }, [currentTotalScore, scoreToPar]);
 
   const getScoreStyles = () => {
     if (currentTotalScore === 0)
@@ -61,16 +69,28 @@ export const TotalScoreCard = ({
   };
 
   const handleSaveScore = () => {
-    const score = parseInt(inputScore);
-    if (score > 0 && score <= 200) {
-      // Reasonable bounds
-      onTotalScoreChange(score);
-      setIsEditing(false);
+    if (inputMode === "total") {
+      const score = parseInt(inputScore);
+      if (score > 0 && score <= 200) {
+        onTotalScoreChange(score);
+        setIsEditing(false);
+      }
+    } else {
+      // Relative mode - convert to total score
+      const relative = parseInt(relativeScore);
+      if (!isNaN(relative)) {
+        const totalScore = totalPar + relative;
+        if (totalScore > 0 && totalScore <= 200) {
+          onTotalScoreChange(totalScore);
+          setIsEditing(false);
+        }
+      }
     }
   };
 
   const handleCancel = () => {
     setInputScore(currentTotalScore.toString());
+    setRelativeScore(scoreToPar.toString());
     setIsEditing(false);
   };
 
@@ -115,20 +135,99 @@ export const TotalScoreCard = ({
           {/* Total Score Display/Input */}
           {isEditing ? (
             <div className="text-right">
-              <input
-                type="number"
-                value={inputScore}
-                onChange={(e) => setInputScore(e.target.value)}
-                className="w-24 text-4xl font-bold text-center border-2 border-emerald-500 rounded-xl px-2 py-1 focus:ring-2 focus:ring-emerald-200"
-                min="18"
-                max="200"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSaveScore();
-                  if (e.key === "Escape") handleCancel();
-                }}
-              />
-              <div className="text-center mt-2 space-x-2">
+              {/* Input Mode Toggle */}
+              <div className="mb-3">
+                <div className="bg-slate-100 rounded-lg p-1 inline-flex">
+                  <button
+                    type="button"
+                    onClick={() => setInputMode("total")}
+                    className={`px-3 py-1 rounded text-sm font-medium transition-all ${
+                      inputMode === "total"
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    Total Score
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInputMode("relative")}
+                    className={`px-3 py-1 rounded text-sm font-medium transition-all ${
+                      inputMode === "relative"
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    Strokes to Par
+                  </button>
+                </div>
+              </div>
+
+              {/* Input Field */}
+              {inputMode === "total" ? (
+                <div>
+                  <input
+                    type="number"
+                    value={inputScore}
+                    onChange={(e) => setInputScore(e.target.value)}
+                    className="w-24 text-4xl font-bold text-center border-2 border-emerald-500 rounded-xl px-2 py-1 focus:ring-2 focus:ring-emerald-200"
+                    min="18"
+                    max="200"
+                    placeholder="72"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSaveScore();
+                      if (e.key === "Escape") handleCancel();
+                    }}
+                  />
+                  <div className="text-xs text-slate-500 mt-1">Total Score</div>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex items-center justify-center gap-2">
+                    <input
+                      type="number"
+                      value={relativeScore}
+                      onChange={(e) => setRelativeScore(e.target.value)}
+                      className="w-20 text-4xl font-bold text-center border-2 border-emerald-500 rounded-xl px-2 py-1 focus:ring-2 focus:ring-emerald-200"
+                      min="-20"
+                      max="50"
+                      placeholder="0"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSaveScore();
+                        if (e.key === "Escape") handleCancel();
+                      }}
+                    />
+                    <div className="text-xl font-bold text-slate-600">
+                      = {totalPar + (parseInt(relativeScore) || 0)}
+                    </div>
+                  </div>
+                  <div className="text-xs text-slate-500 mt-1">
+                    Strokes Over/Under Par ({totalPar})
+                  </div>
+
+                  {/* Quick Score Buttons */}
+                  <div className="flex justify-center gap-1 mt-3">
+                    {[-2, -1, 0, 1, 2, 3].map((score) => (
+                      <button
+                        key={score}
+                        type="button"
+                        onClick={() => setRelativeScore(score.toString())}
+                        className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                          parseInt(relativeScore) === score
+                            ? "bg-emerald-600 text-white"
+                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                        }`}
+                      >
+                        {score === 0 ? "E" : score > 0 ? `+${score}` : score}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="text-center mt-3 space-x-2">
                 <button
                   onClick={handleCancel}
                   className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1 rounded-full font-medium transition-colors"

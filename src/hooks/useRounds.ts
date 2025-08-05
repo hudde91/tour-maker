@@ -13,7 +13,16 @@ export const useCreateRound = (tourId: string) => {
       format: PlayFormat;
       holes: number;
       holeInfo: HoleInfo[];
-      totalPar?: number; // Add this field
+      totalPar?: number;
+
+      // Course Details
+      teeBoxes?: string;
+      slopeRating?: string;
+      totalYardage?: string;
+
+      // Schedule
+      startTime?: string;
+
       settings: RoundSettings;
     }) => {
       const round: Round = {
@@ -23,7 +32,16 @@ export const useCreateRound = (tourId: string) => {
         format: roundData.format,
         holes: roundData.holes,
         holeInfo: roundData.holeInfo,
-        totalPar: roundData.totalPar, // Include manual total par
+        totalPar: roundData.totalPar,
+
+        // Course Details
+        teeBoxes: roundData.teeBoxes,
+        slopeRating: roundData.slopeRating,
+        totalYardage: roundData.totalYardage,
+
+        // Schedule
+        startTime: roundData.startTime,
+
         settings: roundData.settings,
         createdAt: new Date().toISOString(),
         scores: {},

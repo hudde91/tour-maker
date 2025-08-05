@@ -72,7 +72,28 @@ export const RoundCard = ({ round, tour }: RoundCardProps) => {
           <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
             <span className="text-2xl">{formatInfo.icon}</span>
           </div>
-
+          {/* Progress Information */}
+          <div className="flex items-center justify-between mb-4 text-sm">
+            <div className="flex items-center gap-4">
+              <span className="text-slate-600">
+                <span className="font-bold text-slate-900">
+                  {playersWithScores}
+                </span>{" "}
+                of {totalPlayers} players scoring
+              </span>
+              <span className="text-slate-600">
+                <span className="font-bold text-slate-900">
+                  {completionPercentage}%
+                </span>{" "}
+                complete
+              </span>
+            </div>
+            {round.startTime && (
+              <div className="text-slate-500">
+                {new Date(round.startTime).toLocaleString()}
+              </div>
+            )}
+          </div>{" "}
           <div className="flex-1 min-w-0">
             <h3 className="text-xl font-bold text-slate-900 truncate mb-1">
               {round.name}
@@ -85,8 +106,13 @@ export const RoundCard = ({ round, tour }: RoundCardProps) => {
               <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-medium">
                 {formatInfo.name}
               </span>
-              {round.settings.strokesGiven && (
+              {round.teeBoxes && (
                 <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
+                  {round.teeBoxes}
+                </span>
+              )}
+              {round.settings.strokesGiven && (
+                <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-medium">
                   Handicap Applied
                 </span>
               )}

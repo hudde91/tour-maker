@@ -29,6 +29,15 @@ export interface Round {
   holes: number;
   holeInfo: HoleInfo[];
   totalPar?: number; // Optional: manually set total par (overrides calculated from holeInfo)
+
+  // Course Details
+  teeBoxes?: string;
+  slopeRating?: string;
+  totalYardage?: string;
+
+  // Schedule
+  startTime?: string;
+
   settings: RoundSettings;
   createdAt: string;
   startedAt?: string;

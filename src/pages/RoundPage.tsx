@@ -15,7 +15,6 @@ import { storage } from "../lib/storage";
 
 export const RoundPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
-  const navigate = useNavigate();
   const { data: tour, isLoading } = useTour(tourId!);
   const updateScore = useUpdateScore(tourId!, roundId!);
   const startRound = useStartRound(tourId!);
@@ -25,9 +24,9 @@ export const RoundPage = () => {
   const [currentHole, setCurrentHole] = useState(1);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
-  const [scoringMode, setScoringMode] = useState<
-    "individual" | "group" | "total"
-  >("individual");
+  const [scoringMode, setScoringMode] = useState<"individual" | "total">(
+    "individual"
+  );
 
   const round = tour?.rounds.find((r) => r.id === roundId);
 
@@ -496,9 +495,7 @@ export const RoundPage = () => {
         {/* Scoring Interface */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="section-header">
-              Enter Scores - Hole {currentHole}
-            </h2>
+            <h2 className="section-header">Hole {currentHole}</h2>
 
             {/* Scoring Mode Toggle */}
             <div className="bg-white rounded-lg p-1 shadow-sm border border-slate-200">
@@ -521,16 +518,6 @@ export const RoundPage = () => {
                 }`}
               >
                 Total Score
-              </button>
-              <button
-                onClick={() => setScoringMode("group")}
-                className={`px-3 py-1 rounded text-sm font-medium transition-all ${
-                  scoringMode === "group"
-                    ? "bg-emerald-600 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                Group View
               </button>
             </div>
           </div>
