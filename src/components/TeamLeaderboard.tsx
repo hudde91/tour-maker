@@ -144,7 +144,7 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
                     </div>
 
                     <div className="flex items-center gap-4 text-sm text-slate-600">
-                      <div className="flex items-center gap-1">
+                      {/* <div className="flex items-center gap-1">
                         <svg
                           className="w-4 h-4 text-slate-400"
                           fill="none"
@@ -162,7 +162,7 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
                           {teamEntry.playersWithScores} of{" "}
                           {teamEntry.totalPlayers} players scoring
                         </span>
-                      </div>
+                      </div> */}
 
                       {captain && (
                         <div className="flex items-center gap-1">
@@ -222,7 +222,7 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
               {/* Team Player Breakdown */}
               <div className="border-t border-slate-200 pt-4">
                 <h4 className="subsection-header mb-3">
-                  Team Roster Performance
+                  Team {teamEntry.team.name} performance
                 </h4>
                 <div className="grid gap-3">
                   {teamPlayers.map((player) => {

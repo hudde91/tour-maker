@@ -28,9 +28,18 @@ export const ScoreEntryCard = ({
   const [selectedScore, setSelectedScore] = useState(
     currentScore || effectivePar
   );
-  const [isScrolling, setIsScrolling] = useState(false);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout>();
-  const touchStartRef = useRef<{ x: number; time: number } | null>(null);
+
+  // New state for smooth swiping
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const [momentum, setMomentum] = useState(0);
+  const touchStartRef = useRef<{
+    x: number;
+    time: number;
+    score: number;
+  } | null>(null);
+  const lastTouchRef = useRef<{ x: number; time: number } | null>(null);
+  const animationRef = useRef<number>();
 
   // Update selected score when currentScore changes from external source
   useEffect(() => {
@@ -40,6 +49,14 @@ export const ScoreEntryCard = ({
       setSelectedScore(effectivePar);
     }
   }, [currentScore, effectivePar]);
+
+  // Calculate the virtual score based on swipe offset
+  const getVirtualScore = (offset: number = swipeOffset) => {
+    const scoreFromOffset = selectedScore + offset / 50; // Adjusted sensitivity for 72px elements
+    return Math.max(1, Math.min(10, Math.round(scoreFromOffset)));
+  };
+
+  const virtualScore = getVirtualScore();
 
   const getScoreInfo = (score: number) => {
     if (score === 0 || !score)
@@ -112,41 +129,149 @@ export const ScoreEntryCard = ({
     };
   };
 
-  const getPickerButtonStyle = (isCenter: boolean = false) => {
-    if (isCenter) {
-      return "bg-white border-2 border-slate-300 text-slate-900 scale-125 shadow-lg";
-    } else {
-      return "bg-white border border-slate-200 text-slate-600 scale-90";
-    }
-  };
-
   const handleScoreChange = (newScore: number) => {
     const clampedScore = Math.max(1, Math.min(10, newScore));
     setSelectedScore(clampedScore);
     onScoreChange(clampedScore);
   };
 
-  const handlePrevScore = () => {
-    if (selectedScore > 1) {
-      const newScore = selectedScore - 1;
-      handleScoreChange(newScore);
-      setIsScrolling(true);
+  const handleStart = (clientX: number) => {
+    setIsActive(true);
+    setMomentum(0);
+    touchStartRef.current = {
+      x: clientX,
+      time: Date.now(),
+      score: selectedScore,
+    };
+    lastTouchRef.current = {
+      x: clientX,
+      time: Date.now(),
+    };
 
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-      scrollTimeoutRef.current = setTimeout(() => setIsScrolling(false), 300);
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
     }
   };
 
-  const handleNextScore = () => {
-    if (selectedScore < 10) {
-      const newScore = selectedScore + 1;
-      handleScoreChange(newScore);
-      setIsScrolling(true);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    handleStart(e.touches[0].clientX);
+  };
 
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-      scrollTimeoutRef.current = setTimeout(() => setIsScrolling(false), 300);
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleStart(e.clientX);
+  };
+
+  const handleMove = (clientX: number) => {
+    if (!touchStartRef.current) return;
+
+    const currentTime = Date.now();
+
+    // Calculate offset from start position (positive = right swipe, negative = left swipe)
+    const totalOffset = clientX - touchStartRef.current.x;
+    setSwipeOffset(totalOffset);
+
+    // Calculate velocity for momentum
+    if (lastTouchRef.current) {
+      const timeDelta = currentTime - lastTouchRef.current.time;
+      const xDelta = clientX - lastTouchRef.current.x;
+      if (timeDelta > 0) {
+        setMomentum(xDelta / timeDelta);
+      }
+    }
+
+    lastTouchRef.current = { x: clientX, time: currentTime };
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    handleMove(e.touches[0].clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (touchStartRef.current) {
+      e.preventDefault();
+      handleMove(e.clientX);
     }
   };
+
+  const handleEnd = () => {
+    if (!touchStartRef.current) return;
+
+    setIsActive(false);
+
+    // Apply momentum for natural feeling
+    const finalScore = getVirtualScore();
+
+    // Animate to final position
+    const animateToFinal = () => {
+      setSwipeOffset((prevOffset) => {
+        const targetOffset = (finalScore - selectedScore) * 50; // Match the sensitivity
+        const diff = targetOffset - prevOffset;
+
+        if (Math.abs(diff) < 1) {
+          // Animation complete
+          setSwipeOffset(0);
+          handleScoreChange(finalScore);
+          return 0;
+        }
+
+        // Smooth animation towards target
+        const newOffset = prevOffset + diff * 0.3;
+        animationRef.current = requestAnimationFrame(animateToFinal);
+        return newOffset;
+      });
+    };
+
+    animateToFinal();
+
+    touchStartRef.current = null;
+    lastTouchRef.current = null;
+  };
+
+  const handleTouchEnd = () => {
+    handleEnd();
+  };
+
+  const handleMouseUp = () => {
+    handleEnd();
+  };
+
+  // Add global mouse event listeners for desktop support
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (touchStartRef.current) {
+        const currentTime = Date.now();
+        const totalOffset = e.clientX - touchStartRef.current.x;
+        setSwipeOffset(totalOffset);
+
+        // Calculate velocity for momentum
+        if (lastTouchRef.current) {
+          const timeDelta = currentTime - lastTouchRef.current.time;
+          const xDelta = e.clientX - lastTouchRef.current.x;
+          if (timeDelta > 0) {
+            setMomentum(xDelta / timeDelta);
+          }
+        }
+        lastTouchRef.current = { x: e.clientX, time: currentTime };
+      }
+    };
+
+    const handleGlobalMouseUp = () => {
+      if (touchStartRef.current) {
+        handleEnd();
+      }
+    };
+
+    if (isActive) {
+      document.addEventListener("mousemove", handleGlobalMouseMove);
+      document.addEventListener("mouseup", handleGlobalMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handleGlobalMouseMove);
+      document.removeEventListener("mouseup", handleGlobalMouseUp);
+    };
+  }, [isActive]);
 
   const handleQuickPar = () => {
     handleScoreChange(effectivePar);
@@ -157,8 +282,8 @@ export const ScoreEntryCard = ({
     onScoreChange(0);
   };
 
-  const scoreInfo = getScoreInfo(currentScore || selectedScore);
-  const displayScore = currentScore || selectedScore;
+  const scoreInfo = getScoreInfo(currentScore || virtualScore);
+  const displayScore = currentScore || virtualScore;
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
@@ -211,11 +336,11 @@ export const ScoreEntryCard = ({
         {/* Current Score Display */}
         <div className="text-right">
           <div
-            className={`text-3xl font-bold px-4 py-2 rounded-xl border-2 shadow-sm ${scoreInfo.bg} ${scoreInfo.text}`}
+            className={`text-3xl font-bold px-4 py-2 rounded-xl border-2 shadow-sm transition-all duration-200 ${scoreInfo.bg} ${scoreInfo.text}`}
           >
             {currentScore || "–"}
           </div>
-          {(currentScore || (selectedScore && currentScore === 0)) && (
+          {(currentScore || (virtualScore && currentScore === 0)) && (
             <div className="text-center mt-2">
               <span
                 className={`text-xs font-semibold px-2 py-1 rounded-full ${scoreInfo.badgeColor}`}
@@ -227,7 +352,7 @@ export const ScoreEntryCard = ({
         </div>
       </div>
 
-      {/* Score Picker Interface */}
+      {/* Enhanced Score Picker Interface */}
       <div className="border-t border-slate-200 p-5 bg-slate-50">
         <div className="mb-4">
           <div className="flex items-center justify-between mb-4">
@@ -254,138 +379,121 @@ export const ScoreEntryCard = ({
             </div>
           </div>
 
-          {/* Single Score Picker */}
-          <div className="relative h-20 flex items-center justify-center">
-            {/* Navigation Arrows */}
-            <button
-              onClick={handlePrevScore}
-              disabled={selectedScore <= 1}
-              className="absolute left-0 w-10 h-10 rounded-full bg-white border-2 border-slate-300 flex items-center justify-center hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all z-10"
+          {/* Smooth Horizontal Score Picker */}
+          <div className="relative h-24 flex items-center justify-center overflow-hidden bg-white rounded-lg border-2 border-slate-200 shadow-inner">
+            {/* Score Options - these move while center selection stays fixed */}
+            <div
+              className="flex items-center transition-transform duration-100 ease-out"
+              style={{
+                // Calculate offset to keep virtualScore centered, then add swipe offset
+                transform: `translateX(${
+                  -(virtualScore - 1) * 68 + 272 - swipeOffset
+                }px)`, // 272px = 4 * 68px to center in view
+              }}
             >
-              <svg
-                className="w-5 h-5 text-slate-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
+              {Array.from({ length: 10 }, (_, i) => i + 1).map((score) => {
+                const isCenter = score === virtualScore;
+                const distanceFromCenter = score - virtualScore;
+                const absDistance = Math.abs(distanceFromCenter);
+                const opacity = Math.max(0.2, 1 - absDistance * 0.25);
+                const scale = isCenter
+                  ? 1.2
+                  : Math.max(0.6, 1 - absDistance * 0.2);
 
-            <button
-              onClick={handleNextScore}
-              disabled={selectedScore >= 10}
-              className="absolute right-0 w-10 h-10 rounded-full bg-white border-2 border-slate-300 flex items-center justify-center hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all z-10"
-            >
-              <svg
-                className="w-5 h-5 text-slate-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-
-            {/* Score Display Area */}
-            <div className="flex items-center justify-center relative w-32">
-              {/* Previous Score (fading out) */}
-              {isScrolling && selectedScore > 1 && (
-                <div
-                  className={`absolute w-16 h-16 rounded-full font-bold text-lg flex items-center justify-center transition-all duration-300 transform -translate-x-8 ${getPickerButtonStyle(
-                    false
-                  )}`}
-                  style={{ opacity: 0.3 }}
-                >
-                  {selectedScore - 1}
-                </div>
-              )}
-
-              {/* Current Score (center) */}
-              <div
-                className={`w-16 h-16 rounded-full font-bold text-xl flex items-center justify-center transition-all duration-300 ${getPickerButtonStyle(
-                  true
-                )}`}
-              >
-                {selectedScore}
-              </div>
-
-              {/* Next Score (fading in) */}
-              {isScrolling && selectedScore < 10 && (
-                <div
-                  className={`absolute w-16 h-16 rounded-full font-bold text-lg flex items-center justify-center transition-all duration-300 transform translate-x-8 ${getPickerButtonStyle(
-                    false
-                  )}`}
-                  style={{ opacity: 0.3 }}
-                >
-                  {selectedScore + 1}
-                </div>
-              )}
+                return (
+                  <div
+                    key={score}
+                    className={`flex-shrink-0 w-16 h-16 mx-1 rounded-xl font-bold text-xl flex items-center justify-center transition-all duration-150 ${
+                      isCenter
+                        ? "bg-emerald-600 text-white border-2 border-emerald-700 shadow-lg z-10"
+                        : "bg-white text-slate-600 border border-slate-300"
+                    }`}
+                    style={{
+                      opacity,
+                      transform: `scale(${scale})`,
+                    }}
+                  >
+                    {score}
+                  </div>
+                );
+              })}
             </div>
 
-            {/* Enhanced Touch/Swipe Area */}
+            {/* Touch/Mouse Area */}
             <div
-              className="absolute inset-0 touch-pan-x"
-              onTouchStart={(e) => {
-                touchStartRef.current = {
-                  x: e.touches[0].clientX,
-                  time: Date.now(),
-                };
-              }}
-              onTouchEnd={(e) => {
-                if (!touchStartRef.current) return;
-
-                const endX = e.changedTouches[0].clientX;
-                const endTime = Date.now();
-
-                const distance = touchStartRef.current.x - endX;
-                const duration = endTime - touchStartRef.current.time;
-                const velocity = Math.abs(distance) / duration;
-
-                // Calculate increment based on distance and velocity
-                let increment = 1;
-                if (Math.abs(distance) > 60) increment = 2;
-                if (Math.abs(distance) > 120) increment = 3;
-                if (velocity > 0.5) increment = Math.min(increment + 1, 4);
-
-                if (distance > 30) {
-                  // Swipe left (increase score)
-                  const newScore = Math.min(10, selectedScore + increment);
-                  handleScoreChange(newScore);
-                  setIsScrolling(true);
-                  if (scrollTimeoutRef.current)
-                    clearTimeout(scrollTimeoutRef.current);
-                  scrollTimeoutRef.current = setTimeout(
-                    () => setIsScrolling(false),
-                    300
-                  );
-                } else if (distance < -30) {
-                  // Swipe right (decrease score)
-                  const newScore = Math.max(1, selectedScore - increment);
-                  handleScoreChange(newScore);
-                  setIsScrolling(true);
-                  if (scrollTimeoutRef.current)
-                    clearTimeout(scrollTimeoutRef.current);
-                  scrollTimeoutRef.current = setTimeout(
-                    () => setIsScrolling(false),
-                    300
-                  );
-                }
-
-                touchStartRef.current = null;
-              }}
+              className="absolute inset-0 touch-pan-x cursor-grab active:cursor-grabbing select-none"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
             />
+
+            {/* Center Selection Indicator - Fixed position */}
+            <div className="absolute inset-x-0 top-0 h-full flex items-center justify-center pointer-events-none z-20">
+              <div className="w-20 h-20 border-4 border-emerald-500 rounded-xl bg-emerald-50 bg-opacity-50 flex items-center justify-center">
+                <div className="w-2 h-2 bg-emerald-600 rounded-full" />
+              </div>
+            </div>
+
+            {/* Navigation Hints */}
+            <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none">
+              <div className="flex flex-col items-center">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+                <span className="text-xs mt-1">Lower</span>
+              </div>
+            </div>
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none">
+              <div className="flex flex-col items-center">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+                <span className="text-xs mt-1">Higher</span>
+              </div>
+            </div>
           </div>
+
+          {/* Live Preview of Score */}
+          {isActive && (
+            <div className="mt-3 text-center animate-fade-in">
+              <div
+                className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold ${
+                  getScoreInfo(virtualScore).badgeColor
+                }`}
+              >
+                <span>{getScoreInfo(virtualScore).badge}</span>
+                {virtualScore !== selectedScore && (
+                  <span className="text-xs opacity-75">
+                    ({virtualScore > selectedScore ? "+" : ""}
+                    {virtualScore - selectedScore})
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Par Reference */}
           <div className="flex justify-center mt-2">
