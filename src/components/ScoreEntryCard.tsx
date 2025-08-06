@@ -183,15 +183,6 @@ export const ScoreEntryCard = ({
           >
             {currentScore || "–"}
           </div>
-          {currentScore && (
-            <div className="text-center mt-2">
-              <span
-                className={`text-xs font-semibold px-2 py-1 rounded-full ${scoreInfo.badgeColor}`}
-              >
-                {scoreInfo.name}
-              </span>
-            </div>
-          )}
         </div>
       </div>
 
@@ -235,12 +226,10 @@ export const ScoreEntryCard = ({
                 <div className="text-xs leading-tight">
                   {option.score === effectivePar
                     ? "Par"
-                    : option.score < effectivePar
-                    ? `${effectivePar - option.score} Under`
                     : option.score === effectivePar + 1
                     ? "Bogey"
                     : option.score === effectivePar + 2
-                    ? "Dbl Bogey"
+                    ? "Double Bogey"
                     : option.score === effectivePar - 1
                     ? "Birdie"
                     : option.score === effectivePar - 2

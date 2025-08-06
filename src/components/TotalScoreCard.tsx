@@ -37,61 +37,16 @@ export const TotalScoreCard = ({
     setHandicapStrokes(player.handicap?.toString() || "0");
   }, [player.handicap]);
 
-  const getScoreStyles = (score: number, isPar: number) => {
-    const toPar = score - isPar;
-
-    if (score === 0)
-      return {
-        bg: "bg-slate-100 border-slate-200",
-        text: "text-slate-400",
-        badge: "No Score",
-      };
-
-    if (toPar <= -5)
-      return {
-        bg: "bg-purple-100 border-purple-300",
-        text: "text-purple-900",
-        badge: `${toPar} Under`,
-      };
-    if (toPar < 0)
-      return {
-        bg: "bg-red-100 border-red-300",
-        text: "text-red-900",
-        badge: `${Math.abs(toPar)} Under Par`,
-      };
-    if (toPar === 0)
-      return {
-        bg: "bg-blue-100 border-blue-300",
-        text: "text-blue-900",
-        badge: "Even Par",
-      };
-    if (toPar <= 5)
-      return {
-        bg: "bg-orange-100 border-orange-300",
-        text: "text-orange-900",
-        badge: `+${toPar} Over`,
-      };
-    return {
-      bg: "bg-red-200 border-red-400",
-      text: "text-red-900",
-      badge: `+${toPar} Over`,
-    };
-  };
-
   const handleSaveScore = () => {
     const score = parseInt(inputScore);
     if (score > 0 && score <= 200) {
       onTotalScoreChange(score);
-      setIsEditing(false);
     }
   };
 
   const handleCancel = () => {
     setInputScore(currentTotalScore.toString());
-    setIsEditing(false);
   };
-
-  const grossScoreStyles = getScoreStyles(currentTotalScore, totalPar);
 
   return (
     <div className="card hover:shadow-elevated transition-all duration-200">
@@ -130,62 +85,42 @@ export const TotalScoreCard = ({
 
         <div className="flex items-center gap-4">
           {/* Total Score Display/Input */}
-          {isEditing ? (
-            <div className="text-right">
-              <div className="mb-3">
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Total Score
-                </label>
-                <input
-                  type="number"
-                  value={inputScore}
-                  onChange={(e) => setInputScore(e.target.value)}
-                  className="w-24 text-4xl font-bold text-center border-2 border-emerald-500 rounded-xl px-2 py-1 focus:ring-2 focus:ring-emerald-200"
-                  min="18"
-                  max="200"
-                  placeholder="72"
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSaveScore();
-                    if (e.key === "Escape") handleCancel();
-                  }}
-                />
-              </div>
+          <div className="text-right">
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Total Score
+              </label>
+              <input
+                type="number"
+                value={inputScore}
+                onChange={(e) => setInputScore(e.target.value)}
+                className="w-24 text-4xl font-bold text-center border-2 border-emerald-500 rounded-xl px-2 py-1 focus:ring-2 focus:ring-emerald-200"
+                min="18"
+                max="200"
+                placeholder="72"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSaveScore();
+                  if (e.key === "Escape") handleCancel();
+                }}
+              />
+            </div>
 
-              <div className="text-center space-x-2">
-                <button
-                  onClick={handleCancel}
-                  className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1 rounded-full font-medium transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSaveScore}
-                  className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded-full font-medium transition-colors"
-                >
-                  Save
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="text-right">
+            <div className="text-center space-x-2">
               <button
-                onClick={() => setIsEditing(true)}
-                className={`text-4xl font-bold px-4 py-2 rounded-xl border-2 shadow-sm transition-all hover:scale-105 ${grossScoreStyles.bg} ${grossScoreStyles.text}`}
+                onClick={handleCancel}
+                className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1 rounded-full font-medium transition-colors"
               >
-                {currentTotalScore || "–"}
+                Cancel
               </button>
-              {currentTotalScore > 0 && (
-                <div className="text-center mt-2">
-                  <span
-                    className={`text-xs font-semibold px-2 py-1 rounded-full ${grossScoreStyles.bg} ${grossScoreStyles.text} border`}
-                  >
-                    {grossScoreStyles.badge}
-                  </span>
-                </div>
-              )}
+              <button
+                onClick={handleSaveScore}
+                className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded-full font-medium transition-colors"
+              >
+                Save
+              </button>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
