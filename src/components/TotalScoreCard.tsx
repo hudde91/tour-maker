@@ -17,84 +17,81 @@ export const TotalScoreCard = ({
 }: TotalScoreCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [inputScore, setInputScore] = useState(currentTotalScore.toString());
-  const [inputMode, setInputMode] = useState<"total" | "relative">("total");
-  const [relativeScore, setRelativeScore] = useState("0");
+  const [handicapStrokes, setHandicapStrokes] = useState(
+    player.handicap?.toString() || "0"
+  );
 
   const totalPar = storage.getTotalPar(round);
   const scoreToPar = currentTotalScore - totalPar;
+  const effectiveHandicap = parseInt(handicapStrokes) || 0;
+  const netScore = currentTotalScore - effectiveHandicap;
+  const netToPar = netScore - totalPar;
 
   // Update input values when props change
   useEffect(() => {
     setInputScore(currentTotalScore.toString());
-    setRelativeScore(scoreToPar.toString());
-  }, [currentTotalScore, scoreToPar]);
+  }, [currentTotalScore]);
 
-  const getScoreStyles = () => {
-    if (currentTotalScore === 0)
+  // Update handicap strokes when player handicap changes
+  useEffect(() => {
+    setHandicapStrokes(player.handicap?.toString() || "0");
+  }, [player.handicap]);
+
+  const getScoreStyles = (score: number, isPar: number) => {
+    const toPar = score - isPar;
+
+    if (score === 0)
       return {
         bg: "bg-slate-100 border-slate-200",
         text: "text-slate-400",
         badge: "No Score",
       };
 
-    if (scoreToPar <= -5)
+    if (toPar <= -5)
       return {
         bg: "bg-purple-100 border-purple-300",
         text: "text-purple-900",
-        badge: `${scoreToPar} Under`,
+        badge: `${toPar} Under`,
       };
-    if (scoreToPar < 0)
+    if (toPar < 0)
       return {
         bg: "bg-red-100 border-red-300",
         text: "text-red-900",
-        badge: `${Math.abs(scoreToPar)} Under Par`,
+        badge: `${Math.abs(toPar)} Under Par`,
       };
-    if (scoreToPar === 0)
+    if (toPar === 0)
       return {
         bg: "bg-blue-100 border-blue-300",
         text: "text-blue-900",
         badge: "Even Par",
       };
-    if (scoreToPar <= 5)
+    if (toPar <= 5)
       return {
         bg: "bg-orange-100 border-orange-300",
         text: "text-orange-900",
-        badge: `+${scoreToPar} Over`,
+        badge: `+${toPar} Over`,
       };
     return {
       bg: "bg-red-200 border-red-400",
       text: "text-red-900",
-      badge: `+${scoreToPar} Over`,
+      badge: `+${toPar} Over`,
     };
   };
 
   const handleSaveScore = () => {
-    if (inputMode === "total") {
-      const score = parseInt(inputScore);
-      if (score > 0 && score <= 200) {
-        onTotalScoreChange(score);
-        setIsEditing(false);
-      }
-    } else {
-      // Relative mode - convert to total score
-      const relative = parseInt(relativeScore);
-      if (!isNaN(relative)) {
-        const totalScore = totalPar + relative;
-        if (totalScore > 0 && totalScore <= 200) {
-          onTotalScoreChange(totalScore);
-          setIsEditing(false);
-        }
-      }
+    const score = parseInt(inputScore);
+    if (score > 0 && score <= 200) {
+      onTotalScoreChange(score);
+      setIsEditing(false);
     }
   };
 
   const handleCancel = () => {
     setInputScore(currentTotalScore.toString());
-    setRelativeScore(scoreToPar.toString());
     setIsEditing(false);
   };
 
-  const scoreStyles = getScoreStyles();
+  const grossScoreStyles = getScoreStyles(currentTotalScore, totalPar);
 
   return (
     <div className="card hover:shadow-elevated transition-all duration-200">
@@ -135,99 +132,27 @@ export const TotalScoreCard = ({
           {/* Total Score Display/Input */}
           {isEditing ? (
             <div className="text-right">
-              {/* Input Mode Toggle */}
               <div className="mb-3">
-                <div className="bg-slate-100 rounded-lg p-1 inline-flex">
-                  <button
-                    type="button"
-                    onClick={() => setInputMode("total")}
-                    className={`px-3 py-1 rounded text-sm font-medium transition-all ${
-                      inputMode === "total"
-                        ? "bg-white text-slate-900 shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    Total Score
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setInputMode("relative")}
-                    className={`px-3 py-1 rounded text-sm font-medium transition-all ${
-                      inputMode === "relative"
-                        ? "bg-white text-slate-900 shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    Strokes to Par
-                  </button>
-                </div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Total Score
+                </label>
+                <input
+                  type="number"
+                  value={inputScore}
+                  onChange={(e) => setInputScore(e.target.value)}
+                  className="w-24 text-4xl font-bold text-center border-2 border-emerald-500 rounded-xl px-2 py-1 focus:ring-2 focus:ring-emerald-200"
+                  min="18"
+                  max="200"
+                  placeholder="72"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSaveScore();
+                    if (e.key === "Escape") handleCancel();
+                  }}
+                />
               </div>
 
-              {/* Input Field */}
-              {inputMode === "total" ? (
-                <div>
-                  <input
-                    type="number"
-                    value={inputScore}
-                    onChange={(e) => setInputScore(e.target.value)}
-                    className="w-24 text-4xl font-bold text-center border-2 border-emerald-500 rounded-xl px-2 py-1 focus:ring-2 focus:ring-emerald-200"
-                    min="18"
-                    max="200"
-                    placeholder="72"
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleSaveScore();
-                      if (e.key === "Escape") handleCancel();
-                    }}
-                  />
-                  <div className="text-xs text-slate-500 mt-1">Total Score</div>
-                </div>
-              ) : (
-                <div>
-                  <div className="flex items-center justify-center gap-2">
-                    <input
-                      type="number"
-                      value={relativeScore}
-                      onChange={(e) => setRelativeScore(e.target.value)}
-                      className="w-20 text-4xl font-bold text-center border-2 border-emerald-500 rounded-xl px-2 py-1 focus:ring-2 focus:ring-emerald-200"
-                      min="-20"
-                      max="50"
-                      placeholder="0"
-                      autoFocus
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleSaveScore();
-                        if (e.key === "Escape") handleCancel();
-                      }}
-                    />
-                    <div className="text-xl font-bold text-slate-600">
-                      = {totalPar + (parseInt(relativeScore) || 0)}
-                    </div>
-                  </div>
-                  <div className="text-xs text-slate-500 mt-1">
-                    Strokes Over/Under Par ({totalPar})
-                  </div>
-
-                  {/* Quick Score Buttons */}
-                  <div className="flex justify-center gap-1 mt-3">
-                    {[-2, -1, 0, 1, 2, 3].map((score) => (
-                      <button
-                        key={score}
-                        type="button"
-                        onClick={() => setRelativeScore(score.toString())}
-                        className={`px-2 py-1 rounded text-xs font-medium transition-all ${
-                          parseInt(relativeScore) === score
-                            ? "bg-emerald-600 text-white"
-                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-                        }`}
-                      >
-                        {score === 0 ? "E" : score > 0 ? `+${score}` : score}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="text-center mt-3 space-x-2">
+              <div className="text-center space-x-2">
                 <button
                   onClick={handleCancel}
                   className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1 rounded-full font-medium transition-colors"
@@ -246,16 +171,16 @@ export const TotalScoreCard = ({
             <div className="text-right">
               <button
                 onClick={() => setIsEditing(true)}
-                className={`text-4xl font-bold px-4 py-2 rounded-xl border-2 shadow-sm transition-all hover:scale-105 ${scoreStyles.bg} ${scoreStyles.text}`}
+                className={`text-4xl font-bold px-4 py-2 rounded-xl border-2 shadow-sm transition-all hover:scale-105 ${grossScoreStyles.bg} ${grossScoreStyles.text}`}
               >
                 {currentTotalScore || "–"}
               </button>
               {currentTotalScore > 0 && (
                 <div className="text-center mt-2">
                   <span
-                    className={`text-xs font-semibold px-2 py-1 rounded-full ${scoreStyles.bg} ${scoreStyles.text} border`}
+                    className={`text-xs font-semibold px-2 py-1 rounded-full ${grossScoreStyles.bg} ${grossScoreStyles.text} border`}
                   >
-                    {scoreStyles.badge}
+                    {grossScoreStyles.badge}
                   </span>
                 </div>
               )}
@@ -264,41 +189,124 @@ export const TotalScoreCard = ({
         </div>
       </div>
 
+      {/* Handicap Strokes Section */}
+      {!isEditing && currentTotalScore > 0 && (
+        <div className="mt-6 pt-4 border-t border-slate-200">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h4 className="text-lg font-semibold text-slate-800 mb-1">
+                Handicap Calculation
+              </h4>
+              <p className="text-sm text-slate-600">
+                Adjust handicap strokes for net scoring competition
+              </p>
+            </div>
+
+            <div className="text-right">
+              <div className="flex items-center gap-2 mb-2">
+                <label className="text-sm font-medium text-slate-700">
+                  Handicap Strokes:
+                </label>
+                <input
+                  type="number"
+                  value={handicapStrokes}
+                  onChange={(e) => setHandicapStrokes(e.target.value)}
+                  className="w-16 px-2 py-1 text-center border border-slate-300 rounded focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
+                  min="0"
+                  max="54"
+                  placeholder="0"
+                />
+              </div>
+              <p className="text-xs text-slate-500">
+                Based on player's handicap: {player.handicap || 0}
+              </p>
+            </div>
+          </div>
+
+          {/* Net Score Display */}
+          {effectiveHandicap > 0 && (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="text-sm font-medium text-emerald-800 mb-1">
+                    Net Score (After Handicap)
+                  </div>
+                  <div className="text-xs text-emerald-700">
+                    {currentTotalScore} - {effectiveHandicap} strokes ={" "}
+                    {netScore}
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-emerald-800 mb-1">
+                    {netScore}
+                  </div>
+                  <div
+                    className={`text-lg font-semibold ${
+                      netToPar < 0
+                        ? "text-red-600"
+                        : netToPar > 0
+                        ? "text-orange-600"
+                        : "text-blue-600"
+                    }`}
+                  >
+                    {netToPar === 0 ? "E" : netToPar > 0 ? "+" : ""}
+                    {netToPar || 0}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Round Summary */}
-      <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-3 gap-4 text-center">
-        <div>
-          <div className="text-2xl font-bold text-slate-900">
-            {currentTotalScore || 0}
+      <div className="mt-4 pt-4 border-t border-slate-100">
+        <div className="grid grid-cols-4 gap-4 text-center">
+          <div>
+            <div className="text-2xl font-bold text-slate-900">
+              {currentTotalScore || 0}
+            </div>
+            <div className="text-xs text-slate-500 uppercase tracking-wide">
+              Gross Score
+            </div>
           </div>
-          <div className="text-xs text-slate-500 uppercase tracking-wide">
-            Total Score
-          </div>
-        </div>
-        <div>
-          <div
-            className={`text-2xl font-bold ${
-              scoreToPar < 0
-                ? "text-red-600"
+          <div>
+            <div
+              className={`text-2xl font-bold ${
+                scoreToPar < 0
+                  ? "text-red-600"
+                  : scoreToPar > 0
+                  ? "text-orange-600"
+                  : "text-blue-600"
+              }`}
+            >
+              {scoreToPar === 0 && currentTotalScore > 0
+                ? "E"
                 : scoreToPar > 0
-                ? "text-orange-600"
-                : "text-blue-600"
-            }`}
-          >
-            {scoreToPar === 0 && currentTotalScore > 0
-              ? "E"
-              : scoreToPar > 0
-              ? "+"
-              : ""}
-            {scoreToPar || 0}
+                ? "+"
+                : ""}
+              {scoreToPar || 0}
+            </div>
+            <div className="text-xs text-slate-500 uppercase tracking-wide">
+              To Par
+            </div>
           </div>
-          <div className="text-xs text-slate-500 uppercase tracking-wide">
-            To Par
+          <div>
+            <div className="text-2xl font-bold text-slate-900">
+              {effectiveHandicap}
+            </div>
+            <div className="text-xs text-slate-500 uppercase tracking-wide">
+              HC Strokes
+            </div>
           </div>
-        </div>
-        <div>
-          <div className="text-2xl font-bold text-slate-900">{totalPar}</div>
-          <div className="text-xs text-slate-500 uppercase tracking-wide">
-            Course Par
+          <div>
+            <div className="text-2xl font-bold text-emerald-600">
+              {netScore > 0 ? netScore : "–"}
+            </div>
+            <div className="text-xs text-slate-500 uppercase tracking-wide">
+              Net Score
+            </div>
           </div>
         </div>
       </div>

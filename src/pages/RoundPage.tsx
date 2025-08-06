@@ -393,49 +393,72 @@ export const RoundPage = () => {
             </div>
           </div>
 
-          {/* Tournament Status Bar */}
+          {/* Tournament Status Bar - Only show hole info in individual mode */}
           <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-3">
             <div className="flex justify-between items-center text-sm">
               <div className="flex items-center gap-4 text-white">
-                <div className="flex items-center gap-1">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  <span className="font-medium">Hole {currentHole}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 3l14 9-14 9V3z"
-                    />
-                  </svg>
-                  <span>Par {currentHoleInfo.par}</span>
-                </div>
-                {currentHoleInfo.yardage && (
+                {scoringMode === "individual" && (
+                  <>
+                    <div className="flex items-center gap-1">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </svg>
+                      <span className="font-medium">Hole {currentHole}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 3l14 9-14 9V3z"
+                        />
+                      </svg>
+                      <span>Par {currentHoleInfo.par}</span>
+                    </div>
+                    {currentHoleInfo.yardage && (
+                      <div className="flex items-center gap-1">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                          />
+                        </svg>
+                        <span>{currentHoleInfo.yardage}y</span>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {scoringMode === "total" && (
                   <div className="flex items-center gap-1">
                     <svg
                       className="w-4 h-4"
@@ -447,10 +470,10 @@ export const RoundPage = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                       />
                     </svg>
-                    <span>{currentHoleInfo.yardage}y</span>
+                    <span className="font-medium">Total Score Entry</span>
                   </div>
                 )}
               </div>
@@ -475,15 +498,17 @@ export const RoundPage = () => {
       </div>
 
       <div className="p-4 pb-24">
-        {/* Hole Navigation */}
-        <div className="mb-6">
-          <HoleNavigation
-            holes={round.holeInfo}
-            currentHole={currentHole}
-            onHoleChange={setCurrentHole}
-            playerScores={getPlayerScores()}
-          />
-        </div>
+        {/* Hole Navigation - Only show in individual mode */}
+        {scoringMode === "individual" && (
+          <div className="mb-6">
+            <HoleNavigation
+              holes={round.holeInfo}
+              currentHole={currentHole}
+              onHoleChange={setCurrentHole}
+              playerScores={getPlayerScores()}
+            />
+          </div>
+        )}
 
         {/* Live Leaderboard (Collapsible) */}
         {showLeaderboard && (
@@ -495,7 +520,11 @@ export const RoundPage = () => {
         {/* Scoring Interface */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="section-header">Hole {currentHole}</h2>
+            <h2 className="section-header">
+              {scoringMode === "individual"
+                ? `Hole ${currentHole}`
+                : "Total Score Entry"}
+            </h2>
 
             {/* Scoring Mode Toggle */}
             <div className="bg-white rounded-lg p-1 shadow-sm border border-slate-200">
@@ -557,58 +586,60 @@ export const RoundPage = () => {
         </div>
       </div>
 
-      {/* Fixed Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 safe-area-bottom shadow-lg">
-        <div className="flex gap-3 max-w-md mx-auto">
-          <button
-            onClick={() => currentHole > 1 && setCurrentHole(currentHole - 1)}
-            disabled={currentHole === 1}
-            className="btn-secondary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <div className="flex items-center justify-center gap-2">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              Previous
-            </div>
-          </button>
+      {/* Fixed Bottom Navigation - Only show in individual mode */}
+      {scoringMode === "individual" && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 safe-area-bottom shadow-lg">
+          <div className="flex gap-3 max-w-md mx-auto">
+            <button
+              onClick={() => currentHole > 1 && setCurrentHole(currentHole - 1)}
+              disabled={currentHole === 1}
+              className="btn-secondary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
+                </svg>
+                Previous
+              </div>
+            </button>
 
-          <button
-            onClick={() =>
-              currentHole < round.holes && setCurrentHole(currentHole + 1)
-            }
-            disabled={currentHole === round.holes}
-            className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <div className="flex items-center justify-center gap-2">
-              Next
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M14 5l7 7m0 0l-7 7m7-7H3"
-                />
-              </svg>
-            </div>
-          </button>
+            <button
+              onClick={() =>
+                currentHole < round.holes && setCurrentHole(currentHole + 1)
+              }
+              disabled={currentHole === round.holes}
+              className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div className="flex items-center justify-center gap-2">
+                Next
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
+              </div>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

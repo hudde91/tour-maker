@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Tour, LeaderboardEntry, TeamLeaderboardEntry } from "../types";
+import { Tour } from "../types";
 import { storage } from "../lib/storage";
 
 interface TournamentLeaderboardProps {
@@ -95,15 +95,6 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                 </button>
               </div>
             )}
-
-          {playersWithScores.length > 0 && leaderboardView === "individual" && (
-            <div className="text-right">
-              <div className="text-sm text-slate-500">Tournament Leader</div>
-              <div className="text-xl font-bold text-emerald-600">
-                {Math.min(...playersWithScores.map((p) => p.totalScore))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
