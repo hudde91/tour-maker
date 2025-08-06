@@ -217,12 +217,6 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
       </div>
 
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-caption bg-slate-100 px-2 py-1 rounded">
-            {teamPlayers.length} / {tour.players.length}
-          </span>
-        </div>
-
         {teamPlayers.map((player) => (
           <div
             key={player.id}

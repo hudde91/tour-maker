@@ -359,7 +359,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                 {Math.min(...playersWithScores.map((p) => p.totalScore))}
               </div>
               <div className="text-xs text-slate-500 uppercase tracking-wide">
-                Low Score
+                Lowest Score
               </div>
             </div>
             <div>

@@ -144,9 +144,6 @@ export const PlayerScorecard = ({
       {isExpanded && (
         <div className="mt-6 pt-6 border-t border-slate-200 animate-fade-in">
           <div className="mb-4">
-            <h4 className="text-lg font-semibold text-slate-800 mb-2">
-              Professional Scorecard
-            </h4>
             <p className="text-sm text-slate-600">
               Round-by-round performance in {tour.name}
             </p>
