@@ -190,32 +190,65 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
 
                 {/* Team Score Display */}
                 <div className="text-right">
-                  <div
-                    className={`text-4xl font-bold mb-1 ${
-                      isLeadingTeam ? "text-yellow-900" : "text-slate-900"
-                    }`}
-                  >
-                    {teamEntry.totalScore}
-                  </div>
-
-                  {teamEntry.totalToPar !== 0 && (
+                  <div className="flex flex-col items-end gap-1">
                     <div
-                      className={`text-xl font-semibold ${
-                        teamEntry.totalToPar < 0
-                          ? "text-red-600"
-                          : teamEntry.totalToPar > 0
-                          ? "text-orange-600"
-                          : "text-blue-600"
+                      className={`text-4xl font-bold mb-1 ${
+                        isLeadingTeam ? "text-yellow-900" : "text-slate-900"
                       }`}
                     >
-                      {teamEntry.totalToPar > 0 ? "+" : ""}
-                      {teamEntry.totalToPar}
+                      {teamEntry.netScore !== undefined
+                        ? teamEntry.netScore
+                        : teamEntry.totalScore}
                     </div>
-                  )}
 
-                  {teamEntry.totalToPar === 0 && teamEntry.totalScore > 0 && (
-                    <div className="text-xl font-semibold text-blue-600">E</div>
-                  )}
+                    {/* Show team handicap strokes if applied - NEW */}
+                    {teamEntry.totalHandicapStrokes &&
+                      teamEntry.totalHandicapStrokes > 0 && (
+                        <div className="text-xs text-slate-500 bg-blue-100 px-2 py-1 rounded">
+                          Gross: {teamEntry.totalScore} (-
+                          {teamEntry.totalHandicapStrokes} HC)
+                        </div>
+                      )}
+
+                    {/* To Par Display */}
+                    {(teamEntry.netToPar !== undefined
+                      ? teamEntry.netToPar
+                      : teamEntry.totalToPar) !== 0 && (
+                      <div
+                        className={`text-xl font-semibold ${
+                          (teamEntry.netToPar !== undefined
+                            ? teamEntry.netToPar
+                            : teamEntry.totalToPar) < 0
+                            ? "text-red-600"
+                            : (teamEntry.netToPar !== undefined
+                                ? teamEntry.netToPar
+                                : teamEntry.totalToPar) > 0
+                            ? "text-orange-600"
+                            : "text-blue-600"
+                        }`}
+                      >
+                        {(teamEntry.netToPar !== undefined
+                          ? teamEntry.netToPar
+                          : teamEntry.totalToPar) > 0
+                          ? "+"
+                          : ""}
+                        {teamEntry.netToPar !== undefined
+                          ? teamEntry.netToPar
+                          : teamEntry.totalToPar}
+                      </div>
+                    )}
+
+                    {(teamEntry.netToPar !== undefined
+                      ? teamEntry.netToPar
+                      : teamEntry.totalToPar) === 0 &&
+                      (teamEntry.netScore !== undefined
+                        ? teamEntry.netScore
+                        : teamEntry.totalScore) > 0 && (
+                        <div className="text-xl font-semibold text-blue-600">
+                          E
+                        </div>
+                      )}
+                  </div>
                 </div>
               </div>
 

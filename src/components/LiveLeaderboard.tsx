@@ -22,7 +22,7 @@ export const LiveLeaderboard = ({
 
   if (isCollapsed && playersWithScores.length === 0) {
     return (
-      <div className="card">
+      <div className="card max-w-5xl mx-auto">
         <h3 className="section-header mb-3">Live Leaderboard</h3>
         <div className="text-center py-8">
           <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -49,7 +49,7 @@ export const LiveLeaderboard = ({
   }
 
   return (
-    <div className="card-elevated">
+    <div className="card-elevated max-w-4xl mx-auto">
       {/* Leaderboard Header with Toggle */}
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -238,34 +238,64 @@ export const LiveLeaderboard = ({
 
                     {/* Score Display */}
                     <div className="text-right">
-                      <div
-                        className={`text-3xl font-bold mb-1 ${
-                          isLeader ? "text-yellow-900" : "text-slate-900"
-                        }`}
-                      >
-                        {entry.totalScore}
-                      </div>
-
-                      {entry.totalToPar !== 0 && (
+                      <div className="flex flex-col items-end gap-1">
                         <div
-                          className={`text-lg font-semibold ${
-                            entry.totalToPar < 0
-                              ? "text-red-600"
-                              : entry.totalToPar > 0
-                              ? "text-orange-600"
-                              : "text-blue-600"
+                          className={`text-3xl font-bold mb-1 ${
+                            isLeader ? "text-yellow-900" : "text-slate-900"
                           }`}
                         >
-                          {entry.totalToPar > 0 ? "+" : ""}
-                          {entry.totalToPar}
+                          {entry.netScore !== undefined
+                            ? entry.netScore
+                            : entry.totalScore}
                         </div>
-                      )}
 
-                      {entry.totalToPar === 0 && entry.totalScore > 0 && (
-                        <div className="text-lg font-semibold text-blue-600">
-                          E
-                        </div>
-                      )}
+                        {/* Show handicap strokes if applied - NEW */}
+                        {entry.handicapStrokes && entry.handicapStrokes > 0 && (
+                          <div className="text-xs text-slate-500 bg-blue-100 px-2 py-1 rounded">
+                            Gross: {entry.totalScore} (-{entry.handicapStrokes}{" "}
+                            HC)
+                          </div>
+                        )}
+
+                        {/* To Par Display */}
+                        {(entry.netToPar !== undefined
+                          ? entry.netToPar
+                          : entry.totalToPar) !== 0 && (
+                          <div
+                            className={`text-lg font-semibold ${
+                              (entry.netToPar !== undefined
+                                ? entry.netToPar
+                                : entry.totalToPar) < 0
+                                ? "text-red-600"
+                                : (entry.netToPar !== undefined
+                                    ? entry.netToPar
+                                    : entry.totalToPar) > 0
+                                ? "text-orange-600"
+                                : "text-blue-600"
+                            }`}
+                          >
+                            {(entry.netToPar !== undefined
+                              ? entry.netToPar
+                              : entry.totalToPar) > 0
+                              ? "+"
+                              : ""}
+                            {entry.netToPar !== undefined
+                              ? entry.netToPar
+                              : entry.totalToPar}
+                          </div>
+                        )}
+
+                        {(entry.netToPar !== undefined
+                          ? entry.netToPar
+                          : entry.totalToPar) === 0 &&
+                          (entry.netScore !== undefined
+                            ? entry.netScore
+                            : entry.totalScore) > 0 && (
+                            <div className="text-lg font-semibold text-blue-600">
+                              E
+                            </div>
+                          )}
+                      </div>
                     </div>
                   </div>
                 );

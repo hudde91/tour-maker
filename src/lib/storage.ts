@@ -13,7 +13,52 @@ const STORAGE_KEYS = {
   ACTIVE_TOUR: "active-tour-id",
 } as const;
 
+const calculateHandicapStrokes = (
+  player: Player,
+  round: Round,
+  isHoleByHole: boolean = true
+): number => {
+  if (!round.settings.strokesGiven || !player.handicap) return 0;
+
+  if (isHoleByHole) {
+    // Calculate hole-by-hole strokes (like in ScoreEntryCard.tsx)
+    let totalStrokes = 0;
+    round.holeInfo.forEach((hole) => {
+      if (
+        hole.handicap &&
+        player.handicap !== undefined &&
+        hole.handicap <= player.handicap
+      ) {
+        totalStrokes++;
+      }
+    });
+    return totalStrokes;
+  } else {
+    // For total score entry, use full handicap (like in TotalScoreCard.tsx)
+    return player.handicap;
+  }
+};
+
 export const storage = {
+  recalculateAllScoresWithHandicaps: (tourId: string): void => {
+    const tour = storage.getTour(tourId);
+    if (!tour) return;
+
+    tour.rounds.forEach((round) => {
+      Object.entries(round.scores).forEach(([playerId, playerScore]) => {
+        const player = tour.players.find((p) => p.id === playerId);
+        if (player && playerScore.scores) {
+          // Recalculate this player's score
+          storage.updatePlayerScore(
+            tourId,
+            round.id,
+            playerId,
+            playerScore.scores
+          );
+        }
+      });
+    });
+  },
   // Tours
   getTours: (): Tour[] => {
     const tours = localStorage.getItem(STORAGE_KEYS.TOURS);
@@ -92,17 +137,40 @@ export const storage = {
     if (!tour) return;
 
     const round = tour.rounds.find((r) => r.id === roundId);
-    if (!round) return;
+    const player = tour.players.find((p) => p.id === playerId);
+    if (!round || !player) return;
 
     const totalScore = scores.reduce((sum, score) => sum + score, 0);
-    const totalPar = storage.getTotalPar(round); // Use helper function
+    const totalPar = storage.getTotalPar(round);
     const totalToPar = totalScore - totalPar;
+
+    // Calculate handicap strokes properly - hole by hole
+    let handicapStrokes = 0;
+    if (round.settings.strokesGiven && player.handicap) {
+      round.holeInfo.forEach((hole) => {
+        if (
+          hole.handicap &&
+          player.handicap !== undefined &&
+          hole.handicap <= player.handicap
+        ) {
+          handicapStrokes++;
+        }
+      });
+    }
+
+    // Calculate net scores
+    const netScore =
+      handicapStrokes > 0 ? totalScore - handicapStrokes : undefined;
+    const netToPar = netScore ? netScore - totalPar : undefined;
 
     round.scores[playerId] = {
       playerId,
       scores,
       totalScore,
       totalToPar,
+      handicapStrokes: handicapStrokes > 0 ? handicapStrokes : undefined,
+      netScore,
+      netToPar,
     };
 
     storage.saveTour(tour);
@@ -331,7 +399,11 @@ export const storage = {
     tour.players.forEach((player) => {
       let totalScore = 0;
       let totalToPar = 0;
+      let totalHandicapStrokes = 0;
+      let totalNetScore = 0;
+      let totalNetToPar = 0;
       let roundsPlayed = 0;
+      let hasHandicapApplied = false;
 
       if (roundId) {
         // Single round leaderboard
@@ -340,6 +412,10 @@ export const storage = {
           const playerScore = round.scores[player.id];
           totalScore = playerScore.totalScore;
           totalToPar = playerScore.totalToPar;
+          totalHandicapStrokes = playerScore.handicapStrokes || 0;
+          totalNetScore = playerScore.netScore || 0;
+          totalNetToPar = playerScore.netToPar || 0;
+          hasHandicapApplied = !!playerScore.handicapStrokes;
           roundsPlayed = playerScore.scores.some((s) => s > 0) ? 1 : 0;
         }
       } else {
@@ -349,6 +425,10 @@ export const storage = {
             const playerScore = round.scores[player.id];
             totalScore += playerScore.totalScore;
             totalToPar += playerScore.totalToPar;
+            totalHandicapStrokes += playerScore.handicapStrokes || 0;
+            totalNetScore += playerScore.netScore || playerScore.totalScore;
+            totalNetToPar += playerScore.netToPar || playerScore.totalToPar;
+            if (playerScore.handicapStrokes) hasHandicapApplied = true;
             if (playerScore.scores.some((s) => s > 0)) roundsPlayed++;
           }
         });
@@ -358,17 +438,24 @@ export const storage = {
         player,
         totalScore,
         totalToPar,
+        netScore: hasHandicapApplied ? totalNetScore : undefined,
+        netToPar: hasHandicapApplied ? totalNetToPar : undefined,
+        handicapStrokes: hasHandicapApplied ? totalHandicapStrokes : undefined,
         roundsPlayed,
         position: 0, // Will be set after sorting
       });
     });
 
-    // Sort by total score (lowest first), but only among players who have scores
+    // Sort by net score if handicaps are applied, otherwise by gross score
     entries.sort((a, b) => {
       if (a.totalScore === 0 && b.totalScore === 0) return 0;
       if (a.totalScore === 0) return 1;
       if (b.totalScore === 0) return -1;
-      return a.totalScore - b.totalScore;
+
+      // Use net score for sorting if handicaps are applied
+      const aScore = a.netScore || a.totalScore;
+      const bScore = b.netScore || b.totalScore;
+      return aScore - bScore;
     });
 
     // Set positions
@@ -390,13 +477,19 @@ export const storage = {
     if (!tour) return;
 
     const round = tour.rounds.find((r) => r.id === roundId);
-    if (!round) return;
+    const player = tour.players.find((p) => p.id === playerId);
+    if (!round || !player) return;
 
-    // Calculate total par using helper function
     const totalPar = storage.getTotalPar(round);
     const totalToPar = totalScore - totalPar;
 
-    // Create a distributed score array (spread the score across holes reasonably)
+    // Calculate handicap strokes
+    const handicapStrokes = calculateHandicapStrokes(player, round);
+    const netScore =
+      handicapStrokes > 0 ? totalScore - handicapStrokes : undefined;
+    const netToPar = netScore ? netScore - totalPar : undefined;
+
+    // Create a distributed score array
     const averageScore = totalScore / round.holes;
     const scores = new Array(round.holes).fill(Math.round(averageScore));
 
@@ -404,7 +497,6 @@ export const storage = {
     let currentTotal = scores.reduce((sum, score) => sum + score, 0);
     let difference = totalScore - currentTotal;
 
-    // Distribute the difference across holes
     let holeIndex = 0;
     while (difference !== 0 && holeIndex < round.holes) {
       if (difference > 0) {
@@ -422,10 +514,88 @@ export const storage = {
       scores,
       totalScore,
       totalToPar,
+      handicapStrokes,
+      netScore,
+      netToPar,
     };
 
     storage.saveTour(tour);
   },
+
+  updatePlayerTotalScoreWithHandicap: (
+    tourId: string,
+    roundId: string,
+    playerId: string,
+    totalScore: number,
+    manualHandicapStrokes?: number
+  ): void => {
+    const tour = storage.getTour(tourId);
+    if (!tour) return;
+
+    const round = tour.rounds.find((r) => r.id === roundId);
+    const player = tour.players.find((p) => p.id === playerId);
+    if (!round || !player) return;
+
+    const totalPar = storage.getTotalPar(round);
+    const totalToPar = totalScore - totalPar;
+
+    // Use manual handicap strokes if provided, otherwise calculate
+    let handicapStrokes = 0;
+    if (round.settings.strokesGiven) {
+      if (manualHandicapStrokes !== undefined) {
+        handicapStrokes = manualHandicapStrokes;
+      } else if (player.handicap) {
+        // Calculate hole-by-hole strokes as fallback
+        round.holeInfo.forEach((hole) => {
+          if (
+            hole.handicap &&
+            player.handicap !== undefined &&
+            hole.handicap <= player.handicap
+          ) {
+            handicapStrokes++;
+          }
+        });
+      }
+    }
+
+    // Calculate net scores
+    const netScore =
+      handicapStrokes > 0 ? totalScore - handicapStrokes : undefined;
+    const netToPar = netScore ? netScore - totalPar : undefined;
+
+    // Create distributed score array
+    const averageScore = totalScore / round.holes;
+    const scores = new Array(round.holes).fill(Math.round(averageScore));
+
+    // Adjust the scores to match the exact total
+    let currentTotal = scores.reduce((sum, score) => sum + score, 0);
+    let difference = totalScore - currentTotal;
+
+    let holeIndex = 0;
+    while (difference !== 0 && holeIndex < round.holes) {
+      if (difference > 0) {
+        scores[holeIndex]++;
+        difference--;
+      } else if (difference < 0 && scores[holeIndex] > 1) {
+        scores[holeIndex]--;
+        difference++;
+      }
+      holeIndex = (holeIndex + 1) % round.holes;
+    }
+
+    round.scores[playerId] = {
+      playerId,
+      scores,
+      totalScore,
+      totalToPar,
+      handicapStrokes: handicapStrokes > 0 ? handicapStrokes : undefined,
+      netScore,
+      netToPar,
+    };
+
+    storage.saveTour(tour);
+  },
+
   // Calculate team leaderboard
   calculateTeamLeaderboard: (
     tour: Tour,
@@ -441,7 +611,11 @@ export const storage = {
       );
       let teamTotalScore = 0;
       let teamTotalToPar = 0;
+      let teamNetScore = 0;
+      let teamNetToPar = 0;
+      let teamHandicapStrokes = 0;
       let playersWithScores = 0;
+      let hasHandicapApplied = false;
 
       teamPlayers.forEach((player) => {
         if (roundId) {
@@ -452,6 +626,10 @@ export const storage = {
             if (playerScore.totalScore > 0) {
               teamTotalScore += playerScore.totalScore;
               teamTotalToPar += playerScore.totalToPar;
+              teamNetScore += playerScore.netScore || playerScore.totalScore;
+              teamNetToPar += playerScore.netToPar || playerScore.totalToPar;
+              teamHandicapStrokes += playerScore.handicapStrokes || 0;
+              if (playerScore.handicapStrokes) hasHandicapApplied = true;
               playersWithScores++;
             }
           }
@@ -463,10 +641,13 @@ export const storage = {
               if (playerScore.totalScore > 0) {
                 teamTotalScore += playerScore.totalScore;
                 teamTotalToPar += playerScore.totalToPar;
+                teamNetScore += playerScore.netScore || playerScore.totalScore;
+                teamNetToPar += playerScore.netToPar || playerScore.totalToPar;
+                teamHandicapStrokes += playerScore.handicapStrokes || 0;
+                if (playerScore.handicapStrokes) hasHandicapApplied = true;
               }
             }
           });
-          // Count player as having scores if they have any scores in any round
           const hasAnyScores = tour.rounds.some(
             (round) =>
               round.scores[player.id] && round.scores[player.id].totalScore > 0
@@ -479,18 +660,27 @@ export const storage = {
         team,
         totalScore: teamTotalScore,
         totalToPar: teamTotalToPar,
+        netScore: hasHandicapApplied ? teamNetScore : undefined,
+        netToPar: hasHandicapApplied ? teamNetToPar : undefined,
+        totalHandicapStrokes: hasHandicapApplied
+          ? teamHandicapStrokes
+          : undefined,
         playersWithScores,
         totalPlayers: teamPlayers.length,
         position: 0, // Will be set after sorting
       });
     });
 
-    // Sort by total score (lowest first), but only among teams with scores
+    // Sort by net score if handicaps are applied, otherwise by gross score
     teamEntries.sort((a, b) => {
       if (a.totalScore === 0 && b.totalScore === 0) return 0;
       if (a.totalScore === 0) return 1;
       if (b.totalScore === 0) return -1;
-      return a.totalScore - b.totalScore;
+
+      //: Use net score for sorting if handicaps are applied
+      const aScore = a.netScore || a.totalScore;
+      const bScore = b.netScore || b.totalScore;
+      return aScore - bScore;
     });
 
     // Set positions

@@ -342,7 +342,7 @@ export const CreateRoundPage = () => {
                 />
               </div>
 
-              <div className="form-group">
+              {/* <div className="form-group">
                 <label className="form-label">Tee Boxes</label>
                 <select
                   value={formData.teeBoxes}
@@ -357,7 +357,7 @@ export const CreateRoundPage = () => {
                   <option value="Championship Tees">Championship Tees</option>
                   <option value="Tournament Tees">Tournament Tees</option>
                 </select>
-              </div>
+              </div> */}
 
               <div className="form-group">
                 <label className="form-label">Number of Holes</label>

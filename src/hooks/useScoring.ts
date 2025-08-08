@@ -68,3 +68,34 @@ export const useUpdateTotalScore = (tourId: string, roundId: string) => {
     },
   });
 };
+
+export const useUpdateTotalScoreWithHandicap = (
+  tourId: string,
+  roundId: string
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      playerId,
+      totalScore,
+      handicapStrokes,
+    }: {
+      playerId: string;
+      totalScore: number;
+      handicapStrokes?: number;
+    }) => {
+      storage.updatePlayerTotalScoreWithHandicap(
+        tourId,
+        roundId,
+        playerId,
+        totalScore,
+        handicapStrokes
+      );
+      return { playerId, totalScore, handicapStrokes };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+    },
+  });
+};

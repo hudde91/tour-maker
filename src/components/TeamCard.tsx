@@ -259,7 +259,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
             </div>
 
             <div className="flex items-center gap-2">
-              {team.captainId !== player.id && (
+              {/* {team.captainId !== player.id && (
                 <button
                   onClick={() => handleSetCaptain(player.id)}
                   className="text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1 rounded-full font-medium transition-colors border border-amber-200"
@@ -267,7 +267,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                 >
                   Make Captain
                 </button>
-              )}
+              )} */}
               <button
                 onClick={() => handleRemovePlayer(player.id)}
                 className="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded-full font-medium transition-colors border border-red-200"

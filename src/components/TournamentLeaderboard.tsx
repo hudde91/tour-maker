@@ -25,7 +25,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   // If no scores at all, show empty state
   if (playersWithScores.length === 0) {
     return (
-      <div className="card">
+      <div className="card max-w-5xl mx-auto">
         <h2 className="section-header mb-6">Tournament Leaderboard</h2>
         <div className="text-center py-12">
           <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -56,7 +56,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   }
 
   return (
-    <div className="card">
+    <div className="card max-w-5xl mx-auto p-10">
       {/* Tournament Leaderboard Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -275,11 +275,11 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                         </span>
                       )}
 
-                      {isLeader && (
+                      {/* {isLeader && (
                         <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold">
                           Tournament Leader
                         </span>
-                      )}
+                      )} */}
                     </div>
 
                     <div className="flex items-center gap-3 text-sm text-slate-600">
@@ -307,32 +307,52 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
 
                 {/* Score Display */}
                 <div className="text-right">
-                  <div
-                    className={`text-2xl font-bold ${
-                      isLeader ? "text-yellow-900" : "text-slate-900"
-                    }`}
-                  >
-                    {entry.totalScore}
-                  </div>
-
-                  {entry.totalToPar !== 0 && (
+                  <div className="flex flex-col items-end gap-1">
                     <div
-                      className={`text-sm font-semibold ${
-                        entry.totalToPar < 0
-                          ? "text-red-600"
-                          : entry.totalToPar > 0
-                          ? "text-orange-600"
-                          : "text-blue-600"
+                      className={`text-2xl font-bold ${
+                        isLeader ? "text-yellow-900" : "text-slate-900"
                       }`}
                     >
-                      {entry.totalToPar > 0 ? "+" : ""}
-                      {entry.totalToPar}
+                      {entry.netScore !== undefined
+                        ? entry.netScore
+                        : entry.totalScore}
                     </div>
-                  )}
 
-                  {entry.totalToPar === 0 && entry.totalScore > 0 && (
-                    <div className="text-sm font-semibold text-blue-600">E</div>
-                  )}
+                    {/* Show handicap strokes if applied */}
+                    {entry.handicapStrokes && entry.handicapStrokes > 0 && (
+                      <div className="text-xs text-slate-500 bg-blue-100 px-2 py-1 rounded">
+                        Gross: {entry.totalScore} (-{entry.handicapStrokes} HC)
+                      </div>
+                    )}
+
+                    {/* To Par Display */}
+                    {(entry.netToPar !== undefined
+                      ? entry.netToPar
+                      : entry.totalToPar) !== 0 && (
+                      <div
+                        className={`text-sm font-semibold ${
+                          (entry.netToPar !== undefined
+                            ? entry.netToPar
+                            : entry.totalToPar) < 0
+                            ? "text-red-600"
+                            : (entry.netToPar !== undefined
+                                ? entry.netToPar
+                                : entry.totalToPar) > 0
+                            ? "text-orange-600"
+                            : "text-blue-600"
+                        }`}
+                      >
+                        {(entry.netToPar !== undefined
+                          ? entry.netToPar
+                          : entry.totalToPar) > 0
+                          ? "+"
+                          : ""}
+                        {entry.netToPar !== undefined
+                          ? entry.netToPar
+                          : entry.totalToPar}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -353,15 +373,15 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       {playersWithScores.length > 0 && (
         <div className="mt-6 pt-6 border-t border-slate-200">
           <h3 className="subsection-header mb-4">Tournament Statistics</h3>
-          <div className="grid grid-cols-4 gap-4 text-center">
-            <div>
+          <div className="grid grid-cols-3 gap-4 text-center">
+            {/* <div>
               <div className="text-2xl font-bold text-slate-900">
                 {Math.min(...playersWithScores.map((p) => p.totalScore))}
               </div>
               <div className="text-xs text-slate-500 uppercase tracking-wide">
                 Lowest Score
               </div>
-            </div>
+            </div> */}
             <div>
               <div className="text-2xl font-bold text-slate-900">
                 {Math.round(

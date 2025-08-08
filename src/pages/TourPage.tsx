@@ -123,9 +123,9 @@ export const TourPage = () => {
         </div>
       </div>
 
-      <div className="px-4 -mt-4 pb-8">
+      <div className="px-4 -mt-4 pb-8 max-w-6xl mx-auto">
         {/* Tournament Overview */}
-        <div className="card-elevated mb-6">
+        <div className="card-elevated mb-6 max-w-4xl mx-auto">
           <div className="flex justify-between items-start mb-6">
             <h2 className="section-header">Tournament Overview</h2>
             <span
@@ -170,7 +170,7 @@ export const TourPage = () => {
         </div>
 
         {/* Players Section with Scorecards */}
-        <div className="card mb-6">
+        <div className="card mb-6 max-w-5xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <h2 className="section-header">
               Tournament Players ({tour.players.length})
@@ -197,7 +197,7 @@ export const TourPage = () => {
           </div>
 
           {tour.players.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="text-center py-12 max-w-md mx-auto">
               <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg
                   className="w-10 h-10 text-slate-400"
@@ -227,7 +227,7 @@ export const TourPage = () => {
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 max-w-4xl mx-auto">
               {tour.players.map((player) => (
                 <PlayerScorecard
                   key={player.id}
@@ -243,7 +243,7 @@ export const TourPage = () => {
 
         {/* Teams Section - Only for team formats */}
         {(tour.format === "team" || tour.format === "ryder-cup") && (
-          <div className="card mb-6">
+          <div className="card mb-6 max-w-5xl mx-auto">
             <div className="flex justify-between items-center mb-6">
               <h2 className="section-header">
                 Tournament Teams ({tour.teams?.length || 0})
@@ -270,7 +270,7 @@ export const TourPage = () => {
             </div>
 
             {!tour.teams || tour.teams.length === 0 ? (
-              <div className="text-center py-12">
+              <div className="text-center py-12 max-w-md mx-auto">
                 <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <svg
                     className="w-10 h-10 text-slate-400"
@@ -300,7 +300,7 @@ export const TourPage = () => {
                 </button>
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-6 max-w-4xl mx-auto">
                 {tour.teams.map((team) => (
                   <TeamCard key={team.id} team={team} tour={tour} />
                 ))}
@@ -361,7 +361,7 @@ export const TourPage = () => {
         )}
 
         {/* Rounds Section */}
-        <div className="card mb-6">
+        <div className="card mb-6 max-w-5xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <h2 className="section-header">
               Tournament Rounds ({tour.rounds.length})
@@ -385,7 +385,7 @@ export const TourPage = () => {
           </div>
 
           {tour.rounds.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="text-center py-12 max-w-md mx-auto">
               <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg
                   className="w-10 h-10 text-slate-400"
@@ -412,7 +412,7 @@ export const TourPage = () => {
               </Link>
             </div>
           ) : (
-            <div className="grid gap-4">
+            <div className="grid gap-4 max-w-4xl mx-auto">
               {tour.rounds.map((round) => (
                 <RoundCard key={round.id} round={round} tour={tour} />
               ))}

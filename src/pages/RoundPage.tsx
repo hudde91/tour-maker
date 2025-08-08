@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
 import {
   useUpdateScore,
   useStartRound,
   useCompleteRound,
+  useUpdateTotalScoreWithHandicap,
 } from "../hooks/useScoring";
 import { ScoreEntryCard } from "../components/ScoreEntryCard";
 import { HoleNavigation } from "../components/HoleNavigation";
@@ -20,6 +21,10 @@ export const RoundPage = () => {
   const startRound = useStartRound(tourId!);
   const completeRound = useCompleteRound(tourId!);
   const updateTotalScore = useUpdateTotalScore(tourId!, roundId!);
+  const updateTotalScoreWithHandicap = useUpdateTotalScoreWithHandicap(
+    tourId!,
+    roundId!
+  );
 
   const [currentHole, setCurrentHole] = useState(1);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
@@ -142,10 +147,29 @@ export const RoundPage = () => {
 
   const handleTotalScoreChange = async (
     playerId: string,
-    totalScore: number
+    totalScore: number,
+    handicapStrokes?: number
   ) => {
+    console.log("=== ROUND PAGE DEBUG ===");
+    console.log("Player ID:", playerId);
+    console.log("Total Score:", totalScore);
+    console.log("Handicap Strokes:", handicapStrokes);
+
     try {
-      await updateTotalScore.mutateAsync({ playerId, totalScore });
+      if (handicapStrokes !== undefined) {
+        console.log("Using updateTotalScoreWithHandicap hook");
+        await updateTotalScoreWithHandicap.mutateAsync({
+          playerId,
+          totalScore,
+          handicapStrokes,
+        });
+      } else {
+        console.log("Using regular updateTotalScore hook");
+        await updateTotalScore.mutateAsync({
+          playerId,
+          totalScore,
+        });
+      }
     } catch (error) {
       console.error("Failed to update total score:", error);
     }
@@ -564,8 +588,8 @@ export const RoundPage = () => {
                   player={player}
                   round={round}
                   currentTotalScore={totalScore}
-                  onTotalScoreChange={(score) =>
-                    handleTotalScoreChange(player.id, score)
+                  onTotalScoreChange={(score, handicapStrokes) =>
+                    handleTotalScoreChange(player.id, score, handicapStrokes)
                   }
                 />
               ) : (

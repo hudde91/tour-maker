@@ -177,7 +177,10 @@ export const PlayerScorecard = ({
                 {playerRounds.map((round, index) => {
                   const playerScore = round.scores[player.id];
                   const totalPar = storage.getTotalPar(round);
-                  const roundToPar = playerScore.totalToPar;
+                  const roundToPar =
+                    playerScore.netToPar || playerScore.totalToPar; // NEW: Use net if available
+                  const displayScore =
+                    playerScore.netScore || playerScore.totalScore; // NEW: Use net if available
 
                   return (
                     <div
@@ -192,11 +195,25 @@ export const PlayerScorecard = ({
                           <span className="text-sm text-slate-500">
                             {round.name}
                           </span>
+                          {/* NEW: Show handicap indicator */}
+                          {playerScore.handicapStrokes &&
+                            playerScore.handicapStrokes > 0 && (
+                              <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-semibold">
+                                HC Applied
+                              </span>
+                            )}
                         </div>
                         <div className="flex items-center gap-4 text-sm text-slate-600">
                           <span>{round.courseName}</span>
                           <span>Par {totalPar}</span>
                           <span>{round.holes} holes</span>
+                          {/* NEW: Show handicap strokes info */}
+                          {playerScore.handicapStrokes &&
+                            playerScore.handicapStrokes > 0 && (
+                              <span className="text-blue-600 font-medium">
+                                -{playerScore.handicapStrokes} strokes
+                              </span>
+                            )}
                           <span
                             className={`px-2 py-1 rounded text-xs font-semibold ${
                               round.status === "completed"
@@ -211,8 +228,15 @@ export const PlayerScorecard = ({
 
                       <div className="text-right">
                         <div className="text-2xl font-bold text-slate-900 mb-1">
-                          {playerScore.totalScore}
+                          {displayScore} {/* Show net score */}
                         </div>
+                        {/* Show gross score if different */}
+                        {playerScore.handicapStrokes &&
+                          playerScore.handicapStrokes > 0 && (
+                            <div className="text-xs text-slate-500 mb-1">
+                              Gross: {playerScore.totalScore}
+                            </div>
+                          )}
                         <div
                           className={`text-lg font-semibold ${getScoreColor(
                             roundToPar
