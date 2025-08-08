@@ -13,6 +13,24 @@ const STORAGE_KEYS = {
   ACTIVE_TOUR: "active-tour-id",
 } as const;
 
+// Helper function to calculate strokes for a specific hole using proper golf handicap system
+const calculateStrokesForHole = (
+  playerHandicap: number,
+  holeHandicap: number
+): number => {
+  if (!playerHandicap || !holeHandicap) return 0;
+
+  // Calculate base strokes (how many full rounds of 18 holes)
+  const baseStrokes = Math.floor(playerHandicap / 18);
+
+  // Calculate remaining handicap strokes to distribute
+  const remainingStrokes = playerHandicap % 18;
+
+  // Player gets base strokes on every hole, plus 1 extra stroke
+  // if this hole's handicap <= remaining strokes
+  return baseStrokes + (holeHandicap <= remainingStrokes ? 1 : 0);
+};
+
 const calculateHandicapStrokes = (
   player: Player,
   round: Round,
@@ -21,25 +39,24 @@ const calculateHandicapStrokes = (
   if (!round.settings.strokesGiven || !player.handicap) return 0;
 
   if (isHoleByHole) {
-    // Calculate hole-by-hole strokes (like in ScoreEntryCard.tsx)
+    // Calculate hole-by-hole strokes using proper golf handicap system
     let totalStrokes = 0;
     round.holeInfo.forEach((hole) => {
-      if (
-        hole.handicap &&
-        player.handicap !== undefined &&
-        hole.handicap <= player.handicap
-      ) {
-        totalStrokes++;
+      if (hole.handicap && player.handicap !== undefined) {
+        totalStrokes += calculateStrokesForHole(player.handicap, hole.handicap);
       }
     });
     return totalStrokes;
   } else {
-    // For total score entry, use full handicap (like in TotalScoreCard.tsx)
+    // For total score entry, use full handicap
     return player.handicap;
   }
 };
 
 export const storage = {
+  // Export the helper function for use in components
+  calculateStrokesForHole,
+
   recalculateAllScoresWithHandicaps: (tourId: string): void => {
     const tour = storage.getTour(tourId);
     if (!tour) return;
@@ -144,16 +161,15 @@ export const storage = {
     const totalPar = storage.getTotalPar(round);
     const totalToPar = totalScore - totalPar;
 
-    // Calculate handicap strokes properly - hole by hole
+    // Calculate handicap strokes properly - hole by hole using golf handicap system
     let handicapStrokes = 0;
     if (round.settings.strokesGiven && player.handicap) {
       round.holeInfo.forEach((hole) => {
-        if (
-          hole.handicap &&
-          player.handicap !== undefined &&
-          hole.handicap <= player.handicap
-        ) {
-          handicapStrokes++;
+        if (hole.handicap && player.handicap !== undefined) {
+          handicapStrokes += calculateStrokesForHole(
+            player.handicap,
+            hole.handicap
+          );
         }
       });
     }
@@ -334,6 +350,12 @@ export const storage = {
     const holes: HoleInfo[] = [];
     const standardPars = [4, 4, 3, 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 4, 3, 4, 4, 5]; // Standard 18-hole layout
 
+    // Proper handicap ratings based on hole difficulty (1 = hardest, 18 = easiest)
+    // These represent typical difficulty ordering for a golf course
+    const standardHandicaps = [
+      10, 8, 16, 2, 14, 4, 18, 12, 6, 11, 5, 17, 1, 9, 15, 3, 13, 7,
+    ];
+
     for (let i = 1; i <= numHoles; i++) {
       holes.push({
         number: i,
@@ -346,7 +368,10 @@ export const storage = {
               : 4
             : standardPars[i - 1] || 4,
         yardage: undefined,
-        handicap: i,
+        handicap:
+          numHoles === 9
+            ? ((i - 1) % 9) + 1 // For 9 holes: 1-9 in order
+            : standardHandicaps[i - 1] || i, // Use proper difficulty-based handicaps for 18 holes
       });
     }
 
@@ -545,14 +570,13 @@ export const storage = {
       if (manualHandicapStrokes !== undefined) {
         handicapStrokes = manualHandicapStrokes;
       } else if (player.handicap) {
-        // Calculate hole-by-hole strokes as fallback
+        // Calculate hole-by-hole strokes as fallback using proper golf handicap system
         round.holeInfo.forEach((hole) => {
-          if (
-            hole.handicap &&
-            player.handicap !== undefined &&
-            hole.handicap <= player.handicap
-          ) {
-            handicapStrokes++;
+          if (hole.handicap && player.handicap !== undefined) {
+            handicapStrokes += calculateStrokesForHole(
+              player.handicap,
+              hole.handicap
+            );
           }
         });
       }

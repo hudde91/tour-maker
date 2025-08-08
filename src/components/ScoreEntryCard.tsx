@@ -1,4 +1,5 @@
 import { Player, HoleInfo, PlayerScore } from "../types";
+import { storage } from "../lib/storage";
 
 interface ScoreEntryCardProps {
   player: Player;
@@ -18,12 +19,14 @@ export const ScoreEntryCard = ({
   strokesGiven,
 }: ScoreEntryCardProps) => {
   const par = holeInfo.par;
-  const strokeHole =
-    strokesGiven && player.handicap && holeInfo.handicap
-      ? holeInfo.handicap <= player.handicap
-      : false;
 
-  const effectivePar = strokeHole ? par + 1 : par;
+  // Calculate strokes for this hole using proper golf handicap system
+  const strokesForHole =
+    strokesGiven && player.handicap && holeInfo.handicap
+      ? storage.calculateStrokesForHole(player.handicap, holeInfo.handicap)
+      : 0;
+
+  const effectivePar = par + strokesForHole;
 
   const getScoreInfo = (score: number) => {
     if (score === 0 || !score)
@@ -110,7 +113,7 @@ export const ScoreEntryCard = ({
   const generateScoreOptions = () => {
     const options = [];
     const minScore = 1;
-    const maxScore = Math.max(10, effectivePar + 6); // At least up to par + 6
+    const maxScore = Math.max(10, effectivePar + 6); // At least up to effective par + 6
 
     for (let score = minScore; score <= maxScore; score++) {
       const info = getScoreInfo(score);
@@ -150,9 +153,9 @@ export const ScoreEntryCard = ({
                 />
               </svg>
             </div>
-            {strokeHole && (
-              <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-md">
-                S
+            {strokesForHole > 0 && (
+              <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-md">
+                {strokesForHole > 1 ? strokesForHole : "S"}
               </div>
             )}
           </div>
@@ -167,9 +170,9 @@ export const ScoreEntryCard = ({
                   HC {player.handicap}
                 </span>
               )}
-              {strokeHole && (
+              {strokesForHole > 0 && (
                 <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold border border-blue-200">
-                  Stroke Hole
+                  {strokesForHole} Stroke{strokesForHole > 1 ? "s" : ""}
                 </span>
               )}
             </div>
@@ -196,15 +199,18 @@ export const ScoreEntryCard = ({
               </h4>
               <div className="text-xs text-slate-600">
                 Par {par}
-                {strokeHole && " • Stroke Hole (+1)"}
+                {strokesForHole > 0 &&
+                  ` • ${strokesForHole} Stroke${strokesForHole > 1 ? "s" : ""}`}
               </div>
             </div>
             <div className="text-xs text-slate-500 bg-white px-2 py-1 rounded border">
               <span className="text-blue-600 font-semibold">
                 PAR {effectivePar}
               </span>
-              {strokeHole && (
-                <span className="ml-1 text-blue-500">(+1 stroke)</span>
+              {strokesForHole > 0 && (
+                <span className="ml-1 text-blue-500">
+                  (+{strokesForHole} stroke{strokesForHole > 1 ? "s" : ""})
+                </span>
               )}
             </div>
           </div>
