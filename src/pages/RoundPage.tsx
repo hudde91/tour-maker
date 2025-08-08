@@ -11,6 +11,7 @@ import { ScoreEntryCard } from "../components/ScoreEntryCard";
 import { HoleNavigation } from "../components/HoleNavigation";
 import { LiveLeaderboard } from "../components/LiveLeaderboard";
 import { TotalScoreCard } from "../components/TotalScoreCard";
+import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useUpdateTotalScore } from "../hooks/useScoring";
 import { storage } from "../lib/storage";
 
@@ -28,6 +29,7 @@ export const RoundPage = () => {
 
   const [currentHole, setCurrentHole] = useState(1);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
 
   const [scoringMode, setScoringMode] = useState<"individual" | "total">(
     "individual"
@@ -113,18 +115,21 @@ export const RoundPage = () => {
     }
   };
 
-  const handleCompleteRound = async () => {
-    if (
-      window.confirm(
-        "Complete this tournament round? No additional scores can be entered after completion."
-      )
-    ) {
-      try {
-        await completeRound.mutateAsync(round.id);
-      } catch (error) {
-        console.error("Failed to complete round:", error);
-      }
+  const handleCompleteRound = () => {
+    setShowCompleteConfirm(true);
+  };
+
+  const confirmCompleteRound = async () => {
+    try {
+      await completeRound.mutateAsync(round.id);
+      setShowCompleteConfirm(false);
+    } catch (error) {
+      console.error("Failed to complete round:", error);
     }
+  };
+
+  const cancelCompleteRound = () => {
+    setShowCompleteConfirm(false);
   };
 
   const handleScoreChange = async (
@@ -664,6 +669,18 @@ export const RoundPage = () => {
           </div>
         </div>
       )}
+
+      {/* Complete Round Confirmation */}
+      <ConfirmDialog
+        isOpen={showCompleteConfirm}
+        title="Complete Tournament Round"
+        message="Complete this tournament round? No additional scores can be entered after completion."
+        confirmLabel="Complete Round"
+        cancelLabel="Cancel"
+        onConfirm={confirmCompleteRound}
+        onCancel={cancelCompleteRound}
+        isDestructive={false}
+      />
     </div>
   );
 };

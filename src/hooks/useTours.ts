@@ -48,3 +48,17 @@ export const useCreateTour = () => {
     },
   });
 };
+
+export const useDeleteTour = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (tourId: string) => {
+      storage.deleteTour(tourId);
+      return tourId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
+    },
+  });
+};

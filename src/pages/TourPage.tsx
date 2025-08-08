@@ -1,24 +1,51 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { useTour } from "../hooks/useTours";
-import { AddPlayerModal } from "../components/AddPlayerModal";
-import { PlayerCard } from "../components/PlayerCard";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useTour, useDeleteTour } from "../hooks/useTours";
+import { AddPlayerSheet } from "../components/AddPlayerSheet";
 import { PlayerScorecard } from "../components/PlayerScorecard";
-import { CreateTeamModal } from "../components/CreateTeamModal";
+import { CreateTeamSheet } from "../components/CreateTeamSheet";
 import { TeamCard } from "../components/TeamCard";
 import { RoundCard } from "../components/RoundCard";
 import { TournamentLeaderboard } from "../components/TournamentLeaderboard";
+import { ConfirmDialog } from "../components/ConfirmDialog";
+import { useToast } from "../components/Toast";
 
 export const TourPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
+  const navigate = useNavigate();
   const { data: tour, isLoading } = useTour(tourId!);
+  const deleteTour = useDeleteTour();
+  const { showToast, ToastComponent } = useToast();
 
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [expandedPlayer, setExpandedPlayer] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handlePlayerToggle = (playerId: string) => {
     setExpandedPlayer(expandedPlayer === playerId ? null : playerId);
+  };
+
+  const handleDeleteTournament = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!tour) return;
+
+    try {
+      await deleteTour.mutateAsync(tour.id);
+      navigate("/"); // Navigate back to home after deletion
+    } catch (error) {
+      console.error("Failed to delete tournament:", error);
+      alert("Failed to delete tournament. Please try again.");
+    } finally {
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
   };
 
   if (isLoading) {
@@ -67,8 +94,7 @@ export const TourPage = () => {
 
   const handleShareTournament = () => {
     navigator.clipboard.writeText(window.location.href);
-    // You could add a toast notification here
-    alert("Tournament link copied to clipboard!");
+    showToast("Tournament link copied to clipboard!", "success");
   };
 
   return (
@@ -93,25 +119,49 @@ export const TourPage = () => {
               </svg>
             </Link>
 
-            <button
-              onClick={handleShareTournament}
-              className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleShareTournament}
+                className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                />
-              </svg>
-              Share Tournament
-            </button>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+                  />
+                </svg>
+                Share Tournament
+              </button>
+
+              <button
+                onClick={handleDeleteTournament}
+                disabled={deleteTour.isPending}
+                className="flex items-center gap-2 bg-red-600 bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 disabled:opacity-50"
+                title="Delete tournament"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+                {deleteTour.isPending ? "Deleting..." : "Delete"}
+              </button>
+            </div>
           </div>
 
           <div>
@@ -397,7 +447,7 @@ export const TourPage = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 712-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
               </div>
@@ -421,18 +471,32 @@ export const TourPage = () => {
         </div>
       </div>
 
-      {/* Modals */}
-      <AddPlayerModal
+      {/* Sheets */}
+      <AddPlayerSheet
         tour={tour}
         isOpen={showAddPlayer}
         onClose={() => setShowAddPlayer(false)}
       />
 
-      <CreateTeamModal
+      <CreateTeamSheet
         tour={tour}
         isOpen={showCreateTeam}
         onClose={() => setShowCreateTeam(false)}
       />
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Delete Tournament"
+        message={`Delete tournament "${tour.name}"? All players, teams, rounds, and scores will be permanently lost. This action cannot be undone.`}
+        confirmLabel="Delete Tournament"
+        cancelLabel="Cancel"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        isDestructive={true}
+      />
+      {/* Toast Notifications */}
+      <ToastComponent />
     </div>
   );
 };

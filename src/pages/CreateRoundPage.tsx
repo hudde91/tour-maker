@@ -426,6 +426,11 @@ export const CreateRoundPage = () => {
                   </span>
                   <button
                     type="button"
+                    aria-label={
+                      formData.useManualPar
+                        ? "Disable manual total par"
+                        : "Enable manual total par"
+                    }
                     onClick={() =>
                       setFormData({
                         ...formData,
