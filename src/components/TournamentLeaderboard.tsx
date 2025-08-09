@@ -26,22 +26,13 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   if (playersWithScores.length === 0) {
     return (
       <div className="card max-w-5xl mx-auto">
-        <h2 className="section-header mb-6">Tournament Leaderboard</h2>
+        <h2 className="section-header mb-6 flex items-center gap-3">
+          <span className="text-3xl">🏆</span>
+          Tournament Leaderboard
+        </h2>
         <div className="text-center py-12">
           <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg
-              className="w-10 h-10 text-slate-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-              />
-            </svg>
+            <span className="text-4xl">📊</span>
           </div>
           <h3 className="text-xl font-semibold text-slate-700 mb-3">
             Tournament Not Started
@@ -56,11 +47,14 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   }
 
   return (
-    <div className="card max-w-5xl mx-auto p-10">
+    <div className="card max-w-5xl mx-auto p-6 md:p-10">
       {/* Tournament Leaderboard Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h2 className="section-header">Tournament Leaderboard</h2>
+          <h2 className="section-header flex items-center gap-3">
+            <span className="text-3xl">🏆</span>
+            Tournament Leaderboard
+          </h2>
           <p className="text-slate-600 mt-1">
             Overall standings across {tour.rounds.length} round
             {tour.rounds.length !== 1 ? "s" : ""}
@@ -81,7 +75,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
-                  Individual
+                  👤 Individual
                 </button>
                 <button
                   onClick={() => setLeaderboardView("team")}
@@ -91,7 +85,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
-                  Team
+                  👥 Team
                 </button>
               </div>
             )}
@@ -105,6 +99,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
         <div className="space-y-3">
           {teamsWithScores.length === 0 ? (
             <div className="text-center py-8">
+              <span className="text-4xl mb-4 block">👥</span>
               <p className="text-slate-500">No team scores yet</p>
             </div>
           ) : (
@@ -126,7 +121,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                       : "border-slate-200"
                   }`}
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
                     {/* Team Position */}
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm ${
@@ -139,38 +134,55 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                           : "bg-slate-200 text-slate-700"
                       }`}
                     >
-                      {teamEntry.position}
+                      {isLeadingTeam ? (
+                        <span className="text-lg">🥇</span>
+                      ) : index === 1 ? (
+                        <span className="text-lg">🥈</span>
+                      ) : index === 2 ? (
+                        <span className="text-lg">🥉</span>
+                      ) : (
+                        teamEntry.position
+                      )}
                     </div>
 
                     {/* Team Info */}
-                    <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <div
-                          className="w-3 h-3 rounded-full border border-white shadow-sm"
-                          style={{ backgroundColor: teamEntry.team.color }}
-                        />
-                        <h3
-                          className={`font-bold ${
-                            isLeadingTeam
-                              ? "text-lg text-yellow-900"
-                              : "text-slate-900"
-                          }`}
-                        >
-                          {teamEntry.team.name}
-                        </h3>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-1">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-3 h-3 rounded-full border border-white shadow-sm"
+                            style={{ backgroundColor: teamEntry.team.color }}
+                          />
+                          <h3
+                            className={`font-bold truncate ${
+                              isLeadingTeam
+                                ? "text-lg text-yellow-900"
+                                : "text-slate-900"
+                            }`}
+                          >
+                            {teamEntry.team.name}
+                          </h3>
+                        </div>
+
                         {isLeadingTeam && (
-                          <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold">
-                            Leading
+                          <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold self-start">
+                            🏆 Leading
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-3 text-sm text-slate-600">
-                        <span>
+                      <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                        <span className="flex items-center gap-1">
+                          <span className="text-base">👥</span>
                           {teamEntry.playersWithScores} of{" "}
                           {teamEntry.totalPlayers} players
                         </span>
-                        {captain && <span>Captain: {captain.name}</span>}
+                        {captain && (
+                          <span className="flex items-center gap-1">
+                            <span className="text-base">👑</span>
+                            Captain: {captain.name}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -216,15 +228,15 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
             return (
               <div
                 key={entry.player.id}
-                className={`flex items-center justify-between p-4 bg-white border rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer ${
+                className={`flex items-center justify-between p-4 bg-white border rounded-lg shadow-sm transition-all ${
                   isLeader
                     ? "border-2 border-yellow-300 bg-gradient-to-r from-yellow-50 to-amber-50"
                     : isTop3
                     ? "border-amber-200 bg-amber-50"
-                    : "border-slate-200 hover:border-slate-300"
+                    : "border-slate-200"
                 }`}
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 flex-1 min-w-0">
                   {/* Position Badge */}
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm ${
@@ -238,29 +250,21 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                     }`}
                   >
                     {isLeader ? (
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 3l14 9-14 9V3z"
-                        />
-                      </svg>
+                      <span className="text-lg">🥇</span>
+                    ) : index === 1 ? (
+                      <span className="text-lg">🥈</span>
+                    ) : index === 2 ? (
+                      <span className="text-lg">🥉</span>
                     ) : (
                       entry.position
                     )}
                   </div>
 
                   {/* Player Info */}
-                  <div>
-                    <div className="flex items-center gap-3 mb-1">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-1">
                       <h3
-                        className={`font-bold ${
+                        className={`font-bold truncate ${
                           isLeader
                             ? "text-lg text-yellow-900"
                             : "text-slate-900"
@@ -269,22 +273,21 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                         {entry.player.name}
                       </h3>
 
-                      {isCaptain && (
-                        <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold">
-                          Captain
-                        </span>
-                      )}
-
-                      {/* {isLeader && (
-                        <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold">
-                          Tournament Leader
-                        </span>
-                      )} */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {isCaptain && (
+                          <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold">
+                            👑 Captain
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-3 text-sm text-slate-600">
+                    <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
                       {entry.player.handicap !== undefined && (
-                        <span>HC: {entry.player.handicap}</span>
+                        <span className="flex items-center gap-1">
+                          <span className="text-base">⛳</span>
+                          HC: {entry.player.handicap}
+                        </span>
                       )}
 
                       {team && (
@@ -297,7 +300,8 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                         </div>
                       )}
 
-                      <span>
+                      <span className="flex items-center gap-1">
+                        <span className="text-base">📋</span>
                         {entry.roundsPlayed} round
                         {entry.roundsPlayed !== 1 ? "s" : ""}
                       </span>
@@ -361,7 +365,8 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
           {/* Show more players indicator */}
           {playersWithScores.length > 10 && (
             <div className="text-center py-4 border-t border-slate-200">
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-500 flex items-center justify-center gap-2">
+                <span className="text-base">👥</span>
                 Showing top 10 of {playersWithScores.length} players
               </p>
             </div>
@@ -372,17 +377,13 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       {/* Tournament Statistics */}
       {playersWithScores.length > 0 && (
         <div className="mt-6 pt-6 border-t border-slate-200">
-          <h3 className="subsection-header mb-4">Tournament Statistics</h3>
+          <h3 className="subsection-header mb-4 flex items-center gap-2">
+            <span className="text-xl">📊</span>
+            Tournament Statistics
+          </h3>
           <div className="grid grid-cols-3 gap-4 text-center">
-            {/* <div>
-              <div className="text-2xl font-bold text-slate-900">
-                {Math.min(...playersWithScores.map((p) => p.totalScore))}
-              </div>
-              <div className="text-xs text-slate-500 uppercase tracking-wide">
-                Lowest Score
-              </div>
-            </div> */}
-            <div>
+            <div className="bg-slate-50 rounded-lg p-4">
+              <div className="text-xl mb-2">📊</div>
               <div className="text-2xl font-bold text-slate-900">
                 {Math.round(
                   playersWithScores.reduce((sum, p) => sum + p.totalScore, 0) /
@@ -393,7 +394,8 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                 Average
               </div>
             </div>
-            <div>
+            <div className="bg-slate-50 rounded-lg p-4">
+              <div className="text-xl mb-2">🔥</div>
               <div className="text-2xl font-bold text-slate-900">
                 {playersWithScores.filter((p) => p.totalToPar < 0).length}
               </div>
@@ -401,7 +403,8 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                 Under Par
               </div>
             </div>
-            <div>
+            <div className="bg-slate-50 rounded-lg p-4">
+              <div className="text-xl mb-2">✅</div>
               <div className="text-2xl font-bold text-slate-900">
                 {tour.rounds.filter((r) => r.status === "completed").length}
               </div>

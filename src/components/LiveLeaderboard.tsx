@@ -26,19 +26,7 @@ export const LiveLeaderboard = ({
         <h3 className="section-header mb-3">Live Leaderboard</h3>
         <div className="text-center py-8">
           <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg
-              className="w-8 h-8 text-slate-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-              />
-            </svg>
+            <span className="text-3xl">📊</span>
           </div>
           <p className="text-slate-500 font-medium">
             Scores will appear as players enter them
@@ -51,9 +39,12 @@ export const LiveLeaderboard = ({
   return (
     <div className="card-elevated max-w-4xl mx-auto">
       {/* Leaderboard Header with Toggle */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h3 className="section-header">Live Tournament Leaderboard</h3>
+          <h3 className="section-header flex items-center gap-2">
+            <span className="text-2xl">🏆</span>
+            Live Tournament Leaderboard
+          </h3>
           <p className="text-slate-600 mt-1">
             {leaderboardView === "individual"
               ? `${playersWithScores.length} of ${tour.players.length} players scoring`
@@ -75,7 +66,7 @@ export const LiveLeaderboard = ({
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
-                  Individual
+                  👤 Individual
                 </button>
                 <button
                   onClick={() => setLeaderboardView("team")}
@@ -85,14 +76,17 @@ export const LiveLeaderboard = ({
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
-                  Team
+                  👥 Team
                 </button>
               </div>
             )}
 
           {playersWithScores.length > 0 && leaderboardView === "individual" && (
             <div className="text-right">
-              <div className="text-sm text-slate-500">Low Round</div>
+              <div className="text-sm text-slate-500 flex items-center gap-1">
+                <span className="text-base">🎯</span>
+                Low Round
+              </div>
               <div className="text-xl font-bold text-emerald-600">
                 {Math.min(...playersWithScores.map((p) => p.totalScore))}
               </div>
@@ -110,19 +104,7 @@ export const LiveLeaderboard = ({
           {playersWithScores.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg
-                  className="w-10 h-10 text-slate-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                <span className="text-4xl">⏳</span>
               </div>
               <h4 className="text-lg font-semibold text-slate-700 mb-2">
                 Tournament Starting Soon
@@ -144,18 +126,18 @@ export const LiveLeaderboard = ({
                 return (
                   <div
                     key={entry.player.id}
-                    className={`leaderboard-row transition-all duration-200 ${
+                    className={`flex items-center justify-between p-4 bg-white border rounded-lg shadow-sm transition-all duration-200 ${
                       isLeader
-                        ? "leaderboard-leader scale-[1.02]"
+                        ? "border-2 border-yellow-300 bg-gradient-to-r from-yellow-50 to-amber-50"
                         : isTop3
                         ? "border-amber-200 bg-amber-50"
-                        : ""
+                        : "border-slate-200"
                     }`}
                   >
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
                       {/* Position Badge */}
                       <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold shadow-sm ${
+                        className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-lg font-bold shadow-sm ${
                           isLeader
                             ? "bg-yellow-500 text-white shadow-yellow-200"
                             : index === 1
@@ -165,53 +147,49 @@ export const LiveLeaderboard = ({
                             : "bg-slate-200 text-slate-700"
                         }`}
                       >
-                        {isLeader && (
-                          <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 3l14 9-14 9V3z"
-                            />
-                          </svg>
+                        {isLeader ? (
+                          <span className="text-xl">🥇</span>
+                        ) : index === 1 ? (
+                          <span className="text-xl">🥈</span>
+                        ) : index === 2 ? (
+                          <span className="text-xl">🥉</span>
+                        ) : (
+                          entry.position
                         )}
-                        {!isLeader && entry.position}
                       </div>
 
                       {/* Player Info */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-1">
                           <h4
                             className={`font-bold truncate ${
                               isLeader
-                                ? "text-xl text-yellow-900"
-                                : "text-lg text-slate-900"
+                                ? "text-lg md:text-xl text-yellow-900"
+                                : "text-base md:text-lg text-slate-900"
                             }`}
                           >
                             {entry.player.name}
                           </h4>
 
-                          {isCaptain && (
-                            <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-200">
-                              Captain
-                            </span>
-                          )}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {isCaptain && (
+                              <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-200">
+                                👑 Captain
+                              </span>
+                            )}
 
-                          {isLeader && (
-                            <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold border border-yellow-300">
-                              Leader
-                            </span>
-                          )}
+                            {isLeader && (
+                              <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold border border-yellow-300">
+                                🏆 Leader
+                              </span>
+                            )}
+                          </div>
                         </div>
 
-                        <div className="flex items-center gap-4 text-sm">
+                        <div className="flex flex-wrap items-center gap-3 text-sm">
                           {entry.player.handicap !== undefined && (
-                            <span className="text-slate-600">
+                            <span className="text-slate-600 flex items-center gap-1">
+                              <span className="text-base">⛳</span>
                               HC: {entry.player.handicap}
                             </span>
                           )}
@@ -228,7 +206,8 @@ export const LiveLeaderboard = ({
                             </div>
                           )}
 
-                          <span className="text-slate-500">
+                          <span className="text-slate-500 flex items-center gap-1">
+                            <span className="text-base">📋</span>
                             {entry.roundsPlayed} round
                             {entry.roundsPlayed !== 1 ? "s" : ""}
                           </span>
@@ -240,7 +219,7 @@ export const LiveLeaderboard = ({
                     <div className="text-right">
                       <div className="flex flex-col items-end gap-1">
                         <div
-                          className={`text-3xl font-bold mb-1 ${
+                          className={`text-2xl md:text-3xl font-bold mb-1 ${
                             isLeader ? "text-yellow-900" : "text-slate-900"
                           }`}
                         >
@@ -249,7 +228,7 @@ export const LiveLeaderboard = ({
                             : entry.totalScore}
                         </div>
 
-                        {/* Show handicap strokes if applied - NEW */}
+                        {/* Show handicap strokes if applied */}
                         {entry.handicapStrokes && entry.handicapStrokes > 0 && (
                           <div className="text-xs text-slate-500 bg-blue-100 px-2 py-1 rounded">
                             Gross: {entry.totalScore} (-{entry.handicapStrokes}{" "}
@@ -306,7 +285,8 @@ export const LiveLeaderboard = ({
           {/* Tournament Summary */}
           {!isCollapsed && playersWithScores.length > 0 && (
             <div className="mt-6 pt-6 border-t border-slate-200 grid grid-cols-3 gap-4 text-center">
-              <div>
+              <div className="bg-slate-50 rounded-lg p-4">
+                <div className="text-xl mb-1">🎯</div>
                 <div className="text-2xl font-bold text-slate-900">
                   {Math.min(...playersWithScores.map((p) => p.totalScore))}
                 </div>
@@ -314,7 +294,8 @@ export const LiveLeaderboard = ({
                   Low Score
                 </div>
               </div>
-              <div>
+              <div className="bg-slate-50 rounded-lg p-4">
+                <div className="text-xl mb-1">📊</div>
                 <div className="text-2xl font-bold text-slate-900">
                   {Math.round(
                     playersWithScores.reduce(
@@ -327,7 +308,8 @@ export const LiveLeaderboard = ({
                   Average
                 </div>
               </div>
-              <div>
+              <div className="bg-slate-50 rounded-lg p-4">
+                <div className="text-xl mb-1">🔥</div>
                 <div className="text-2xl font-bold text-slate-900">
                   {playersWithScores.filter((p) => p.totalToPar < 0).length}
                 </div>
@@ -341,7 +323,10 @@ export const LiveLeaderboard = ({
           {/* Waiting Players */}
           {!isCollapsed && playersWithScores.length < tour.players.length && (
             <div className="mt-6 pt-6 border-t border-slate-200">
-              <h4 className="subsection-header mb-3">Players Yet to Start</h4>
+              <h4 className="subsection-header mb-3 flex items-center gap-2">
+                <span className="text-lg">⏳</span>
+                Players Yet to Start
+              </h4>
               <div className="flex flex-wrap gap-2">
                 {tour.players
                   .filter(

@@ -48,6 +48,11 @@ export const TourPage = () => {
     setShowDeleteConfirm(false);
   };
 
+  const handleShareTournament = () => {
+    navigator.clipboard.writeText(window.location.href);
+    showToast("Tournament link copied to clipboard!", "success");
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -62,19 +67,7 @@ export const TourPage = () => {
         <div className="p-6">
           <div className="card text-center py-12">
             <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg
-                className="w-10 h-10 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 12.5c-.77.833.192 2.5 1.732 2.5z"
-                />
-              </svg>
+              <span className="text-4xl">❌</span>
             </div>
             <h3 className="text-xl font-semibold text-slate-700 mb-3">
               Tournament Not Found
@@ -92,16 +85,11 @@ export const TourPage = () => {
     );
   }
 
-  const handleShareTournament = () => {
-    navigator.clipboard.writeText(window.location.href);
-    showToast("Tournament link copied to clipboard!", "success");
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 safe-area-top">
       {/* Professional Header */}
       <div className="golf-hero-bg">
-        <div className="p-6">
+        <div className="p-6 w-full max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <Link to="/" className="nav-back">
               <svg
@@ -122,126 +110,119 @@ export const TourPage = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleShareTournament}
-                className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30"
+                className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm"
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                  />
-                </svg>
-                Share Tournament
+                <span className="text-base">🔗</span>
+                <span className="hidden sm:inline">Share</span>
               </button>
 
               <button
                 onClick={handleDeleteTournament}
                 disabled={deleteTour.isPending}
-                className="flex items-center gap-2 bg-red-600 bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 disabled:opacity-50"
+                className="flex items-center gap-2 bg-red-600 bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 disabled:opacity-50 text-sm"
                 title="Delete tournament"
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-                {deleteTour.isPending ? "Deleting..." : "Delete"}
+                <span className="text-base">🗑️</span>
+                <span className="hidden sm:inline">
+                  {deleteTour.isPending ? "Deleting..." : "Delete"}
+                </span>
               </button>
             </div>
           </div>
 
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">{tour.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+              {tour.name}
+            </h1>
             {tour.description && (
-              <p className="text-emerald-100 text-lg">{tour.description}</p>
+              <p className="text-emerald-100 text-base md:text-lg">
+                {tour.description}
+              </p>
             )}
           </div>
         </div>
       </div>
 
-      <div className="px-4 -mt-4 pb-8 max-w-6xl mx-auto">
+      <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto">
         {/* Tournament Overview */}
-        <div className="card-elevated mb-6 max-w-4xl mx-auto">
-          <div className="flex justify-between items-start mb-6">
+        <div className="card-elevated mb-6 w-full max-w-4xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h2 className="section-header">Tournament Overview</h2>
             <span
-              className={`px-3 py-1 rounded-full text-sm font-semibold ${
+              className={`px-3 py-1 rounded-full text-sm font-semibold self-start sm:self-auto ${
                 tour.isActive ? "status-active" : "status-completed"
               }`}
             >
-              {tour.isActive ? "Active Tournament" : "Completed"}
+              {tour.isActive ? "🟢 Active Tournament" : "🔵 Completed"}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-slate-900 mb-1">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <div className="bg-slate-50 rounded-lg p-4 text-center">
+              <div className="text-2xl mb-2">👥</div>
+              <div className="text-2xl md:text-3xl font-bold text-slate-900 mb-1">
                 {tour.players.length}
               </div>
-              <div className="text-caption">Players Registered</div>
+              <div className="text-xs md:text-sm text-slate-500 font-medium">
+                Players Registered
+              </div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-slate-900 mb-1">
+
+            <div className="bg-slate-50 rounded-lg p-4 text-center">
+              <div className="text-2xl mb-2">📋</div>
+              <div className="text-2xl md:text-3xl font-bold text-slate-900 mb-1">
                 {tour.rounds.length}
               </div>
-              <div className="text-caption">Tournament Rounds</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-slate-900 mb-1">
-                {tour.teams?.length || 0}
+              <div className="text-xs md:text-sm text-slate-500 font-medium">
+                Tournament Rounds
               </div>
-              <div className="text-caption">
+            </div>
+
+            <div className="bg-slate-50 rounded-lg p-4 text-center">
+              <div className="text-2xl mb-2">
+                {tour.format === "individual"
+                  ? "👤"
+                  : tour.format === "team"
+                  ? "👥"
+                  : "🏆"}
+              </div>
+              <div className="text-2xl md:text-3xl font-bold text-slate-900 mb-1">
+                {tour.teams?.length ||
+                  (tour.format === "individual" ? "Solo" : "0")}
+              </div>
+              <div className="text-xs md:text-sm text-slate-500 font-medium">
                 {tour.format === "individual"
                   ? "Individual Format"
                   : "Teams Created"}
               </div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-slate-900 mb-1 capitalize">
+
+            <div className="bg-slate-50 rounded-lg p-4 text-center">
+              <div className="text-2xl mb-2">🏷️</div>
+              <div className="text-lg md:text-xl font-bold text-slate-900 mb-1 capitalize">
                 {tour.format.replace("-", " ")}
               </div>
-              <div className="text-caption">Competition Format</div>
+              <div className="text-xs md:text-sm text-slate-500 font-medium">
+                Competition Format
+              </div>
             </div>
           </div>
         </div>
 
         {/* Players Section with Scorecards */}
-        <div className="card mb-6 max-w-5xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="section-header">
-              Tournament Players ({tour.players.length})
-            </h2>
+        <div className="card mb-6 w-full max-w-5xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+              <h2 className="section-header">Tournament Players</h2>
+              <p className="text-slate-600 text-sm">
+                {tour.players.length} registered participants
+              </p>
+            </div>
             <button
               onClick={() => setShowAddPlayer(true)}
-              className="btn-secondary"
+              className="btn-secondary self-start sm:self-auto"
             >
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
+              <span className="text-base mr-2">➕</span>
               Add Player
             </button>
           </div>
@@ -249,19 +230,7 @@ export const TourPage = () => {
           {tour.players.length === 0 ? (
             <div className="text-center py-12 max-w-md mx-auto">
               <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg
-                  className="w-10 h-10 text-slate-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 715.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 616 0zm6 3a2 2 0 11-4 0 2 2 0 414 0zM7 10a2 2 0 11-4 0 2 2 0 414 0z"
-                  />
-                </svg>
+                <span className="text-4xl">👥</span>
               </div>
               <h3 className="text-xl font-semibold text-slate-700 mb-3">
                 No Players Registered
@@ -277,7 +246,7 @@ export const TourPage = () => {
               </button>
             </div>
           ) : (
-            <div className="space-y-4 max-w-4xl mx-auto">
+            <div className="space-y-4 w-full max-w-4xl mx-auto">
               {tour.players.map((player) => (
                 <PlayerScorecard
                   key={player.id}
@@ -293,28 +262,19 @@ export const TourPage = () => {
 
         {/* Teams Section - Only for team formats */}
         {(tour.format === "team" || tour.format === "ryder-cup") && (
-          <div className="card mb-6 max-w-5xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="section-header">
-                Tournament Teams ({tour.teams?.length || 0})
-              </h2>
+          <div className="card mb-6 w-full max-w-5xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <div>
+                <h2 className="section-header">Tournament Teams</h2>
+                <p className="text-slate-600 text-sm">
+                  {tour.teams?.length || 0} teams competing
+                </p>
+              </div>
               <button
                 onClick={() => setShowCreateTeam(true)}
-                className="btn-secondary"
+                className="btn-secondary self-start sm:self-auto"
               >
-                <svg
-                  className="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
+                <span className="text-base mr-2">🏗️</span>
                 Create Team
               </button>
             </div>
@@ -322,19 +282,7 @@ export const TourPage = () => {
             {!tour.teams || tour.teams.length === 0 ? (
               <div className="text-center py-12 max-w-md mx-auto">
                 <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg
-                    className="w-10 h-10 text-slate-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 715.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 616 0zm6 3a2 2 0 11-4 0 2 2 0 414 0zM7 10a2 2 0 11-4 0 2 2 0 414 0z"
-                    />
-                  </svg>
+                  <span className="text-4xl">🏗️</span>
                 </div>
                 <h3 className="text-xl font-semibold text-slate-700 mb-3">
                   No Teams Created
@@ -350,7 +298,7 @@ export const TourPage = () => {
                 </button>
               </div>
             ) : (
-              <div className="space-y-6 max-w-4xl mx-auto">
+              <div className="space-y-6 w-full max-w-4xl mx-auto">
                 {tour.teams.map((team) => (
                   <TeamCard key={team.id} team={team} tour={tour} />
                 ))}
@@ -359,21 +307,7 @@ export const TourPage = () => {
                 {tour.players.filter((p) => !p.teamId).length > 0 && (
                   <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <div className="p-1 bg-amber-100 rounded">
-                        <svg
-                          className="w-4 h-4 text-amber-600"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 12.5c-.77.833.192 2.5 1.732 2.5z"
-                          />
-                        </svg>
-                      </div>
+                      <span className="text-2xl">⚠️</span>
                       <div>
                         <h4 className="font-semibold text-amber-900 mb-1">
                           {tour.players.filter((p) => !p.teamId).length}{" "}
@@ -411,25 +345,19 @@ export const TourPage = () => {
         )}
 
         {/* Rounds Section */}
-        <div className="card mb-6 max-w-5xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="section-header">
-              Tournament Rounds ({tour.rounds.length})
-            </h2>
-            <Link to={`/tour/${tourId}/create-round`} className="btn-secondary">
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
+        <div className="card mb-6 w-full max-w-5xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+              <h2 className="section-header">Tournament Rounds</h2>
+              <p className="text-slate-600 text-sm">
+                {tour.rounds.length} rounds configured
+              </p>
+            </div>
+            <Link
+              to={`/tour/${tourId}/create-round`}
+              className="btn-secondary self-start sm:self-auto"
+            >
+              <span className="text-base mr-2">🏌️</span>
               Create Round
             </Link>
           </div>
@@ -437,19 +365,7 @@ export const TourPage = () => {
           {tour.rounds.length === 0 ? (
             <div className="text-center py-12 max-w-md mx-auto">
               <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg
-                  className="w-10 h-10 text-slate-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 712-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
+                <span className="text-4xl">🏌️</span>
               </div>
               <h3 className="text-xl font-semibold text-slate-700 mb-3">
                 No Rounds Created
@@ -462,7 +378,7 @@ export const TourPage = () => {
               </Link>
             </div>
           ) : (
-            <div className="grid gap-4 max-w-4xl mx-auto">
+            <div className="grid gap-4 w-full max-w-4xl mx-auto">
               {tour.rounds.map((round) => (
                 <RoundCard key={round.id} round={round} tour={tour} />
               ))}
@@ -495,6 +411,7 @@ export const TourPage = () => {
         onCancel={cancelDelete}
         isDestructive={true}
       />
+
       {/* Toast Notifications */}
       <ToastComponent />
     </div>

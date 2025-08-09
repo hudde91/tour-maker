@@ -109,26 +109,14 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
     <>
       <div className="card-elevated">
         {/* Team Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex items-center gap-4 flex-1 min-w-0">
             {/* Team Logo/Color */}
             <div
-              className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0"
+              className="w-12 h-12 md:w-16 md:h-16 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0"
               style={{ backgroundColor: team.color }}
             >
-              <svg
-                className="w-8 h-8 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 616 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
+              <span className="text-2xl md:text-3xl">👥</span>
             </div>
 
             <div className="flex-1 min-w-0">
@@ -137,7 +125,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="input-field text-xl font-bold"
+                  className="input-field text-xl font-bold w-full"
                   onBlur={handleSaveName}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleSaveName();
@@ -150,24 +138,12 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                 />
               ) : (
                 <>
-                  <h3 className="text-2xl font-bold text-slate-900 truncate mb-1">
+                  <h3 className="text-xl md:text-2xl font-bold text-slate-900 truncate mb-1">
                     {team.name}
                   </h3>
-                  <div className="flex items-center gap-4 text-sm text-slate-600">
+                  <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm text-slate-600">
                     <div className="flex items-center gap-1">
-                      <svg
-                        className="w-4 h-4 text-slate-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 715.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 616 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                      </svg>
+                      <span className="text-base">👥</span>
                       <span className="font-medium">
                         {teamPlayers.length} Players
                       </span>
@@ -175,19 +151,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
 
                     {captain && (
                       <div className="flex items-center gap-1">
-                        <svg
-                          className="w-4 h-4 text-amber-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 3l14 9-14 9V3z"
-                          />
-                        </svg>
+                        <span className="text-base">👑</span>
                         <span className="font-medium">
                           Captain: {captain.name}
                         </span>
@@ -200,44 +164,20 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-start sm:self-auto">
             <button
               onClick={() => setIsEditing(!isEditing)}
               className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
               title="Edit team"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
+              <span className="text-base">✏️</span>
             </button>
             <button
               onClick={handleDeleteTeam}
               className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               title="Delete team"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
+              <span className="text-base">🗑️</span>
             </button>
           </div>
         </div>
@@ -248,36 +188,25 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
               key={player.id}
               className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="w-8 h-8 bg-gradient-to-br from-slate-300 to-slate-400 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
+                  <span className="text-sm">👤</span>
                 </div>
 
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-slate-900">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-slate-900 truncate">
                       {player.name}
                     </span>
                     {team.captainId === player.id && (
                       <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-200">
-                        Captain
+                        👑 Captain
                       </span>
                     )}
                   </div>
                   {player.handicap !== undefined && (
-                    <span className="text-sm text-slate-500">
+                    <span className="text-sm text-slate-500 flex items-center gap-1">
+                      <span className="text-xs">⛳</span>
                       Handicap: {player.handicap}
                     </span>
                   )}
@@ -306,19 +235,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                 className="w-full p-3 border-2 border-dashed border-slate-300 rounded-lg text-slate-600 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all font-medium"
               >
                 <div className="flex items-center justify-center gap-2">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
+                  <span className="text-base">➕</span>
                   Add Player to Team
                 </div>
               </button>
@@ -326,7 +243,8 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
               {/* Player Assignment Dropdown */}
               {showPlayerAssignment && (
                 <div className="mt-3 space-y-2 bg-white border border-slate-200 rounded-lg p-3 shadow-sm">
-                  <div className="text-sm font-medium text-slate-700 mb-2">
+                  <div className="text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+                    <span className="text-base">👥</span>
                     Available Players:
                   </div>
                   {unassignedPlayers.map((player) => (
@@ -336,29 +254,21 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                       className="w-full text-left p-3 hover:bg-emerald-50 rounded-lg transition-colors border border-slate-200 hover:border-emerald-300"
                     >
                       <div className="flex items-center justify-between">
-                        <div>
-                          <div className="font-medium text-slate-900">
-                            {player.name}
-                          </div>
-                          {player.handicap !== undefined && (
-                            <div className="text-sm text-slate-500">
-                              Handicap: {player.handicap}
+                        <div className="flex items-center gap-3">
+                          <span className="text-base">👤</span>
+                          <div>
+                            <div className="font-medium text-slate-900">
+                              {player.name}
                             </div>
-                          )}
+                            {player.handicap !== undefined && (
+                              <div className="text-sm text-slate-500 flex items-center gap-1">
+                                <span className="text-xs">⛳</span>
+                                Handicap: {player.handicap}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <svg
-                          className="w-4 h-4 text-emerald-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                          />
-                        </svg>
+                        <span className="text-emerald-500 text-base">➕</span>
                       </div>
                     </button>
                   ))}

@@ -57,49 +57,77 @@ export const HomePage = () => {
     );
   }
 
+  const getFormatIcon = (format: string) => {
+    switch (format) {
+      case "individual":
+        return "👤"; // Person icon - clear for individual
+      case "team":
+        return "👥"; // Group icon - clear for teams
+      case "ryder-cup":
+        return "🏆"; // Trophy icon - premium/championship feel
+      default:
+        return "⛳"; // Golf flag as default
+    }
+  };
+
+  const getStatusInfo = (tour: any) => {
+    if (!tour.isActive) {
+      return {
+        text: "Completed",
+        style: "bg-blue-100 text-blue-800 border-blue-200",
+      };
+    }
+
+    const hasActiveRounds = tour.rounds.some(
+      (r: any) => r.status === "in-progress"
+    );
+    if (hasActiveRounds) {
+      return {
+        text: "Live",
+        style: "bg-red-100 text-red-800 border-red-200 animate-pulse",
+      };
+    }
+
+    return {
+      text: "Active",
+      style: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    };
+  };
+
   return (
-    <div className="min-h-screen golf-bg-pattern">
-      {/* Hero Section */}
-      <div className="golf-hero-bg safe-area-top">
-        <div className="p-6 pb-12">
+    <div className="min-h-screen golf-bg-pattern w-full">
+      {/* Hero Section - Full Width */}
+      <div className="golf-hero-bg safe-area-top w-full">
+        <div className="p-6 pb-12 w-full max-w-6xl mx-auto">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 tracking-tight">
               Tour Maker
             </h1>
-            <p className="text-emerald-100 text-lg font-medium">
+            <p className="text-emerald-100 text-lg md:text-xl font-medium">
               Professional Golf Tournament Management
             </p>
           </div>
         </div>
       </div>
 
-      <div className="px-4 -mt-6 pb-8">
+      <div className="px-4 -mt-6 pb-8 w-full max-w-6xl mx-auto">
         {/* Create Tournament Card */}
-        <div className="card-elevated mb-8">
+        <div className="card-elevated mb-8 w-full max-w-2xl mx-auto">
           <div className="text-center">
-            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-8 h-8 text-emerald-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
+            <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+              <span className="text-3xl">⛳</span>
             </div>
-            <h2 className="text-xl font-semibold text-slate-800 mb-2">
+            <h2 className="text-2xl font-bold text-slate-800 mb-3">
               Create New Tournament
             </h2>
-            <p className="text-slate-600 mb-6">
+            <p className="text-slate-600 text-lg mb-8 leading-relaxed">
               Set up a professional golf tournament with players, teams, and
               multiple rounds
             </p>
-            <Link to="/create" className="btn-primary w-full">
+            <Link
+              to="/create"
+              className="btn-primary text-lg py-4 px-8 shadow-lg w-full sm:w-auto"
+            >
               Create Tournament
             </Link>
           </div>
@@ -107,76 +135,126 @@ export const HomePage = () => {
 
         {/* Tournaments Section */}
         <div className="section-spacing">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="section-header">Your Tournaments</h2>
-            <span className="text-caption bg-slate-100 px-3 py-1 rounded-full">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 w-full max-w-5xl mx-auto">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+                Your Tournaments
+              </h2>
+              <p className="text-slate-600 text-base md:text-lg">
+                Manage and track all your golf competitions
+              </p>
+            </div>
+            <span className="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full font-semibold border border-emerald-200 self-start sm:self-auto">
               {tours.length} Total
             </span>
           </div>
 
           {tours.length === 0 ? (
-            <div className="card text-center py-12">
-              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-10 h-10 text-slate-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                  />
-                </svg>
+            <div className="card-elevated w-full max-w-2xl mx-auto">
+              <div className="text-center py-16">
+                <div className="w-24 h-24 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <span className="text-4xl">📋</span>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-700 mb-4">
+                  No Tournaments Yet
+                </h3>
+                <p className="text-slate-500 text-lg mb-8 leading-relaxed max-w-md mx-auto">
+                  Create your first tournament to get started with professional
+                  golf management
+                </p>
+                <Link to="/create" className="btn-primary text-lg py-3 px-6">
+                  Get Started
+                </Link>
               </div>
-              <h3 className="text-xl font-semibold text-slate-700 mb-2">
-                No Tournaments Yet
-              </h3>
-              <p className="text-slate-500 mb-6">
-                Create your first tournament to get started with professional
-                golf management
-              </p>
-              <Link to="/create" className="btn-secondary">
-                Get Started
-              </Link>
             </div>
           ) : (
-            <div className="space-y-4">
-              {tours.map((tour) => (
-                <div
-                  key={tour.id}
-                  className="leaderboard-row hover:shadow-lg transition-all group relative"
-                >
-                  <Link
-                    to={`/tour/${tour.id}`}
-                    className="flex-1 min-w-0 flex items-center"
+            <div className="w-full max-w-5xl mx-auto space-y-4">
+              {tours.map((tour) => {
+                const statusInfo = getStatusInfo(tour);
+
+                return (
+                  <div
+                    key={tour.id}
+                    className="bg-white rounded-xl shadow-lg border border-slate-200 p-4 md:p-6 hover:shadow-xl transition-all duration-200 group"
                   >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-slate-900 truncate">
-                          {tour.name}
-                        </h3>
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            tour.isActive ? "status-active" : "status-completed"
-                          }`}
+                    <div className="flex items-start justify-between">
+                      <Link to={`/tour/${tour.id}`} className="flex-1 min-w-0">
+                        <div className="flex flex-col md:flex-row md:items-center gap-4">
+                          {/* Tournament Icon & Header */}
+                          <div className="flex items-center gap-4">
+                            <div className="flex-shrink-0">
+                              <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                                <span className="text-xl md:text-2xl">
+                                  {getFormatIcon(tour.format)}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
+                                <h3 className="text-lg md:text-xl font-bold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
+                                  {tour.name}
+                                </h3>
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs font-semibold border self-start ${statusInfo.style}`}
+                                >
+                                  {statusInfo.text}
+                                </span>
+                              </div>
+
+                              {tour.description && (
+                                <p className="text-slate-600 text-sm mb-2 line-clamp-2 leading-relaxed">
+                                  {tour.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Tournament Stats */}
+                          <div className="grid grid-cols-2 md:flex md:items-center gap-3 md:gap-6 text-xs md:text-sm text-slate-500">
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm">👥</span>
+                              <span className="font-medium">
+                                {tour.players.length} Players
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm">📋</span>
+                              <span className="font-medium">
+                                {tour.rounds.length} Rounds
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm">🏷️</span>
+                              <span className="font-medium capitalize">
+                                {tour.format.replace("-", " ")}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm">📅</span>
+                              <span className="font-medium">
+                                {new Date(tour.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+
+                      <div className="flex items-center gap-2 ml-2">
+                        {/* Delete Button */}
+                        <button
+                          onClick={(e) =>
+                            handleDeleteTour(e, tour.id, tour.name)
+                          }
+                          disabled={deleteTour.isPending}
+                          className="p-2 md:p-3 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 opacity-0 group-hover:opacity-100 touch-manipulation"
+                          title="Delete tournament"
                         >
-                          {tour.isActive ? "Active" : "Completed"}
-                        </span>
-                      </div>
-
-                      {tour.description && (
-                        <p className="text-slate-600 text-sm mb-3 line-clamp-2">
-                          {tour.description}
-                        </p>
-                      )}
-
-                      <div className="flex items-center gap-6 text-caption">
-                        <div className="flex items-center gap-1">
                           <svg
-                            className="w-4 h-4 text-slate-400"
+                            className="w-4 h-4 md:w-5 md:h-5"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -185,15 +263,15 @@ export const HomePage = () => {
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth={2}
-                              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 715.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 616 0zm6 3a2 2 0 11-4 0 2 2 0 414 0zM7 10a2 2 0 11-4 0 2 2 0 414 0z"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                             />
                           </svg>
-                          <span>{tour.players.length} Players</span>
-                        </div>
+                        </button>
 
-                        <div className="flex items-center gap-1">
+                        {/* Navigation Arrow */}
+                        <div className="flex-shrink-0">
                           <svg
-                            className="w-4 h-4 text-slate-400"
+                            className="w-5 h-5 md:w-6 md:h-6 text-slate-400 group-hover:text-emerald-600 transition-colors"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -202,76 +280,15 @@ export const HomePage = () => {
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth={2}
-                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                              d="M9 5l7 7-7 7"
                             />
                           </svg>
-                          <span>{tour.rounds.length} Rounds</span>
-                        </div>
-
-                        <div className="flex items-center gap-1">
-                          <svg
-                            className="w-4 h-4 text-slate-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                            />
-                          </svg>
-                          <span className="capitalize">
-                            {tour.format.replace("-", " ")}
-                          </span>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-
-                  <div className="flex items-center gap-2 ml-4">
-                    {/* Delete Button */}
-                    <button
-                      onClick={(e) => handleDeleteTour(e, tour.id, tour.name)}
-                      disabled={deleteTour.isPending}
-                      className="p-3 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 opacity-0 group-hover:opacity-100 touch-manipulation"
-                      title="Delete tournament"
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                    </button>
-
-                    {/* Navigation Arrow */}
-                    <div className="flex-shrink-0">
-                      <svg
-                        className="w-5 h-5 text-slate-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
