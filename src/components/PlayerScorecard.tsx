@@ -199,8 +199,8 @@ export const PlayerScorecard = ({
                                 : "bg-emerald-100 text-emerald-800"
                             }`}
                           >
-                            {round.status === "completed" ? "🏁" : "🔴"}
-                            {round.status === "completed" ? "Final" : "Live"}
+                            {round.status === "completed" ? "" : "🔴"}
+                            {round.status === "completed" ? "Finished" : "Live"}
                           </span>
                         </div>
                       </div>

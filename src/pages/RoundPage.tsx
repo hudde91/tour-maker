@@ -518,7 +518,7 @@ export const RoundPage = () => {
                       : "bg-emerald-500 text-white"
                   }`}
                 >
-                  {round.status === "completed" ? "Final" : "Live"}
+                  {round.status === "completed" ? "Completed" : "Live"}
                 </span>
               </div>
             </div>

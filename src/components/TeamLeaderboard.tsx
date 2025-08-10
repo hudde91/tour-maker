@@ -31,7 +31,7 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
   return (
     <div className="space-y-4">
       {/* Team Leaderboard Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h3 className="section-header flex items-center gap-2">
             <span className="text-2xl">🏆</span>
@@ -54,7 +54,7 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
             </div>
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* Team Standings */}
       <div className="space-y-4">

@@ -170,7 +170,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
               className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
               title="Edit team"
             >
-              <span className="text-base">✏️</span>
+              <span className="text-base">Edit</span>
             </button>
             <button
               onClick={handleDeleteTeam}
