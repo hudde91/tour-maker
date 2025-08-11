@@ -179,67 +179,75 @@ export const HomePage = () => {
                   >
                     <div className="flex items-start justify-between">
                       <Link to={`/tour/${tour.id}`} className="flex-1 min-w-0">
-                        <div className="flex flex-col md:flex-row md:items-center gap-4">
-                          {/* Tournament Icon & Header */}
-                          <div className="flex items-center gap-4">
-                            <div className="flex-shrink-0">
-                              <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                                <span className="text-xl md:text-2xl">
-                                  {getFormatIcon(tour.format)}
-                                </span>
+                        <div className="space-y-3">
+                          <div className="flex flex-col md:flex-row md:items-center gap-4">
+                            {/* Tournament Icon & Header */}
+                            <div className="flex items-center gap-4">
+                              <div className="flex-shrink-0">
+                                <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                                  <span className="text-xl md:text-2xl">
+                                    {getFormatIcon(tour.format)}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                  <h3 className="text-lg md:text-xl font-bold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
+                                    {tour.name}
+                                  </h3>
+                                  <span
+                                    className={`px-2 py-1 rounded-full text-xs font-semibold border self-start ${statusInfo.style}`}
+                                  >
+                                    {statusInfo.text}
+                                  </span>
+                                </div>
                               </div>
                             </div>
 
-                            <div className="flex-1 min-w-0">
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
-                                <h3 className="text-lg md:text-xl font-bold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
-                                  {tour.name}
-                                </h3>
-                                <span
-                                  className={`px-2 py-1 rounded-full text-xs font-semibold border self-start ${statusInfo.style}`}
-                                >
-                                  {statusInfo.text}
+                            {/* Tournament Stats */}
+                            <div className="grid grid-cols-2 md:flex md:items-center gap-3 md:gap-6 text-xs md:text-sm text-slate-500">
+                              <div className="flex items-center gap-1">
+                                <span className="text-sm">👥</span>
+                                <span className="font-medium">
+                                  {tour.players.length} Players
                                 </span>
                               </div>
 
-                              {tour.description && (
-                                <p className="text-slate-600 text-sm mb-2 line-clamp-2 leading-relaxed">
-                                  {tour.description}
-                                </p>
-                              )}
+                              <div className="flex items-center gap-1">
+                                <span className="text-sm">📋</span>
+                                <span className="font-medium">
+                                  {tour.rounds.length} Rounds
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-1">
+                                <span className="text-sm">🏷️</span>
+                                <span className="font-medium capitalize">
+                                  {tour.format.replace("-", " ")}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-1">
+                                <span className="text-sm">📅</span>
+                                <span className="font-medium">
+                                  {new Date(
+                                    tour.createdAt
+                                  ).toLocaleDateString()}
+                                </span>
+                              </div>
                             </div>
                           </div>
 
-                          {/* Tournament Stats */}
-                          <div className="grid grid-cols-2 md:flex md:items-center gap-3 md:gap-6 text-xs md:text-sm text-slate-500">
-                            <div className="flex items-center gap-1">
-                              <span className="text-sm">👥</span>
-                              <span className="font-medium">
-                                {tour.players.length} Players
-                              </span>
+                          {/* Tournament Description - positioned below stats but aligned with tournament name */}
+                          {tour.description && (
+                            <div className="flex items-start gap-4">
+                              <div className="w-12 md:w-16 flex-shrink-0"></div>
+                              <p className="text-slate-600 text-sm line-clamp-2 leading-relaxed flex-1 min-w-0">
+                                {tour.description}
+                              </p>
                             </div>
-
-                            <div className="flex items-center gap-1">
-                              <span className="text-sm">📋</span>
-                              <span className="font-medium">
-                                {tour.rounds.length} Rounds
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-1">
-                              <span className="text-sm">🏷️</span>
-                              <span className="font-medium capitalize">
-                                {tour.format.replace("-", " ")}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-1">
-                              <span className="text-sm">📅</span>
-                              <span className="font-medium">
-                                {new Date(tour.createdAt).toLocaleDateString()}
-                              </span>
-                            </div>
-                          </div>
+                          )}
                         </div>
                       </Link>
 

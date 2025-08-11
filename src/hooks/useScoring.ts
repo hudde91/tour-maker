@@ -21,6 +21,46 @@ export const useUpdateScore = (tourId: string, roundId: string) => {
   });
 };
 
+export const useUpdateTeamScore = (tourId: string, roundId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      teamId,
+      scores,
+    }: {
+      teamId: string;
+      scores: number[];
+    }) => {
+      storage.updateTeamScore(tourId, roundId, teamId, scores);
+      return { teamId, scores };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+    },
+  });
+};
+
+export const useUpdateTeamTotalScore = (tourId: string, roundId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      teamId,
+      totalScore,
+    }: {
+      teamId: string;
+      totalScore: number;
+    }) => {
+      storage.updateTeamTotalScore(tourId, roundId, teamId, totalScore);
+      return { teamId, totalScore };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+    },
+  });
+};
+
 export const useStartRound = (tourId: string) => {
   const queryClient = useQueryClient();
 

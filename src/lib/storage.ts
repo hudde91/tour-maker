@@ -76,6 +76,7 @@ export const storage = {
       });
     });
   },
+
   // Tours
   getTours: (): Tour[] => {
     const tours = localStorage.getItem(STORAGE_KEYS.TOURS);
@@ -336,6 +337,7 @@ export const storage = {
 
     storage.saveTour(tour);
   },
+
   // Delete round
   deleteRound: (tourId: string, roundId: string): void => {
     const tour = storage.getTour(tourId);
@@ -377,6 +379,106 @@ export const storage = {
 
     return holes;
   },
+
+  // Check if round uses team scoring (scramble format)
+  isTeamScoringFormat: (round: Round): boolean => {
+    return (
+      round.format === "scramble" ||
+      (round.format === "best-ball" &&
+        round.settings.teamScoring === "scramble")
+    );
+  },
+
+  // Get team score for a round
+  getTeamScore: (tour: Tour, roundId: string, teamId: string) => {
+    const round = tour.rounds.find((r) => r.id === roundId);
+    if (!round) return null;
+
+    const teamScoreKey = `team_${teamId}`;
+    return round.scores[teamScoreKey] || null;
+  },
+
+  // Team scoring for scramble format
+  updateTeamScore: (
+    tourId: string,
+    roundId: string,
+    teamId: string,
+    scores: number[]
+  ): void => {
+    const tour = storage.getTour(tourId);
+    if (!tour) return;
+
+    const round = tour.rounds.find((r) => r.id === roundId);
+    if (!round) return;
+
+    const totalScore = scores.reduce((sum, score) => sum + score, 0);
+    const totalPar = storage.getTotalPar(round);
+    const totalToPar = totalScore - totalPar;
+
+    // For scramble, we store the team score under a special key
+    const teamScoreKey = `team_${teamId}`;
+
+    round.scores[teamScoreKey] = {
+      playerId: teamScoreKey,
+      scores,
+      totalScore,
+      totalToPar,
+      isTeamScore: true,
+      teamId,
+    };
+
+    storage.saveTour(tour);
+  },
+
+  // Update team total score directly (for scramble completed rounds)
+  updateTeamTotalScore: (
+    tourId: string,
+    roundId: string,
+    teamId: string,
+    totalScore: number
+  ): void => {
+    const tour = storage.getTour(tourId);
+    if (!tour) return;
+
+    const round = tour.rounds.find((r) => r.id === roundId);
+    if (!round) return;
+
+    const totalPar = storage.getTotalPar(round);
+    const totalToPar = totalScore - totalPar;
+
+    // Create distributed score array for team
+    const averageScore = totalScore / round.holes;
+    const scores = new Array(round.holes).fill(Math.round(averageScore));
+
+    // Adjust the scores to match the exact total
+    let currentTotal = scores.reduce((sum, score) => sum + score, 0);
+    let difference = totalScore - currentTotal;
+
+    let holeIndex = 0;
+    while (difference !== 0 && holeIndex < round.holes) {
+      if (difference > 0) {
+        scores[holeIndex]++;
+        difference--;
+      } else if (difference < 0 && scores[holeIndex] > 1) {
+        scores[holeIndex]--;
+        difference++;
+      }
+      holeIndex = (holeIndex + 1) % round.holes;
+    }
+
+    const teamScoreKey = `team_${teamId}`;
+    round.scores[teamScoreKey] = {
+      playerId: teamScoreKey,
+      scores,
+      totalScore,
+      totalToPar,
+      isTeamScore: true,
+      teamId,
+    };
+
+    storage.saveTour(tour);
+  },
+
   // Start round
   startRound: (tourId: string, roundId: string): void => {
     const tour = storage.getTour(tourId);
@@ -387,17 +489,37 @@ export const storage = {
       round.status = "in-progress";
       round.startedAt = new Date().toISOString();
 
-      // Initialize empty scores for all players
-      tour.players.forEach((player) => {
-        if (!round.scores[player.id]) {
-          round.scores[player.id] = {
-            playerId: player.id,
-            scores: new Array(round.holes).fill(0),
-            totalScore: 0,
-            totalToPar: 0,
-          };
-        }
-      });
+      // Check if this is a team scoring format (scramble)
+      const isTeamScoring = storage.isTeamScoringFormat(round);
+
+      if (isTeamScoring && tour.teams) {
+        // Initialize empty scores for all teams
+        tour.teams.forEach((team) => {
+          const teamScoreKey = `team_${team.id}`;
+          if (!round.scores[teamScoreKey]) {
+            round.scores[teamScoreKey] = {
+              playerId: teamScoreKey,
+              scores: new Array(round.holes).fill(0),
+              totalScore: 0,
+              totalToPar: 0,
+              isTeamScore: true,
+              teamId: team.id,
+            };
+          }
+        });
+      } else {
+        // Initialize empty scores for all players (individual format)
+        tour.players.forEach((player) => {
+          if (!round.scores[player.id]) {
+            round.scores[player.id] = {
+              playerId: player.id,
+              scores: new Array(round.holes).fill(0),
+              totalScore: 0,
+              totalToPar: 0,
+            };
+          }
+        });
+      }
     }
 
     storage.saveTour(tour);

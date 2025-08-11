@@ -116,6 +116,8 @@ export interface PlayerScore {
   handicapStrokes?: number; // handicap strokes applied
   netScore?: number; // net score (totalScore - handicapStrokes)
   netToPar?: number; // net score to par
+  isTeamScore?: boolean;
+  teamId?: string;
 }
 
 export interface Tour {

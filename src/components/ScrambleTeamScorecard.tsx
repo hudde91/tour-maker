@@ -1,34 +1,25 @@
-import { Player, HoleInfo, PlayerScore } from "../types";
-import { storage } from "../lib/storage";
+import { Team, Tour, HoleInfo } from "../types";
 
-interface ScoreEntryCardProps {
-  player: Player;
+interface ScrambleTeamScorecardProps {
+  team: Team;
+  tour: Tour;
   holeInfo: HoleInfo;
   currentScore: number;
-  playerScore: PlayerScore;
+  teamScore: any; // We'll define this better
   onScoreChange: (score: number) => void;
-  strokesGiven: boolean;
 }
 
-export const ScoreEntryCard = ({
-  player,
+export const ScrambleTeamScorecard = ({
+  team,
+  tour,
   holeInfo,
   currentScore,
-  playerScore,
+  teamScore,
   onScoreChange,
-  strokesGiven,
-}: ScoreEntryCardProps) => {
+}: ScrambleTeamScorecardProps) => {
   const par = holeInfo.par;
-
-  // Calculate strokes for this hole using proper golf handicap system
-  const strokesForHole =
-    strokesGiven && player.handicap && holeInfo.handicap
-      ? storage.calculateStrokesForHole(player.handicap, holeInfo.handicap)
-      : 0;
-
-  // Incorrect
-  // const effectivePar = par + strokesForHole;
-  const effectivePar = par;
+  const teamPlayers = tour.players.filter((p) => p.teamId === team.id);
+  const captain = teamPlayers.find((p) => p.id === team.captainId);
 
   const getScoreInfo = (score: number) => {
     if (score === 0 || !score)
@@ -39,7 +30,8 @@ export const ScoreEntryCard = ({
         badgeColor: "bg-slate-100 text-slate-500",
       };
 
-    // Handle hole-in-one first (always score = 1)
+    const scoreToPar = score - par;
+
     if (score === 1) {
       return {
         bg: "bg-gradient-to-br from-purple-100 to-pink-100 border-purple-300 shadow-lg",
@@ -48,8 +40,6 @@ export const ScoreEntryCard = ({
         badgeColor: "bg-purple-500 text-white",
       };
     }
-
-    const scoreToPar = score - effectivePar;
 
     if (scoreToPar <= -3)
       return {
@@ -115,7 +105,7 @@ export const ScoreEntryCard = ({
   const generateScoreOptions = () => {
     const options = [];
     const minScore = 1;
-    const maxScore = Math.max(10, effectivePar + 6); // At least up to effective par + 6
+    const maxScore = Math.max(10, par + 6);
 
     for (let score = minScore; score <= maxScore; score++) {
       const info = getScoreInfo(score);
@@ -135,46 +125,34 @@ export const ScoreEntryCard = ({
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
-      {/* Player Header */}
+      {/* Team Header */}
       <div className="flex justify-between items-center p-5">
         <div className="flex items-center gap-4">
-          {/* Player Avatar */}
+          {/* Team Avatar */}
           <div className="relative">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center shadow-md">
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
+            <div
+              className="w-12 h-12 rounded-full flex items-center justify-center shadow-md"
+              style={{ backgroundColor: team.color }}
+            >
+              <span className="text-2xl">👥</span>
             </div>
-            {strokesForHole > 0 && (
-              <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-md">
-                {strokesForHole > 1 ? strokesForHole : "S"}
-              </div>
-            )}
+            {/* Scramble indicator */}
+            <div className="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-md">
+              S
+            </div>
           </div>
 
           <div>
             <h3 className="text-lg font-semibold text-slate-900">
-              {player.name}
+              {team.name}
             </h3>
             <div className="flex items-center gap-3 text-sm">
-              {player.handicap !== undefined && (
-                <span className="text-slate-600 font-medium">
-                  HC {player.handicap}
-                </span>
-              )}
-              {strokesForHole > 0 && (
-                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold border border-blue-200">
-                  {strokesForHole} Stroke{strokesForHole > 1 ? "s" : ""}
+              <span className="text-slate-600 font-medium">
+                {teamPlayers.length} Players
+              </span>
+              {captain && (
+                <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs font-semibold border border-amber-200">
+                  👑 {captain.name}
                 </span>
               )}
             </div>
@@ -191,29 +169,42 @@ export const ScoreEntryCard = ({
         </div>
       </div>
 
+      {/* Team Members Display */}
+      <div className="border-t border-slate-100 px-5 py-3 bg-slate-50">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm font-medium text-slate-700">Team:</span>
+          {teamPlayers.map((player, index) => (
+            <span key={player.id} className="flex items-center">
+              <span className="text-sm text-slate-600">{player.name}</span>
+              {player.handicap !== undefined && (
+                <span className="text-xs text-slate-500 ml-1">
+                  (HC: {player.handicap})
+                </span>
+              )}
+              {index < teamPlayers.length - 1 && (
+                <span className="text-slate-400 mx-1">•</span>
+              )}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Professional Score Selection Interface */}
       <div className="border-t border-slate-200 p-5 bg-slate-50">
         <div className="mb-4">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h4 className="text-sm font-semibold text-slate-800">
-                Hole {holeInfo.number} Score
+                Team Score - Hole {holeInfo.number}
               </h4>
               <div className="text-xs text-slate-600">
-                Par {par}
-                {strokesForHole > 0 &&
-                  ` • ${strokesForHole} Stroke${strokesForHole > 1 ? "s" : ""}`}
+                Par {par} • Scramble Format
               </div>
             </div>
             <div className="text-xs text-slate-500 bg-white px-2 py-1 rounded border">
-              <span className="text-blue-600 font-semibold">
-                PAR {effectivePar}
+              <span className="text-emerald-600 font-semibold">
+                TEAM SCRAMBLE
               </span>
-              {strokesForHole > 0 && (
-                <span className="ml-1 text-blue-500">
-                  (+{strokesForHole} stroke{strokesForHole > 1 ? "s" : ""})
-                </span>
-              )}
             </div>
           </div>
 
@@ -232,19 +223,19 @@ export const ScoreEntryCard = ({
               >
                 <div className="text-lg font-bold mb-1">{option.score}</div>
                 <div className="text-xs leading-tight">
-                  {option.score === effectivePar
+                  {option.score === par
                     ? "Par"
-                    : option.score === effectivePar + 1
+                    : option.score === par + 1
                     ? "Bogey"
-                    : option.score === effectivePar + 2
-                    ? "Double Bogey"
-                    : option.score === effectivePar - 1
+                    : option.score === par + 2
+                    ? "Double"
+                    : option.score === par - 1
                     ? "Birdie"
-                    : option.score === effectivePar - 2
+                    : option.score === par - 2
                     ? "Eagle"
                     : option.score === 1
                     ? "Ace!"
-                    : `+${option.score - effectivePar}`}
+                    : `${option.score > par ? "+" : ""}${option.score - par}`}
                 </div>
 
                 {/* Selection indicator */}
@@ -277,7 +268,7 @@ export const ScoreEntryCard = ({
           {/* Quick Actions */}
           <div className="flex gap-3">
             <button
-              onClick={() => handleScoreChange(effectivePar)}
+              onClick={() => handleScoreChange(par)}
               className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg font-semibold text-sm transition-colors"
             >
               <svg
@@ -293,7 +284,7 @@ export const ScoreEntryCard = ({
                   d="M13 10V3L4 14h7v7l9-11h-7z"
                 />
               </svg>
-              Quick Par ({effectivePar})
+              Quick Par ({par})
             </button>
 
             {currentScore > 0 && (
@@ -321,29 +312,29 @@ export const ScoreEntryCard = ({
         </div>
       </div>
 
-      {/* Player Round Summary */}
+      {/* Team Round Summary */}
       <div className="border-t border-slate-100 p-4 bg-white rounded-b-xl">
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
             <div className="text-xl font-bold text-slate-900">
-              {playerScore.totalScore || 0}
+              {teamScore?.totalScore || 0}
             </div>
             <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Total
+              Team Total
             </div>
           </div>
           <div>
             <div
               className={`text-xl font-bold ${
-                playerScore.totalToPar < 0
+                (teamScore?.totalToPar || 0) < 0
                   ? "text-red-600"
-                  : playerScore.totalToPar > 0
+                  : (teamScore?.totalToPar || 0) > 0
                   ? "text-orange-600"
                   : "text-blue-600"
               }`}
             >
-              {playerScore.totalToPar > 0 ? "+" : ""}
-              {playerScore.totalToPar || 0}
+              {(teamScore?.totalToPar || 0) > 0 ? "+" : ""}
+              {teamScore?.totalToPar || 0}
             </div>
             <div className="text-xs text-slate-500 uppercase tracking-wide">
               To Par
@@ -351,7 +342,7 @@ export const ScoreEntryCard = ({
           </div>
           <div>
             <div className="text-xl font-bold text-slate-900">
-              {playerScore.scores.filter((s) => s > 0).length}
+              {teamScore?.scores?.filter((s: number) => s > 0).length || 0}
             </div>
             <div className="text-xs text-slate-500 uppercase tracking-wide">
               Holes
