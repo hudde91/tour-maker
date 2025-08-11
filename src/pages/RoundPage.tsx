@@ -167,8 +167,8 @@ export const RoundPage = () => {
   // Error State
   if (!tour || !round || !formatConfig) {
     return (
-      <div className="min-h-screen bg-slate-50 safe-area-top">
-        <div className="p-6">
+      <div className=" min-h-screen bg-slate-50 safe-area-top">
+        <div className="p-6 w-full max-w-6xl mx-auto">
           <div className="card text-center py-12">
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg
@@ -227,37 +227,39 @@ export const RoundPage = () => {
         onCompleteRound={handleCompleteRound}
       />
 
-      <div className="p-4 pb-24">
+      <div className="px-4 mt-4 pb-24 w-full max-w-6xl mx-auto">
         {/* Live Leaderboard (Collapsible) */}
         {showLeaderboard && (
-          <div className="mb-6 animate-fade-in">
+          <div className="mb-6 animate-fade-in w-full max-w-5xl mx-auto">
             <LiveLeaderboard tour={tour} round={round} />
           </div>
         )}
 
         {/* Format-Specific Scoring Interface */}
-        {formatConfig.type === "scramble" ? (
-          <ScrambleScoringInterface
-            tour={tour}
-            round={round}
-            onTeamScoreChange={handleTeamScoreChange}
-            onTeamTotalScoreChange={handleTeamTotalScoreChange}
-          />
-        ) : formatConfig.type === "best-ball" ? (
-          <BestBallScoringInterface
-            tour={tour}
-            round={round}
-            onPlayerScoreChange={handlePlayerScoreChange}
-            onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
-          />
-        ) : (
-          <IndividualScoringInterface
-            tour={tour}
-            round={round}
-            onPlayerScoreChange={handlePlayerScoreChange}
-            onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
-          />
-        )}
+        <div className="w-full max-w-5xl mx-auto">
+          {formatConfig.type === "scramble" ? (
+            <ScrambleScoringInterface
+              tour={tour}
+              round={round}
+              onTeamScoreChange={handleTeamScoreChange}
+              onTeamTotalScoreChange={handleTeamTotalScoreChange}
+            />
+          ) : formatConfig.type === "best-ball" ? (
+            <BestBallScoringInterface
+              tour={tour}
+              round={round}
+              onPlayerScoreChange={handlePlayerScoreChange}
+              onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
+            />
+          ) : (
+            <IndividualScoringInterface
+              tour={tour}
+              round={round}
+              onPlayerScoreChange={handlePlayerScoreChange}
+              onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
+            />
+          )}
+        </div>
       </div>
 
       {/* Complete Round Confirmation */}

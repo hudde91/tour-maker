@@ -30,7 +30,7 @@ export const PreRoundComponent = ({
     <div className="min-h-screen bg-slate-50 safe-area-top">
       {/* Professional Header */}
       <div className="golf-hero-bg">
-        <div className="p-6">
+        <div className="p-6 w-full max-w-6xl mx-auto">
           <div className="flex items-center mb-4">
             <Link to={`/tour/${tour.id}`} className="nav-back mr-4">
               <svg
@@ -55,9 +55,9 @@ export const PreRoundComponent = ({
         </div>
       </div>
 
-      <div className="px-4 -mt-4 pb-8">
+      <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto">
         {/* Pre-Round Information */}
-        <div className="card-elevated text-center mb-6">
+        <div className="card-elevated text-center mb-6 w-full max-w-4xl mx-auto">
           <div className="w-24 h-24 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
             <svg
               className="w-12 h-12 text-white"
@@ -144,16 +144,14 @@ export const PreRoundComponent = ({
                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 12.5c-.77.833.192 2.5 1.732 2.5z"
                   />
                 </svg>
-                <div>
-                  <h4 className="font-semibold text-red-900 mb-2">
-                    Setup Required
-                  </h4>
-                  <ul className="text-sm text-red-800 space-y-1">
-                    {validationErrors.map((error, index) => (
-                      <li key={index}>• {error}</li>
-                    ))}
-                  </ul>
-                </div>
+                <h4 className="font-semibold text-red-900 mb-2">
+                  Setup Required
+                </h4>
+                <ul className="text-sm text-red-800 space-y-1">
+                  {validationErrors.map((error, index) => (
+                    <li key={index}>• {error}</li>
+                  ))}
+                </ul>
               </div>
             </div>
           )}
@@ -191,7 +189,7 @@ export const PreRoundComponent = ({
         </div>
 
         {/* Tournament Format Info */}
-        <div className="card">
+        <div className="card w-full max-w-3xl mx-auto">
           <h3 className="subsection-header mb-4">Round Information</h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
