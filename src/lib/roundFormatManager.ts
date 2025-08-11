@@ -16,7 +16,8 @@ export interface FormatConfig {
   requiresTeams: boolean;
 }
 
-// Format detection and configuration
+// Update the getFormatConfig function in roundFormatManager.ts
+
 export const getFormatConfig = (round: Round): FormatConfig => {
   switch (round.format) {
     case "scramble":
@@ -31,24 +32,14 @@ export const getFormatConfig = (round: Round): FormatConfig => {
       };
 
     case "best-ball":
-      if (round.settings.teamScoring === "scramble") {
-        return {
-          type: "scramble",
-          displayName: "Team Scramble",
-          description: "All players hit, choose best shot, repeat",
-          isTeamBased: true,
-          allowsHoleByHole: true,
-          allowsTotalScore: true,
-          requiresTeams: true,
-        };
-      }
       return {
         type: "best-ball",
         displayName: "Best Ball",
-        description: "Count best individual score per hole",
+        description:
+          "Players score individually, team uses best score per hole",
         isTeamBased: true,
         allowsHoleByHole: true,
-        allowsTotalScore: false,
+        allowsTotalScore: true,
         requiresTeams: true,
       };
 
@@ -115,20 +106,33 @@ export const getScoringEntities = (tour: Tour, config: FormatConfig) => {
 };
 
 // Progress calculation
+
+// Progress calculation - update to handle best ball
 export const calculateProgress = (tour: Tour, round: Round) => {
   const config = getFormatConfig(round);
   const { entities, count, type } = getScoringEntities(tour, config);
 
   let entitiesWithScores = 0;
 
-  if (config.isTeamBased && tour.teams) {
-    // Count teams with scores
-    entitiesWithScores = tour.teams.filter((team) => {
-      const teamScore = round.scores[`team_${team.id}`];
-      return teamScore && teamScore.scores.some((score) => score > 0);
-    }).length;
+  if (config.type === "scramble") {
+    // Count teams with scores for scramble
+    entitiesWithScores =
+      tour.teams?.filter((team) => {
+        const teamScore = round.scores[`team_${team.id}`];
+        return teamScore && teamScore.scores.some((score) => score > 0);
+      }).length || 0;
+  } else if (config.type === "best-ball") {
+    // For best ball, count teams that have at least one player with scores
+    entitiesWithScores =
+      tour.teams?.filter((team) => {
+        const teamPlayers = tour.players.filter((p) => p.teamId === team.id);
+        return teamPlayers.some((player) => {
+          const playerScore = round.scores[player.id];
+          return playerScore && playerScore.scores.some((score) => score > 0);
+        });
+      }).length || 0;
   } else {
-    // Count players with scores
+    // Count individual players with scores
     entitiesWithScores = Object.keys(round.scores).filter((playerId) =>
       round.scores[playerId].scores.some((score) => score > 0)
     ).length;

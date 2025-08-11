@@ -18,12 +18,12 @@ import { IndividualScoringInterface } from "../components/IndividualScoringInter
 import { ScrambleScoringInterface } from "../components/ScrambleScoringInterface";
 import { getFormatConfig } from "../lib/roundFormatManager";
 import { storage } from "../lib/storage";
+import { BestBallScoringInterface } from "../components/BestBallScoringInterface";
 
 export const RoundPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
   const { data: tour, isLoading } = useTour(tourId!);
 
-  // Hooks
   const updateScore = useUpdateScore(tourId!, roundId!);
   const updateTeamScore = useUpdateTeamScore(tourId!, roundId!);
   const updateTeamTotalScore = useUpdateTeamTotalScore(tourId!, roundId!);
@@ -35,14 +35,12 @@ export const RoundPage = () => {
     roundId!
   );
 
-  // State
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
 
   const round = tour?.rounds.find((r) => r.id === roundId);
   const formatConfig = round ? getFormatConfig(round) : null;
 
-  // Event Handlers
   const handleStartRound = async () => {
     try {
       await startRound.mutateAsync(round!.id);
@@ -244,6 +242,13 @@ export const RoundPage = () => {
             round={round}
             onTeamScoreChange={handleTeamScoreChange}
             onTeamTotalScoreChange={handleTeamTotalScoreChange}
+          />
+        ) : formatConfig.type === "best-ball" ? (
+          <BestBallScoringInterface
+            tour={tour}
+            round={round}
+            onPlayerScoreChange={handlePlayerScoreChange}
+            onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
           />
         ) : (
           <IndividualScoringInterface

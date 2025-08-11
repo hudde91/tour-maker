@@ -1,4 +1,4 @@
-import { Tour, Round, TeamLeaderboardEntry } from "../types";
+import { Tour, Round } from "../types";
 import { storage } from "../lib/storage";
 
 interface TeamLeaderboardProps {
@@ -30,32 +30,6 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
 
   return (
     <div className="space-y-4">
-      {/* Team Leaderboard Header */}
-      {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <h3 className="section-header flex items-center gap-2">
-            <span className="text-2xl">🏆</span>
-            Team Championship Standings
-          </h3>
-          <p className="text-slate-600 mt-1">
-            {teamsWithScores.length} of {tour.teams?.length || 0} teams
-            competing
-          </p>
-        </div>
-
-        {teamsWithScores.length > 0 && (
-          <div className="text-right">
-            <div className="text-sm text-slate-500 flex items-center gap-1">
-              <span className="text-base">🎯</span>
-              Leading Team Score
-            </div>
-            <div className="text-xl font-bold text-emerald-600">
-              {Math.min(...teamsWithScores.map((t) => t.totalScore))}
-            </div>
-          </div>
-        )}
-      </div> */}
-
       {/* Team Standings */}
       <div className="space-y-4">
         {teamsWithScores.map((teamEntry, index) => {
@@ -286,7 +260,6 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
           );
         })}
       </div>
-
       {/* Team Championship Summary */}
       {teamsWithScores.length > 0 && (
         <div className="card mt-6">
