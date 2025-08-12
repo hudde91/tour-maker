@@ -1,17 +1,122 @@
+import { nanoid } from "nanoid";
 import {
-  Team,
+  MatchPlayRound,
+  MatchPlayHole,
+  MatchResult,
+  HoleResult,
+  MatchStatusInfo,
   Tour,
   Round,
   Player,
-  HoleInfo,
-  LeaderboardEntry,
+  Team,
   TeamLeaderboardEntry,
+  LeaderboardEntry,
+  HoleInfo,
 } from "../types";
 
 const STORAGE_KEYS = {
   TOURS: "golf-tours",
   ACTIVE_TOUR: "active-tour-id",
 } as const;
+
+export const matchPlayUtils = {
+  // Calculate match status (1-up, 2-down, All Square, etc.)
+  calculateMatchStatus: (
+    holes: MatchPlayHole[],
+    totalHoles: number
+  ): MatchStatusInfo => {
+    let teamAWins = 0;
+    let teamBWins = 0;
+    let holesPlayed = 0;
+
+    // Count wins for each team
+    holes.forEach((hole) => {
+      if (hole.teamAScore > 0 && hole.teamBScore > 0) {
+        holesPlayed++;
+        if (hole.result === "team-a") teamAWins++;
+        else if (hole.result === "team-b") teamBWins++;
+        // ties don't count toward wins
+      }
+    });
+
+    const holesRemaining = totalHoles - holesPlayed;
+    const lead = Math.abs(teamAWins - teamBWins);
+    const leadingTeam =
+      teamAWins > teamBWins
+        ? "team-a"
+        : teamBWins > teamAWins
+        ? "team-b"
+        : "tied";
+
+    // Determine if match can still be won
+    const maxPossibleCatchUp = holesRemaining;
+    const canTrailingTeamWin = lead <= maxPossibleCatchUp;
+
+    // Check if match is completed (someone won or tie impossible)
+    const isCompleted = !canTrailingTeamWin || holesRemaining === 0;
+
+    // Generate status string
+    let status: string;
+    let result: MatchResult | undefined;
+
+    if (isCompleted) {
+      if (teamAWins > teamBWins) {
+        result = "team-a";
+        const margin = lead > 1 ? ` ${lead}&${holesRemaining}` : "";
+        status = `Team A Wins${margin}`;
+      } else if (teamBWins > teamAWins) {
+        result = "team-b";
+        const margin = lead > 1 ? ` ${lead}&${holesRemaining}` : "";
+        status = `Team B Wins${margin}`;
+      } else {
+        result = "tie";
+        status = "Match Tied";
+      }
+    } else {
+      // Match ongoing
+      if (leadingTeam === "tied") {
+        status = "All Square";
+      } else if (lead === holesRemaining) {
+        status = "Dormie"; // leading by exactly holes remaining
+      } else {
+        const teamLabel = leadingTeam === "team-a" ? "Team A" : "Team B";
+        status = `${teamLabel} ${lead}-up`;
+      }
+    }
+
+    return {
+      holesRemaining,
+      leadingTeam,
+      lead,
+      status,
+      canWin: canTrailingTeamWin,
+      isCompleted,
+      result,
+    };
+  },
+
+  // Determine hole result based on scores
+  calculateHoleResult: (teamAScore: number, teamBScore: number): HoleResult => {
+    if (teamAScore === 0 || teamBScore === 0) return "tie"; // no score yet
+    if (teamAScore < teamBScore) return "team-a";
+    if (teamBScore < teamAScore) return "team-b";
+    return "tie";
+  },
+
+  // Calculate points awarded (1 for win, 0.5 for tie, 0 for loss)
+  calculateMatchPoints: (result: MatchResult) => {
+    switch (result) {
+      case "team-a":
+        return { teamA: 1, teamB: 0 };
+      case "team-b":
+        return { teamA: 0, teamB: 1 };
+      case "tie":
+        return { teamA: 0.5, teamB: 0.5 };
+      default:
+        return { teamA: 0, teamB: 0 };
+    }
+  },
+};
 
 // Helper function to calculate strokes for a specific hole using proper golf handicap system
 const calculateStrokesForHole = (
@@ -1224,5 +1329,162 @@ export const storage = {
 
     // Tournament-wide leaderboard - combine all rounds with format awareness
     return storage.calculateTournamentTeamLeaderboard(tour);
+  },
+
+  // Create a new match play round
+  createMatchPlayRound: (
+    tourId: string,
+    roundId: string,
+    matchData: {
+      format: "singles" | "foursomes" | "four-ball";
+      teamA: { id: string; playerIds: string[] };
+      teamB: { id: string; playerIds: string[] };
+    }
+  ): MatchPlayRound => {
+    const tour = storage.getTour(tourId);
+    const round = tour?.rounds.find((r) => r.id === roundId);
+    if (!tour || !round) throw new Error("Tour or round not found");
+
+    const matchId = nanoid();
+    const match: MatchPlayRound = {
+      id: matchId,
+      roundId,
+      format: matchData.format,
+      teamA: matchData.teamA,
+      teamB: matchData.teamB,
+      holes: [],
+      status: "in-progress",
+      result: "ongoing",
+      points: { teamA: 0, teamB: 0 },
+    };
+
+    // Initialize Ryder Cup data if not exists
+    if (!round.ryderCup) {
+      round.ryderCup = {
+        teamAPoints: 0,
+        teamBPoints: 0,
+        targetPoints: 14.5,
+        matches: [],
+        sessions: {
+          day1Foursomes: [],
+          day1FourBall: [],
+          day2Foursomes: [],
+          day2FourBall: [],
+          day3Singles: [],
+        },
+      };
+    }
+
+    round.ryderCup.matches.push(match);
+    storage.saveTour(tour);
+    return match;
+  },
+
+  // Update match play hole score
+  updateMatchPlayHole: (
+    tourId: string,
+    roundId: string,
+    matchId: string,
+    holeNumber: number,
+    teamAScore: number,
+    teamBScore: number
+  ): void => {
+    const tour = storage.getTour(tourId);
+    const round = tour?.rounds.find((r) => r.id === roundId);
+    const match = round?.ryderCup?.matches.find((m) => m.id === matchId);
+
+    if (!tour || !round || !match) return;
+
+    // Find or create hole
+    let hole = match.holes.find((h) => h.holeNumber === holeNumber);
+    if (!hole) {
+      hole = {
+        holeNumber,
+        teamAScore: 0,
+        teamBScore: 0,
+        result: "tie",
+        matchStatus: "",
+      };
+      match.holes.push(hole);
+    }
+
+    // Update hole scores
+    hole.teamAScore = teamAScore;
+    hole.teamBScore = teamBScore;
+    hole.result = matchPlayUtils.calculateHoleResult(teamAScore, teamBScore);
+
+    // Recalculate match status
+    const statusInfo = matchPlayUtils.calculateMatchStatus(
+      match.holes,
+      round.holes
+    );
+    hole.matchStatus = statusInfo.status;
+
+    // Update match if completed
+    if (statusInfo.isCompleted && statusInfo.result) {
+      match.status = "completed";
+      match.result = statusInfo.result;
+      match.points = matchPlayUtils.calculateMatchPoints(statusInfo.result);
+      match.completedAt = new Date().toISOString();
+
+      // Update tournament points
+      if (round.ryderCup) {
+        round.ryderCup.teamAPoints += match.points.teamA;
+        round.ryderCup.teamBPoints += match.points.teamB;
+      }
+    }
+
+    storage.saveTour(tour);
+  },
+
+  // Get match play leaderboard (team points)
+  getMatchPlayLeaderboard: (tourId: string, roundId?: string) => {
+    const tour = storage.getTour(tourId);
+    if (!tour) return { teamA: 0, teamB: 0, matches: [] };
+
+    let totalTeamAPoints = 0;
+    let totalTeamBPoints = 0;
+    let allMatches: MatchPlayRound[] = [];
+
+    if (roundId) {
+      // Single round
+      const round = tour.rounds.find((r) => r.id === roundId);
+      if (round?.ryderCup) {
+        totalTeamAPoints = round.ryderCup.teamAPoints;
+        totalTeamBPoints = round.ryderCup.teamBPoints;
+        allMatches = round.ryderCup.matches;
+      }
+    } else {
+      // All rounds
+      tour.rounds.forEach((round) => {
+        if (round.ryderCup) {
+          totalTeamAPoints += round.ryderCup.teamAPoints;
+          totalTeamBPoints += round.ryderCup.teamBPoints;
+          allMatches.push(...round.ryderCup.matches);
+        }
+      });
+    }
+
+    return {
+      teamA: totalTeamAPoints,
+      teamB: totalTeamBPoints,
+      matches: allMatches,
+      target: 14.5,
+      winner:
+        totalTeamAPoints >= 14.5
+          ? "team-a"
+          : totalTeamBPoints >= 14.5
+          ? "team-b"
+          : undefined,
+    };
+  },
+
+  // Check if tournament format supports match play
+  isMatchPlayFormat: (round: Round): boolean => {
+    return (
+      round.format === "match-play" ||
+      round.settings.matchPlayType !== undefined ||
+      round.isMatchPlay === true
+    );
   },
 };
