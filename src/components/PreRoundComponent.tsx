@@ -1,11 +1,6 @@
 import { Link } from "react-router-dom";
 import { Tour, Round } from "../types";
-import {
-  FormatConfig,
-  validateFormatSetup,
-  getScoringEntities,
-} from "../lib/roundFormatManager";
-import { storage } from "../lib/storage";
+import { FormatConfig, validateFormatSetup } from "../lib/roundFormatManager";
 
 interface PreRoundComponentProps {
   tour: Tour;
@@ -13,6 +8,7 @@ interface PreRoundComponentProps {
   formatConfig: FormatConfig;
   onStartRound: () => void;
   isStarting: boolean;
+  onCaptainPairing?: () => void;
 }
 
 export const PreRoundComponent = ({
@@ -21,14 +17,40 @@ export const PreRoundComponent = ({
   formatConfig,
   onStartRound,
   isStarting,
+  onCaptainPairing,
 }: PreRoundComponentProps) => {
-  const totalPar = storage.getTotalPar(round);
-  const { count, type } = getScoringEntities(tour, formatConfig);
   const validationErrors = validateFormatSetup(tour, round);
+  const canStart = validationErrors.length === 0 && tour.players.length >= 2;
+
+  const isRyderCupFormat = [
+    "foursomes-match-play",
+    "four-ball-match-play",
+    "singles-match-play",
+  ].includes(round.format);
+
+  const hasMatchesCreated =
+    round.ryderCup?.matches && round.ryderCup.matches.length > 0;
+
+  const getFormatIcon = () => {
+    switch (round.format) {
+      case "foursomes-match-play":
+        return "🔄";
+      case "four-ball-match-play":
+        return "⭐";
+      case "singles-match-play":
+        return "👤";
+      default:
+        return formatConfig.type === "scramble"
+          ? "🤝"
+          : formatConfig.type === "best-ball"
+          ? "⭐"
+          : "🏌️‍♂️";
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 safe-area-top">
-      {/* Professional Header */}
+      {/* Header */}
       <div className="golf-hero-bg">
         <div className="p-6 w-full max-w-6xl mx-auto">
           <div className="flex items-center mb-4">
@@ -48,84 +70,130 @@ export const PreRoundComponent = ({
               </svg>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-white">{round.name}</h1>
-              <p className="text-emerald-100 mt-1">{round.courseName}</p>
+              <h1 className="text-2xl md:text-3xl font-bold text-white">
+                {round.name}
+              </h1>
+              <p className="text-emerald-100 mt-1">
+                {round.courseName} • {formatConfig.displayName}
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto">
-        {/* Pre-Round Information */}
-        <div className="card-elevated text-center mb-6 w-full max-w-4xl mx-auto">
-          <div className="w-24 h-24 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <svg
-              className="w-12 h-12 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+      <div className="px-4 -mt-4 pb-8 w-full max-w-4xl mx-auto">
+        {/* Round Setup Card */}
+        <div className="card-elevated mb-6">
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+              <span className="text-3xl">{getFormatIcon()}</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">
+              Round Setup
+            </h2>
+            <p className="text-slate-600">
+              Prepare your {formatConfig.displayName} round
+            </p>
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-900 mb-3">
-            Tournament Round Ready
-          </h2>
-          <p className="text-slate-600 text-lg mb-8">
-            All systems are ready to begin this{" "}
-            {formatConfig.displayName.toLowerCase()} round
-          </p>
-
-          {/* Round Statistics */}
-          <div className="grid grid-cols-3 gap-6 mb-8">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-slate-900 mb-1">
-                {count}
+          {/* Round Information */}
+          <div className="bg-slate-50 rounded-lg p-6 mb-6">
+            <h3 className="font-semibold text-slate-900 mb-4">Round Details</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-emerald-600">
+                  {round.holes}
+                </div>
+                <div className="text-sm text-slate-500">Holes</div>
               </div>
-              <div className="text-slate-500 font-medium capitalize">
-                {type}
+              <div>
+                <div className="text-2xl font-bold text-emerald-600">
+                  {round.holeInfo.reduce((sum, hole) => sum + hole.par, 0)}
+                </div>
+                <div className="text-sm text-slate-500">Total Par</div>
               </div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-slate-900 mb-1">
-                {round.holes}
+              <div>
+                <div className="text-2xl font-bold text-emerald-600">
+                  {tour.players.length}
+                </div>
+                <div className="text-sm text-slate-500">Players</div>
               </div>
-              <div className="text-slate-500 font-medium">Holes</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-slate-900 mb-1">
-                {totalPar}
+              <div>
+                <div className="text-2xl font-bold text-emerald-600">
+                  {tour.teams?.length || 0}
+                </div>
+                <div className="text-sm text-slate-500">Teams</div>
               </div>
-              <div className="text-slate-500 font-medium">Total Par</div>
             </div>
           </div>
 
-          {/* Format-specific Information */}
-          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6">
+          {/* Format Information */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div className="flex items-center gap-3 mb-2">
-              <span className="text-2xl">
-                {formatConfig.type === "scramble"
-                  ? "🤝"
-                  : formatConfig.type === "best-ball"
-                  ? "⭐"
-                  : formatConfig.isTeamBased
-                  ? "👥"
-                  : "👤"}
-              </span>
-              <h3 className="font-semibold text-emerald-900">
+              <span className="text-2xl">{getFormatIcon()}</span>
+              <h3 className="font-semibold text-blue-900">
                 {formatConfig.displayName}
               </h3>
             </div>
-            <p className="text-sm text-emerald-800">
-              {formatConfig.description}
-            </p>
+            <p className="text-sm text-blue-800">{formatConfig.description}</p>
           </div>
+
+          {/* Ryder Cup Specific Setup */}
+          {isRyderCupFormat && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🏆</span>
+                  <h3 className="font-semibold text-amber-900">
+                    Ryder Cup Format
+                  </h3>
+                </div>
+                {onCaptainPairing && (
+                  <button
+                    onClick={onCaptainPairing}
+                    className="btn-secondary text-sm py-2 px-3"
+                  >
+                    👑 Captain Pairings
+                  </button>
+                )}
+              </div>
+
+              {hasMatchesCreated ? (
+                <div className="flex items-center gap-2 text-green-800">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium">
+                    {round.ryderCup?.matches.length} matches created and ready
+                    to play
+                  </span>
+                </div>
+              ) : (
+                <div className="text-sm text-amber-800">
+                  Team captains need to set up matches before starting the
+                  round.
+                  {onCaptainPairing && (
+                    <button
+                      onClick={onCaptainPairing}
+                      className="ml-2 text-amber-900 underline font-medium"
+                    >
+                      Set up matches now
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Validation Errors */}
           {validationErrors.length > 0 && (
@@ -144,33 +212,26 @@ export const PreRoundComponent = ({
                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 12.5c-.77.833.192 2.5 1.732 2.5z"
                   />
                 </svg>
-                <h4 className="font-semibold text-red-900 mb-2">
-                  Setup Required
-                </h4>
-                <ul className="text-sm text-red-800 space-y-1">
-                  {validationErrors.map((error, index) => (
-                    <li key={index}>• {error}</li>
-                  ))}
-                </ul>
+                <div>
+                  <h4 className="font-semibold text-red-900 mb-2">
+                    Setup Required
+                  </h4>
+                  <ul className="list-disc list-inside space-y-1 text-red-800 text-sm">
+                    {validationErrors.map((error, index) => (
+                      <li key={index}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Start Button */}
-          <button
-            onClick={onStartRound}
-            disabled={isStarting || validationErrors.length > 0}
-            className="btn-primary text-lg py-4 px-8 disabled:opacity-50 shadow-lg"
-          >
-            {isStarting ? (
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Starting Tournament Round...
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
+          {/* Player Requirements */}
+          {tour.players.length < 2 && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start gap-3">
                 <svg
-                  className="w-6 h-6"
+                  className="w-5 h-5 text-yellow-500 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -179,55 +240,63 @@ export const PreRoundComponent = ({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10v4a2 2 0 002 2h2a2 2 0 002-2v-4m-6 0a2 2 0 012-2h2a2 2 0 012 2m-6 0V9a2 2 0 012-2h2a2 2 0 012 2v1"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 12.5c-.77.833.192 2.5 1.732 2.5z"
                   />
                 </svg>
-                Begin Tournament Round
+                <div>
+                  <h4 className="font-semibold text-yellow-900 mb-1">
+                    More Players Needed
+                  </h4>
+                  <p className="text-yellow-800 text-sm">
+                    Add at least {2 - tour.players.length} more player(s) to
+                    start the round.
+                  </p>
+                </div>
               </div>
-            )}
-          </button>
-        </div>
+            </div>
+          )}
 
-        {/* Tournament Format Info */}
-        <div className="card w-full max-w-3xl mx-auto">
-          <h3 className="subsection-header mb-4">Round Information</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-slate-600">Format:</span>
-              <span className="font-semibold text-slate-900">
-                {formatConfig.displayName}
-              </span>
+          {/* Special Requirements for Ryder Cup */}
+          {isRyderCupFormat && !hasMatchesCreated && (
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <span className="text-purple-500 text-xl">👑</span>
+                <div>
+                  <h4 className="font-semibold text-purple-900 mb-1">
+                    Captain Setup Required
+                  </h4>
+                  <p className="text-purple-800 text-sm">
+                    Team captains must create match pairings before starting
+                    this Ryder Cup round.
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-slate-600">Competition Type:</span>
-              <span className="font-semibold text-slate-900">
-                {formatConfig.isTeamBased ? "Team-based" : "Individual"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-slate-600">Handicap Strokes:</span>
-              <span
-                className={`font-semibold ${
-                  round.settings.strokesGiven
-                    ? "text-emerald-600"
-                    : "text-slate-500"
-                }`}
-              >
-                {round.settings.strokesGiven ? "Applied" : "Not Applied"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-slate-600">Course:</span>
-              <span className="font-semibold text-slate-900">
-                {round.courseName}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-slate-600">Created:</span>
-              <span className="font-semibold text-slate-900">
-                {new Date(round.createdAt).toLocaleDateString()}
-              </span>
-            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex gap-4">
+            <Link
+              to={`/tour/${tour.id}`}
+              className="btn-secondary flex-1 text-center"
+            >
+              Back to Tournament
+            </Link>
+            <button
+              onClick={onStartRound}
+              disabled={
+                !canStart ||
+                isStarting ||
+                (isRyderCupFormat && !hasMatchesCreated)
+              }
+              className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isStarting
+                ? "Starting Round..."
+                : isRyderCupFormat && !hasMatchesCreated
+                ? "Set Up Matches First"
+                : `Start ${formatConfig.displayName} Round`}
+            </button>
           </div>
         </div>
       </div>

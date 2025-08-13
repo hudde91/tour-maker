@@ -10,15 +10,20 @@ import {
   useUpdateTeamTotalScore,
   useUpdateTotalScore,
 } from "../hooks/useScoring";
+import { useUpdateMatchHole } from "../hooks/useMatchPlay";
 import { LiveLeaderboard } from "../components/LiveLeaderboard";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { RoundHeader } from "../components/RoundHeader";
 import { PreRoundComponent } from "../components/PreRoundComponent";
 import { IndividualScoringInterface } from "../components/IndividualScoringInterface";
 import { ScrambleScoringInterface } from "../components/ScrambleScoringInterface";
+import { BestBallScoringInterface } from "../components/BestBallScoringInterface";
+import { FoursomesScoringInterface } from "../components/FoursomesScoringInterface";
+import { FourBallMatchPlayInterface } from "../components/FourBallMatchPlayInterface";
+import { SinglesMatchPlayInterface } from "../components/SinglesMatchPlayInterface";
+import { CaptainPairingInterface } from "../components/CaptainPairingInterface";
 import { getFormatConfig } from "../lib/roundFormatManager";
 import { storage } from "../lib/storage";
-import { BestBallScoringInterface } from "../components/BestBallScoringInterface";
 
 export const RoundPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
@@ -34,12 +39,26 @@ export const RoundPage = () => {
     tourId!,
     roundId!
   );
+  const updateMatchHole = useUpdateMatchHole(tourId!, roundId!);
 
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
+  const [showCaptainPairing, setShowCaptainPairing] = useState(false);
 
   const round = tour?.rounds.find((r) => r.id === roundId);
   const formatConfig = round ? getFormatConfig(round) : null;
+
+  // Check if this is a Ryder Cup format
+  const isRyderCupFormat =
+    round &&
+    [
+      "foursomes-match-play",
+      "four-ball-match-play",
+      "singles-match-play",
+    ].includes(round.format);
+
+  // Check if round needs team captains and pairings
+  const needsCaptainPairing = tour?.format === "ryder-cup" && isRyderCupFormat;
 
   const handleStartRound = async () => {
     try {
@@ -135,6 +154,45 @@ export const RoundPage = () => {
     }
   };
 
+  const handleMatchHoleUpdate = async (
+    matchId: string,
+    holeNumber: number,
+    teamAScore: number,
+    teamBScore: number,
+    individualScores?: {
+      teamA: { [playerId: string]: number };
+      teamB: { [playerId: string]: number };
+    }
+  ) => {
+    try {
+      await updateMatchHole.mutateAsync({
+        matchId,
+        holeNumber,
+        teamAScore,
+        teamBScore,
+      });
+
+      // For Four-Ball, also update individual player scores
+      if (individualScores && round!.format === "four-ball-match-play") {
+        const allScores = {
+          ...individualScores.teamA,
+          ...individualScores.teamB,
+        };
+
+        for (const [playerId, score] of Object.entries(allScores)) {
+          const playerScore = round!.scores[playerId];
+          if (playerScore) {
+            const newScores = [...playerScore.scores];
+            newScores[holeNumber - 1] = score;
+            await updateScore.mutateAsync({ playerId, scores: newScores });
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to update match hole:", error);
+    }
+  };
+
   // Loading State
   if (isLoading) {
     return (
@@ -167,7 +225,7 @@ export const RoundPage = () => {
   // Error State
   if (!tour || !round || !formatConfig) {
     return (
-      <div className=" min-h-screen bg-slate-50 safe-area-top">
+      <div className="min-h-screen bg-slate-50 safe-area-top">
         <div className="p-6 w-full max-w-6xl mx-auto">
           <div className="card text-center py-12">
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -201,16 +259,31 @@ export const RoundPage = () => {
     );
   }
 
-  // Pre-round Screen
+  // Pre-round Screen with Captain Pairing for Ryder Cup formats
   if (round.status === "created") {
     return (
-      <PreRoundComponent
-        tour={tour}
-        round={round}
-        formatConfig={formatConfig}
-        onStartRound={handleStartRound}
-        isStarting={startRound.isPending}
-      />
+      <>
+        <PreRoundComponent
+          tour={tour}
+          round={round}
+          formatConfig={formatConfig}
+          onStartRound={handleStartRound}
+          isStarting={startRound.isPending}
+          onCaptainPairing={
+            needsCaptainPairing ? () => setShowCaptainPairing(true) : undefined
+          }
+        />
+
+        {/* Captain Pairing Interface */}
+        {needsCaptainPairing && (
+          <CaptainPairingInterface
+            tour={tour}
+            round={round}
+            isOpen={showCaptainPairing}
+            onClose={() => setShowCaptainPairing(false)}
+          />
+        )}
+      </>
     );
   }
 
@@ -225,6 +298,9 @@ export const RoundPage = () => {
         showLeaderboard={showLeaderboard}
         onToggleLeaderboard={() => setShowLeaderboard(!showLeaderboard)}
         onCompleteRound={handleCompleteRound}
+        onCaptainPairing={
+          needsCaptainPairing ? () => setShowCaptainPairing(true) : undefined
+        }
       />
 
       <div className="px-4 mt-4 pb-24 w-full max-w-6xl mx-auto">
@@ -237,30 +313,78 @@ export const RoundPage = () => {
 
         {/* Format-Specific Scoring Interface */}
         <div className="w-full max-w-5xl mx-auto">
-          {formatConfig.type === "scramble" ? (
-            <ScrambleScoringInterface
-              tour={tour}
-              round={round}
-              onTeamScoreChange={handleTeamScoreChange}
-              onTeamTotalScoreChange={handleTeamTotalScoreChange}
-            />
-          ) : formatConfig.type === "best-ball" ? (
-            <BestBallScoringInterface
-              tour={tour}
-              round={round}
-              onPlayerScoreChange={handlePlayerScoreChange}
-              onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
-            />
-          ) : (
-            <IndividualScoringInterface
-              tour={tour}
-              round={round}
-              onPlayerScoreChange={handlePlayerScoreChange}
-              onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
-            />
-          )}
+          {(() => {
+            switch (round.format) {
+              case "scramble":
+                return (
+                  <ScrambleScoringInterface
+                    tour={tour}
+                    round={round}
+                    onTeamScoreChange={handleTeamScoreChange}
+                    onTeamTotalScoreChange={handleTeamTotalScoreChange}
+                  />
+                );
+
+              case "best-ball":
+                return (
+                  <BestBallScoringInterface
+                    tour={tour}
+                    round={round}
+                    onPlayerScoreChange={handlePlayerScoreChange}
+                    onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
+                  />
+                );
+
+              case "foursomes-match-play":
+                return (
+                  <FoursomesScoringInterface
+                    tour={tour}
+                    round={round}
+                    onMatchHoleUpdate={handleMatchHoleUpdate}
+                  />
+                );
+
+              case "four-ball-match-play":
+                return (
+                  <FourBallMatchPlayInterface
+                    tour={tour}
+                    round={round}
+                    onMatchHoleUpdate={handleMatchHoleUpdate}
+                  />
+                );
+
+              case "singles-match-play":
+                return (
+                  <SinglesMatchPlayInterface
+                    tour={tour}
+                    round={round}
+                    onMatchHoleUpdate={handleMatchHoleUpdate}
+                  />
+                );
+
+              default:
+                return (
+                  <IndividualScoringInterface
+                    tour={tour}
+                    round={round}
+                    onPlayerScoreChange={handlePlayerScoreChange}
+                    onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
+                  />
+                );
+            }
+          })()}
         </div>
       </div>
+
+      {/* Captain Pairing Interface for active rounds */}
+      {needsCaptainPairing && (
+        <CaptainPairingInterface
+          tour={tour}
+          round={round}
+          isOpen={showCaptainPairing}
+          onClose={() => setShowCaptainPairing(false)}
+        />
+      )}
 
       {/* Complete Round Confirmation */}
       <ConfirmDialog

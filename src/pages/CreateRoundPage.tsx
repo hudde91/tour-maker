@@ -282,43 +282,113 @@ export const CreateRoundPage = () => {
 
               <div className="form-group md:col-span-2">
                 <label className="form-label">Game Format *</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {Object.entries(GOLF_FORMATS).map(([key, format]) => (
-                    <label
-                      key={key}
-                      className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                        formData.format === key
-                          ? "border-emerald-500 bg-emerald-50"
-                          : "border-slate-200 hover:border-slate-300"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="format"
-                        value={key}
-                        checked={formData.format === key}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            format: e.target.value as PlayFormat,
-                          })
-                        }
-                        className="sr-only"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-lg">{format.icon}</span>
-                          <span className="font-medium text-slate-900">
-                            {format.name}
-                          </span>
-                        </div>
-                        <p className="text-sm text-slate-600">
-                          {format.description}
-                        </p>
-                      </div>
-                    </label>
-                  ))}
+
+                {/* Standard Formats */}
+                <div className="mb-6">
+                  <h4 className="text-sm font-medium text-slate-700 mb-3">
+                    Standard Formats
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {Object.entries(GOLF_FORMATS)
+                      .filter(([key, format]) => !format.ryderCup)
+                      .map(([key, format]) => (
+                        <label
+                          key={key}
+                          className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                            formData.format === key
+                              ? "border-emerald-500 bg-emerald-50"
+                              : "border-slate-200 hover:border-slate-300"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="format"
+                            value={key}
+                            checked={formData.format === key}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                format: e.target.value as PlayFormat,
+                              })
+                            }
+                            className="sr-only"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-lg">{format.icon}</span>
+                              <span className="font-medium text-slate-900">
+                                {format.name}
+                              </span>
+                            </div>
+                            <p className="text-sm text-slate-600">
+                              {format.description}
+                            </p>
+                          </div>
+                        </label>
+                      ))}
+                  </div>
                 </div>
+
+                {/* Ryder Cup Formats - Only show for Ryder Cup tournaments */}
+                {tour.format === "ryder-cup" && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xl">🏆</span>
+                      <h4 className="text-sm font-medium text-slate-700">
+                        Ryder Cup Formats
+                      </h4>
+                      <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-200">
+                        Premium
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {Object.entries(GOLF_FORMATS)
+                        .filter(([key, format]) => format.ryderCup)
+                        .map(([key, format]) => (
+                          <label
+                            key={key}
+                            className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                              formData.format === key
+                                ? "border-amber-500 bg-amber-50"
+                                : "border-slate-200 hover:border-slate-300"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="format"
+                              value={key}
+                              checked={formData.format === key}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  format: e.target.value as PlayFormat,
+                                })
+                              }
+                              className="sr-only"
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-lg">{format.icon}</span>
+                                <span className="font-medium text-slate-900">
+                                  {format.name}
+                                </span>
+                              </div>
+                              <p className="text-sm text-slate-600">
+                                {format.description}
+                              </p>
+                              {format.playersPerTeam && (
+                                <p className="text-xs text-amber-700 mt-1 font-medium">
+                                  {format.playersPerTeam} player
+                                  {format.playersPerTeam > 1 ? "s" : ""} per
+                                  team
+                                </p>
+                              )}
+                            </div>
+                          </label>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -341,23 +411,6 @@ export const CreateRoundPage = () => {
                   required
                 />
               </div>
-
-              {/* <div className="form-group">
-                <label className="form-label">Tee Boxes</label>
-                <select
-                  value={formData.teeBoxes}
-                  onChange={(e) =>
-                    setFormData({ ...formData, teeBoxes: e.target.value })
-                  }
-                  className="input-field"
-                >
-                  <option value="Forward Tees">Forward Tees</option>
-                  <option value="Middle Tees">Middle Tees</option>
-                  <option value="Back Tees">Back Tees</option>
-                  <option value="Championship Tees">Championship Tees</option>
-                  <option value="Tournament Tees">Tournament Tees</option>
-                </select>
-              </div> */}
 
               <div className="form-group">
                 <label className="form-label">Number of Holes</label>
@@ -612,53 +665,6 @@ export const CreateRoundPage = () => {
                   />
                 </label>
               </div>
-
-              {/* Format-specific settings */}
-              {formData.format === "match-play" && (
-                <div className="form-group">
-                  <label className="form-label">Match Play Format</label>
-                  <select
-                    value={formData.settings.matchPlayFormat}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        settings: {
-                          ...formData.settings,
-                          matchPlayFormat: e.target.value as
-                            | "singles"
-                            | "teams",
-                        },
-                      })
-                    }
-                    className="input-field"
-                  >
-                    <option value="singles">Singles (1 vs 1)</option>
-                    <option value="teams">Teams</option>
-                  </select>
-                </div>
-              )}
-
-              {formData.format === "skins" && (
-                <div className="form-group">
-                  <label className="form-label">Skin Value (points)</label>
-                  <input
-                    type="number"
-                    value={formData.settings.skinsValue}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        settings: {
-                          ...formData.settings,
-                          skinsValue: parseInt(e.target.value) || 1,
-                        },
-                      })
-                    }
-                    className="input-field"
-                    min="1"
-                    max="10"
-                  />
-                </div>
-              )}
             </div>
           </div>
 
