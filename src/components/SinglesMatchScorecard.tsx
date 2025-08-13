@@ -32,8 +32,8 @@ export const SinglesMatchScorecard = ({
     matchStatus: "",
   };
 
-  const [playerAScore, setPlayerAScore] = useState(currentHoleData.teamAScore);
-  const [playerBScore, setPlayerBScore] = useState(currentHoleData.teamBScore);
+  const [playerAScore, setPlayerAScore] = useState(0);
+  const [playerBScore, setPlayerBScore] = useState(0);
 
   // Reset scores when hole changes - load existing scores if available
   useEffect(() => {
@@ -48,6 +48,22 @@ export const SinglesMatchScorecard = ({
     setPlayerAScore(playerAExistingScore);
     setPlayerBScore(playerBExistingScore);
   }, [currentHole, match.teamA.playerIds, match.teamB.playerIds, round.scores]);
+
+  const handlePlayerAScoreChange = (score: number) => {
+    setPlayerAScore(score);
+    // Auto-update if both scores are now available
+    if (playerBScore > 0) {
+      onHoleUpdate(currentHole, score, playerBScore);
+    }
+  };
+
+  const handlePlayerBScoreChange = (score: number) => {
+    setPlayerBScore(score);
+    // Auto-update if both scores are now available
+    if (playerAScore > 0) {
+      onHoleUpdate(currentHole, playerAScore, score);
+    }
+  };
 
   const getPlayerInfo = (teamId: string, playerIds: string[]) => {
     const team = tour.teams?.find((t) => t.id === teamId);
@@ -64,12 +80,6 @@ export const SinglesMatchScorecard = ({
 
   const playerAInfo = getPlayerInfo(match.teamA.id, match.teamA.playerIds);
   const playerBInfo = getPlayerInfo(match.teamB.id, match.teamB.playerIds);
-
-  const handleScoreUpdate = () => {
-    if (playerAScore > 0 && playerBScore > 0) {
-      onHoleUpdate(currentHole, playerAScore, playerBScore);
-    }
-  };
 
   const getScoreButtonClass = (score: number, currentPlayerScore: number) => {
     const isSelected = score === currentPlayerScore && currentPlayerScore > 0;
@@ -108,6 +118,11 @@ export const SinglesMatchScorecard = ({
         </div>
       );
     }
+  };
+
+  const clearAllScores = () => {
+    setPlayerAScore(0);
+    setPlayerBScore(0);
   };
 
   return (
@@ -185,15 +200,7 @@ export const SinglesMatchScorecard = ({
             {Array.from({ length: 8 }, (_, i) => i + 1).map((score) => (
               <button
                 key={score}
-                onClick={() => {
-                  setPlayerAScore(score);
-                  if (playerBScore > 0) {
-                    setTimeout(
-                      () => onHoleUpdate(currentHole, score, playerBScore),
-                      100
-                    );
-                  }
-                }}
+                onClick={() => handlePlayerAScoreChange(score)}
                 className={getScoreButtonClass(score, playerAScore)}
               >
                 <div className="text-lg font-bold">{score}</div>
@@ -267,15 +274,7 @@ export const SinglesMatchScorecard = ({
             {Array.from({ length: 8 }, (_, i) => i + 1).map((score) => (
               <button
                 key={score}
-                onClick={() => {
-                  setPlayerBScore(score);
-                  if (playerAScore > 0) {
-                    setTimeout(
-                      () => onHoleUpdate(currentHole, playerAScore, score),
-                      100
-                    );
-                  }
-                }}
+                onClick={() => handlePlayerBScoreChange(score)}
                 className={getScoreButtonClass(score, playerBScore)}
               >
                 <div className="text-lg font-bold">{score}</div>
@@ -296,22 +295,15 @@ export const SinglesMatchScorecard = ({
 
       {/* Action Buttons */}
       <div className="flex gap-3 mt-6">
-        <button
-          onClick={() => {
-            setPlayerAScore(0);
-            setPlayerBScore(0);
-          }}
-          className="btn-secondary flex-1"
-        >
+        <button onClick={clearAllScores} className="btn-secondary flex-1">
           Clear Scores
         </button>
         <button
-          onClick={handleScoreUpdate}
           disabled={playerAScore === 0 || playerBScore === 0}
           className="btn-primary flex-1 disabled:opacity-50 text-lg py-3"
         >
           {playerAScore > 0 && playerBScore > 0
-            ? "✅ Update Hole"
+            ? "✅ Scores Updated"
             : "⏳ Enter Both Scores"}
         </button>
       </div>

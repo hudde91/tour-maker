@@ -101,40 +101,49 @@ export const FourBallMatchScorecard = ({
       ...Object.values(teamBPlayerScores).filter((score) => score > 0)
     ) || 0;
 
-  // Update team scores when individual scores change
-  useEffect(() => {
-    const hasAllScores =
-      Object.values(teamAPlayerScores).every((score) => score > 0) &&
-      Object.values(teamBPlayerScores).every((score) => score > 0);
-
-    if (hasAllScores) {
-      onHoleUpdate(currentHole, teamABestScore, teamBBestScore, {
-        teamA: teamAPlayerScores,
-        teamB: teamBPlayerScores,
-      });
-    }
-  }, [
-    teamAPlayerScores,
-    teamBPlayerScores,
-    teamABestScore,
-    teamBBestScore,
-    currentHole,
-    onHoleUpdate,
-  ]);
-
   const updatePlayerScore = (
     playerId: string,
     score: number,
     team: "A" | "B"
   ) => {
     if (team === "A") {
-      setTeamAPlayerScores((prev) => ({ ...prev, [playerId]: score }));
+      const newScores = { ...teamAPlayerScores, [playerId]: score };
+      setTeamAPlayerScores(newScores);
+
+      // Check if we should auto-update after this score change
+      const hasAllTeamAScores = Object.values(newScores).every((s) => s > 0);
+      const hasAllTeamBScores = Object.values(teamBPlayerScores).every(
+        (s) => s > 0
+      );
+
+      if (hasAllTeamAScores && hasAllTeamBScores) {
+        const newTeamABest = Math.min(...Object.values(newScores));
+        onHoleUpdate(currentHole, newTeamABest, teamBBestScore, {
+          teamA: newScores,
+          teamB: teamBPlayerScores,
+        });
+      }
     } else {
-      setTeamBPlayerScores((prev) => ({ ...prev, [playerId]: score }));
+      const newScores = { ...teamBPlayerScores, [playerId]: score };
+      setTeamBPlayerScores(newScores);
+
+      // Check if we should auto-update after this score change
+      const hasAllTeamAScores = Object.values(teamAPlayerScores).every(
+        (s) => s > 0
+      );
+      const hasAllTeamBScores = Object.values(newScores).every((s) => s > 0);
+
+      if (hasAllTeamAScores && hasAllTeamBScores) {
+        const newTeamBBest = Math.min(...Object.values(newScores));
+        onHoleUpdate(currentHole, teamABestScore, newTeamBBest, {
+          teamA: teamAPlayerScores,
+          teamB: newScores,
+        });
+      }
     }
   };
 
-  const getScoreButtonClass = (score: number, currentScore: number) => {
+  const getScoreButtonStyle = (score: number, currentScore: number) => {
     const isSelected = score === currentScore && currentScore > 0;
     return `p-2 rounded-lg font-bold text-center transition-all border-2 ${
       isSelected
@@ -143,7 +152,7 @@ export const FourBallMatchScorecard = ({
     }`;
   };
 
-  const getHoleResultDisplay = () => {
+  const renderHoleResult = () => {
     if (teamABestScore === 0 || teamBBestScore === 0) return null;
 
     if (teamABestScore < teamBBestScore) {
@@ -173,7 +182,7 @@ export const FourBallMatchScorecard = ({
     }
   };
 
-  const clearAllScores = () => {
+  const resetAllScores = () => {
     setTeamAPlayerScores({
       [match.teamA.playerIds[0]]: 0,
       [match.teamA.playerIds[1]]: 0,
@@ -278,7 +287,7 @@ export const FourBallMatchScorecard = ({
                   <button
                     key={score}
                     onClick={() => updatePlayerScore(player.id, score, "A")}
-                    className={getScoreButtonClass(
+                    className={getScoreButtonStyle(
                       score,
                       teamAPlayerScores[player.id]
                     )}
@@ -302,7 +311,7 @@ export const FourBallMatchScorecard = ({
             <span className="text-slate-700 font-bold text-lg">FOUR-BALL</span>
           </div>
         </div>
-        {getHoleResultDisplay()}
+        {renderHoleResult()}
       </div>
 
       {/* Team B - Individual Player Scoring */}
@@ -367,7 +376,7 @@ export const FourBallMatchScorecard = ({
                   <button
                     key={score}
                     onClick={() => updatePlayerScore(player.id, score, "B")}
-                    className={getScoreButtonClass(
+                    className={getScoreButtonStyle(
                       score,
                       teamBPlayerScores[player.id]
                     )}
@@ -383,7 +392,7 @@ export const FourBallMatchScorecard = ({
 
       {/* Action Buttons */}
       <div className="flex gap-3 mb-6">
-        <button onClick={clearAllScores} className="btn-secondary flex-1">
+        <button onClick={resetAllScores} className="btn-secondary flex-1">
           Clear All Scores
         </button>
         <button

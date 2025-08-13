@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
 import {
@@ -45,8 +45,14 @@ export const RoundPage = () => {
   const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
   const [showCaptainPairing, setShowCaptainPairing] = useState(false);
 
-  const round = tour?.rounds.find((r) => r.id === roundId);
-  const formatConfig = round ? getFormatConfig(round) : null;
+  // Memoize round to prevent recreation on every render
+  const round = useMemo(() => {
+    return tour?.rounds.find((r) => r.id === roundId);
+  }, [tour?.rounds, roundId]);
+
+  const formatConfig = useMemo(() => {
+    return round ? getFormatConfig(round) : null;
+  }, [round]);
 
   // Check if this is a Ryder Cup format
   const isRyderCupFormat =
@@ -60,138 +66,143 @@ export const RoundPage = () => {
   // Check if round needs team captains and pairings
   const needsCaptainPairing = tour?.format === "ryder-cup" && isRyderCupFormat;
 
-  const handleStartRound = async () => {
+  const handleStartRound = useCallback(async () => {
+    if (!round) return;
     try {
-      await startRound.mutateAsync(round!.id);
+      await startRound.mutateAsync(round.id);
     } catch (error) {
       console.error("Failed to start round:", error);
     }
-  };
+  }, [round?.id, startRound]);
 
-  const handleCompleteRound = () => {
+  const handleCompleteRound = useCallback(() => {
     setShowCompleteConfirm(true);
-  };
+  }, []);
 
-  const confirmCompleteRound = async () => {
+  const confirmCompleteRound = useCallback(async () => {
+    if (!round) return;
     try {
-      await completeRound.mutateAsync(round!.id);
+      await completeRound.mutateAsync(round.id);
       setShowCompleteConfirm(false);
     } catch (error) {
       console.error("Failed to complete round:", error);
     }
-  };
+  }, [round?.id, completeRound]);
 
-  const cancelCompleteRound = () => {
+  const cancelCompleteRound = useCallback(() => {
     setShowCompleteConfirm(false);
-  };
+  }, []);
 
-  const handlePlayerScoreChange = async (
-    playerId: string,
-    holeIndex: number,
-    score: number
-  ) => {
-    const playerScore = round!.scores[playerId];
-    if (!playerScore) return;
+  const handlePlayerScoreChange = useCallback(
+    async (playerId: string, holeIndex: number, score: number) => {
+      if (!round) return;
+      const playerScore = round.scores[playerId];
+      if (!playerScore) return;
 
-    const newScores = [...playerScore.scores];
-    newScores[holeIndex] = score;
+      const newScores = [...playerScore.scores];
+      newScores[holeIndex] = score;
 
-    try {
-      await updateScore.mutateAsync({ playerId, scores: newScores });
-    } catch (error) {
-      console.error("Failed to update score:", error);
-    }
-  };
-
-  const handlePlayerTotalScoreChange = async (
-    playerId: string,
-    totalScore: number,
-    handicapStrokes?: number
-  ) => {
-    try {
-      if (handicapStrokes !== undefined) {
-        await updateTotalScoreWithHandicap.mutateAsync({
-          playerId,
-          totalScore,
-          handicapStrokes,
-        });
-      } else {
-        await updateTotalScore.mutateAsync({
-          playerId,
-          totalScore,
-        });
+      try {
+        await updateScore.mutateAsync({ playerId, scores: newScores });
+      } catch (error) {
+        console.error("Failed to update score:", error);
       }
-    } catch (error) {
-      console.error("Failed to update total score:", error);
-    }
-  };
+    },
+    [round?.scores, updateScore]
+  );
 
-  const handleTeamScoreChange = async (
-    teamId: string,
-    holeIndex: number,
-    score: number
-  ) => {
-    const teamScore = storage.getTeamScore(tour!, round!.id, teamId);
-    const currentScores = teamScore?.scores || new Array(round!.holes).fill(0);
-    const newScores = [...currentScores];
-    newScores[holeIndex] = score;
+  const handlePlayerTotalScoreChange = useCallback(
+    async (playerId: string, totalScore: number, handicapStrokes?: number) => {
+      try {
+        if (handicapStrokes !== undefined) {
+          await updateTotalScoreWithHandicap.mutateAsync({
+            playerId,
+            totalScore,
+            handicapStrokes,
+          });
+        } else {
+          await updateTotalScore.mutateAsync({
+            playerId,
+            totalScore,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to update total score:", error);
+      }
+    },
+    [updateTotalScoreWithHandicap, updateTotalScore]
+  );
 
-    try {
-      await updateTeamScore.mutateAsync({ teamId, scores: newScores });
-    } catch (error) {
-      console.error("Failed to update team score:", error);
-    }
-  };
+  const handleTeamScoreChange = useCallback(
+    async (teamId: string, holeIndex: number, score: number) => {
+      if (!tour || !round) return;
+      const teamScore = storage.getTeamScore(tour, round.id, teamId);
+      const currentScores = teamScore?.scores || new Array(round.holes).fill(0);
+      const newScores = [...currentScores];
+      newScores[holeIndex] = score;
 
-  const handleTeamTotalScoreChange = async (
-    teamId: string,
-    totalScore: number
-  ) => {
-    try {
-      await updateTeamTotalScore.mutateAsync({ teamId, totalScore });
-    } catch (error) {
-      console.error("Failed to update team total score:", error);
-    }
-  };
+      try {
+        await updateTeamScore.mutateAsync({ teamId, scores: newScores });
+      } catch (error) {
+        console.error("Failed to update team score:", error);
+      }
+    },
+    [tour?.id, round?.id, round?.holes, updateTeamScore]
+  );
 
-  const handleMatchHoleUpdate = async (
-    matchId: string,
-    holeNumber: number,
-    teamAScore: number,
-    teamBScore: number,
-    individualScores?: {
-      teamA: { [playerId: string]: number };
-      teamB: { [playerId: string]: number };
-    }
-  ) => {
-    try {
-      await updateMatchHole.mutateAsync({
-        matchId,
-        holeNumber,
-        teamAScore,
-        teamBScore,
-      });
+  const handleTeamTotalScoreChange = useCallback(
+    async (teamId: string, totalScore: number) => {
+      try {
+        await updateTeamTotalScore.mutateAsync({ teamId, totalScore });
+      } catch (error) {
+        console.error("Failed to update team total score:", error);
+      }
+    },
+    [updateTeamTotalScore]
+  );
 
-      // For Four-Ball, also update individual player scores
-      if (individualScores && round!.format === "four-ball-match-play") {
-        const allScores = {
-          ...individualScores.teamA,
-          ...individualScores.teamB,
-        };
+  const handleMatchHoleUpdate = useCallback(
+    async (
+      matchId: string,
+      holeNumber: number,
+      teamAScore: number,
+      teamBScore: number,
+      individualScores?: {
+        teamA: { [playerId: string]: number };
+        teamB: { [playerId: string]: number };
+      }
+    ) => {
+      if (!round) return;
+      try {
+        await updateMatchHole.mutateAsync({
+          matchId,
+          holeNumber,
+          teamAScore,
+          teamBScore,
+        });
 
-        for (const [playerId, score] of Object.entries(allScores)) {
-          const playerScore = round!.scores[playerId];
-          if (playerScore) {
-            const newScores = [...playerScore.scores];
-            newScores[holeNumber - 1] = score;
-            await updateScore.mutateAsync({ playerId, scores: newScores });
+        // For Four-Ball, also update individual player scores
+        if (individualScores && round.format === "four-ball-match-play") {
+          const allScores = {
+            ...individualScores.teamA,
+            ...individualScores.teamB,
+          };
+
+          for (const [playerId, score] of Object.entries(allScores)) {
+            const playerScore = round.scores[playerId];
+            if (playerScore) {
+              const newScores = [...playerScore.scores];
+              newScores[holeNumber - 1] = score;
+              await updateScore.mutateAsync({ playerId, scores: newScores });
+            }
           }
         }
+      } catch (error) {
+        console.error("Failed to update match hole:", error);
       }
-    } catch (error) {
-      console.error("Failed to update match hole:", error);
-    }
-  };
+    },
+    [round?.format, round?.scores, updateMatchHole, updateScore]
+  );
 
   // Loading State
   if (isLoading) {

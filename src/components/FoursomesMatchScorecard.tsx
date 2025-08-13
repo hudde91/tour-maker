@@ -1,4 +1,3 @@
-// src/components/FoursomesMatchScorecard.tsx
 import { useState, useEffect } from "react";
 import { Tour, Round, MatchPlayRound } from "../types";
 
@@ -32,8 +31,8 @@ export const FoursomesMatchScorecard = ({
     matchStatus: "",
   };
 
-  const [teamAScore, setTeamAScore] = useState(currentHoleData.teamAScore);
-  const [teamBScore, setTeamBScore] = useState(currentHoleData.teamBScore);
+  const [teamAScore, setTeamAScore] = useState(0);
+  const [teamBScore, setTeamBScore] = useState(0);
 
   // Reset scores when hole changes - load existing scores if available
   useEffect(() => {
@@ -72,9 +71,19 @@ export const FoursomesMatchScorecard = ({
   const teamATeePlayer = getTeeShotPlayer(currentHole, teamAInfo.players);
   const teamBTeePlayer = getTeeShotPlayer(currentHole, teamBInfo.players);
 
-  const handleScoreUpdate = () => {
-    if (teamAScore > 0 && teamBScore > 0) {
-      onHoleUpdate(currentHole, teamAScore, teamBScore);
+  const handleTeamAScoreChange = (score: number) => {
+    setTeamAScore(score);
+    // Auto-update if both scores are now available
+    if (teamBScore > 0) {
+      onHoleUpdate(currentHole, score, teamBScore);
+    }
+  };
+
+  const handleTeamBScoreChange = (score: number) => {
+    setTeamBScore(score);
+    // Auto-update if both scores are now available
+    if (teamAScore > 0) {
+      onHoleUpdate(currentHole, teamAScore, score);
     }
   };
 
@@ -115,6 +124,11 @@ export const FoursomesMatchScorecard = ({
         </div>
       );
     }
+  };
+
+  const clearAllScores = () => {
+    setTeamAScore(0);
+    setTeamBScore(0);
   };
 
   return (
@@ -201,15 +215,7 @@ export const FoursomesMatchScorecard = ({
             {Array.from({ length: 8 }, (_, i) => i + 1).map((score) => (
               <button
                 key={score}
-                onClick={() => {
-                  setTeamAScore(score);
-                  if (teamBScore > 0) {
-                    setTimeout(
-                      () => onHoleUpdate(currentHole, score, teamBScore),
-                      100
-                    );
-                  }
-                }}
+                onClick={() => handleTeamAScoreChange(score)}
                 className={getScoreButtonClass(score, teamAScore)}
               >
                 <div className="text-lg font-bold">{score}</div>
@@ -292,15 +298,7 @@ export const FoursomesMatchScorecard = ({
             {Array.from({ length: 8 }, (_, i) => i + 1).map((score) => (
               <button
                 key={score}
-                onClick={() => {
-                  setTeamBScore(score);
-                  if (teamAScore > 0) {
-                    setTimeout(
-                      () => onHoleUpdate(currentHole, teamAScore, score),
-                      100
-                    );
-                  }
-                }}
+                onClick={() => handleTeamBScoreChange(score)}
                 className={getScoreButtonClass(score, teamBScore)}
               >
                 <div className="text-lg font-bold">{score}</div>
@@ -321,22 +319,15 @@ export const FoursomesMatchScorecard = ({
 
       {/* Action Buttons */}
       <div className="flex gap-3 mt-6">
-        <button
-          onClick={() => {
-            setTeamAScore(0);
-            setTeamBScore(0);
-          }}
-          className="btn-secondary flex-1"
-        >
+        <button onClick={clearAllScores} className="btn-secondary flex-1">
           Clear Scores
         </button>
         <button
-          onClick={handleScoreUpdate}
           disabled={teamAScore === 0 || teamBScore === 0}
           className="btn-primary flex-1 disabled:opacity-50 text-lg py-3"
         >
           {teamAScore > 0 && teamBScore > 0
-            ? "✅ Update Hole"
+            ? "✅ Scores Updated"
             : "⏳ Enter Both Scores"}
         </button>
       </div>
@@ -346,7 +337,7 @@ export const FoursomesMatchScorecard = ({
         <h5 className="font-semibold text-slate-800 mb-4 text-center">
           🏆 Match Progress
         </h5>
-        <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="grid grid-cols-3 gap-4 text-center mb-4">
           <div>
             <div
               className="text-2xl font-bold"
