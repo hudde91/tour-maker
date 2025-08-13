@@ -51,6 +51,26 @@ export const FourBallMatchScorecard = ({
     [match.teamB.playerIds[1]]: 0,
   });
 
+  // Reset player scores when hole changes - load existing scores if available
+  useEffect(() => {
+    const newTeamAScores: { [playerId: string]: number } = {};
+    const newTeamBScores: { [playerId: string]: number } = {};
+
+    // Load existing scores for this hole if they exist
+    match.teamA.playerIds.forEach((playerId) => {
+      const playerScore = round.scores[playerId];
+      newTeamAScores[playerId] = playerScore?.scores[currentHole - 1] || 0;
+    });
+
+    match.teamB.playerIds.forEach((playerId) => {
+      const playerScore = round.scores[playerId];
+      newTeamBScores[playerId] = playerScore?.scores[currentHole - 1] || 0;
+    });
+
+    setTeamAPlayerScores(newTeamAScores);
+    setTeamBPlayerScores(newTeamBScores);
+  }, [currentHole, match.teamA.playerIds, match.teamB.playerIds, round.scores]);
+
   const getTeamInfo = (teamId: string, playerIds: string[]) => {
     const team = tour.teams?.find((t) => t.id === teamId);
     const players = playerIds
@@ -115,7 +135,7 @@ export const FourBallMatchScorecard = ({
   };
 
   const getScoreButtonClass = (score: number, currentScore: number) => {
-    const isSelected = score === currentScore;
+    const isSelected = score === currentScore && currentScore > 0;
     return `p-2 rounded-lg font-bold text-center transition-all border-2 ${
       isSelected
         ? "bg-emerald-600 text-white border-emerald-600 scale-105 shadow-lg"

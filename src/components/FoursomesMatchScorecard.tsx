@@ -1,5 +1,5 @@
 // src/components/FoursomesMatchScorecard.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tour, Round, MatchPlayRound } from "../types";
 
 interface FoursomesMatchScorecardProps {
@@ -34,6 +34,12 @@ export const FoursomesMatchScorecard = ({
 
   const [teamAScore, setTeamAScore] = useState(currentHoleData.teamAScore);
   const [teamBScore, setTeamBScore] = useState(currentHoleData.teamBScore);
+
+  // Reset scores when hole changes - load existing scores if available
+  useEffect(() => {
+    setTeamAScore(currentHoleData.teamAScore);
+    setTeamBScore(currentHoleData.teamBScore);
+  }, [currentHole, currentHoleData.teamAScore, currentHoleData.teamBScore]);
 
   const getTeamInfo = (teamId: string, playerIds: string[]) => {
     const team = tour.teams?.find((t) => t.id === teamId);
@@ -73,7 +79,7 @@ export const FoursomesMatchScorecard = ({
   };
 
   const getScoreButtonClass = (score: number, currentTeamScore: number) => {
-    const isSelected = score === currentTeamScore;
+    const isSelected = score === currentTeamScore && currentTeamScore > 0;
     return `p-3 rounded-lg font-bold text-center transition-all border-2 ${
       isSelected
         ? "bg-emerald-600 text-white border-emerald-600 scale-105 shadow-lg"

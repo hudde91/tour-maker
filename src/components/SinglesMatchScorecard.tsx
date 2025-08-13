@@ -1,5 +1,5 @@
 // src/components/SinglesMatchScorecard.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tour, Round, MatchPlayRound } from "../types";
 
 interface SinglesMatchScorecardProps {
@@ -35,6 +35,20 @@ export const SinglesMatchScorecard = ({
   const [playerAScore, setPlayerAScore] = useState(currentHoleData.teamAScore);
   const [playerBScore, setPlayerBScore] = useState(currentHoleData.teamBScore);
 
+  // Reset scores when hole changes - load existing scores if available
+  useEffect(() => {
+    const playerAId = match.teamA.playerIds[0];
+    const playerBId = match.teamB.playerIds[0];
+
+    const playerAExistingScore =
+      round.scores[playerAId]?.scores[currentHole - 1] || 0;
+    const playerBExistingScore =
+      round.scores[playerBId]?.scores[currentHole - 1] || 0;
+
+    setPlayerAScore(playerAExistingScore);
+    setPlayerBScore(playerBExistingScore);
+  }, [currentHole, match.teamA.playerIds, match.teamB.playerIds, round.scores]);
+
   const getPlayerInfo = (teamId: string, playerIds: string[]) => {
     const team = tour.teams?.find((t) => t.id === teamId);
     const player = tour.players.find((p) => p.id === playerIds[0]);
@@ -58,7 +72,7 @@ export const SinglesMatchScorecard = ({
   };
 
   const getScoreButtonClass = (score: number, currentPlayerScore: number) => {
-    const isSelected = score === currentPlayerScore;
+    const isSelected = score === currentPlayerScore && currentPlayerScore > 0;
     return `p-3 rounded-lg font-bold text-center transition-all border-2 ${
       isSelected
         ? "bg-emerald-600 text-white border-emerald-600 scale-105 shadow-lg"
