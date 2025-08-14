@@ -190,26 +190,15 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                   {/* Team Score */}
                   <div className="text-right">
                     <div
-                      className={`text-2xl font-bold ${
+                      className={`text-2xl font-bold mb-1 ${
                         isLeadingTeam ? "text-yellow-900" : "text-slate-900"
                       }`}
                     >
-                      {teamEntry.totalScore}
+                      {teamEntry.netScore || teamEntry.totalScore}
                     </div>
-                    {teamEntry.totalToPar !== 0 && (
-                      <div
-                        className={`text-sm font-semibold ${
-                          teamEntry.totalToPar < 0
-                            ? "text-red-600"
-                            : teamEntry.totalToPar > 0
-                            ? "text-orange-600"
-                            : "text-blue-600"
-                        }`}
-                      >
-                        {teamEntry.totalToPar > 0 ? "+" : ""}
-                        {teamEntry.totalToPar}
-                      </div>
-                    )}
+                    <div className="text-sm font-medium text-slate-600">
+                      Total Strokes
+                    </div>
                   </div>
                 </div>
               );
@@ -329,33 +318,9 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                       </div>
                     )}
 
-                    {/* To Par Display */}
-                    {(entry.netToPar !== undefined
-                      ? entry.netToPar
-                      : entry.totalToPar) !== 0 && (
-                      <div
-                        className={`text-sm font-semibold ${
-                          (entry.netToPar !== undefined
-                            ? entry.netToPar
-                            : entry.totalToPar) < 0
-                            ? "text-red-600"
-                            : (entry.netToPar !== undefined
-                                ? entry.netToPar
-                                : entry.totalToPar) > 0
-                            ? "text-orange-600"
-                            : "text-blue-600"
-                        }`}
-                      >
-                        {(entry.netToPar !== undefined
-                          ? entry.netToPar
-                          : entry.totalToPar) > 0
-                          ? "+"
-                          : ""}
-                        {entry.netToPar !== undefined
-                          ? entry.netToPar
-                          : entry.totalToPar}
-                      </div>
-                    )}
+                    <div className="text-sm font-medium text-slate-600">
+                      Total Strokes
+                    </div>
                   </div>
                 </div>
               </div>
@@ -383,6 +348,15 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
           </h3>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="bg-slate-50 rounded-lg p-4">
+              <div className="text-xl mb-2">🎯</div>
+              <div className="text-2xl font-bold text-slate-900">
+                {Math.min(...playersWithScores.map((p) => p.totalScore))}
+              </div>
+              <div className="text-xs text-slate-500 uppercase tracking-wide">
+                Low Score
+              </div>
+            </div>
+            <div className="bg-slate-50 rounded-lg p-4">
               <div className="text-xl mb-2">📊</div>
               <div className="text-2xl font-bold text-slate-900">
                 {Math.round(
@@ -392,15 +366,6 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
               </div>
               <div className="text-xs text-slate-500 uppercase tracking-wide">
                 Average
-              </div>
-            </div>
-            <div className="bg-slate-50 rounded-lg p-4">
-              <div className="text-xl mb-2">🔥</div>
-              <div className="text-2xl font-bold text-slate-900">
-                {playersWithScores.filter((p) => p.totalToPar < 0).length}
-              </div>
-              <div className="text-xs text-slate-500 uppercase tracking-wide">
-                Under Par
               </div>
             </div>
             <div className="bg-slate-50 rounded-lg p-4">

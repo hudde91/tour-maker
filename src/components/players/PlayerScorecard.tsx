@@ -22,18 +22,8 @@ export const PlayerScorecard = ({
     return sum + (round.scores[player.id]?.totalScore || 0);
   }, 0);
 
-  const totalToPar = playerRounds.reduce((sum, round) => {
-    return sum + (round.scores[player.id]?.totalToPar || 0);
-  }, 0);
-
   const team = tour.teams?.find((t) => t.id === player.teamId);
   const isCaptain = team?.captainId === player.id;
-
-  const getScoreColor = (toPar: number) => {
-    if (toPar < 0) return "text-red-600";
-    if (toPar > 0) return "text-orange-600";
-    return "text-blue-600";
-  };
 
   return (
     <div className="card hover:shadow-elevated transition-all duration-200">
@@ -98,14 +88,8 @@ export const PlayerScorecard = ({
               <div className="text-xl md:text-2xl font-bold text-slate-900">
                 {totalScore}
               </div>
-              <div
-                className={`text-sm font-semibold ${getScoreColor(totalToPar)}`}
-              >
-                {totalToPar === 0
-                  ? "E"
-                  : totalToPar > 0
-                  ? `+${totalToPar}`
-                  : totalToPar}
+              <div className="text-sm font-medium text-slate-600">
+                Total Strokes
               </div>
             </div>
           )}
@@ -145,9 +129,6 @@ export const PlayerScorecard = ({
               <div className="space-y-3 card-spacing">
                 {playerRounds.map((round, index) => {
                   const playerScore = round.scores[player.id];
-                  const totalPar = storage.getTotalPar(round);
-                  const roundToPar =
-                    playerScore.netToPar || playerScore.totalToPar;
                   const displayScore =
                     playerScore.netScore || playerScore.totalScore;
 
@@ -179,7 +160,7 @@ export const PlayerScorecard = ({
                           </span>
                           <span className="flex items-center gap-1">
                             <span className="text-base">⛳</span>
-                            Par {totalPar}
+                            Par {storage.getTotalPar(round)}
                           </span>
                           <span className="flex items-center gap-1">
                             <span className="text-base">🏕️</span>
@@ -215,16 +196,8 @@ export const PlayerScorecard = ({
                               Gross: {playerScore.totalScore}
                             </div>
                           )}
-                        <div
-                          className={`text-base md:text-lg font-semibold ${getScoreColor(
-                            roundToPar
-                          )}`}
-                        >
-                          {roundToPar === 0
-                            ? "E"
-                            : roundToPar > 0
-                            ? `+${roundToPar}`
-                            : roundToPar}
+                        <div className="text-sm font-medium text-slate-600">
+                          Strokes
                         </div>
                       </div>
                     </div>
@@ -245,35 +218,27 @@ export const PlayerScorecard = ({
                       {totalScore}
                     </div>
                     <div className="text-xs text-slate-500 uppercase tracking-wide">
-                      Total Score
+                      Total Strokes
                     </div>
                   </div>
                   <div className="bg-white rounded-lg p-3">
                     <div className="text-xl mb-1">📊</div>
-                    <div
-                      className={`text-xl md:text-2xl font-bold mb-1 ${getScoreColor(
-                        totalToPar
-                      )}`}
-                    >
-                      {totalToPar === 0
-                        ? "E"
-                        : totalToPar > 0
-                        ? `+${totalToPar}`
-                        : totalToPar}
-                    </div>
-                    <div className="text-xs text-slate-500 uppercase tracking-wide">
-                      To Par
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-lg p-3">
-                    <div className="text-xl mb-1">🔄</div>
                     <div className="text-xl md:text-2xl font-bold text-slate-900 mb-1">
                       {playerRounds.length > 0
                         ? Math.round(totalScore / playerRounds.length)
                         : 0}
                     </div>
                     <div className="text-xs text-slate-500 uppercase tracking-wide">
-                      Avg Score
+                      Avg Round
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-lg p-3">
+                    <div className="text-xl mb-1">🔄</div>
+                    <div className="text-xl md:text-2xl font-bold text-slate-900 mb-1">
+                      {playerRounds.length}
+                    </div>
+                    <div className="text-xs text-slate-500 uppercase tracking-wide">
+                      Rounds
                     </div>
                   </div>
                 </div>
@@ -304,18 +269,8 @@ export const PlayerScorecard = ({
                               <span className="font-bold text-slate-900">
                                 {bestScore.totalScore}
                               </span>
-                              <span
-                                className={`ml-2 font-semibold ${getScoreColor(
-                                  bestScore.totalToPar
-                                )}`}
-                              >
-                                (
-                                {bestScore.totalToPar === 0
-                                  ? "E"
-                                  : bestScore.totalToPar > 0
-                                  ? `+${bestScore.totalToPar}`
-                                  : bestScore.totalToPar}
-                                )
+                              <span className="ml-2 text-sm font-medium text-slate-600">
+                                strokes
                               </span>
                             </div>
                           );
