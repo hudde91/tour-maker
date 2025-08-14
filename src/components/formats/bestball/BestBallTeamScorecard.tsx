@@ -52,13 +52,9 @@ export const BestBallTeamScorecard = ({
       }
     }
 
-    const totalPar = storage.getTotalPar(round);
-    const teamToPar = teamTotal - totalPar;
-
     return {
       holeScores: teamHoleScores,
       totalScore: teamTotal,
-      totalToPar: teamToPar,
     };
   };
 
@@ -116,20 +112,9 @@ export const BestBallTeamScorecard = ({
           <div className="text-2xl font-bold text-slate-900">
             {teamScores.totalScore || "–"}
           </div>
-          {teamScores.totalToPar !== 0 && teamScores.totalScore > 0 && (
-            <div
-              className={`text-sm font-semibold ${
-                teamScores.totalToPar < 0
-                  ? "text-red-600"
-                  : teamScores.totalToPar > 0
-                  ? "text-orange-600"
-                  : "text-blue-600"
-              }`}
-            >
-              {teamScores.totalToPar > 0 ? "+" : ""}
-              {teamScores.totalToPar}
-            </div>
-          )}
+          <div className="text-sm font-medium text-slate-600">
+            Total Strokes
+          </div>
         </div>
       </div>
 
@@ -142,7 +127,7 @@ export const BestBallTeamScorecard = ({
             </div>
             <div className="flex items-center gap-2">
               <span className="text-lg font-bold text-emerald-900">
-                {currentHoleBest.score}
+                {currentHoleBest.score} strokes
               </span>
               <span className="text-xs text-emerald-700">
                 by{" "}
@@ -237,28 +222,24 @@ export const BestBallTeamScorecard = ({
             </div>
           </div>
           <div>
-            <div
-              className={`text-xl font-bold ${
-                teamScores.totalToPar < 0
-                  ? "text-red-600"
-                  : teamScores.totalToPar > 0
-                  ? "text-orange-600"
-                  : "text-blue-600"
-              }`}
-            >
-              {teamScores.totalToPar > 0 ? "+" : ""}
-              {teamScores.totalToPar || 0}
-            </div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide">
-              To Par
-            </div>
-          </div>
-          <div>
             <div className="text-xl font-bold text-slate-900">
               {teamScores.holeScores.filter((s) => s > 0).length}
             </div>
             <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Holes
+              Holes Played
+            </div>
+          </div>
+          <div>
+            <div className="text-xl font-bold text-slate-900">
+              {teamScores.holeScores.filter((s) => s > 0).length > 0
+                ? Math.round(
+                    teamScores.totalScore /
+                      teamScores.holeScores.filter((s) => s > 0).length
+                  )
+                : 0}
+            </div>
+            <div className="text-xs text-slate-500 uppercase tracking-wide">
+              Avg per Hole
             </div>
           </div>
         </div>

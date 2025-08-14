@@ -140,44 +140,9 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
                         </div>
                       )}
 
-                    {/* To Par Display */}
-                    {(teamEntry.netToPar !== undefined
-                      ? teamEntry.netToPar
-                      : teamEntry.totalToPar) !== 0 && (
-                      <div
-                        className={`text-xl font-semibold ${
-                          (teamEntry.netToPar !== undefined
-                            ? teamEntry.netToPar
-                            : teamEntry.totalToPar) < 0
-                            ? "text-red-600"
-                            : (teamEntry.netToPar !== undefined
-                                ? teamEntry.netToPar
-                                : teamEntry.totalToPar) > 0
-                            ? "text-orange-600"
-                            : "text-blue-600"
-                        }`}
-                      >
-                        {(teamEntry.netToPar !== undefined
-                          ? teamEntry.netToPar
-                          : teamEntry.totalToPar) > 0
-                          ? "+"
-                          : ""}
-                        {teamEntry.netToPar !== undefined
-                          ? teamEntry.netToPar
-                          : teamEntry.totalToPar}
-                      </div>
-                    )}
-
-                    {(teamEntry.netToPar !== undefined
-                      ? teamEntry.netToPar
-                      : teamEntry.totalToPar) === 0 &&
-                      (teamEntry.netScore !== undefined
-                        ? teamEntry.netScore
-                        : teamEntry.totalScore) > 0 && (
-                        <div className="text-xl font-semibold text-blue-600">
-                          E
-                        </div>
-                      )}
+                    <div className="text-sm font-medium text-slate-600">
+                      Total Strokes
+                    </div>
                   </div>
                 </div>
               </div>
@@ -227,22 +192,16 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
                           {playerScore && playerScore.totalScore > 0 ? (
                             <>
                               <div className="text-lg font-bold text-slate-900">
-                                {playerScore.totalScore}
+                                {playerScore.netScore || playerScore.totalScore}
                               </div>
-                              {playerScore.totalToPar !== 0 && (
-                                <div
-                                  className={`text-sm font-semibold ${
-                                    playerScore.totalToPar < 0
-                                      ? "text-red-600"
-                                      : playerScore.totalToPar > 0
-                                      ? "text-orange-600"
-                                      : "text-blue-600"
-                                  }`}
-                                >
-                                  {playerScore.totalToPar > 0 ? "+" : ""}
-                                  {playerScore.totalToPar}
+                              {playerScore.handicapStrokes && (
+                                <div className="text-xs text-slate-500">
+                                  Gross: {playerScore.totalScore}
                                 </div>
                               )}
+                              <div className="text-xs text-slate-500">
+                                Strokes
+                              </div>
                             </>
                           ) : (
                             <div className="text-slate-400 font-medium flex items-center gap-1">
@@ -271,7 +230,9 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
             <div className="bg-slate-50 rounded-lg p-4">
               <div className="text-xl mb-2">🎯</div>
               <div className="text-2xl font-bold text-slate-900">
-                {Math.min(...teamsWithScores.map((t) => t.totalScore))}
+                {Math.min(
+                  ...teamsWithScores.map((t) => t.netScore || t.totalScore)
+                )}
               </div>
               <div className="text-xs text-slate-500 uppercase tracking-wide">
                 Best Team Score
@@ -281,8 +242,10 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
               <div className="text-xl mb-2">📊</div>
               <div className="text-2xl font-bold text-slate-900">
                 {Math.round(
-                  teamsWithScores.reduce((sum, t) => sum + t.totalScore, 0) /
-                    teamsWithScores.length
+                  teamsWithScores.reduce(
+                    (sum, t) => sum + (t.netScore || t.totalScore),
+                    0
+                  ) / teamsWithScores.length
                 )}
               </div>
               <div className="text-xs text-slate-500 uppercase tracking-wide">
@@ -290,12 +253,12 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
               </div>
             </div>
             <div className="bg-slate-50 rounded-lg p-4">
-              <div className="text-xl mb-2">🔥</div>
+              <div className="text-xl mb-2">🏆</div>
               <div className="text-2xl font-bold text-slate-900">
-                {teamsWithScores.filter((t) => t.totalToPar < 0).length}
+                {teamsWithScores.length}
               </div>
               <div className="text-xs text-slate-500 uppercase tracking-wide">
-                Teams Under Par
+                Teams Competing
               </div>
             </div>
           </div>

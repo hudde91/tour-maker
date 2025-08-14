@@ -27,8 +27,6 @@ export const TotalScoreCard = ({
   // Calculate preview values
   const previewScore = parseInt(inputScore) || 0;
   const previewNetScore = previewScore - effectiveHandicap;
-  const previewScoreToPar = previewScore - totalPar;
-  const previewNetToPar = previewNetScore - totalPar;
 
   // Update input values when props change
   useEffect(() => {
@@ -157,45 +155,13 @@ export const TotalScoreCard = ({
                     <div className="text-2xl font-bold text-slate-900">
                       {previewScore}
                     </div>
-                    <div
-                      className={`text-sm font-semibold ${
-                        previewScoreToPar < 0
-                          ? "text-red-600"
-                          : previewScoreToPar > 0
-                          ? "text-orange-600"
-                          : "text-blue-600"
-                      }`}
-                    >
-                      {previewScoreToPar === 0
-                        ? "E"
-                        : previewScoreToPar > 0
-                        ? "+"
-                        : ""}
-                      {previewScoreToPar || 0}
-                    </div>
-                    <div className="text-xs text-slate-500">Gross Score</div>
+                    <div className="text-xs text-slate-500">Gross Strokes</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-emerald-600">
                       {previewNetScore}
                     </div>
-                    <div
-                      className={`text-sm font-semibold ${
-                        previewNetToPar < 0
-                          ? "text-red-600"
-                          : previewNetToPar > 0
-                          ? "text-orange-600"
-                          : "text-blue-600"
-                      }`}
-                    >
-                      {previewNetToPar === 0
-                        ? "E"
-                        : previewNetToPar > 0
-                        ? "+"
-                        : ""}
-                      {previewNetToPar || 0}
-                    </div>
-                    <div className="text-xs text-slate-500">Net Score</div>
+                    <div className="text-xs text-slate-500">Net Strokes</div>
                   </div>
                 </div>
               </div>
@@ -240,17 +206,8 @@ export const TotalScoreCard = ({
                     Gross: {currentTotalScore} (-{effectiveHandicap} HC)
                   </div>
                 )}
-                <div
-                  className={`text-lg font-semibold ${
-                    previewNetToPar < 0
-                      ? "text-red-600"
-                      : previewNetToPar > 0
-                      ? "text-orange-600"
-                      : "text-blue-600"
-                  }`}
-                >
-                  {previewNetToPar === 0 ? "E" : previewNetToPar > 0 ? "+" : ""}
-                  {previewNetToPar}
+                <div className="text-lg font-medium text-slate-600">
+                  Total Strokes
                 </div>
               </div>
 

@@ -11,13 +11,69 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     "individual"
   );
 
-  // Get overall tournament leaderboard (no roundId = all rounds combined)
-  const individualLeaderboard = storage.calculateLeaderboard(tour);
+  // Calculate tournament totals like PlayerScorecard and LiveLeaderboard
+  const calculateTournamentLeaderboard = () => {
+    const entries = tour.players.map((player) => {
+      // Get all rounds this player has scores in
+      const playerRounds = tour.rounds.filter(
+        (round) =>
+          round.scores[player.id] && round.scores[player.id].totalScore > 0
+      );
+
+      // Calculate total strokes across all rounds
+      const totalScore = playerRounds.reduce((sum, round) => {
+        return sum + (round.scores[player.id]?.totalScore || 0);
+      }, 0);
+
+      // Calculate total handicap strokes across all rounds
+      const totalHandicapStrokes = playerRounds.reduce((sum, round) => {
+        return sum + (round.scores[player.id]?.handicapStrokes || 0);
+      }, 0);
+
+      // Calculate net score if handicaps are applied
+      const netScore =
+        totalHandicapStrokes > 0
+          ? totalScore - totalHandicapStrokes
+          : undefined;
+
+      const team = tour.teams?.find((t) => t.id === player.teamId);
+      const isCaptain = team?.captainId === player.id;
+
+      return {
+        player,
+        totalScore,
+        netScore,
+        handicapStrokes:
+          totalHandicapStrokes > 0 ? totalHandicapStrokes : undefined,
+        roundsPlayed: playerRounds.length,
+        position: 0,
+        team,
+        isCaptain,
+      };
+    });
+
+    // Filter out players with no scores
+    const playersWithScores = entries.filter((entry) => entry.totalScore > 0);
+
+    // Sort by net score if handicaps are applied, otherwise by total score
+    playersWithScores.sort((a, b) => {
+      const aScore = a.netScore || a.totalScore;
+      const bScore = b.netScore || b.totalScore;
+      return aScore - bScore;
+    });
+
+    // Set positions
+    playersWithScores.forEach((entry, index) => {
+      entry.position = index + 1;
+    });
+
+    return playersWithScores;
+  };
+
+  const individualLeaderboard = calculateTournamentLeaderboard();
   const teamLeaderboard = storage.calculateTeamLeaderboard(tour);
 
-  const playersWithScores = individualLeaderboard.filter(
-    (entry) => entry.totalScore > 0
-  );
+  const playersWithScores = individualLeaderboard;
   const teamsWithScores = teamLeaderboard.filter(
     (entry) => entry.totalScore > 0
   );
@@ -209,8 +265,6 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
         /* Individual Tournament Leaderboard */
         <div className="space-y-3">
           {playersWithScores.slice(0, 10).map((entry, index) => {
-            const team = tour.teams?.find((t) => t.id === entry.player.teamId);
-            const isCaptain = team?.captainId === entry.player.id;
             const isLeader = index === 0;
             const isTop3 = index < 3;
 
@@ -263,7 +317,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                       </h3>
 
                       <div className="flex items-center gap-2 flex-wrap">
-                        {isCaptain && (
+                        {entry.isCaptain && (
                           <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold">
                             👑 Captain
                           </span>
@@ -279,13 +333,13 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                         </span>
                       )}
 
-                      {team && (
+                      {entry.team && (
                         <div className="flex items-center gap-2">
                           <div
                             className="w-3 h-3 rounded-full border border-white shadow-sm"
-                            style={{ backgroundColor: team.color }}
+                            style={{ backgroundColor: entry.team.color }}
                           />
-                          <span className="font-medium">{team.name}</span>
+                          <span className="font-medium">{entry.team.name}</span>
                         </div>
                       )}
 
@@ -350,7 +404,9 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
             <div className="bg-slate-50 rounded-lg p-4">
               <div className="text-xl mb-2">🎯</div>
               <div className="text-2xl font-bold text-slate-900">
-                {Math.min(...playersWithScores.map((p) => p.totalScore))}
+                {Math.min(
+                  ...playersWithScores.map((p) => p.netScore || p.totalScore)
+                )}
               </div>
               <div className="text-xs text-slate-500 uppercase tracking-wide">
                 Low Score
@@ -360,8 +416,10 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
               <div className="text-xl mb-2">📊</div>
               <div className="text-2xl font-bold text-slate-900">
                 {Math.round(
-                  playersWithScores.reduce((sum, p) => sum + p.totalScore, 0) /
-                    playersWithScores.length
+                  playersWithScores.reduce(
+                    (sum, p) => sum + (p.netScore || p.totalScore),
+                    0
+                  ) / playersWithScores.length
                 )}
               </div>
               <div className="text-xs text-slate-500 uppercase tracking-wide">

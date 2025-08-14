@@ -17,13 +17,72 @@ export const LiveLeaderboard = ({
   const [leaderboardView, setLeaderboardView] = useState<"individual" | "team">(
     "individual"
   );
-  const leaderboard = storage.calculateLeaderboard(tour, round.id);
-  const playersWithScores = leaderboard.filter((entry) => entry.totalScore > 0);
+
+  // Calculate tournament totals like PlayerScorecard does
+  const calculateTournamentLeaderboard = () => {
+    const entries = tour.players.map((player) => {
+      // Get all rounds this player has scores in
+      const playerRounds = tour.rounds.filter(
+        (round) =>
+          round.scores[player.id] && round.scores[player.id].totalScore > 0
+      );
+
+      // Calculate total strokes across all rounds
+      const totalScore = playerRounds.reduce((sum, round) => {
+        return sum + (round.scores[player.id]?.totalScore || 0);
+      }, 0);
+
+      // Calculate total handicap strokes across all rounds
+      const totalHandicapStrokes = playerRounds.reduce((sum, round) => {
+        return sum + (round.scores[player.id]?.handicapStrokes || 0);
+      }, 0);
+
+      // Calculate net score if handicaps are applied
+      const netScore =
+        totalHandicapStrokes > 0
+          ? totalScore - totalHandicapStrokes
+          : undefined;
+
+      const team = tour.teams?.find((t) => t.id === player.teamId);
+      const isCaptain = team?.captainId === player.id;
+
+      return {
+        player,
+        totalScore,
+        netScore,
+        handicapStrokes:
+          totalHandicapStrokes > 0 ? totalHandicapStrokes : undefined,
+        roundsPlayed: playerRounds.length,
+        position: 0,
+        team,
+        isCaptain,
+      };
+    });
+
+    // Filter out players with no scores
+    const playersWithScores = entries.filter((entry) => entry.totalScore > 0);
+
+    // Sort by net score if handicaps are applied, otherwise by total score
+    playersWithScores.sort((a, b) => {
+      const aScore = a.netScore || a.totalScore;
+      const bScore = b.netScore || b.totalScore;
+      return aScore - bScore;
+    });
+
+    // Set positions
+    playersWithScores.forEach((entry, index) => {
+      entry.position = index + 1;
+    });
+
+    return playersWithScores;
+  };
+
+  const playersWithScores = calculateTournamentLeaderboard();
 
   if (isCollapsed && playersWithScores.length === 0) {
     return (
       <div className="card max-w-5xl mx-auto">
-        <h3 className="section-header mb-3">Live Leaderboard</h3>
+        <h3 className="section-header mb-3">Tournament Leaderboard</h3>
         <div className="text-center py-8">
           <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl">📊</span>
@@ -43,11 +102,11 @@ export const LiveLeaderboard = ({
         <div>
           <h3 className="section-header flex items-center gap-2">
             <span className="text-2xl">🏆</span>
-            Live Tournament Leaderboard
+            Tournament Leaderboard
           </h3>
           <p className="text-slate-600 mt-1">
             {leaderboardView === "individual"
-              ? `${playersWithScores.length} of ${tour.players.length} players scoring`
+              ? `${playersWithScores.length} of ${tour.players.length} players with scores`
               : `${tour.teams?.length || 0} teams competing`}
           </p>
         </div>
@@ -104,10 +163,6 @@ export const LiveLeaderboard = ({
           ) : (
             <div className="space-y-3">
               {playersWithScores.map((entry, index) => {
-                const team = tour.teams?.find(
-                  (t) => t.id === entry.player.teamId
-                );
-                const isCaptain = team?.captainId === entry.player.id;
                 const isLeader = index === 0;
                 const isTop3 = index < 3;
 
@@ -160,7 +215,7 @@ export const LiveLeaderboard = ({
                           </h4>
 
                           <div className="flex items-center gap-2 flex-wrap">
-                            {isCaptain && (
+                            {entry.isCaptain && (
                               <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-200">
                                 👑 Captain
                               </span>
@@ -182,14 +237,14 @@ export const LiveLeaderboard = ({
                             </span>
                           )}
 
-                          {team && (
+                          {entry.team && (
                             <div className="flex items-center gap-2">
                               <div
                                 className="w-3 h-3 rounded-full border border-white shadow-sm"
-                                style={{ backgroundColor: team.color }}
+                                style={{ backgroundColor: entry.team.color }}
                               />
                               <span className="text-slate-700 font-medium">
-                                {team.name}
+                                {entry.team.name}
                               </span>
                             </div>
                           )}
@@ -224,44 +279,9 @@ export const LiveLeaderboard = ({
                           </div>
                         )}
 
-                        {/* To Par Display */}
-                        {(entry.netToPar !== undefined
-                          ? entry.netToPar
-                          : entry.totalToPar) !== 0 && (
-                          <div
-                            className={`text-lg font-semibold ${
-                              (entry.netToPar !== undefined
-                                ? entry.netToPar
-                                : entry.totalToPar) < 0
-                                ? "text-red-600"
-                                : (entry.netToPar !== undefined
-                                    ? entry.netToPar
-                                    : entry.totalToPar) > 0
-                                ? "text-orange-600"
-                                : "text-blue-600"
-                            }`}
-                          >
-                            {(entry.netToPar !== undefined
-                              ? entry.netToPar
-                              : entry.totalToPar) > 0
-                              ? "+"
-                              : ""}
-                            {entry.netToPar !== undefined
-                              ? entry.netToPar
-                              : entry.totalToPar}
-                          </div>
-                        )}
-
-                        {(entry.netToPar !== undefined
-                          ? entry.netToPar
-                          : entry.totalToPar) === 0 &&
-                          (entry.netScore !== undefined
-                            ? entry.netScore
-                            : entry.totalScore) > 0 && (
-                            <div className="text-lg font-semibold text-blue-600">
-                              E
-                            </div>
-                          )}
+                        <div className="text-sm font-medium text-slate-600">
+                          Total Strokes
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -276,7 +296,9 @@ export const LiveLeaderboard = ({
               <div className="bg-slate-50 rounded-lg p-4">
                 <div className="text-xl mb-1">🎯</div>
                 <div className="text-2xl font-bold text-slate-900">
-                  {Math.min(...playersWithScores.map((p) => p.totalScore))}
+                  {Math.min(
+                    ...playersWithScores.map((p) => p.netScore || p.totalScore)
+                  )}
                 </div>
                 <div className="text-xs text-slate-500 uppercase tracking-wide">
                   Low Score
@@ -287,7 +309,7 @@ export const LiveLeaderboard = ({
                 <div className="text-2xl font-bold text-slate-900">
                   {Math.round(
                     playersWithScores.reduce(
-                      (sum, p) => sum + p.totalScore,
+                      (sum, p) => sum + (p.netScore || p.totalScore),
                       0
                     ) / playersWithScores.length
                   )}
@@ -297,12 +319,12 @@ export const LiveLeaderboard = ({
                 </div>
               </div>
               <div className="bg-slate-50 rounded-lg p-4">
-                <div className="text-xl mb-1">🔥</div>
+                <div className="text-xl mb-1">✅</div>
                 <div className="text-2xl font-bold text-slate-900">
-                  {playersWithScores.filter((p) => p.totalToPar < 0).length}
+                  {tour.rounds.filter((r) => r.status === "completed").length}
                 </div>
                 <div className="text-xs text-slate-500 uppercase tracking-wide">
-                  Under Par
+                  Rounds Complete
                 </div>
               </div>
             </div>

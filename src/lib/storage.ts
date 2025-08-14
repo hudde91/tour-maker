@@ -10,7 +10,6 @@ import {
   Player,
   Team,
   TeamLeaderboardEntry,
-  LeaderboardEntry,
   HoleInfo,
 } from "../types";
 
@@ -162,26 +161,6 @@ export const storage = {
   // Export the helper function for use in components
   calculateStrokesForHole,
 
-  recalculateAllScoresWithHandicaps: (tourId: string): void => {
-    const tour = storage.getTour(tourId);
-    if (!tour) return;
-
-    tour.rounds.forEach((round) => {
-      Object.entries(round.scores).forEach(([playerId, playerScore]) => {
-        const player = tour.players.find((p) => p.id === playerId);
-        if (player && playerScore.scores) {
-          // Recalculate this player's score
-          storage.updatePlayerScore(
-            tourId,
-            round.id,
-            playerId,
-            playerScore.scores
-          );
-        }
-      });
-    });
-  },
-
   // Tours
   getTours: (): Tour[] => {
     const tours = localStorage.getItem(STORAGE_KEYS.TOURS);
@@ -209,15 +188,6 @@ export const storage = {
   deleteTour: (id: string): void => {
     const tours = storage.getTours().filter((tour) => tour.id !== id);
     localStorage.setItem(STORAGE_KEYS.TOURS, JSON.stringify(tours));
-  },
-
-  // Active tour
-  setActiveTour: (id: string): void => {
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_TOUR, id);
-  },
-
-  getActiveTour: (): string | null => {
-    return localStorage.getItem(STORAGE_KEYS.ACTIVE_TOUR);
   },
 
   // Rounds
@@ -584,202 +554,6 @@ export const storage = {
     storage.saveTour(tour);
   },
 
-  calculateBestBallTeamScore: (tour: Tour, round: Round, team: Team) => {
-    const teamPlayers = tour.players.filter((p) => p.teamId === team.id);
-    const teamHoleScores: number[] = [];
-    let teamTotalScore = 0;
-
-    // Calculate best score for each hole
-    for (let hole = 0; hole < round.holes; hole++) {
-      const holeScores = teamPlayers
-        .map((player) => {
-          const playerScore = round.scores[player.id];
-          if (!playerScore) return null;
-
-          return {
-            playerId: player.id,
-            score: playerScore.scores[hole] || 0,
-          };
-        })
-        .filter((s) => s && s.score > 0);
-
-      if (holeScores.length > 0) {
-        // Find best gross score for this hole
-        const bestGrossScore = Math.min(...holeScores.map((s) => s!.score));
-        teamHoleScores.push(bestGrossScore);
-        teamTotalScore += bestGrossScore;
-      } else {
-        teamHoleScores.push(0);
-      }
-    }
-
-    const totalPar = storage.getTotalPar(round);
-    const teamTotalToPar = teamTotalScore - totalPar;
-
-    return {
-      holeScores: teamHoleScores,
-      totalScore: teamTotalScore,
-      totalToPar: teamTotalToPar,
-    };
-  },
-
-  // Calculate Best Ball team leaderboard for a specific round
-  calculateBestBallRoundTeamLeaderboard: (
-    tour: Tour,
-    round: Round
-  ): TeamLeaderboardEntry[] => {
-    if (!tour.teams || tour.teams.length === 0) return [];
-
-    const teamEntries: TeamLeaderboardEntry[] = [];
-
-    tour.teams.forEach((team) => {
-      const teamPlayers = tour.players.filter((p) => p.teamId === team.id);
-      let teamTotalScore = 0;
-      let teamTotalToPar = 0;
-      let playersWithScores = 0;
-
-      // Calculate best ball team score for this round
-      for (let hole = 0; hole < round.holes; hole++) {
-        const holeScores = teamPlayers
-          .map((player) => round.scores[player.id]?.scores[hole] || 0)
-          .filter((score) => score > 0);
-
-        if (holeScores.length > 0) {
-          const bestScore = Math.min(...holeScores);
-          teamTotalScore += bestScore;
-        }
-      }
-
-      // Count players with any scores in this round
-      playersWithScores = teamPlayers.filter((player) => {
-        const playerScore = round.scores[player.id];
-        return playerScore && playerScore.scores.some((score) => score > 0);
-      }).length;
-
-      const totalPar = storage.getTotalPar(round);
-      teamTotalToPar = teamTotalScore - totalPar;
-
-      teamEntries.push({
-        team,
-        totalScore: teamTotalScore,
-        totalToPar: teamTotalToPar,
-        netScore: undefined, // Best ball typically doesn't use net scoring at team level
-        netToPar: undefined,
-        totalHandicapStrokes: undefined,
-        playersWithScores,
-        totalPlayers: teamPlayers.length,
-        position: 0,
-      });
-    });
-
-    // Sort by total score
-    teamEntries.sort((a, b) => {
-      if (a.totalScore === 0 && b.totalScore === 0) return 0;
-      if (a.totalScore === 0) return 1;
-      if (b.totalScore === 0) return -1;
-      return a.totalScore - b.totalScore;
-    });
-
-    // Set positions
-    teamEntries.forEach((entry, index) => {
-      entry.position = index + 1;
-    });
-
-    return teamEntries;
-  },
-
-  // Calculate Best Ball team leaderboard across multiple rounds
-  calculateBestBallTeamLeaderboard: (
-    tour: Tour,
-    roundId?: string
-  ): TeamLeaderboardEntry[] => {
-    if (!tour.teams || tour.teams.length === 0) return [];
-
-    const teamEntries: TeamLeaderboardEntry[] = [];
-
-    tour.teams.forEach((team) => {
-      const teamPlayers = tour.players.filter(
-        (player) => player.teamId === team.id
-      );
-      let teamTotalScore = 0;
-      let teamTotalToPar = 0;
-      let playersWithScores = 0;
-
-      const roundsToCalculate = roundId
-        ? tour.rounds.filter((r) => r.id === roundId)
-        : tour.rounds.filter((r) => r.format === "best-ball");
-
-      roundsToCalculate.forEach((round) => {
-        const teamScore = storage.calculateBestBallTeamScore(tour, round, team);
-        if (teamScore.totalScore > 0) {
-          teamTotalScore += teamScore.totalScore;
-          teamTotalToPar += teamScore.totalToPar;
-        }
-      });
-
-      // Count players with scores in the relevant rounds
-      playersWithScores = teamPlayers.filter((player) =>
-        roundsToCalculate.some(
-          (round) =>
-            round.scores[player.id] && round.scores[player.id].totalScore > 0
-        )
-      ).length;
-
-      teamEntries.push({
-        team,
-        totalScore: teamTotalScore,
-        totalToPar: teamTotalToPar,
-        netScore: undefined,
-        netToPar: undefined,
-        totalHandicapStrokes: undefined,
-        playersWithScores,
-        totalPlayers: teamPlayers.length,
-        position: 0,
-      });
-    });
-
-    // Sort by total score
-    teamEntries.sort((a, b) => {
-      if (a.totalScore === 0 && b.totalScore === 0) return 0;
-      if (a.totalScore === 0) return 1;
-      if (b.totalScore === 0) return -1;
-      return a.totalScore - b.totalScore;
-    });
-
-    // Set positions
-    teamEntries.forEach((entry, index) => {
-      entry.position = index + 1;
-    });
-
-    return teamEntries;
-  },
-
-  // Check if round is best ball format
-  isBestBallFormat: (round: Round): boolean => {
-    return round.format === "best-ball";
-  },
-
-  // Get best players for a specific hole in best ball
-  getBestBallHoleWinners: (
-    tour: Tour,
-    round: Round,
-    team: Team,
-    holeIndex: number
-  ) => {
-    const teamPlayers = tour.players.filter((p) => p.teamId === team.id);
-    const holeScores = teamPlayers
-      .map((player) => {
-        const score = round.scores[player.id]?.scores[holeIndex] || 0;
-        return { player, score };
-      })
-      .filter((s) => s.score > 0);
-
-    if (holeScores.length === 0) return [];
-
-    const bestScore = Math.min(...holeScores.map((s) => s.score));
-    return holeScores.filter((s) => s.score === bestScore).map((s) => s.player);
-  },
-
   // Start round
   startRound: (tourId: string, roundId: string): void => {
     const tour = storage.getTour(tourId);
@@ -838,80 +612,6 @@ export const storage = {
     }
 
     storage.saveTour(tour);
-  },
-
-  // Calculate leaderboard
-  calculateLeaderboard: (tour: Tour, roundId?: string): LeaderboardEntry[] => {
-    const entries: LeaderboardEntry[] = [];
-
-    tour.players.forEach((player) => {
-      let totalScore = 0;
-      let totalToPar = 0;
-      let totalHandicapStrokes = 0;
-      let totalNetScore = 0;
-      let totalNetToPar = 0;
-      let roundsPlayed = 0;
-      let hasHandicapApplied = false;
-
-      if (roundId) {
-        // Single round leaderboard
-        const round = tour.rounds.find((r) => r.id === roundId);
-        if (round && round.scores[player.id]) {
-          const playerScore = round.scores[player.id];
-          totalScore = playerScore.totalScore;
-          totalToPar = playerScore.totalToPar;
-          totalHandicapStrokes = playerScore.handicapStrokes || 0;
-          totalNetScore = playerScore.netScore || 0;
-          totalNetToPar = playerScore.netToPar || 0;
-          hasHandicapApplied = !!playerScore.handicapStrokes;
-          roundsPlayed = playerScore.scores.some((s) => s > 0) ? 1 : 0;
-        }
-      } else {
-        // Tournament leaderboard (all rounds)
-        tour.rounds.forEach((round) => {
-          if (round.scores[player.id]) {
-            const playerScore = round.scores[player.id];
-            totalScore += playerScore.totalScore;
-            totalToPar += playerScore.totalToPar;
-            totalHandicapStrokes += playerScore.handicapStrokes || 0;
-            totalNetScore += playerScore.netScore || playerScore.totalScore;
-            totalNetToPar += playerScore.netToPar || playerScore.totalToPar;
-            if (playerScore.handicapStrokes) hasHandicapApplied = true;
-            if (playerScore.scores.some((s) => s > 0)) roundsPlayed++;
-          }
-        });
-      }
-
-      entries.push({
-        player,
-        totalScore,
-        totalToPar,
-        netScore: hasHandicapApplied ? totalNetScore : undefined,
-        netToPar: hasHandicapApplied ? totalNetToPar : undefined,
-        handicapStrokes: hasHandicapApplied ? totalHandicapStrokes : undefined,
-        roundsPlayed,
-        position: 0, // Will be set after sorting
-      });
-    });
-
-    // Sort by net score if handicaps are applied, otherwise by gross score
-    entries.sort((a, b) => {
-      if (a.totalScore === 0 && b.totalScore === 0) return 0;
-      if (a.totalScore === 0) return 1;
-      if (b.totalScore === 0) return -1;
-
-      // Use net score for sorting if handicaps are applied
-      const aScore = a.netScore || a.totalScore;
-      const bScore = b.netScore || b.totalScore;
-      return aScore - bScore;
-    });
-
-    // Set positions
-    entries.forEach((entry, index) => {
-      entry.position = index + 1;
-    });
-
-    return entries;
   },
 
   // Update player total score directly (for completed rounds)
@@ -1477,14 +1177,5 @@ export const storage = {
           ? "team-b"
           : undefined,
     };
-  },
-
-  // Check if tournament format supports match play
-  isMatchPlayFormat: (round: Round): boolean => {
-    return (
-      round.format === "match-play" ||
-      round.settings.matchPlayType !== undefined ||
-      round.isMatchPlay === true
-    );
   },
 };

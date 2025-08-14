@@ -174,7 +174,7 @@ export const ScoreEntryCard = ({
                     ? "Eagle"
                     : option.score === 1
                     ? "Ace!"
-                    : `+${option.score - effectivePar}`}
+                    : `${option.score} strokes`}
                 </div>
 
                 {/* Selection indicator */}
@@ -199,7 +199,9 @@ export const ScoreEntryCard = ({
               <div
                 className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold ${scoreInfo.badgeColor}`}
               >
-                <span>{scoreInfo.name}</span>
+                <span>
+                  {currentScore} strokes - {scoreInfo.name}
+                </span>
               </div>
             </div>
           )}
@@ -259,24 +261,7 @@ export const ScoreEntryCard = ({
               {playerScore.totalScore || 0}
             </div>
             <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Total
-            </div>
-          </div>
-          <div>
-            <div
-              className={`text-xl font-bold ${
-                playerScore.totalToPar < 0
-                  ? "text-red-600"
-                  : playerScore.totalToPar > 0
-                  ? "text-orange-600"
-                  : "text-blue-600"
-              }`}
-            >
-              {playerScore.totalToPar > 0 ? "+" : ""}
-              {playerScore.totalToPar || 0}
-            </div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide">
-              To Par
+              Total Strokes
             </div>
           </div>
           <div>
@@ -284,7 +269,20 @@ export const ScoreEntryCard = ({
               {playerScore.scores.filter((s) => s > 0).length}
             </div>
             <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Holes
+              Holes Played
+            </div>
+          </div>
+          <div>
+            <div className="text-xl font-bold text-slate-900">
+              {playerScore.scores.filter((s) => s > 0).length > 0
+                ? Math.round(
+                    playerScore.totalScore /
+                      playerScore.scores.filter((s) => s > 0).length
+                  )
+                : 0}
+            </div>
+            <div className="text-xs text-slate-500 uppercase tracking-wide">
+              Avg per Hole
             </div>
           </div>
         </div>
