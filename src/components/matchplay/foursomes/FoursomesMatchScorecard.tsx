@@ -134,7 +134,7 @@ export const FoursomesMatchScorecard = ({
   return (
     <div className="card-elevated">
       {/* Header */}
-      <div className="text-center mb-6">
+      <div className="text-center card-spacing">
         <h3 className="text-2xl font-bold text-slate-900 mb-2">
           Hole {currentHole} - Par {currentHoleInfo.par}
         </h3>
@@ -154,7 +154,7 @@ export const FoursomesMatchScorecard = ({
       </div>
 
       {/* Current Match Status */}
-      <div className="text-center mb-6">
+      <div className="text-center card-spacing">
         <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
           <h4 className="font-semibold text-emerald-900 mb-2">Match Status</h4>
           <div className="text-lg font-bold text-emerald-800">

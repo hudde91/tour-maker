@@ -26,12 +26,12 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   if (playersWithScores.length === 0) {
     return (
       <div className="card max-w-5xl mx-auto">
-        <h2 className="section-header mb-6 flex items-center gap-3">
+        <h2 className="section-header card-spacing flex items-center gap-3">
           <span className="text-3xl">🏆</span>
           Tournament Leaderboard
         </h2>
         <div className="text-center py-12">
-          <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto card-spacing">
             <span className="text-4xl">📊</span>
           </div>
           <h3 className="text-xl font-semibold text-slate-700 mb-3">
@@ -49,7 +49,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   return (
     <div className="card max-w-5xl mx-auto p-6 md:p-10">
       {/* Tournament Leaderboard Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 card-spacing">
         <div>
           <h2 className="section-header flex items-center gap-3">
             <span className="text-3xl">🏆</span>

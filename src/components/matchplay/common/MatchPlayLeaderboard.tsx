@@ -56,7 +56,7 @@ export const MatchPlayLeaderboard = ({
   return (
     <div className="card-elevated">
       {/* Tournament Points Header */}
-      <div className="text-center mb-6">
+      <div className="text-center card-spacing">
         <h3 className="text-2xl font-bold text-slate-900 mb-2 flex items-center justify-center gap-3">
           <span className="text-3xl">🏆</span>
           Ryder Cup Points
@@ -67,7 +67,7 @@ export const MatchPlayLeaderboard = ({
       </div>
 
       {/* Points Display */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-2 gap-4 card-spacing">
         {/* Team A */}
         <div
           className="text-center p-6 rounded-xl border-2"
@@ -140,7 +140,7 @@ export const MatchPlayLeaderboard = ({
       </div>
 
       {/* Progress Bar */}
-      <div className="mb-6">
+      <div className="card-spacing">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium text-slate-700">
             Tournament Progress

@@ -15,7 +15,7 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
   if (teamsWithScores.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto card-spacing">
           <span className="text-4xl">👥</span>
         </div>
         <h4 className="text-lg font-semibold text-slate-700 mb-2">
@@ -54,7 +54,7 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
               }`}
             >
               {/* Team Header */}
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 card-spacing">
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   {/* Team Position Badge */}
                   <div

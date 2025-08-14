@@ -97,7 +97,7 @@ export const MatchPlayScorecard = ({
   return (
     <div className="card-elevated">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center card-spacing">
         <div>
           <h3 className="text-xl font-bold text-slate-900">
             Hole {currentHole} - Par {currentHoleInfo.par}

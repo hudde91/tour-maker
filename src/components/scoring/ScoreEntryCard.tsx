@@ -1,5 +1,6 @@
 import { Player, HoleInfo, PlayerScore } from "../../types";
 import { storage } from "../../lib/storage";
+import { getScoreInfo } from "../../lib/scoreUtils";
 
 interface ScoreEntryCardProps {
   player: Player;
@@ -30,77 +31,6 @@ export const ScoreEntryCard = ({
   // const effectivePar = par + strokesForHole;
   const effectivePar = par;
 
-  const getScoreInfo = (score: number) => {
-    if (score === 0 || !score)
-      return {
-        bg: "bg-slate-100 border-slate-200",
-        text: "text-slate-400",
-        name: "No Score",
-        badgeColor: "bg-slate-100 text-slate-500",
-      };
-
-    // Handle hole-in-one first (always score = 1)
-    if (score === 1) {
-      return {
-        bg: "bg-gradient-to-br from-purple-100 to-pink-100 border-purple-300 shadow-lg",
-        text: "text-purple-900",
-        name: "Hole-in-One! 🏌️‍♂️",
-        badgeColor: "bg-purple-500 text-white",
-      };
-    }
-
-    const scoreToPar = score - effectivePar;
-
-    if (scoreToPar <= -3)
-      return {
-        bg: "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-300 shadow-md",
-        text: "text-purple-900",
-        name: "Double Eagle",
-        badgeColor: "bg-purple-500 text-white",
-      };
-    if (scoreToPar === -2)
-      return {
-        bg: "bg-gradient-to-br from-yellow-50 to-amber-100 border-amber-300 shadow-md",
-        text: "text-amber-900",
-        name: "Eagle",
-        badgeColor: "bg-amber-500 text-white",
-      };
-    if (scoreToPar === -1)
-      return {
-        bg: "bg-gradient-to-br from-red-50 to-red-100 border-red-300 shadow-md",
-        text: "text-red-900",
-        name: "Birdie",
-        badgeColor: "bg-red-500 text-white",
-      };
-    if (scoreToPar === 0)
-      return {
-        bg: "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-300 shadow-md",
-        text: "text-blue-900",
-        name: "Par",
-        badgeColor: "bg-blue-500 text-white",
-      };
-    if (scoreToPar === 1)
-      return {
-        bg: "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-300 shadow-md",
-        text: "text-orange-900",
-        name: "Bogey",
-        badgeColor: "bg-orange-500 text-white",
-      };
-    if (scoreToPar === 2)
-      return {
-        bg: "bg-gradient-to-br from-red-100 to-red-200 border-red-400 shadow-md",
-        text: "text-red-900",
-        name: "Double Bogey",
-        badgeColor: "bg-red-600 text-white",
-      };
-    return {
-      bg: "bg-gradient-to-br from-red-200 to-red-300 border-red-500 shadow-md",
-      text: "text-red-900",
-      name: `+${scoreToPar}`,
-      badgeColor: "bg-red-700 text-white",
-    };
-  };
-
   const handleScoreChange = (newScore: number) => {
     onScoreChange(newScore);
   };
@@ -109,7 +39,7 @@ export const ScoreEntryCard = ({
     onScoreChange(0);
   };
 
-  const scoreInfo = getScoreInfo(currentScore);
+  const scoreInfo = getScoreInfo(currentScore, effectivePar);
 
   // Generate score options (typically 1-10 for most holes)
   const generateScoreOptions = () => {
@@ -118,7 +48,7 @@ export const ScoreEntryCard = ({
     const maxScore = Math.max(10, effectivePar + 6); // At least up to effective par + 6
 
     for (let score = minScore; score <= maxScore; score++) {
-      const info = getScoreInfo(score);
+      const info = getScoreInfo(score, effectivePar);
       options.push({
         score,
         name: info.name,

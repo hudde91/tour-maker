@@ -100,14 +100,14 @@ export const TotalScoreCard = ({
       {isEditing ? (
         /* EDITING MODE - Better desktop layout */
         <div className="bg-slate-50 rounded-lg p-6">
-          <div className="text-center mb-6">
+          <div className="text-center card-spacing">
             <h4 className="text-lg font-semibold text-slate-900">
               Enter Round Score
             </h4>
           </div>
 
           {/* Desktop: Side by side, Mobile: Stacked */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 card-spacing">
             {/* Total Score Input */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-slate-700 text-center md:text-left">
@@ -147,7 +147,7 @@ export const TotalScoreCard = ({
 
           {/* Score Preview - Compact desktop layout */}
           {previewScore > 0 && (
-            <div className="bg-white rounded-lg p-4 border border-slate-200 mb-6">
+            <div className="bg-white rounded-lg p-4 border border-slate-200 card-spacing">
               <h5 className="font-medium text-slate-800 mb-3 text-center">
                 Score Preview
               </h5>

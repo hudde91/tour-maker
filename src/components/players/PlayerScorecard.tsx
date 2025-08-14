@@ -142,7 +142,7 @@ export const PlayerScorecard = ({
           ) : (
             <>
               {/* Round Scores */}
-              <div className="space-y-3 mb-6">
+              <div className="space-y-3 card-spacing">
                 {playerRounds.map((round, index) => {
                   const playerScore = round.scores[player.id];
                   const totalPar = storage.getTotalPar(round);

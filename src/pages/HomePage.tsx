@@ -112,15 +112,15 @@ export const HomePage = () => {
 
       <div className="px-4 -mt-6 pb-8 w-full max-w-6xl mx-auto">
         {/* Create Tournament Card */}
-        <div className="card-elevated mb-8 w-full max-w-2xl mx-auto">
+        <div className="card-elevated section-spacing w-full max-w-2xl mx-auto">
           <div className="text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+            <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto card-spacing shadow-xl">
               <span className="text-3xl">⛳</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-800 mb-3">
               Create New Tournament
             </h2>
-            <p className="text-slate-600 text-lg mb-8 leading-relaxed">
+            <p className="text-slate-600 text-lg section-spacing leading-relaxed">
               Set up a professional golf tournament with players, teams, and
               multiple rounds
             </p>
@@ -135,7 +135,7 @@ export const HomePage = () => {
 
         {/* Tournaments Section */}
         <div className="section-spacing">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 w-full max-w-5xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 section-spacing w-full max-w-5xl mx-auto">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
                 Your Tournaments
@@ -152,13 +152,13 @@ export const HomePage = () => {
           {tours.length === 0 ? (
             <div className="card-elevated w-full max-w-2xl mx-auto">
               <div className="text-center py-16">
-                <div className="w-24 h-24 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <div className="w-24 h-24 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto card-spacing">
                   <span className="text-4xl">📋</span>
                 </div>
                 <h3 className="text-2xl font-bold text-slate-700 mb-4">
                   No Tournaments Yet
                 </h3>
-                <p className="text-slate-500 text-lg mb-8 leading-relaxed max-w-md mx-auto">
+                <p className="text-slate-500 text-lg section-spacing leading-relaxed max-w-md mx-auto">
                   Create your first tournament to get started with professional
                   golf management
                 </p>

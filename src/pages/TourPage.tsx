@@ -66,13 +66,13 @@ export const TourPage = () => {
       <div className="min-h-screen bg-slate-50 safe-area-top">
         <div className="p-6">
           <div className="card text-center py-12">
-            <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto card-spacing">
               <span className="text-4xl">❌</span>
             </div>
             <h3 className="text-xl font-semibold text-slate-700 mb-3">
               Tournament Not Found
             </h3>
-            <p className="text-slate-500 mb-6">
+            <p className="text-slate-500 card-spacing">
               The tournament you're looking for doesn't exist or has been
               removed.
             </p>
@@ -145,8 +145,8 @@ export const TourPage = () => {
 
       <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto">
         {/* Tournament Overview */}
-        <div className="card-elevated mb-6 w-full max-w-4xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="card-elevated card-spacing w-full max-w-4xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 card-spacing">
             <h2 className="section-header">Tournament Overview</h2>
             <span
               className={`px-3 py-1 rounded-full text-sm font-semibold self-start sm:self-auto ${
@@ -210,8 +210,8 @@ export const TourPage = () => {
         </div>
 
         {/* Players Section with Scorecards */}
-        <div className="card mb-6 w-full max-w-5xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="card card-spacing w-full max-w-5xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 card-spacing">
             <div>
               <h2 className="section-header">Tournament Players</h2>
               <p className="text-slate-600 text-sm">
@@ -229,13 +229,13 @@ export const TourPage = () => {
 
           {tour.players.length === 0 ? (
             <div className="text-center py-12 max-w-md mx-auto">
-              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto card-spacing">
                 <span className="text-4xl">👥</span>
               </div>
               <h3 className="text-xl font-semibold text-slate-700 mb-3">
                 No Players Registered
               </h3>
-              <p className="text-slate-500 mb-6">
+              <p className="text-slate-500 card-spacing">
                 Add players to get your tournament started
               </p>
               <button
@@ -262,8 +262,8 @@ export const TourPage = () => {
 
         {/* Teams Section - Only for team formats */}
         {(tour.format === "team" || tour.format === "ryder-cup") && (
-          <div className="card mb-6 w-full max-w-5xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div className="card card-spacing w-full max-w-5xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 card-spacing">
               <div>
                 <h2 className="section-header">Tournament Teams</h2>
                 <p className="text-slate-600 text-sm">
@@ -281,13 +281,13 @@ export const TourPage = () => {
 
             {!tour.teams || tour.teams.length === 0 ? (
               <div className="text-center py-12 max-w-md mx-auto">
-                <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto card-spacing">
                   <span className="text-4xl">🏗️</span>
                 </div>
                 <h3 className="text-xl font-semibold text-slate-700 mb-3">
                   No Teams Created
                 </h3>
-                <p className="text-slate-500 mb-6">
+                <p className="text-slate-500 card-spacing">
                   Create teams to organize your tournament competition
                 </p>
                 <button
@@ -339,14 +339,14 @@ export const TourPage = () => {
 
         {/* Tournament Leaderboard Section */}
         {tour.players.length > 0 && tour.rounds.length > 0 && (
-          <div className="mb-6">
+          <div className="card-spacing">
             <TournamentLeaderboard tour={tour} />
           </div>
         )}
 
         {/* Rounds Section */}
-        <div className="card mb-6 w-full max-w-5xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div className="card card-spacing w-full max-w-5xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 card-spacing">
             <div>
               <h2 className="section-header">Tournament Rounds</h2>
               <p className="text-slate-600 text-sm">
@@ -364,13 +364,13 @@ export const TourPage = () => {
 
           {tour.rounds.length === 0 ? (
             <div className="text-center py-12 max-w-md mx-auto">
-              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto card-spacing">
                 <span className="text-4xl">🏌️</span>
               </div>
               <h3 className="text-xl font-semibold text-slate-700 mb-3">
                 No Rounds Created
               </h3>
-              <p className="text-slate-500 mb-6">
+              <p className="text-slate-500 card-spacing">
                 Create tournament rounds to start playing golf
               </p>
               <Link to={`/tour/${tourId}/create-round`} className="btn-primary">

@@ -126,7 +126,9 @@ export const CreateTourPage = () => {
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Tournament Details Section */}
             <div>
-              <h2 className="section-header mb-6">Tournament Details</h2>
+              <h2 className="section-header card-spacing">
+                Tournament Details
+              </h2>
 
               <div className="space-y-6">
                 {/* Tournament Name */}
@@ -167,7 +169,9 @@ export const CreateTourPage = () => {
 
             {/* Tournament Format Section */}
             <div>
-              <h2 className="section-header mb-6">Competition Format</h2>
+              <h2 className="section-header card-spacing">
+                Competition Format
+              </h2>
 
               <div className="space-y-4">
                 {tournamentFormats.map((format) => (

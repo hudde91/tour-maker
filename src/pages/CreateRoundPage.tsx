@@ -251,7 +251,7 @@ export const CreateRoundPage = () => {
 
           {/* Round Information */}
           <div className="card-elevated">
-            <h2 className="section-header mb-6">Round Information</h2>
+            <h2 className="section-header card-spacing">Round Information</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="form-group">
@@ -284,7 +284,7 @@ export const CreateRoundPage = () => {
                 <label className="form-label">Game Format *</label>
 
                 {/* Standard Formats */}
-                <div className="mb-6">
+                <div className="card-spacing">
                   <h4 className="text-sm font-medium text-slate-700 mb-3">
                     Standard Formats
                   </h4>
@@ -395,7 +395,7 @@ export const CreateRoundPage = () => {
 
           {/* Course Information */}
           <div className="card-elevated">
-            <h2 className="section-header mb-6">Course Information</h2>
+            <h2 className="section-header card-spacing">Course Information</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="form-group">
@@ -454,7 +454,7 @@ export const CreateRoundPage = () => {
 
           {/* Course Layout - Detailed Hole Information */}
           <div className="card-elevated">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center card-spacing">
               <h2 className="section-header">Course Layout</h2>
               <div className="flex items-center gap-4 text-sm">
                 <span className="text-slate-600">Total Par: {totalPar}</span>
@@ -465,7 +465,7 @@ export const CreateRoundPage = () => {
             </div>
 
             {/* Manual Total Par Option */}
-            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6">
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 card-spacing">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="font-semibold text-slate-900">Par Setup</h3>
@@ -624,7 +624,7 @@ export const CreateRoundPage = () => {
 
           {/* Tournament Settings */}
           <div className="card-elevated">
-            <h2 className="section-header mb-6">Tournament Settings</h2>
+            <h2 className="section-header card-spacing">Tournament Settings</h2>
 
             <div className="space-y-6">
               <div className="bg-blue-50 p-4 rounded-lg">

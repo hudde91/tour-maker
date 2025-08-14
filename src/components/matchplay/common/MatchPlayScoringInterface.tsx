@@ -56,7 +56,7 @@ export const MatchPlayScoringInterface = ({
   if (matches.length === 0) {
     return (
       <div className="card text-center py-12">
-        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto card-spacing">
           <span className="text-4xl">⚔️</span>
         </div>
         <h3 className="text-xl font-semibold text-slate-700 mb-3">

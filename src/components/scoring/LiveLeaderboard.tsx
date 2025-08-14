@@ -39,7 +39,7 @@ export const LiveLeaderboard = ({
   return (
     <div className="card-elevated max-w-4xl mx-auto">
       {/* Leaderboard Header with Toggle */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 card-spacing">
         <div>
           <h3 className="section-header flex items-center gap-2">
             <span className="text-2xl">🏆</span>
@@ -103,7 +103,7 @@ export const LiveLeaderboard = ({
         <>
           {playersWithScores.length === 0 ? (
             <div className="text-center py-12">
-              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto card-spacing">
                 <span className="text-4xl">⏳</span>
               </div>
               <h4 className="text-lg font-semibold text-slate-700 mb-2">

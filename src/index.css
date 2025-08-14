@@ -91,125 +91,14 @@
     @apply bg-slate-100 text-slate-600 border border-slate-200 shadow-sm;
   }
 
-  /* Enhanced Score Colors (Professional Golf) */
-  .score-eagle {
-    @apply bg-yellow-100 text-yellow-900 border border-yellow-300 shadow-sm;
-  }
-
-  .score-birdie {
-    @apply bg-red-100 text-red-900 border border-red-300 shadow-sm;
-  }
-
-  .score-par {
-    @apply bg-blue-100 text-blue-900 border border-blue-300 shadow-sm;
-  }
-
-  .score-bogey {
-    @apply bg-orange-100 text-orange-900 border border-orange-300 shadow-sm;
-  }
-
-  .score-double {
-    @apply bg-red-200 text-red-900 border border-red-400 shadow-sm;
-  }
-
   /* Enhanced Navigation */
   .nav-back {
     @apply flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-slate-300 shadow-sm hover:bg-slate-50 focus:bg-slate-50 transition-colors focus:ring-4 focus:ring-emerald-200 outline-none;
-  }
-
-  /* Enhanced Professional Tables/Lists */
-  .leaderboard-row {
-    @apply flex items-center justify-between p-4 bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md focus-within:shadow-md transition-all duration-200;
-  }
-
-  .leaderboard-leader {
-    @apply bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-300 shadow-lg;
-  }
-
-  /* ENHANCED Course Hole Styles - MUCH BETTER VISIBILITY */
-  .hole-button {
-    @apply aspect-square flex flex-col items-center justify-center rounded-xl border-2 font-bold transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg outline-none cursor-pointer;
-  }
-
-  .hole-current {
-    @apply bg-emerald-600 text-white border-emerald-700 shadow-xl scale-110 ring-4 ring-emerald-300 ring-opacity-50;
-  }
-
-  .hole-current:hover {
-    @apply bg-emerald-700 border-emerald-800 shadow-2xl scale-[1.15] ring-4 ring-emerald-200;
-  }
-
-  .hole-current:focus {
-    @apply bg-emerald-700 border-emerald-800 shadow-2xl scale-[1.15] ring-4 ring-emerald-200;
-  }
-
-  .hole-completed {
-    @apply bg-emerald-100 text-emerald-800 border-emerald-400 hover:bg-emerald-200 hover:border-emerald-500 hover:scale-105 focus:bg-emerald-200 focus:border-emerald-500 focus:scale-105 focus:ring-4 focus:ring-emerald-200;
-  }
-
-  .hole-pending {
-    @apply bg-white text-slate-600 border-slate-400 hover:bg-slate-50 hover:border-slate-500 hover:text-slate-700 hover:scale-105 focus:bg-slate-50 focus:border-slate-500 focus:text-slate-700 focus:scale-105 focus:ring-4 focus:ring-slate-200;
-  }
-
-  /* Enhanced Team Colors (Professional Palette) */
-  .team-red {
-    @apply bg-red-600 shadow-lg;
-  }
-  .team-blue {
-    @apply bg-blue-600 shadow-lg;
-  }
-  .team-green {
-    @apply bg-emerald-600 shadow-lg;
-  }
-  .team-yellow {
-    @apply bg-amber-500 shadow-lg;
-  }
-  .team-purple {
-    @apply bg-purple-600 shadow-lg;
-  }
-  .team-orange {
-    @apply bg-orange-600 shadow-lg;
-  }
-  .team-cyan {
-    @apply bg-cyan-600 shadow-lg;
-  }
-  .team-pink {
-    @apply bg-pink-600 shadow-lg;
-  }
-  .team-indigo {
-    @apply bg-indigo-600 shadow-lg;
-  }
-  .team-gray {
-    @apply bg-slate-600 shadow-lg;
   }
 }
 
 /* Enhanced Professional Typography Scale */
 @layer utilities {
-  .text-display {
-    @apply text-4xl font-bold tracking-tight text-slate-900;
-  }
-
-  .text-headline {
-    @apply text-2xl font-semibold tracking-tight text-slate-800;
-  }
-
-  .text-title {
-    @apply text-xl font-medium tracking-tight text-slate-700;
-  }
-
-  .text-body {
-    @apply text-base font-normal text-slate-600;
-  }
-
-  .text-caption {
-    @apply text-sm font-medium text-slate-500;
-  }
-
-  .text-overline {
-    @apply text-xs font-semibold uppercase tracking-wider text-slate-400;
-  }
-
   /* Professional Spacing */
   .section-spacing {
     @apply mb-8;
@@ -228,39 +117,6 @@
   .shadow-elevated {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
       0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  }
-
-  /* Enhanced Golf-specific patterns */
-  .fairway-pattern {
-    background-image: repeating-linear-gradient(
-      45deg,
-      rgba(34, 197, 94, 0.05),
-      rgba(34, 197, 94, 0.05) 10px,
-      transparent 10px,
-      transparent 20px
-    );
-  }
-
-  .green-pattern {
-    background-image: radial-gradient(
-      circle at center,
-      rgba(21, 128, 61, 0.1) 0%,
-      rgba(34, 197, 94, 0.05) 50%,
-      transparent 100%
-    );
-  }
-
-  /* Enhanced Focus Rings - Professional */
-  .focus-ring-emerald {
-    @apply focus:ring-4 focus:ring-emerald-200 focus:ring-opacity-50 outline-none;
-  }
-
-  .focus-ring-blue {
-    @apply focus:ring-4 focus:ring-blue-200 focus:ring-opacity-50 outline-none;
-  }
-
-  .focus-ring-red {
-    @apply focus:ring-4 focus:ring-red-200 focus:ring-opacity-50 outline-none;
   }
 }
 
@@ -377,61 +233,6 @@
   .btn-secondary {
     @apply py-3 px-4 text-sm;
   }
-
-  .hole-button {
-    @apply text-xs;
-  }
-
-  .hole-current {
-    @apply scale-[1.08];
-  }
-
-  .hole-current:hover,
-  .hole-current:focus {
-    @apply scale-[1.12];
-  }
-}
-
-/* Enhanced Professional Toggle Switches */
-.toggle-switch {
-  @apply relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:ring-4 focus:ring-emerald-200 outline-none cursor-pointer;
-}
-
-.toggle-switch-on {
-  @apply bg-emerald-600;
-}
-
-.toggle-switch-off {
-  @apply bg-slate-300;
-}
-
-.toggle-knob {
-  @apply inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform;
-}
-
-.toggle-knob-on {
-  @apply translate-x-6;
-}
-
-.toggle-knob-off {
-  @apply translate-x-1;
-}
-
-/* Enhanced Professional Score Buttons */
-.score-button {
-  @apply aspect-square rounded-xl font-bold text-lg transition-all duration-200 border-2 shadow-sm hover:shadow-lg focus:shadow-xl outline-none cursor-pointer;
-}
-
-.score-button:hover {
-  @apply scale-105;
-}
-
-.score-button:focus {
-  @apply scale-105 ring-4 ring-opacity-50;
-}
-
-.score-button:active {
-  @apply scale-95;
 }
 
 /* Professional Input Focus States */
@@ -444,44 +245,4 @@ textarea:focus {
 /* Enhanced Button Focus States */
 button:focus {
   @apply outline-none;
-}
-
-/* Professional Loading States */
-.loading-shimmer {
-  @apply animate-pulse bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200;
-  background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-.hole-button {
-  @apply relative flex flex-col items-center justify-center rounded-xl border-2 font-semibold transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg outline-none cursor-pointer;
-}
-
-.hole-current {
-  @apply bg-emerald-600 text-white border-emerald-700 shadow-xl scale-110 ring-4 ring-emerald-300 ring-opacity-50;
-}
-
-.hole-current:hover {
-  @apply bg-emerald-700 border-emerald-800 shadow-2xl scale-[1.15] ring-4 ring-emerald-200;
-}
-
-.hole-current:focus {
-  @apply bg-emerald-700 border-emerald-800 shadow-2xl scale-[1.15] ring-4 ring-emerald-200;
-}
-
-.hole-completed {
-  @apply bg-emerald-100 text-emerald-800 border-emerald-400 hover:bg-emerald-200 hover:border-emerald-500 hover:scale-105 focus:bg-emerald-200 focus:border-emerald-500 focus:scale-105 focus:ring-4 focus:ring-emerald-200;
-}
-
-.hole-pending {
-  @apply bg-white text-slate-600 border-slate-400 hover:bg-slate-50 hover:border-slate-500 hover:text-slate-700 hover:scale-105 focus:bg-slate-50 focus:border-slate-500 focus:text-slate-700 focus:scale-105 focus:ring-4 focus:ring-slate-200;
 }

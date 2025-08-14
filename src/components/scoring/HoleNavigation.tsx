@@ -47,7 +47,7 @@ export const HoleNavigation = ({
       </div>
 
       {/* Compact Hole Grid */}
-      <div className="grid grid-cols-9 gap-2 mb-6">
+      <div className="grid grid-cols-9 gap-2 card-spacing">
         {holes.map((hole) => {
           const status = getHoleStatus(hole.number);
           return (

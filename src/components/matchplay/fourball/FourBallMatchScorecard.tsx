@@ -196,7 +196,7 @@ export const FourBallMatchScorecard = ({
   return (
     <div className="card-elevated">
       {/* Header */}
-      <div className="text-center mb-6">
+      <div className="text-center card-spacing">
         <h3 className="text-2xl font-bold text-slate-900 mb-2">
           Hole {currentHole} - Par {currentHoleInfo.par}
         </h3>
@@ -216,7 +216,7 @@ export const FourBallMatchScorecard = ({
       </div>
 
       {/* Current Match Status */}
-      <div className="text-center mb-6">
+      <div className="text-center card-spacing">
         <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
           <h4 className="font-semibold text-emerald-900 mb-2">Match Status</h4>
           <div className="text-lg font-bold text-emerald-800">
@@ -227,7 +227,7 @@ export const FourBallMatchScorecard = ({
 
       {/* Team A - Individual Player Scoring */}
       <div
-        className="border-3 rounded-xl p-6 mb-6"
+        className="border-3 rounded-xl p-6 card-spacing"
         style={{
           borderColor: teamAInfo.color,
           backgroundColor: teamAInfo.color + "08",
@@ -302,7 +302,7 @@ export const FourBallMatchScorecard = ({
       </div>
 
       {/* VS Divider with result */}
-      <div className="relative mb-6">
+      <div className="relative card-spacing">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t-2 border-slate-300"></div>
         </div>
@@ -316,7 +316,7 @@ export const FourBallMatchScorecard = ({
 
       {/* Team B - Individual Player Scoring */}
       <div
-        className="border-3 rounded-xl p-6 mb-6"
+        className="border-3 rounded-xl p-6 card-spacing"
         style={{
           borderColor: teamBInfo.color,
           backgroundColor: teamBInfo.color + "08",
@@ -391,7 +391,7 @@ export const FourBallMatchScorecard = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-3 mb-6">
+      <div className="flex gap-3 card-spacing">
         <button onClick={resetAllScores} className="btn-secondary flex-1">
           Clear All Scores
         </button>

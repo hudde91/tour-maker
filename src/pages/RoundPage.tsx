@@ -239,7 +239,7 @@ export const RoundPage = () => {
       <div className="min-h-screen bg-slate-50 safe-area-top">
         <div className="p-6 w-full max-w-6xl mx-auto">
           <div className="card text-center py-12">
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto card-spacing">
               <svg
                 className="w-10 h-10 text-red-500"
                 fill="none"
@@ -257,7 +257,7 @@ export const RoundPage = () => {
             <h3 className="text-xl font-semibold text-slate-700 mb-3">
               Round Not Found
             </h3>
-            <p className="text-slate-500 mb-6">
+            <p className="text-slate-500 card-spacing">
               The tournament round you're looking for doesn't exist or has been
               removed.
             </p>
@@ -317,7 +317,7 @@ export const RoundPage = () => {
       <div className="px-4 mt-4 pb-24 w-full max-w-6xl mx-auto">
         {/* Live Leaderboard (Collapsible) */}
         {showLeaderboard && (
-          <div className="mb-6 animate-fade-in w-full max-w-5xl mx-auto">
+          <div className="card-spacing animate-fade-in w-full max-w-5xl mx-auto">
             <LiveLeaderboard tour={tour} round={round} />
           </div>
         )}
