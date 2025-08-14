@@ -81,22 +81,3 @@ export const getScoreInfo = (score: number, par: number): ScoreInfo => {
     badgeColor: "bg-red-700 text-white",
   };
 };
-
-export const generateScoreOptions = (par: number, maxScore = 10) => {
-  const options = [];
-  const minScore = 1;
-  const actualMaxScore = Math.max(maxScore, par + 6);
-
-  for (let score = minScore; score <= actualMaxScore; score++) {
-    const info = getScoreInfo(score, par);
-    options.push({
-      score,
-      name: info.name,
-      bg: info.bg,
-      text: info.text,
-      badgeColor: info.badgeColor,
-    });
-  }
-
-  return options;
-};

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { Tour, Round } from "../types";
-import { FormatConfig } from "../lib/roundFormatManager";
+import { Tour, Round } from "../../types";
+import { FormatConfig } from "../../lib/roundFormatManager";
 
 interface RoundHeaderProps {
   tour: Tour;
