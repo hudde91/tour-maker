@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTours, useDeleteTour } from "../hooks/useTours";
-import { ConfirmDialog } from "../components/ConfirmDialog";
-import { useToast } from "../components/Toast";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
+import { useToast } from "../components/ui/Toast";
 
 export const HomePage = () => {
   const { data: tours = [], isLoading } = useTours();

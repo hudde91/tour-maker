@@ -11,19 +11,19 @@ import {
   useUpdateTotalScore,
 } from "../hooks/useScoring";
 import { useUpdateMatchHole } from "../hooks/useMatchPlay";
-import { LiveLeaderboard } from "../components/LiveLeaderboard";
-import { ConfirmDialog } from "../components/ConfirmDialog";
-import { RoundHeader } from "../components/RoundHeader";
-import { PreRoundComponent } from "../components/PreRoundComponent";
-import { IndividualScoringInterface } from "../components/IndividualScoringInterface";
-import { ScrambleScoringInterface } from "../components/ScrambleScoringInterface";
-import { BestBallScoringInterface } from "../components/BestBallScoringInterface";
-import { FoursomesScoringInterface } from "../components/FoursomesScoringInterface";
-import { FourBallMatchPlayInterface } from "../components/FourBallMatchPlayInterface";
-import { SinglesMatchPlayInterface } from "../components/SinglesMatchPlayInterface";
-import { CaptainPairingInterface } from "../components/CaptainPairingInterface";
+import { LiveLeaderboard } from "../components/scoring/LiveLeaderboard";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
+import { IndividualScoringInterface } from "../components/formats/individual/IndividualScoringInterface";
+import { ScrambleScoringInterface } from "../components/formats/scramble/ScrambleScoringInterface";
+import { BestBallScoringInterface } from "../components/formats/bestball/BestBallScoringInterface";
+import { FoursomesScoringInterface } from "../components/matchplay/foursomes/FoursomesScoringInterface";
+import { FourBallMatchPlayInterface } from "../components/matchplay/fourball/FourBallMatchPlayInterface";
+import { SinglesMatchPlayInterface } from "../components/matchplay/singles/SinglesMatchPlayInterface";
 import { getFormatConfig } from "../lib/roundFormatManager";
 import { storage } from "../lib/storage";
+import { CaptainPairingInterface } from "../components/matchplay/rydercup/CaptainPairingInterface";
+import { PreRoundComponent } from "../components/rounds/PreRoundComponent";
+import { RoundHeader } from "../components/rounds/RoundHeader";
 
 export const RoundPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();

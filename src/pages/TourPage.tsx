@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useTour, useDeleteTour } from "../hooks/useTours";
-import { AddPlayerSheet } from "../components/AddPlayerSheet";
-import { PlayerScorecard } from "../components/PlayerScorecard";
-import { CreateTeamSheet } from "../components/CreateTeamSheet";
-import { TeamCard } from "../components/TeamCard";
-import { RoundCard } from "../components/RoundCard";
-import { TournamentLeaderboard } from "../components/TournamentLeaderboard";
-import { ConfirmDialog } from "../components/ConfirmDialog";
-import { useToast } from "../components/Toast";
+import { PlayerScorecard } from "../components/players/PlayerScorecard";
+import { TournamentLeaderboard } from "../components/tournament/TournamentLeaderboard";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
+import { useToast } from "../components/ui/Toast";
+import { AddPlayerSheet } from "../components/players/AddPlayerSheet";
+import { RoundCard } from "../components/rounds/RoundCard";
+import { CreateTeamSheet } from "../components/teams/CreateTeamSheet";
+import { TeamCard } from "../components/teams/TeamCard";
 
 export const TourPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
