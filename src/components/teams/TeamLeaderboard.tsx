@@ -132,16 +132,12 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
                     </div>
 
                     {/* Show team handicap strokes if applied */}
-                    {teamEntry.totalHandicapStrokes &&
-                      teamEntry.totalHandicapStrokes > 0 && (
-                        <div className="text-xs text-slate-500 bg-blue-100 px-2 py-1 rounded">
-                          Gross: {teamEntry.totalScore} (-
-                          {teamEntry.totalHandicapStrokes} HC)
-                        </div>
-                      )}
-
-                    <div className="text-sm font-medium text-slate-600">
-                      Total Strokes
+                    <div className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                      Total strokes: {teamEntry.totalScore}
+                      {teamEntry.totalHandicapStrokes &&
+                      teamEntry.totalHandicapStrokes > 0
+                        ? ` (-${teamEntry.totalHandicapStrokes} HC)`
+                        : ""}
                     </div>
                   </div>
                 </div>
@@ -219,51 +215,6 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
           );
         })}
       </div>
-      {/* Team Championship Summary */}
-      {teamsWithScores.length > 0 && (
-        <div className="card mt-6">
-          <h4 className="subsection-header mb-4 flex items-center gap-2">
-            <span className="text-xl">📊</span>
-            Championship Statistics
-          </h4>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div className="bg-slate-50 rounded-lg p-4">
-              <div className="text-xl mb-2">🎯</div>
-              <div className="text-2xl font-bold text-slate-900">
-                {Math.min(
-                  ...teamsWithScores.map((t) => t.netScore || t.totalScore)
-                )}
-              </div>
-              <div className="text-xs text-slate-500 uppercase tracking-wide">
-                Best Team Score
-              </div>
-            </div>
-            <div className="bg-slate-50 rounded-lg p-4">
-              <div className="text-xl mb-2">📊</div>
-              <div className="text-2xl font-bold text-slate-900">
-                {Math.round(
-                  teamsWithScores.reduce(
-                    (sum, t) => sum + (t.netScore || t.totalScore),
-                    0
-                  ) / teamsWithScores.length
-                )}
-              </div>
-              <div className="text-xs text-slate-500 uppercase tracking-wide">
-                Average Team
-              </div>
-            </div>
-            <div className="bg-slate-50 rounded-lg p-4">
-              <div className="text-xl mb-2">🏆</div>
-              <div className="text-2xl font-bold text-slate-900">
-                {teamsWithScores.length}
-              </div>
-              <div className="text-xs text-slate-500 uppercase tracking-wide">
-                Teams Competing
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

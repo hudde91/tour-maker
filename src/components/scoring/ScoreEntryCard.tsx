@@ -260,9 +260,6 @@ export const ScoreEntryCard = ({
             <div className="text-xl font-bold text-slate-900">
               {playerScore.totalScore || 0}
             </div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Total Strokes
-            </div>
           </div>
           <div>
             <div className="text-xl font-bold text-slate-900">

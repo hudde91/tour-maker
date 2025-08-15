@@ -272,15 +272,11 @@ export const LiveLeaderboard = ({
                         </div>
 
                         {/* Show handicap strokes if applied */}
-                        {entry.handicapStrokes && entry.handicapStrokes > 0 && (
-                          <div className="text-xs text-slate-500 bg-blue-100 px-2 py-1 rounded">
-                            Gross: {entry.totalScore} (-{entry.handicapStrokes}{" "}
-                            HC)
-                          </div>
-                        )}
-
-                        <div className="text-sm font-medium text-slate-600">
-                          Total Strokes
+                        <div className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                          Total strokes: {entry.totalScore}
+                          {entry.handicapStrokes && entry.handicapStrokes > 0
+                            ? ` (-${entry.handicapStrokes} HC)`
+                            : ""}
                         </div>
                       </div>
                     </div>
@@ -291,7 +287,7 @@ export const LiveLeaderboard = ({
           )}
 
           {/* Tournament Summary */}
-          {!isCollapsed && playersWithScores.length > 0 && (
+          {/* {!isCollapsed && playersWithScores.length > 0 && (
             <div className="mt-6 pt-6 border-t border-slate-200 grid grid-cols-3 gap-4 text-center">
               <div className="bg-slate-50 rounded-lg p-4">
                 <div className="text-xl mb-1">🎯</div>
@@ -328,7 +324,7 @@ export const LiveLeaderboard = ({
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Waiting Players */}
           {!isCollapsed && playersWithScores.length < tour.players.length && (

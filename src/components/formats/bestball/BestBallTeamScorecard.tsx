@@ -1,7 +1,6 @@
-import { Team, Tour, Round, Player } from "../../../types";
+import { Team, Tour, Round } from "../../../types";
 import { ScoreEntryCard } from "../../scoring/ScoreEntryCard";
 import { TotalScoreCard } from "../../scoring/TotalScoreCard";
-import { storage } from "../../../lib/storage";
 
 interface BestBallTeamScorecardProps {
   team: Team;
@@ -111,9 +110,6 @@ export const BestBallTeamScorecard = ({
         <div className="text-right">
           <div className="text-2xl font-bold text-slate-900">
             {teamScores.totalScore || "–"}
-          </div>
-          <div className="text-sm font-medium text-slate-600">
-            Total Strokes
           </div>
         </div>
       </div>

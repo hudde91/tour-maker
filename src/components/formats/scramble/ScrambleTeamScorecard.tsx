@@ -1,6 +1,5 @@
 import { getScoreInfo } from "../../../lib/scoreUtils";
 import { Team, Tour, HoleInfo } from "../../../types";
-
 interface ScrambleTeamScorecardProps {
   team: Team;
   tour: Tour;
@@ -128,81 +127,101 @@ export const ScrambleTeamScorecard = ({
               <h4 className="text-sm font-semibold text-slate-800">
                 Team Score - Hole {holeInfo.number}
               </h4>
-              <div className="text-xs text-slate-600">
-                Par {par} • Scramble Format
-              </div>
+              • Scramble Format
             </div>
-            <div className="text-xs text-slate-500 bg-white px-2 py-1 rounded border">
-              <span className="text-emerald-600 font-semibold">
-                TEAM SCRAMBLE
+          </div>
+          <div className="text-xs text-slate-500 bg-white px-2 py-1 rounded border">
+            <span className="text-emerald-600 font-semibold">
+              TEAM SCRAMBLE
+            </span>
+          </div>
+        </div>
+
+        {/* Professional Score Options Grid */}
+        <div className="grid grid-cols-5 gap-2 mb-4">
+          {scoreOptions.slice(0, 10).map((option) => (
+            <button
+              key={option.score}
+              type="button"
+              onClick={() => handleScoreChange(option.score)}
+              className={`relative p-3 rounded-xl border-2 font-bold text-center transition-all duration-200 hover:scale-105 focus:scale-105 outline-none shadow-sm hover:shadow-md ${
+                currentScore === option.score
+                  ? `${option.bg} ${option.text} border-slate-400 ring-2 ring-emerald-300 scale-105`
+                  : "bg-white text-slate-700 border-slate-300 hover:border-slate-400"
+              }`}
+            >
+              <div className="text-lg font-bold mb-1">{option.score}</div>
+              <div className="text-xs leading-tight">
+                {option.score === par
+                  ? "Par"
+                  : option.score === par + 1
+                  ? "Bogey"
+                  : option.score === par + 2
+                  ? "Double"
+                  : option.score === par - 1
+                  ? "Birdie"
+                  : option.score === par - 2
+                  ? "Eagle"
+                  : option.score === 1
+                  ? "Ace!"
+                  : `${option.score} strokes`}
+              </div>
+
+              {/* Selection indicator */}
+              {currentScore === option.score && (
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center">
+                  <svg
+                    className="w-2 h-2 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 8 8"
+                  >
+                    <path d="M3 6L1 4l.7-.7L3 4.6l3.3-3.3L7 2z" />
+                  </svg>
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Score Name Display */}
+        {currentScore > 0 && (
+          <div className="text-center mb-4">
+            <div
+              className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold ${scoreInfo.badgeColor}`}
+            >
+              <span>
+                {currentScore} strokes - {scoreInfo.name}
               </span>
             </div>
           </div>
+        )}
 
-          {/* Professional Score Options Grid */}
-          <div className="grid grid-cols-5 gap-2 mb-4">
-            {scoreOptions.slice(0, 10).map((option) => (
-              <button
-                key={option.score}
-                type="button"
-                onClick={() => handleScoreChange(option.score)}
-                className={`relative p-3 rounded-xl border-2 font-bold text-center transition-all duration-200 hover:scale-105 focus:scale-105 outline-none shadow-sm hover:shadow-md ${
-                  currentScore === option.score
-                    ? `${option.bg} ${option.text} border-slate-400 ring-2 ring-emerald-300 scale-105`
-                    : "bg-white text-slate-700 border-slate-300 hover:border-slate-400"
-                }`}
-              >
-                <div className="text-lg font-bold mb-1">{option.score}</div>
-                <div className="text-xs leading-tight">
-                  {option.score === par
-                    ? "Par"
-                    : option.score === par + 1
-                    ? "Bogey"
-                    : option.score === par + 2
-                    ? "Double"
-                    : option.score === par - 1
-                    ? "Birdie"
-                    : option.score === par - 2
-                    ? "Eagle"
-                    : option.score === 1
-                    ? "Ace!"
-                    : `${option.score} strokes`}
-                </div>
+        {/* Quick Actions */}
+        <div className="flex gap-3">
+          <button
+            onClick={() => handleScoreChange(par)}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg font-semibold text-sm transition-colors"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>
+            Quick Par ({par})
+          </button>
 
-                {/* Selection indicator */}
-                {currentScore === option.score && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center">
-                    <svg
-                      className="w-2 h-2 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 8 8"
-                    >
-                      <path d="M3 6L1 4l.7-.7L3 4.6l3.3-3.3L7 2z" />
-                    </svg>
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
-
-          {/* Score Name Display */}
           {currentScore > 0 && (
-            <div className="text-center mb-4">
-              <div
-                className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold ${scoreInfo.badgeColor}`}
-              >
-                <span>
-                  {currentScore} strokes - {scoreInfo.name}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Quick Actions */}
-          <div className="flex gap-3">
             <button
-              onClick={() => handleScoreChange(par)}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg font-semibold text-sm transition-colors"
+              onClick={handleClearScore}
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-semibold text-sm transition-colors"
             >
               <svg
                 className="w-4 h-4"
@@ -214,34 +233,12 @@ export const ScrambleTeamScorecard = ({
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                  d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-              Quick Par ({par})
+              Clear
             </button>
-
-            {currentScore > 0 && (
-              <button
-                onClick={handleClearScore}
-                className="flex items-center justify-center gap-2 px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-semibold text-sm transition-colors"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-                Clear
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </div>
 

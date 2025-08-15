@@ -109,7 +109,7 @@ export const TotalScoreCard = ({
             {/* Total Score Input */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-slate-700 text-center md:text-left">
-                Total Score *
+                Total strokes *
               </label>
               <input
                 type="number"
@@ -206,9 +206,6 @@ export const TotalScoreCard = ({
                     Gross: {currentTotalScore} (-{effectiveHandicap} HC)
                   </div>
                 )}
-                <div className="text-lg font-medium text-slate-600">
-                  Total Strokes
-                </div>
               </div>
 
               {/* Edit Button - Right side on desktop */}

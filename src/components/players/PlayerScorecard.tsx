@@ -85,11 +85,8 @@ export const PlayerScorecard = ({
         <div className="flex items-center gap-3 md:gap-4">
           {totalScore > 0 && (
             <div className="text-right">
-              <div className="text-xl md:text-2xl font-bold text-slate-900">
-                {totalScore}
-              </div>
               <div className="text-sm font-medium text-slate-600">
-                Total Strokes
+                Total Strokes: {totalScore}
               </div>
             </div>
           )}
@@ -187,98 +184,17 @@ export const PlayerScorecard = ({
                       </div>
 
                       <div className="text-right">
-                        <div className="text-xl md:text-2xl font-bold text-slate-900 mb-1">
+                        <div
+                          className={`text-xl md:text-2xl font-bold mb-1 ${
+                            displayScore < 0 ? "text-red-500" : "text-slate-900"
+                          }`}
+                        >
                           {displayScore}
-                        </div>
-                        {playerScore.handicapStrokes &&
-                          playerScore.handicapStrokes > 0 && (
-                            <div className="text-xs text-slate-500 mb-1">
-                              Gross: {playerScore.totalScore}
-                            </div>
-                          )}
-                        <div className="text-sm font-medium text-slate-600">
-                          Strokes
                         </div>
                       </div>
                     </div>
                   );
                 })}
-              </div>
-
-              {/* Tournament Summary */}
-              <div className="bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-200 rounded-lg p-4">
-                <h5 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                  <span className="text-lg">🏆</span>
-                  Tournament Summary
-                </h5>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="bg-white rounded-lg p-3">
-                    <div className="text-xl mb-1">🎯</div>
-                    <div className="text-xl md:text-2xl font-bold text-slate-900 mb-1">
-                      {totalScore}
-                    </div>
-                    <div className="text-xs text-slate-500 uppercase tracking-wide">
-                      Total Strokes
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-lg p-3">
-                    <div className="text-xl mb-1">📊</div>
-                    <div className="text-xl md:text-2xl font-bold text-slate-900 mb-1">
-                      {playerRounds.length > 0
-                        ? Math.round(totalScore / playerRounds.length)
-                        : 0}
-                    </div>
-                    <div className="text-xs text-slate-500 uppercase tracking-wide">
-                      Avg Round
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-lg p-3">
-                    <div className="text-xl mb-1">🔄</div>
-                    <div className="text-xl md:text-2xl font-bold text-slate-900 mb-1">
-                      {playerRounds.length}
-                    </div>
-                    <div className="text-xs text-slate-500 uppercase tracking-wide">
-                      Rounds
-                    </div>
-                  </div>
-                </div>
-
-                {/* Best Round */}
-                {playerRounds.length > 1 && (
-                  <div className="mt-4 pt-4 border-t border-emerald-200">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-slate-700 flex items-center gap-2">
-                        <span className="text-base">🌟</span>
-                        Best Round:
-                      </span>
-                      <div className="text-right">
-                        {(() => {
-                          const bestRound = playerRounds.reduce(
-                            (best, round) => {
-                              const currentScore =
-                                round.scores[player.id]?.totalScore || Infinity;
-                              const bestScore = best
-                                ? best.scores[player.id]?.totalScore || Infinity
-                                : Infinity;
-                              return currentScore < bestScore ? round : best;
-                            }
-                          );
-                          const bestScore = bestRound.scores[player.id];
-                          return (
-                            <div>
-                              <span className="font-bold text-slate-900">
-                                {bestScore.totalScore}
-                              </span>
-                              <span className="ml-2 text-sm font-medium text-slate-600">
-                                strokes
-                              </span>
-                            </div>
-                          );
-                        })()}
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </>
           )}

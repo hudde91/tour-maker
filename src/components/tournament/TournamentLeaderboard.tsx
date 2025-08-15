@@ -252,8 +252,12 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                     >
                       {teamEntry.netScore || teamEntry.totalScore}
                     </div>
-                    <div className="text-sm font-medium text-slate-600">
-                      Total Strokes
+                    <div className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                      Total strokes: {teamEntry.totalScore}
+                      {teamEntry.totalHandicapStrokes &&
+                      teamEntry.totalHandicapStrokes > 0
+                        ? ` (-${teamEntry.totalHandicapStrokes} HC)`
+                        : ""}
                     </div>
                   </div>
                 </div>
@@ -366,14 +370,11 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                     </div>
 
                     {/* Show handicap strokes if applied */}
-                    {entry.handicapStrokes && entry.handicapStrokes > 0 && (
-                      <div className="text-xs text-slate-500 bg-blue-100 px-2 py-1 rounded">
-                        Gross: {entry.totalScore} (-{entry.handicapStrokes} HC)
-                      </div>
-                    )}
-
-                    <div className="text-sm font-medium text-slate-600">
-                      Total Strokes
+                    <div className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                      Total strokes: {entry.totalScore}
+                      {entry.handicapStrokes && entry.handicapStrokes > 0
+                        ? ` (-${entry.handicapStrokes} HC)`
+                        : ""}
                     </div>
                   </div>
                 </div>
@@ -390,52 +391,6 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
               </p>
             </div>
           )}
-        </div>
-      )}
-
-      {/* Tournament Statistics */}
-      {playersWithScores.length > 0 && (
-        <div className="mt-6 pt-6 border-t border-slate-200">
-          <h3 className="subsection-header mb-4 flex items-center gap-2">
-            <span className="text-xl">📊</span>
-            Tournament Statistics
-          </h3>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div className="bg-slate-50 rounded-lg p-4">
-              <div className="text-xl mb-2">🎯</div>
-              <div className="text-2xl font-bold text-slate-900">
-                {Math.min(
-                  ...playersWithScores.map((p) => p.netScore || p.totalScore)
-                )}
-              </div>
-              <div className="text-xs text-slate-500 uppercase tracking-wide">
-                Low Score
-              </div>
-            </div>
-            <div className="bg-slate-50 rounded-lg p-4">
-              <div className="text-xl mb-2">📊</div>
-              <div className="text-2xl font-bold text-slate-900">
-                {Math.round(
-                  playersWithScores.reduce(
-                    (sum, p) => sum + (p.netScore || p.totalScore),
-                    0
-                  ) / playersWithScores.length
-                )}
-              </div>
-              <div className="text-xs text-slate-500 uppercase tracking-wide">
-                Average
-              </div>
-            </div>
-            <div className="bg-slate-50 rounded-lg p-4">
-              <div className="text-xl mb-2">✅</div>
-              <div className="text-2xl font-bold text-slate-900">
-                {tour.rounds.filter((r) => r.status === "completed").length}
-              </div>
-              <div className="text-xs text-slate-500 uppercase tracking-wide">
-                Rounds Complete
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </div>
