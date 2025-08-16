@@ -111,6 +111,9 @@ export const BestBallTeamScorecard = ({
           <div className="text-2xl font-bold text-slate-900">
             {teamScores.totalScore || "–"}
           </div>
+          <div className="text-sm font-medium text-slate-600">
+            Total Strokes
+          </div>
         </div>
       </div>
 

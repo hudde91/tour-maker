@@ -44,9 +44,7 @@ export const MatchPlayScoringInterface = ({
     matches.forEach((match) => {
       const holeResults = new Array(round.holes).fill(0);
       match.holes.forEach((hole) => {
-        if (hole.result !== "tie") {
-          holeResults[hole.holeNumber - 1] = 1; // mark as completed
-        }
+        holeResults[hole.holeNumber - 1] = 1; // mark as completed
       });
       progress[match.id] = holeResults;
     });

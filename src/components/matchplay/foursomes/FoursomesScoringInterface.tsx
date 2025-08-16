@@ -33,21 +33,13 @@ export const FoursomesScoringInterface = ({
     return tour.teams?.find((t) => t.id === teamId)?.name || `Team ${teamId}`;
   };
 
-  const getPlayerNames = (playerIds: string[]) => {
-    return playerIds.map(
-      (id) => tour.players.find((p) => p.id === id)?.name || "Unknown"
-    );
-  };
-
   // Get match progress for hole navigation
   const getMatchProgress = () => {
     const progress: Record<string, number[]> = {};
     matches.forEach((match) => {
       const holeResults = new Array(round.holes).fill(0);
       match.holes.forEach((hole) => {
-        if (hole.result !== "tie") {
-          holeResults[hole.holeNumber - 1] = 1;
-        }
+        holeResults[hole.holeNumber - 1] = 1;
       });
       progress[match.id] = holeResults;
     });

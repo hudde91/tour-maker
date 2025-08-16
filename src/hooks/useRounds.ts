@@ -47,6 +47,26 @@ export const useCreateRound = (tourId: string) => {
         scores: {},
         status: "created",
       };
+      // Initialize Ryder Cup container when tour is in Ryder Cup mode
+      try {
+        const tourCtx = storage.getTour(tourId);
+        if (tourCtx?.format === "ryder-cup") {
+          round.ryderCup = {
+            teamAPoints: 0,
+            teamBPoints: 0,
+            targetPoints: 0,
+            matches: [],
+            sessions: {
+              day1Foursomes: [],
+              day1FourBall: [],
+              day2Foursomes: [],
+              day2FourBall: [],
+              day3Singles: [],
+            },
+          };
+          round.isMatchPlay = true;
+        }
+      } catch {}
 
       storage.saveRound(tourId, round);
       return round;

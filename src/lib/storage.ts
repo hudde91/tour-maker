@@ -202,6 +202,19 @@ export const storage = {
       tour.rounds.push(round);
     }
 
+    // Keep totals in sync on any hole change
+    if (round.ryderCup) {
+      const totals = round.ryderCup.matches.reduce(
+        (acc, m) => {
+          acc.teamA += m.points?.teamA || 0;
+          acc.teamB += m.points?.teamB || 0;
+          return acc;
+        },
+        { teamA: 0, teamB: 0 }
+      );
+      round.ryderCup.teamAPoints = totals.teamA;
+      round.ryderCup.teamBPoints = totals.teamB;
+    }
     storage.saveTour(tour);
   },
 
@@ -1129,8 +1142,17 @@ export const storage = {
 
       // Update tournament points
       if (round.ryderCup) {
-        round.ryderCup.teamAPoints += match.points.teamA;
-        round.ryderCup.teamBPoints += match.points.teamB;
+        // Recompute totals from all matches to avoid double counting
+        const totals = round.ryderCup.matches.reduce(
+          (acc, m) => {
+            acc.teamA += m.points?.teamA || 0;
+            acc.teamB += m.points?.teamB || 0;
+            return acc;
+          },
+          { teamA: 0, teamB: 0 }
+        );
+        round.ryderCup.teamAPoints = totals.teamA;
+        round.ryderCup.teamBPoints = totals.teamB;
       }
     }
 
@@ -1150,9 +1172,17 @@ export const storage = {
       // Single round
       const round = tour.rounds.find((r) => r.id === roundId);
       if (round?.ryderCup) {
-        totalTeamAPoints = round.ryderCup.teamAPoints;
-        totalTeamBPoints = round.ryderCup.teamBPoints;
         allMatches = round.ryderCup.matches;
+        const totals = allMatches.reduce(
+          (acc, m) => {
+            acc.teamA += m.points?.teamA || 0;
+            acc.teamB += m.points?.teamB || 0;
+            return acc;
+          },
+          { teamA: 0, teamB: 0 }
+        );
+        totalTeamAPoints = totals.teamA;
+        totalTeamBPoints = totals.teamB;
       }
     } else {
       // All rounds
@@ -1169,13 +1199,53 @@ export const storage = {
       teamA: totalTeamAPoints,
       teamB: totalTeamBPoints,
       matches: allMatches,
-      target: 14.5,
+      target: allMatches.length > 0 ? allMatches.length / 2 + 0.5 : 0.5,
       winner:
-        totalTeamAPoints >= 14.5
+        totalTeamAPoints >= allMatches.length / 2 + 0.5
           ? "team-a"
-          : totalTeamBPoints >= 14.5
+          : totalTeamBPoints >= allMatches.length / 2 + 0.5
           ? "team-b"
           : undefined,
     };
+  },
+
+  addRyderCupSession: (
+    tourId: string,
+    roundId: string,
+    sessionType:
+      | "day1-foursomes"
+      | "day1-four-ball"
+      | "day2-foursomes"
+      | "day2-four-ball"
+      | "day3-singles",
+    matchIds: string[]
+  ) => {
+    const tour = storage.getTour(tourId);
+    if (!tour) return;
+    const round = tour.rounds.find((r) => r.id === roundId);
+    if (!round || !round.ryderCup) return;
+
+    const s = round.ryderCup.sessions;
+    const pushAll = (arr: string[]) => arr.push(...matchIds);
+
+    switch (sessionType) {
+      case "day1-foursomes":
+        pushAll(s.day1Foursomes);
+        break;
+      case "day1-four-ball":
+        pushAll(s.day1FourBall);
+        break;
+      case "day2-foursomes":
+        pushAll(s.day2Foursomes);
+        break;
+      case "day2-four-ball":
+        pushAll(s.day2FourBall);
+        break;
+      case "day3-singles":
+        pushAll(s.day3Singles);
+        break;
+    }
+
+    storage.saveTour(tour);
   },
 };

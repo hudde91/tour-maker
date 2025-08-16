@@ -1,4 +1,5 @@
 import { useCreateRyderCupSession } from "../../../hooks/useMatchPlay";
+
 import { Tour, Round } from "../../../types";
 import { useState } from "react";
 
@@ -26,6 +27,13 @@ export const CaptainPairingInterface = ({
   const [sessionType, setSessionType] = useState<
     "foursomes" | "four-ball" | "singles"
   >("foursomes");
+  // Day selector for Ryder sessions
+  const [day, setDay] = useState<1 | 2 | 3>(1);
+  const allowedDays: number[] = sessionType === "singles" ? [3] : [1, 2];
+  if (!allowedDays.includes(day)) {
+    setDay(allowedDays[0] as 1 | 2 | 3);
+  }
+
   const [pairings, setPairings] = useState<Pairing[]>([]);
   const [currentPairing, setCurrentPairing] = useState<Pairing>({
     id: "",
@@ -109,8 +117,19 @@ export const CaptainPairingInterface = ({
     if (pairings.length === 0) return;
 
     try {
+      const sessionParam =
+        sessionType === "singles"
+          ? "day3-singles"
+          : sessionType === "foursomes"
+          ? day === 1
+            ? "day1-foursomes"
+            : "day2-foursomes"
+          : day === 1
+          ? "day1-four-ball"
+          : "day2-four-ball";
+
       await createSession.mutateAsync({
-        sessionType,
+        sessionType: sessionParam,
         pairings,
       });
       onClose();
