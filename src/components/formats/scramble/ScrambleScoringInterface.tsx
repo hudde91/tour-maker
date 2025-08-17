@@ -158,7 +158,8 @@ export const ScrambleScoringInterface = ({
               tour={tour}
               holeInfo={currentHoleInfo}
               currentScore={currentScore}
-              teamScore={teamScore}
+              round={round}
+              currentHole={currentHole}
               onScoreChange={(score) =>
                 onTeamScoreChange(team.id, currentHole - 1, score)
               }

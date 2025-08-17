@@ -160,6 +160,14 @@ export const PlayerScorecard = ({
                             Par {storage.getTotalPar(round)}
                           </span>
                           <span className="flex items-center gap-1">
+                            <span className="text-base">⭐</span>
+                            Stableford{" "}
+                            {storage.calculateStablefordForPlayer(
+                              round,
+                              player.id
+                            )}
+                          </span>
+                          <span className="flex items-center gap-1">
                             <span className="text-base">🏕️</span>
                             {round.holes} holes
                           </span>

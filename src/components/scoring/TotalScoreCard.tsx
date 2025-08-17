@@ -15,32 +15,14 @@ export const TotalScoreCard = ({
   currentTotalScore,
   onTotalScoreChange,
 }: TotalScoreCardProps) => {
-  if (round.format === "best-ball") {
-    return null;
-  }
-
   const [inputScore, setInputScore] = useState(currentTotalScore.toString());
-  const [handicapStrokes, setHandicapStrokes] = useState<string>("");
+  const [handicapStrokes, setHandicapStrokes] = useState(
+    player.handicap?.toString() || "0"
+  );
   const [isEditing, setIsEditing] = useState(currentTotalScore === 0); // Auto-edit if no score
 
   const totalPar = storage.getTotalPar(round);
-  const calcStrokesForHole = (playerHcp: number, holeHcp: number) => {
-    const base = Math.floor(playerHcp / 18);
-    const rem = playerHcp % 18;
-    return base + (holeHcp <= rem ? 1 : 0);
-  };
-
-  const autoHC =
-    round.settings.strokesGiven && player.handicap
-      ? round.holeInfo.reduce((sum, h) => {
-          return h.handicap
-            ? sum + calcStrokesForHole(player.handicap!, h.handicap)
-            : sum;
-        }, 0)
-      : 0;
-
-  const effectiveHandicap =
-    handicapStrokes.trim() !== "" ? parseInt(handicapStrokes) || 0 : autoHC;
+  const effectiveHandicap = parseInt(handicapStrokes) || 0;
 
   // Calculate preview values
   const previewScore = parseInt(inputScore) || 0;
@@ -52,14 +34,19 @@ export const TotalScoreCard = ({
   }, [currentTotalScore]);
 
   // Update handicap strokes when player handicap changes
+  useEffect(() => {
+    setHandicapStrokes(player.handicap?.toString() || "0");
+  }, [player.handicap]);
+
   const handleSave = () => {
     const score = parseInt(inputScore);
-    const providedHC =
-      handicapStrokes.trim() !== ""
-        ? parseInt(handicapStrokes) || 0
-        : undefined;
+    const handicapStrokesValue = parseInt(handicapStrokes) || 0;
+
     if (score > 0 && score <= 200) {
-      onTotalScoreChange(score, providedHC);
+      onTotalScoreChange(
+        score,
+        handicapStrokesValue > 0 ? handicapStrokesValue : undefined
+      );
       setIsEditing(false);
     }
   };
@@ -143,12 +130,12 @@ export const TotalScoreCard = ({
               </label>
               <input
                 type="number"
-                placeholder={`auto: ${autoHC}`}
                 value={handicapStrokes}
                 onChange={(e) => setHandicapStrokes(e.target.value)}
                 className="w-full text-lg text-center border-2 border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
                 min="0"
                 max="54"
+                placeholder="0"
               />
               <p className="text-xs text-slate-500 text-center md:text-left">
                 Extra strokes to subtract from total

@@ -202,19 +202,6 @@ export const storage = {
       tour.rounds.push(round);
     }
 
-    // Keep totals in sync on any hole change
-    if (round.ryderCup) {
-      const totals = round.ryderCup.matches.reduce(
-        (acc, m) => {
-          acc.teamA += m.points?.teamA || 0;
-          acc.teamB += m.points?.teamB || 0;
-          return acc;
-        },
-        { teamA: 0, teamB: 0 }
-      );
-      round.ryderCup.teamAPoints = totals.teamA;
-      round.ryderCup.teamBPoints = totals.teamB;
-    }
     storage.saveTour(tour);
   },
 
@@ -1142,17 +1129,8 @@ export const storage = {
 
       // Update tournament points
       if (round.ryderCup) {
-        // Recompute totals from all matches to avoid double counting
-        const totals = round.ryderCup.matches.reduce(
-          (acc, m) => {
-            acc.teamA += m.points?.teamA || 0;
-            acc.teamB += m.points?.teamB || 0;
-            return acc;
-          },
-          { teamA: 0, teamB: 0 }
-        );
-        round.ryderCup.teamAPoints = totals.teamA;
-        round.ryderCup.teamBPoints = totals.teamB;
+        round.ryderCup.teamAPoints += match.points.teamA;
+        round.ryderCup.teamBPoints += match.points.teamB;
       }
     }
 
@@ -1172,17 +1150,9 @@ export const storage = {
       // Single round
       const round = tour.rounds.find((r) => r.id === roundId);
       if (round?.ryderCup) {
+        totalTeamAPoints = round.ryderCup.teamAPoints;
+        totalTeamBPoints = round.ryderCup.teamBPoints;
         allMatches = round.ryderCup.matches;
-        const totals = allMatches.reduce(
-          (acc, m) => {
-            acc.teamA += m.points?.teamA || 0;
-            acc.teamB += m.points?.teamB || 0;
-            return acc;
-          },
-          { teamA: 0, teamB: 0 }
-        );
-        totalTeamAPoints = totals.teamA;
-        totalTeamBPoints = totals.teamB;
       }
     } else {
       // All rounds
@@ -1199,53 +1169,78 @@ export const storage = {
       teamA: totalTeamAPoints,
       teamB: totalTeamBPoints,
       matches: allMatches,
-      target: allMatches.length > 0 ? allMatches.length / 2 + 0.5 : 0.5,
+      target: 14.5,
       winner:
-        totalTeamAPoints >= allMatches.length / 2 + 0.5
+        totalTeamAPoints >= 14.5
           ? "team-a"
-          : totalTeamBPoints >= allMatches.length / 2 + 0.5
+          : totalTeamBPoints >= 14.5
           ? "team-b"
           : undefined,
     };
   },
 
-  addRyderCupSession: (
-    tourId: string,
-    roundId: string,
-    sessionType:
-      | "day1-foursomes"
-      | "day1-four-ball"
-      | "day2-foursomes"
-      | "day2-four-ball"
-      | "day3-singles",
-    matchIds: string[]
-  ) => {
-    const tour = storage.getTour(tourId);
-    if (!tour) return;
-    const round = tour.rounds.find((r) => r.id === roundId);
-    if (!round || !round.ryderCup) return;
+  // --- Stableford (Poängbogey) utilities ---
+  // Allocate handicap strokes per hole for a player based on total handicapStrokes and hole stroke index.
+  _allocateHandicapStrokesPerHole: (
+    round: Round,
+    playerId: string
+  ): number[] => {
+    const playerScore = round.scores[playerId];
+    const total = Math.max(0, playerScore?.handicapStrokes || 0);
+    const holes = round.holeInfo || [];
+    const n = holes.length || round.holes || 18;
 
-    const s = round.ryderCup.sessions;
-    const pushAll = (arr: string[]) => arr.push(...matchIds);
+    // Build stroke index list (1..n). If missing, fall back to [1..n].
+    const idx = holes.map((h, i) =>
+      h.handicap && h.handicap > 0 ? h.handicap : i + 1
+    );
+    // Map: hole order by stroke index difficulty (1 is hardest)
+    const order = [...idx]
+      .map((v, i) => ({ i, v }))
+      .sort((a, b) => a.v - b.v)
+      .map((o) => o.i);
 
-    switch (sessionType) {
-      case "day1-foursomes":
-        pushAll(s.day1Foursomes);
-        break;
-      case "day1-four-ball":
-        pushAll(s.day1FourBall);
-        break;
-      case "day2-foursomes":
-        pushAll(s.day2Foursomes);
-        break;
-      case "day2-four-ball":
-        pushAll(s.day2FourBall);
-        break;
-      case "day3-singles":
-        pushAll(s.day3Singles);
-        break;
+    const base = Math.floor(total / n);
+    const rem = total % n;
+    const alloc = new Array(n).fill(base);
+
+    // Distribute remaining strokes to the hardest holes
+    for (let r = 0; r < rem; r++) {
+      const holeIdx = order[r % n];
+      alloc[holeIdx] += 1;
     }
+    return alloc;
+  },
 
-    storage.saveTour(tour);
+  // Calculate Stableford points for a single player in a given round.
+  // Formula: points = clamp(0, 2 - (net - par)), capped at 6.
+  calculateStablefordForPlayer: (round: Round, playerId: string): number => {
+    const playerScore = round.scores[playerId];
+    if (!playerScore) return 0;
+    const holes = round.holeInfo || [];
+    const scores = playerScore.scores || [];
+    const alloc = storage._allocateHandicapStrokesPerHole(round, playerId);
+    let total = 0;
+    for (let i = 0; i < Math.min(scores.length, holes.length); i++) {
+      const gross = scores[i] || 0;
+      const par = holes[i]?.par || 4;
+      if (!gross || gross <= 0) continue; // no score -> 0p
+      const net = gross - (alloc[i] || 0);
+      const netToPar = net - par;
+      let pts = 2 - netToPar;
+      if (pts < 0) pts = 0;
+      if (pts > 6) pts = 6;
+      total += pts;
+    }
+    return total;
+  },
+
+  // Sum Stableford across all rounds in a tour for a player
+  calculateTournamentStableford: (tour: Tour, playerId: string): number => {
+    let total = 0;
+    for (const r of tour.rounds) {
+      total += storage.calculateStablefordForPlayer(r, playerId);
+    }
+    return total;
   },
 };

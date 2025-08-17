@@ -111,9 +111,6 @@ export const BestBallTeamScorecard = ({
           <div className="text-2xl font-bold text-slate-900">
             {teamScores.totalScore || "–"}
           </div>
-          <div className="text-sm font-medium text-slate-600">
-            Total Strokes
-          </div>
         </div>
       </div>
 
@@ -230,15 +227,34 @@ export const BestBallTeamScorecard = ({
           </div>
           <div>
             <div className="text-xl font-bold text-slate-900">
-              {teamScores.holeScores.filter((s) => s > 0).length > 0
-                ? Math.round(
-                    teamScores.totalScore /
-                      teamScores.holeScores.filter((s) => s > 0).length
-                  )
-                : 0}
+              {(() => {
+                const holeIndex = currentHole - 1;
+                const n = round.holes || 18;
+                const par = round.holeInfo[holeIndex]?.par || 4;
+                const si = round.holeInfo[holeIndex]?.handicap || 0;
+                const teamPlayers = tour.players.filter(
+                  (p) => p.teamId === team.id
+                );
+                const playerPts = teamPlayers.map((p) => {
+                  const ps = round.scores[p.id];
+                  const gross = ps?.scores[holeIndex] || 0;
+                  const total = Math.max(0, ps?.handicapStrokes || 0);
+                  const base = Math.floor(total / n);
+                  const rem = total % n;
+                  const alloc = base + (si > 0 && si <= rem ? 1 : 0);
+                  if (!gross) return 0;
+                  const net = gross - alloc;
+                  const diff = net - par;
+                  let pts = 2 - diff;
+                  if (pts < 0) pts = 0;
+                  if (pts > 6) pts = 6;
+                  return pts;
+                });
+                return playerPts.length ? Math.max(...playerPts) : 0;
+              })()}
             </div>
             <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Avg per Hole
+              Stableford (Hole)
             </div>
           </div>
         </div>

@@ -377,6 +377,13 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                         : ""}
                     </div>
                   </div>
+                  <div className="text-xs text-slate-500">
+                    Stableford:{" "}
+                    {storage.calculateTournamentStableford(
+                      tour,
+                      entry.player.id
+                    )}
+                  </div>
                 </div>
               </div>
             );

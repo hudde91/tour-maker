@@ -260,9 +260,6 @@ export const ScoreEntryCard = ({
             <div className="text-xl font-bold text-slate-900">
               {playerScore.totalScore || 0}
             </div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Total Strokes
-            </div>
           </div>
           <div>
             <div className="text-xl font-bold text-slate-900">
@@ -274,15 +271,26 @@ export const ScoreEntryCard = ({
           </div>
           <div>
             <div className="text-xl font-bold text-slate-900">
-              {playerScore.scores.filter((s) => s > 0).length > 0
-                ? Math.round(
-                    playerScore.totalScore /
-                      playerScore.scores.filter((s) => s > 0).length
-                  )
-                : 0}
+              {(() => {
+                const scores = playerScore.scores || [];
+                const n = scores.length || 18;
+                const total = Math.max(0, playerScore.handicapStrokes || 0);
+                const base = Math.floor(total / n);
+                const rem = total % n;
+                const si = holeInfo.handicap || 0; // 1..n (1 hardest)
+                const alloc = base + (si > 0 && si <= rem ? 1 : 0);
+                const gross = currentScore > 0 ? currentScore : 0;
+                if (!gross) return 0;
+                const net = gross - alloc;
+                const diff = net - (holeInfo.par || 4);
+                let pts = 2 - diff;
+                if (pts < 0) pts = 0;
+                if (pts > 6) pts = 6;
+                return pts;
+              })()}
             </div>
             <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Avg per Hole
+              Stableford (Hole)
             </div>
           </div>
         </div>
