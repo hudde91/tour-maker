@@ -16,7 +16,8 @@ interface BestBallScoringInterfaceProps {
   onPlayerTotalScoreChange: (
     playerId: string,
     totalScore: number,
-    handicapStrokes?: number
+    handicapStrokes?: number,
+    stablefordPoints?: number
   ) => void;
 }
 
@@ -178,8 +179,17 @@ export const BestBallScoringInterface = ({
                 player={player}
                 round={round}
                 currentTotalScore={totalScore}
-                onTotalScoreChange={(score, handicapStrokes) =>
-                  onPlayerTotalScoreChange(player.id, score, handicapStrokes)
+                onTotalScoreChange={(
+                  score,
+                  handicapStrokes,
+                  stablefordPoints
+                ) =>
+                  onPlayerTotalScoreChange(
+                    player.id,
+                    score,
+                    handicapStrokes,
+                    stablefordPoints
+                  )
                 }
               />
             ) : (

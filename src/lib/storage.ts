@@ -620,7 +620,8 @@ export const storage = {
     tourId: string,
     roundId: string,
     playerId: string,
-    totalScore: number
+    totalScore: number,
+    stablefordPointsManual?: number
   ): void => {
     const tour = storage.getTour(tourId);
     if (!tour) return;
@@ -666,6 +667,7 @@ export const storage = {
       handicapStrokes,
       netScore,
       netToPar,
+      stablefordManual: stablefordPointsManual,
     };
 
     storage.saveTour(tour);
@@ -676,7 +678,8 @@ export const storage = {
     roundId: string,
     playerId: string,
     totalScore: number,
-    manualHandicapStrokes?: number
+    manualHandicapStrokes?: number,
+    stablefordPointsManual?: number
   ): void => {
     const tour = storage.getTour(tourId);
     if (!tour) return;
@@ -739,6 +742,7 @@ export const storage = {
       handicapStrokes: handicapStrokes > 0 ? handicapStrokes : undefined,
       netScore,
       netToPar,
+      stablefordManual: stablefordPointsManual,
     };
 
     storage.saveTour(tour);
@@ -796,8 +800,8 @@ export const storage = {
 
       teamEntries.push({
         team,
-        totalScore: teamTotalScore > 0 ? teamTotalScore : undefined,
-        totalToPar: teamTotalToPar,
+        totalScore: teamTotalScore > 0 ? teamTotalScore : 0,
+        totalToPar: teamTotalToPar ?? 0,
         netScore: undefined,
         netToPar: undefined,
         totalHandicapStrokes: undefined,
@@ -1139,6 +1143,8 @@ export const storage = {
   calculateStablefordForPlayer: (round: Round, playerId: string): number => {
     const playerScore = round.scores[playerId];
     if (!playerScore) return 0;
+    const manual = (playerScore as any).stablefordManual;
+    if (typeof manual === "number" && Number.isFinite(manual)) return manual;
     const holes = round.holeInfo || [];
     const scores = playerScore.scores || [];
     const alloc = storage._allocateHandicapStrokesPerHole(round, playerId);

@@ -112,18 +112,25 @@ export const RoundPage = () => {
   );
 
   const handlePlayerTotalScoreChange = useCallback(
-    async (playerId: string, totalScore: number, handicapStrokes?: number) => {
+    async (
+      playerId: string,
+      totalScore: number,
+      handicapStrokes?: number,
+      stablefordPoints?: number
+    ) => {
       try {
         if (handicapStrokes !== undefined) {
           await updateTotalScoreWithHandicap.mutateAsync({
             playerId,
             totalScore,
             handicapStrokes,
+            stablefordPoints,
           });
         } else {
           await updateTotalScore.mutateAsync({
             playerId,
             totalScore,
+            stablefordPoints,
           });
         }
       } catch (error) {

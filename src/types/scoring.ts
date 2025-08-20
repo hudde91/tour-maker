@@ -10,6 +10,7 @@ export interface PlayerScore {
   netToPar?: number; // net score to par
   isTeamScore?: boolean;
   teamId?: string;
+  stablefordManual?: number;
 }
 
 export interface FoursomeScore {
@@ -34,8 +35,8 @@ export interface LeaderboardEntry {
 
 export interface TeamLeaderboardEntry {
   team: Team;
-  totalScore: number | undefined; // gross team score
-  totalToPar: number | undefined; // gross team to par
+  totalScore: number; // gross team score
+  totalToPar: number; // gross team to par
   netScore?: number; // net team score (if handicaps applied)
   netToPar?: number; // net team to par
   totalHandicapStrokes?: number; // total team handicap strokes

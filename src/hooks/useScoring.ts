@@ -96,12 +96,20 @@ export const useUpdateTotalScore = (tourId: string, roundId: string) => {
     mutationFn: async ({
       playerId,
       totalScore,
+      stablefordPoints,
     }: {
       playerId: string;
       totalScore: number;
+      stablefordPoints?: number;
     }) => {
-      storage.updatePlayerTotalScore(tourId, roundId, playerId, totalScore);
-      return { playerId, totalScore };
+      storage.updatePlayerTotalScore(
+        tourId,
+        roundId,
+        playerId,
+        totalScore,
+        stablefordPoints
+      );
+      return { playerId, totalScore, stablefordPoints };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
@@ -120,19 +128,22 @@ export const useUpdateTotalScoreWithHandicap = (
       playerId,
       totalScore,
       handicapStrokes,
+      stablefordPoints,
     }: {
       playerId: string;
       totalScore: number;
       handicapStrokes?: number;
+      stablefordPoints?: number;
     }) => {
       storage.updatePlayerTotalScoreWithHandicap(
         tourId,
         roundId,
         playerId,
         totalScore,
-        handicapStrokes
+        handicapStrokes,
+        stablefordPoints
       );
-      return { playerId, totalScore, handicapStrokes };
+      return { playerId, totalScore, handicapStrokes, stablefordPoints };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });

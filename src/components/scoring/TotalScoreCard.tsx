@@ -6,7 +6,11 @@ interface TotalScoreCardProps {
   player: Player;
   round: Round;
   currentTotalScore: number;
-  onTotalScoreChange: (totalScore: number, handicapStrokes?: number) => void;
+  onTotalScoreChange: (
+    totalScore: number,
+    handicapStrokes?: number,
+    stablefordPoints?: number
+  ) => void;
 }
 
 export const TotalScoreCard = ({
@@ -19,6 +23,7 @@ export const TotalScoreCard = ({
   const [handicapStrokes, setHandicapStrokes] = useState(
     player.handicap?.toString() || "0"
   );
+  const [stableford, setStableford] = useState<string>("");
   const [isEditing, setIsEditing] = useState(currentTotalScore === 0); // Auto-edit if no score
 
   const totalPar = storage.getTotalPar(round);
@@ -41,11 +46,12 @@ export const TotalScoreCard = ({
   const handleSave = () => {
     const score = parseInt(inputScore);
     const handicapStrokesValue = parseInt(handicapStrokes) || 0;
-
+    const stablefordValue = parseInt(stableford);
     if (score > 0 && score <= 200) {
       onTotalScoreChange(
         score,
-        handicapStrokesValue > 0 ? handicapStrokesValue : undefined
+        handicapStrokesValue > 0 ? handicapStrokesValue : undefined,
+        Number.isFinite(stablefordValue) ? stablefordValue : undefined
       );
       setIsEditing(false);
     }
@@ -141,6 +147,23 @@ export const TotalScoreCard = ({
                 Extra strokes to subtract from total
               </p>
             </div>
+          </div>
+
+          {/* Stableford (Poängbogey) Input */}
+          <div className="space-y-2 md:col-span-2">
+            <label className="block text-sm font-medium text-slate-700 text-center md:text-left">
+              Poängbogey (Stableford)
+            </label>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              step={1}
+              value={stableford}
+              onChange={(e) => setStableford(e.target.value)}
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 text-center md:text-left"
+              placeholder="Ange dina Stableford-poäng (valfritt)"
+            />
           </div>
 
           {/* Score Preview - Compact desktop layout */}
