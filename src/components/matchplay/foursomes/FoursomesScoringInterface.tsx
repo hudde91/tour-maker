@@ -4,6 +4,7 @@ import { Tour, Round, MatchPlayRound } from "../../../types";
 import { FoursomesMatchScorecard } from "./FoursomesMatchScorecard";
 import { MatchPlayLeaderboard } from "../common/MatchPlayLeaderboard";
 import { HoleNavigation } from "../../scoring/HoleNavigation";
+import MatchStatusBadge from "../rydercup/MatchStatusBadge";
 
 interface FoursomesScoringInterfaceProps {
   tour: Tour;
@@ -73,6 +74,10 @@ export const FoursomesScoringInterface = ({
               Foursomes - Hole {currentHole}
             </h2>
             <p className="text-slate-600">Alternate Shot Match Play</p>
+            <MatchStatusBadge
+              match={currentMatch}
+              totalHoles={round.holes ?? 18}
+            />
           </div>
         </div>
 

@@ -1,58 +1,11 @@
 import React, { useMemo } from "react";
 import { Tour, Round } from "../../types";
+import { storage } from "../../lib/storage";
 
 interface LiveLeaderboardProps {
   tour: Tour;
   round: Round;
   isCollapsed?: boolean;
-}
-
-/** Fallback Stableford calculator (if not available in storage).
- *  - Allocates handicap strokes per hole based on total handicapStrokes
- *    and hole Stroke Index (handicap 1..18).
- *  - Points per hole: clamp(0, 2 - (net - par)), capped at 6.
- */
-function calculateStablefordForPlayer(round: Round, playerId: string): number {
-  const ps: any = (round as any).scores?.[playerId];
-  if (!ps) return 0;
-  const holes = (round as any).holeInfo || [];
-  const scores: number[] = ps.scores || [];
-  const n = (round as any).holes || holes.length || 18;
-  const total = Math.max(0, ps.handicapStrokes || 0);
-
-  // Build stroke index list (1..n). If missing, use 1..n.
-  const idx = holes.length
-    ? holes.map((h: any, i: number) =>
-        h?.handicap && h.handicap > 0 ? h.handicap : i + 1
-      )
-    : Array.from({ length: n }, (_, i) => i + 1);
-
-  // Order hole indices by difficulty (1 hardest)
-  const order = idx
-    .map((v: number, i: number) => ({ i, v }))
-    .sort(
-      (a: { i: number; v: number }, b: { i: number; v: number }) => a.v - b.v
-    )
-    .map((o: { i: number; v: number }) => o.i);
-
-  const base = Math.floor(total / n);
-  const rem = total % n;
-  const alloc = new Array(n).fill(base);
-  for (let r = 0; r < rem; r++) alloc[order[r % n]] += 1;
-
-  let totalPts = 0;
-  for (let i = 0; i < Math.min(scores.length, holes.length || n); i++) {
-    const gross = scores[i] || 0;
-    if (!gross) continue;
-    const par = holes[i]?.par ?? 4;
-    const net = gross - (alloc[i] || 0);
-    const diff = net - par;
-    let pts = 2 - diff;
-    if (pts < 0) pts = 0;
-    if (pts > 6) pts = 6;
-    totalPts += pts;
-  }
-  return totalPts;
 }
 
 export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
@@ -72,7 +25,10 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
       // Prefer existing 'points' if round stores a points metric; otherwise undefined
       const existingPoints = ps?.points as number | undefined;
 
-      const stableford = calculateStablefordForPlayer(round, player.id);
+      const stableford = storage.calculateStablefordForPlayer(
+        round as any,
+        player.id
+      );
 
       return {
         player,
@@ -87,12 +43,6 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
   // Sort: by existing points desc if available, otherwise by Stableford desc, then by totalStrokes asc
   const sorted = useMemo(() => {
     return [...entries].sort((a, b) => {
-      const aHasPts = typeof a.points === "number";
-      const bHasPts = typeof b.points === "number";
-      if (aHasPts && bHasPts && a.points !== b.points)
-        return b.points! - a.points!;
-      if (aHasPts && !bHasPts) return -1;
-      if (!aHasPts && bHasPts) return 1;
       if (a.stableford !== b.stableford) return b.stableford - a.stableford;
       return a.totalStrokes - b.totalStrokes;
     });
@@ -101,8 +51,7 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
   return (
     <div className={isCollapsed ? "space-y-2" : "space-y-3"}>
       {sorted.map((entry, idx) => {
-        const { player, totalStrokes, handicapStrokes, points, stableford } =
-          entry;
+        const { player, totalStrokes, points, stableford } = entry;
         return (
           <div
             key={player.id}

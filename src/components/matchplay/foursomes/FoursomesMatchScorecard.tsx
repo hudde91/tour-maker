@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Tour, Round, MatchPlayRound } from "../../../types";
+import MatchStatusBadge from "../rydercup/MatchStatusBadge";
 
 interface FoursomesMatchScorecardProps {
   match: MatchPlayRound;
@@ -153,14 +154,8 @@ export const FoursomesMatchScorecard = ({
         </div>
       </div>
 
-      {/* Current Match Status */}
       <div className="text-center card-spacing">
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-          <h4 className="font-semibold text-emerald-900 mb-2">Match Status</h4>
-          <div className="text-lg font-bold text-emerald-800">
-            {currentHoleData.matchStatus || "All Square"}
-          </div>
-        </div>
+        <MatchStatusBadge match={match} totalHoles={round.holes ?? 18} />
       </div>
 
       {/* Team Scoring Areas */}

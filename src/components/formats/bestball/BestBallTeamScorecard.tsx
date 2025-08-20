@@ -1,6 +1,7 @@
 import { Team, Tour, Round } from "../../../types";
 import { ScoreEntryCard } from "../../scoring/ScoreEntryCard";
 import { TotalScoreCard } from "../../scoring/TotalScoreCard";
+import { safeMin, formatHoleScore } from "../../../lib/scoringUtils";
 
 interface BestBallTeamScorecardProps {
   team: Team;
@@ -38,12 +39,12 @@ export const BestBallTeamScorecard = ({
     let teamTotal = 0;
 
     for (let hole = 0; hole < round.holes; hole++) {
-      const holeScores = teamPlayers
-        .map((player) => round.scores[player.id]?.scores[hole] || 0)
-        .filter((score) => score > 0);
+      const holeScores = teamPlayers.map(
+        (player) => round.scores[player.id]?.scores[hole] ?? null
+      );
 
-      if (holeScores.length > 0) {
-        const bestScore = Math.min(...holeScores);
+      const bestScore = safeMin(holeScores);
+      if (typeof bestScore === "number") {
         teamHoleScores.push(bestScore);
         teamTotal += bestScore;
       } else {
@@ -66,15 +67,11 @@ export const BestBallTeamScorecard = ({
       })
       .filter((s) => s.score > 0);
 
-    if (holeScores.length === 0) return null;
-
-    const bestScore = Math.min(...holeScores.map((s) => s.score));
+    const arr = holeScores.map((s) => s.score);
+    const bestScore = safeMin(arr);
+    if (bestScore == null) return null;
     const bestPlayers = holeScores.filter((s) => s.score === bestScore);
-
-    return {
-      score: bestScore,
-      playerIds: bestPlayers.map((p) => p.playerId),
-    };
+    return { score: bestScore, playerIds: bestPlayers.map((p) => p.playerId) };
   };
 
   const teamScores = calculateTeamScores();

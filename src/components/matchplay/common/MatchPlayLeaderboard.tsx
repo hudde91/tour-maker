@@ -1,4 +1,5 @@
 import { Tour, Round, MatchPlayRound } from "../../../types";
+import { getMatchStatus } from "../../../lib/uiMatchPlay";
 
 interface MatchPlayLeaderboardProps {
   tour: Tour;
@@ -204,13 +205,28 @@ export const MatchPlayLeaderboard = ({
                         {getPlayerNames(teamBInfo.playerIds)}
                       </div>
                     </div>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-semibold ${getMatchStatusColor(
-                        match
-                      )}`}
-                    >
-                      {getMatchResultText(match)}
-                    </span>
+
+                    {(() => {
+                      const { text, code } = getMatchStatus(
+                        match,
+                        round?.holes ?? 18
+                      );
+                      const palette =
+                        code === "complete"
+                          ? "bg-green-600 text-white"
+                          : code === "dormie"
+                          ? "bg-amber-600 text-white"
+                          : code === "in-progress"
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-500 text-white";
+                      return (
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-semibold ${palette}`}
+                        >
+                          {text}
+                        </span>
+                      );
+                    })()}
                   </div>
 
                   {/* Points Display */}

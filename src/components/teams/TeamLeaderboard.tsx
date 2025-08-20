@@ -39,6 +39,17 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
           const teamPlayers = tour.players.filter(
             (p) => p.teamId === teamEntry.team.id
           );
+
+          const teamStableford = storage.calculateTeamStablefordForRound(
+            tour as any,
+            round as any,
+            teamEntry.team.id
+          );
+          const tournamentTeamStableford =
+            storage.calculateTournamentTeamStableford(
+              tour as any,
+              teamEntry.team.id
+            );
           const isLeadingTeam = index === 0;
           const isTop3 = index < 3;
 
@@ -138,6 +149,12 @@ export const TeamLeaderboard = ({ tour, round }: TeamLeaderboardProps) => {
                       teamEntry.totalHandicapStrokes > 0
                         ? ` (-${teamEntry.totalHandicapStrokes} HC)`
                         : ""}
+                    </div>
+                    <div className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                      Team Stableford: {teamStableford}
+                    </div>
+                    <div className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                      Tournament Team Stableford: {tournamentTeamStableford}
                     </div>
                   </div>
                 </div>

@@ -34,8 +34,8 @@ export interface LeaderboardEntry {
 
 export interface TeamLeaderboardEntry {
   team: Team;
-  totalScore: number; // gross team score
-  totalToPar: number; // gross team to par
+  totalScore: number | undefined; // gross team score
+  totalToPar: number | undefined; // gross team to par
   netScore?: number; // net team score (if handicaps applied)
   netToPar?: number; // net team to par
   totalHandicapStrokes?: number; // total team handicap strokes

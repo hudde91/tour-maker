@@ -3,6 +3,7 @@ import { Tour, Round } from "../../../types";
 import { MatchPlayLeaderboard } from "../common/MatchPlayLeaderboard";
 import { HoleNavigation } from "../../scoring/HoleNavigation";
 import { SinglesMatchScorecard } from "./SinglesMatchScorecard";
+import MatchStatusBadge from "../rydercup/MatchStatusBadge";
 
 interface SinglesMatchPlayInterfaceProps {
   tour: Tour;
@@ -78,6 +79,10 @@ export const SinglesMatchPlayInterface = ({
               Singles - Hole {currentHole}
             </h2>
             <p className="text-slate-600">Head-to-Head Match Play</p>
+            <MatchStatusBadge
+              match={currentMatch}
+              totalHoles={round.holes ?? 18}
+            />
           </div>
         </div>
 

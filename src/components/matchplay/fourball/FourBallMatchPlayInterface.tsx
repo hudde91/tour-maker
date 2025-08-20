@@ -3,6 +3,7 @@ import { Tour, Round } from "../../../types";
 import { MatchPlayLeaderboard } from "../common/MatchPlayLeaderboard";
 import { HoleNavigation } from "../../scoring/HoleNavigation";
 import { FourBallMatchScorecard } from "./FourBallMatchScorecard";
+import MatchStatusBadge from "../rydercup/MatchStatusBadge";
 
 interface FourBallMatchPlayInterfaceProps {
   tour: Tour;
@@ -76,6 +77,10 @@ export const FourBallMatchPlayInterface = ({
               Four-Ball - Hole {currentHole}
             </h2>
             <p className="text-slate-600">Best Ball Match Play</p>
+            <MatchStatusBadge
+              match={currentMatch}
+              totalHoles={round.holes ?? 18}
+            />
           </div>
         </div>
 

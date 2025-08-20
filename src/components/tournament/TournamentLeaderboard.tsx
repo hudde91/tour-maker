@@ -55,13 +55,19 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     // Filter out players with no scores
     const playersWithScores = entries.filter((entry) => entry.totalScore > 0);
 
-    // Sort by net score if handicaps are applied, otherwise by total score
+    // Sort by Tournament Stableford (desc)
     playersWithScores.sort((a, b) => {
-      const aScore = a.netScore || a.totalScore;
-      const bScore = b.netScore || b.totalScore;
-      return aScore - bScore;
+      const aSf = storage.calculateTournamentStableford(
+        tour as any,
+        a.player.id
+      );
+      const bSf = storage.calculateTournamentStableford(
+        tour as any,
+        b.player.id
+      );
+      if (aSf !== bSf) return bSf - aSf;
+      return (a.totalScore || 0) - (b.totalScore || 0);
     });
-
     // Set positions
     playersWithScores.forEach((entry, index) => {
       entry.position = index + 1;

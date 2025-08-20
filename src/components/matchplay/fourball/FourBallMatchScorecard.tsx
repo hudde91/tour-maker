@@ -1,6 +1,7 @@
-// src/components/FourBallMatchScorecard.tsx
 import { useState, useEffect } from "react";
 import { Tour, Round, MatchPlayRound } from "../../../types";
+import MatchStatusBadge from "../rydercup/MatchStatusBadge";
+import { safeMin, formatHoleScore } from "../../../lib/scoringUtils";
 
 interface FourBallMatchScorecardProps {
   match: MatchPlayRound;
@@ -91,15 +92,9 @@ export const FourBallMatchScorecard = ({
   const teamBInfo = getTeamInfo(match.teamB.id, match.teamB.playerIds);
 
   // Calculate best ball scores for each team
-  const teamABestScore =
-    Math.min(
-      ...Object.values(teamAPlayerScores).filter((score) => score > 0)
-    ) || 0;
 
-  const teamBBestScore =
-    Math.min(
-      ...Object.values(teamBPlayerScores).filter((score) => score > 0)
-    ) || 0;
+  const teamABestScore = safeMin(Object.values(teamAPlayerScores));
+  const teamBBestScore = safeMin(Object.values(teamBPlayerScores));
 
   const updatePlayerScore = (
     playerId: string,
@@ -117,11 +112,16 @@ export const FourBallMatchScorecard = ({
       );
 
       if (hasAllTeamAScores && hasAllTeamBScores) {
-        const newTeamABest = Math.min(...Object.values(newScores));
-        onHoleUpdate(currentHole, newTeamABest, teamBBestScore, {
-          teamA: newScores,
-          teamB: teamBPlayerScores,
-        });
+        const newTeamABest = safeMin(Object.values(newScores));
+        onHoleUpdate(
+          currentHole,
+          typeof newTeamABest === "number" ? newTeamABest : 0,
+          typeof teamBBestScore === "number" ? teamBBestScore : 0,
+          {
+            teamA: newScores,
+            teamB: teamBPlayerScores,
+          }
+        );
       }
     } else {
       const newScores = { ...teamBPlayerScores, [playerId]: score };
@@ -134,11 +134,16 @@ export const FourBallMatchScorecard = ({
       const hasAllTeamBScores = Object.values(newScores).every((s) => s > 0);
 
       if (hasAllTeamAScores && hasAllTeamBScores) {
-        const newTeamBBest = Math.min(...Object.values(newScores));
-        onHoleUpdate(currentHole, teamABestScore, newTeamBBest, {
-          teamA: teamAPlayerScores,
-          teamB: newScores,
-        });
+        const newTeamBBest = safeMin(Object.values(newScores));
+        onHoleUpdate(
+          currentHole,
+          typeof teamABestScore === "number" ? teamABestScore : 0,
+          typeof newTeamBBest === "number" ? newTeamBBest : 0,
+          {
+            teamA: teamAPlayerScores,
+            teamB: newScores,
+          }
+        );
       }
     }
   };
@@ -155,19 +160,22 @@ export const FourBallMatchScorecard = ({
   const renderHoleResult = () => {
     if (teamABestScore === 0 || teamBBestScore === 0) return null;
 
-    if (teamABestScore < teamBBestScore) {
+    const teamABest = typeof teamABestScore === "number" ? teamABestScore : 0;
+    const teamBBest = typeof teamBBestScore === "number" ? teamBBestScore : 0;
+
+    if (teamABest < teamBBest) {
       return (
         <div className="text-center py-3">
           <span className="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full font-semibold text-lg">
-            🏆 {teamAInfo.name} wins hole ({teamABestScore} vs {teamBBestScore})
+            🏆 {teamAInfo.name} wins hole ({teamABest} vs {teamBBest})
           </span>
         </div>
       );
-    } else if (teamBBestScore < teamABestScore) {
+    } else if (teamBBest < teamABest) {
       return (
         <div className="text-center py-3">
           <span className="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full font-semibold text-lg">
-            🏆 {teamBInfo.name} wins hole ({teamBBestScore} vs {teamABestScore})
+            🏆 {teamBInfo.name} wins hole ({teamBBest} vs {teamABest})
           </span>
         </div>
       );
@@ -175,7 +183,7 @@ export const FourBallMatchScorecard = ({
       return (
         <div className="text-center py-3">
           <span className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold text-lg">
-            🤝 Hole Tied ({teamABestScore} each)
+            🤝 Hole Tied ({teamABest} each)
           </span>
         </div>
       );
@@ -215,14 +223,8 @@ export const FourBallMatchScorecard = ({
         </div>
       </div>
 
-      {/* Current Match Status */}
       <div className="text-center card-spacing">
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-          <h4 className="font-semibold text-emerald-900 mb-2">Match Status</h4>
-          <div className="text-lg font-bold text-emerald-800">
-            {currentHoleData.matchStatus || "All Square"}
-          </div>
-        </div>
+        <MatchStatusBadge match={match} totalHoles={round.holes ?? 18} />
       </div>
 
       {/* Team A - Individual Player Scoring */}
@@ -248,7 +250,7 @@ export const FourBallMatchScorecard = ({
               <p className="text-sm text-slate-600">
                 Best Ball:
                 <span className="font-bold ml-1">
-                  {teamABestScore > 0 ? teamABestScore : "–"}
+                  {formatHoleScore(teamABestScore)}
                 </span>
               </p>
             </div>
@@ -337,7 +339,7 @@ export const FourBallMatchScorecard = ({
               <p className="text-sm text-slate-600">
                 Best Ball:
                 <span className="font-bold ml-1">
-                  {teamBBestScore > 0 ? teamBBestScore : "–"}
+                  {formatHoleScore(teamBBestScore)}
                 </span>
               </p>
             </div>
@@ -399,7 +401,10 @@ export const FourBallMatchScorecard = ({
           disabled={teamABestScore === 0 || teamBBestScore === 0}
           className="btn-primary flex-1 disabled:opacity-50 text-lg py-3"
         >
-          {teamABestScore > 0 && teamBBestScore > 0
+          {typeof teamABestScore === "number" &&
+          typeof teamBBestScore === "number" &&
+          teamABestScore > 0 &&
+          teamBBestScore > 0
             ? "✅ Scores Updated"
             : "⏳ Enter All Player Scores"}
         </button>

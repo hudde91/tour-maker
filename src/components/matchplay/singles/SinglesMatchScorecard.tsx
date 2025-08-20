@@ -1,6 +1,6 @@
-// src/components/SinglesMatchScorecard.tsx
 import { useState, useEffect } from "react";
 import { Tour, Round, MatchPlayRound } from "../../../types";
+import MatchStatusBadge from "../rydercup/MatchStatusBadge";
 
 interface SinglesMatchScorecardProps {
   match: MatchPlayRound;
@@ -132,6 +132,9 @@ export const SinglesMatchScorecard = ({
         <h3 className="text-2xl font-bold text-slate-900 mb-2">
           Hole {currentHole} - Par {currentHoleInfo.par}
         </h3>
+        <div className="flex justify-center">
+          <MatchStatusBadge match={match} totalHoles={round.holes ?? 18} />
+        </div>
         <div className="flex items-center justify-center gap-4 text-sm text-slate-600">
           <span className="bg-red-100 px-3 py-1 rounded-full">👤 Singles</span>
           <span className="bg-slate-100 px-3 py-1 rounded-full">

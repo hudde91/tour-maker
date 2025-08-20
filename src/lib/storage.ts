@@ -12,6 +12,7 @@ import {
   TeamLeaderboardEntry,
   HoleInfo,
 } from "../types";
+import { safeMin } from "./scoringUtils";
 
 const STORAGE_KEYS = {
   TOURS: "golf-tours",
@@ -749,37 +750,55 @@ export const storage = {
   ): TeamLeaderboardEntry[] => {
     const teamEntries: TeamLeaderboardEntry[] = [];
 
+    const holesCount =
+      (typeof round.holes === "number" && round.holes > 0
+        ? round.holes
+        : (round as any).holeInfo?.length) ?? 18;
+
+    const getHolePar = (idx: number): number => {
+      const par =
+        (round as any).pars?.[idx] ??
+        (round as any).course?.holes?.[idx]?.par ??
+        (round as any).holesData?.[idx]?.par ??
+        4;
+      return typeof par === "number" && Number.isFinite(par) ? par : 4;
+    };
+
     tour.teams!.forEach((team) => {
       const teamPlayers = tour.players.filter((p) => p.teamId === team.id);
+
       let teamTotalScore = 0;
-      let playersWithScores = 0;
+      let countedPar = 0;
 
-      // Calculate best ball team score for this round
-      for (let hole = 0; hole < round.holes; hole++) {
-        const holeScores = teamPlayers
-          .map((player) => round.scores[player.id]?.scores[hole] || 0)
-          .filter((score) => score > 0);
-
-        if (holeScores.length > 0) {
-          const bestScore = Math.min(...holeScores);
+      // Best ball team score per hole
+      for (let h = 0; h < holesCount; h++) {
+        const holeScores = teamPlayers.map(
+          (player) => round.scores[player.id]?.scores?.[h] ?? null
+        );
+        // safeMin returnerar number | null
+        const bestScore = safeMin(holeScores as any);
+        if (typeof bestScore === "number") {
           teamTotalScore += bestScore;
+          countedPar += getHolePar(h);
         }
       }
 
-      // Count players with any scores in this round
-      playersWithScores = teamPlayers.filter((player) => {
-        const playerScore = round.scores[player.id];
-        return playerScore && playerScore.scores.some((score) => score > 0);
+      // Antal spelare med *någon* giltig score i rundan
+      const playersWithScores = teamPlayers.filter((player) => {
+        const s = round.scores[player.id]?.scores ?? [];
+        return s.some(
+          (v: any) => typeof v === "number" && Number.isFinite(v) && v > 0
+        );
       }).length;
 
-      const totalPar = storage.getTotalPar(round);
-      const teamTotalToPar = teamTotalScore - totalPar;
+      const teamTotalToPar =
+        countedPar > 0 ? teamTotalScore - countedPar : undefined;
 
       teamEntries.push({
         team,
-        totalScore: teamTotalScore,
+        totalScore: teamTotalScore > 0 ? teamTotalScore : undefined,
         totalToPar: teamTotalToPar,
-        netScore: undefined, // Best ball typically doesn't use net scoring at team level
+        netScore: undefined,
         netToPar: undefined,
         totalHandicapStrokes: undefined,
         playersWithScores,
@@ -788,7 +807,6 @@ export const storage = {
       });
     });
 
-    // Sort and set positions
     return storage.sortAndPositionTeams(teamEntries);
   },
 
@@ -991,9 +1009,12 @@ export const storage = {
       if (a.totalScore === 0) return 1;
       if (b.totalScore === 0) return -1;
 
-      const aScore = a.netScore || a.totalScore;
-      const bScore = b.netScore || b.totalScore;
-      return aScore - bScore;
+      const aScore = typeof a.netScore === "number" ? a.netScore : a.totalScore;
+      const bScore = typeof b.netScore === "number" ? b.netScore : b.totalScore;
+      return (
+        (typeof aScore === "number" ? aScore : 0) -
+        (typeof bScore === "number" ? bScore : 0)
+      );
     });
 
     // Set positions
@@ -1080,105 +1101,6 @@ export const storage = {
     return match;
   },
 
-  // Update match play hole score
-  updateMatchPlayHole: (
-    tourId: string,
-    roundId: string,
-    matchId: string,
-    holeNumber: number,
-    teamAScore: number,
-    teamBScore: number
-  ): void => {
-    const tour = storage.getTour(tourId);
-    const round = tour?.rounds.find((r) => r.id === roundId);
-    const match = round?.ryderCup?.matches.find((m) => m.id === matchId);
-
-    if (!tour || !round || !match) return;
-
-    // Find or create hole
-    let hole = match.holes.find((h) => h.holeNumber === holeNumber);
-    if (!hole) {
-      hole = {
-        holeNumber,
-        teamAScore: 0,
-        teamBScore: 0,
-        result: "tie",
-        matchStatus: "",
-      };
-      match.holes.push(hole);
-    }
-
-    // Update hole scores
-    hole.teamAScore = teamAScore;
-    hole.teamBScore = teamBScore;
-    hole.result = matchPlayUtils.calculateHoleResult(teamAScore, teamBScore);
-
-    // Recalculate match status
-    const statusInfo = matchPlayUtils.calculateMatchStatus(
-      match.holes,
-      round.holes
-    );
-    hole.matchStatus = statusInfo.status;
-
-    // Update match if completed
-    if (statusInfo.isCompleted && statusInfo.result) {
-      match.status = "completed";
-      match.result = statusInfo.result;
-      match.points = matchPlayUtils.calculateMatchPoints(statusInfo.result);
-      match.completedAt = new Date().toISOString();
-
-      // Update tournament points
-      if (round.ryderCup) {
-        round.ryderCup.teamAPoints += match.points.teamA;
-        round.ryderCup.teamBPoints += match.points.teamB;
-      }
-    }
-
-    storage.saveTour(tour);
-  },
-
-  // Get match play leaderboard (team points)
-  getMatchPlayLeaderboard: (tourId: string, roundId?: string) => {
-    const tour = storage.getTour(tourId);
-    if (!tour) return { teamA: 0, teamB: 0, matches: [] };
-
-    let totalTeamAPoints = 0;
-    let totalTeamBPoints = 0;
-    let allMatches: MatchPlayRound[] = [];
-
-    if (roundId) {
-      // Single round
-      const round = tour.rounds.find((r) => r.id === roundId);
-      if (round?.ryderCup) {
-        totalTeamAPoints = round.ryderCup.teamAPoints;
-        totalTeamBPoints = round.ryderCup.teamBPoints;
-        allMatches = round.ryderCup.matches;
-      }
-    } else {
-      // All rounds
-      tour.rounds.forEach((round) => {
-        if (round.ryderCup) {
-          totalTeamAPoints += round.ryderCup.teamAPoints;
-          totalTeamBPoints += round.ryderCup.teamBPoints;
-          allMatches.push(...round.ryderCup.matches);
-        }
-      });
-    }
-
-    return {
-      teamA: totalTeamAPoints,
-      teamB: totalTeamBPoints,
-      matches: allMatches,
-      target: 14.5,
-      winner:
-        totalTeamAPoints >= 14.5
-          ? "team-a"
-          : totalTeamBPoints >= 14.5
-          ? "team-b"
-          : undefined,
-    };
-  },
-
   // --- Stableford (Poängbogey) utilities ---
   // Allocate handicap strokes per hole for a player based on total handicapStrokes and hole stroke index.
   _allocateHandicapStrokesPerHole: (
@@ -1242,5 +1164,278 @@ export const storage = {
       total += storage.calculateStablefordForPlayer(r, playerId);
     }
     return total;
+  },
+
+  // Add a Ryder Cup session with pairings; ensures sessions & matches are tracked
+  addRyderCupSession: (
+    tourId: string,
+    roundId: string,
+    sessionData: {
+      sessionType:
+        | "day1-foursomes"
+        | "day1-four-ball"
+        | "day2-foursomes"
+        | "day2-four-ball"
+        | "day3-singles"
+        | "foursomes"
+        | "four-ball"
+        | "singles";
+      pairings: { teamAPlayerIds: string[]; teamBPlayerIds: string[] }[];
+    }
+  ): MatchPlayRound[] => {
+    const tour = storage.getTour(tourId);
+    const round = tour?.rounds.find((r) => r.id === roundId);
+    if (!tour || !round) throw new Error("Tour or round not found");
+    if (!tour.teams || tour.teams.length < 2) {
+      throw new Error("Ryder Cup requires two teams");
+    }
+
+    // Ensure ryderCup structure
+    if (!round.ryderCup) {
+      round.ryderCup = {
+        teamAPoints: 0,
+        teamBPoints: 0,
+        targetPoints: 14.5,
+        matches: [],
+        sessions: {
+          day1Foursomes: [],
+          day1FourBall: [],
+          day2Foursomes: [],
+          day2FourBall: [],
+          day3Singles: [],
+        },
+      };
+    } else if (!round.ryderCup.sessions) {
+      (round.ryderCup as any).sessions = {
+        day1Foursomes: [],
+        day1FourBall: [],
+        day2Foursomes: [],
+        day2FourBall: [],
+        day3Singles: [],
+      };
+    }
+
+    const st = sessionData.sessionType;
+    const format: "singles" | "foursomes" | "four-ball" = st.includes(
+      "four-ball"
+    )
+      ? "four-ball"
+      : st.includes("foursomes")
+      ? "foursomes"
+      : "singles";
+
+    const sessionKey =
+      st === "day1-foursomes"
+        ? "day1Foursomes"
+        : st === "day1-four-ball"
+        ? "day1FourBall"
+        : st === "day2-foursomes"
+        ? "day2Foursomes"
+        : st === "day2-four-ball"
+        ? "day2FourBall"
+        : st === "day3-singles"
+        ? "day3Singles"
+        : null;
+
+    const created: MatchPlayRound[] = [];
+
+    const defaultA = tour.teams[0]!.id;
+    const defaultB = tour.teams[1]!.id;
+
+    for (const pairing of sessionData.pairings) {
+      const pA0 = tour.players.find((p) => p.id === pairing.teamAPlayerIds[0]);
+      const pB0 = tour.players.find((p) => p.id === pairing.teamBPlayerIds[0]);
+
+      // Infer team IDs from players; fallback to the two defined teams
+      const teamAId = pA0?.teamId ?? defaultA;
+      const teamBId =
+        pB0?.teamId ?? (teamAId === defaultA ? defaultB : defaultA);
+
+      const match = storage.createMatchPlayRound(tourId, roundId, {
+        format,
+        teamA: { id: teamAId, playerIds: pairing.teamAPlayerIds },
+        teamB: { id: teamBId, playerIds: pairing.teamBPlayerIds },
+      });
+
+      // Track match object + link id into the session list
+      round.ryderCup!.matches.push(match);
+      if (sessionKey) {
+        (round.ryderCup!.sessions as any)[sessionKey].push(match.id);
+      }
+      created.push(match);
+    }
+
+    storage.saveTour(tour);
+    return created;
+  },
+
+  // Update one match-play hole + recalc status/points
+  updateMatchHole: (
+    tourId: string,
+    roundId: string,
+    data: {
+      matchId: string;
+      holeNumber: number;
+      teamAScore: number;
+      teamBScore: number;
+    }
+  ) => {
+    const tour = storage.getTour(tourId);
+    const round = tour?.rounds.find((r) => r.id === roundId);
+    if (!tour || !round) throw new Error("Tour or round not found");
+    if (!round.ryderCup) throw new Error("Ryder Cup data not initialized");
+
+    const match = round.ryderCup.matches.find(
+      (m: any) => m.id === data.matchId
+    );
+    if (!match) throw new Error("Match not found");
+
+    const totalHoles = round.holes || 18;
+    const isValid = (n: any) =>
+      typeof n === "number" && Number.isFinite(n) && n > 0;
+
+    if (!match.holes || !Array.isArray(match.holes)) {
+      match.holes = Array.from({ length: totalHoles }, (_, i) => ({
+        holeNumber: i + 1,
+        teamAScore: 0,
+        teamBScore: 0,
+        result: "tie" as any,
+        matchStatus: "in-progress" as any,
+      }));
+    } else if (match.holes.length < totalHoles) {
+      for (let i = match.holes.length; i < totalHoles; i++) {
+        match.holes[i] = {
+          holeNumber: i + 1,
+          teamAScore: 0,
+          teamBScore: 0,
+          result: "tie" as any,
+          matchStatus: "in-progress" as any,
+        };
+      }
+    }
+
+    // 1) Apply the hole update
+    const idx = Math.max(
+      0,
+      Math.min(totalHoles - 1, (data.holeNumber || 1) - 1)
+    );
+    const hole = match.holes[idx] as any;
+    hole.holeNumber = data.holeNumber;
+    hole.teamAScore = data.teamAScore;
+    hole.teamBScore = data.teamBScore;
+
+    // Sätt inte result om någon sida saknar giltig score
+    if (isValid(data.teamAScore) && isValid(data.teamBScore)) {
+      hole.result =
+        data.teamAScore === data.teamBScore
+          ? ("tie" as any)
+          : data.teamAScore < data.teamBScore
+          ? ("team-a" as any)
+          : ("team-b" as any);
+    } else {
+      hole.result = hole.result ?? ("tie" as any); // lämna som tidigare; UI räknar ej detta hål som spelat
+    }
+
+    // 2) Re-derive results for all played holes (finite + >0 only)
+    let aWins = 0;
+    let bWins = 0;
+    let holesPlayed = 0;
+    for (let i = 0; i < totalHoles; i++) {
+      const h = match.holes[i] as any;
+      if (!(isValid(h.teamAScore) && isValid(h.teamBScore))) continue;
+      holesPlayed++;
+      const res =
+        h.teamAScore === h.teamBScore
+          ? "tie"
+          : h.teamAScore < h.teamBScore
+          ? "team-a"
+          : "team-b";
+      h.result = res as any;
+      if (res === "team-a") aWins++;
+      else if (res === "team-b") bWins++;
+    }
+
+    const lead = aWins - bWins;
+    const holesRemaining = totalHoles - holesPlayed;
+    const leadAbs = Math.abs(lead);
+    const phraseCurrent = (lv: number) =>
+      lv === 0 ? "All square" : lv > 0 ? `Team A ${lv} up` : `Team B ${-lv} up`;
+    const isDormie = lead !== 0 && leadAbs === holesRemaining;
+
+    // 3) Compute match-level outcome/state
+    let teamAPoints = 0;
+    let teamBPoints = 0;
+    let isComplete = false;
+    let statusText: string;
+    let statusCode: "not-started" | "in-progress" | "dormie" | "complete";
+
+    if (holesPlayed === 0) {
+      statusText = "Not started";
+      statusCode = "not-started";
+    } else if (leadAbs > holesRemaining) {
+      const x = leadAbs;
+      const y = holesRemaining;
+      if (lead > 0) {
+        statusText = `Team A wins ${x}&${y}`;
+        teamAPoints = 1;
+      } else {
+        statusText = `Team B wins ${x}&${y}`;
+        teamBPoints = 1;
+      }
+      isComplete = true;
+      statusCode = "complete";
+    } else if (holesRemaining === 0) {
+      if (lead === 0) {
+        statusText = "Halved";
+        teamAPoints = 0.5;
+        teamBPoints = 0.5;
+      } else if (lead > 0) {
+        statusText = "Team A wins 1 up";
+        teamAPoints = 1;
+      } else {
+        statusText = "Team B wins 1 up";
+        teamBPoints = 1;
+      }
+      isComplete = true;
+      statusCode = "complete";
+    } else if (isDormie) {
+      statusText = `Dormie — ${phraseCurrent(lead)}`;
+      statusCode = "dormie";
+    } else {
+      statusText = phraseCurrent(lead);
+      statusCode = "in-progress";
+    }
+
+    // 4) Persist hole-level matchStatus (friendly text)
+    (hole as any).matchStatus = statusText as any;
+
+    // 5) Persist match-level status/points
+    (match as any).isComplete = isComplete;
+    (match as any).winner =
+      isComplete && teamAPoints !== teamBPoints
+        ? lead > 0
+          ? "team-a"
+          : "team-b"
+        : lead === 0 && isComplete
+        ? "halved"
+        : undefined;
+    (match as any).resultSummary = isComplete ? statusText : undefined;
+    (match as any).statusText = statusText;
+    (match as any).statusCode = statusCode;
+    (match as any).points = isComplete
+      ? { teamA: teamAPoints, teamB: teamBPoints }
+      : { teamA: 0, teamB: 0 };
+
+    // 6) Re-sum Ryder Cup team totals
+    let sumA = 0;
+    let sumB = 0;
+    for (const m of round.ryderCup.matches as any[]) {
+      sumA += m.points?.teamA || 0;
+      sumB += m.points?.teamB || 0;
+    }
+    round.ryderCup.teamAPoints = sumA;
+    round.ryderCup.teamBPoints = sumB;
+
+    storage.saveTour(tour);
   },
 };
