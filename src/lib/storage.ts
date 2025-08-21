@@ -1300,13 +1300,14 @@ export const storage = {
     const isValid = (n: any) =>
       typeof n === "number" && Number.isFinite(n) && n > 0;
 
+    // Ensure holes array matches shape, but do NOT default ties for unplayed holes
     if (!match.holes || !Array.isArray(match.holes)) {
       match.holes = Array.from({ length: totalHoles }, (_, i) => ({
         holeNumber: i + 1,
         teamAScore: 0,
         teamBScore: 0,
-        result: "tie" as any,
-        matchStatus: "in-progress" as any,
+        result: undefined as any,
+        matchStatus: undefined as any,
       }));
     } else if (match.holes.length < totalHoles) {
       for (let i = match.holes.length; i < totalHoles; i++) {
@@ -1314,9 +1315,9 @@ export const storage = {
           holeNumber: i + 1,
           teamAScore: 0,
           teamBScore: 0,
-          result: "tie" as any,
-          matchStatus: "in-progress" as any,
-        };
+          result: undefined,
+          matchStatus: undefined,
+        } as any;
       }
     }
 
@@ -1331,7 +1332,7 @@ export const storage = {
     hole.teamBScore = data.teamBScore;
 
     // Sätt inte result om någon sida saknar giltig score
-    if (isValid(data.teamAScore) && isValid(data.teamBScore)) {
+    if (isValid(hole.teamAScore) && isValid(hole.teamBScore)) {
       hole.result =
         data.teamAScore === data.teamBScore
           ? ("tie" as any)
@@ -1348,7 +1349,11 @@ export const storage = {
     let holesPlayed = 0;
     for (let i = 0; i < totalHoles; i++) {
       const h = match.holes[i] as any;
-      if (!(isValid(h.teamAScore) && isValid(h.teamBScore))) continue;
+      if (!(isValid(h.teamAScore) && isValid(h.teamBScore))) {
+        h.result = undefined;
+        h.matchStatus = undefined;
+        continue;
+      }
       holesPlayed++;
       const res =
         h.teamAScore === h.teamBScore
@@ -1357,6 +1362,7 @@ export const storage = {
           ? "team-a"
           : "team-b";
       h.result = res as any;
+
       if (res === "team-a") aWins++;
       else if (res === "team-b") bWins++;
     }
@@ -1410,6 +1416,12 @@ export const storage = {
     } else {
       statusText = phraseCurrent(lead);
       statusCode = "in-progress";
+    }
+
+    if (isValid(hole.teamAScore) && isValid(hole.teamBScore)) {
+      (hole as any).matchStatus = statusText as any;
+    } else {
+      (hole as any).matchStatus = undefined;
     }
 
     // 4) Persist hole-level matchStatus (friendly text)
