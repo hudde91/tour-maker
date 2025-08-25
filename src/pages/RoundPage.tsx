@@ -24,7 +24,7 @@ import { storage } from "../lib/storage";
 import { CaptainPairingInterface } from "../components/matchplay/rydercup/CaptainPairingInterface";
 import { PreRoundComponent } from "../components/rounds/PreRoundComponent";
 import { RoundHeader } from "../components/rounds/RoundHeader";
-import ErrorBoundary from "@/components/common/ErrorBoundary";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 
 export const RoundPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
