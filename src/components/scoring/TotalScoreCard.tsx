@@ -139,8 +139,8 @@ export const TotalScoreCard = ({
                 value={handicapStrokes}
                 onChange={(e) => setHandicapStrokes(e.target.value)}
                 className="w-full text-lg text-center border-2 border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
-                min="0"
-                max="54"
+                min={0}
+                max={54}
                 placeholder="0"
               />
               <p className="text-xs text-slate-500 text-center md:text-left">

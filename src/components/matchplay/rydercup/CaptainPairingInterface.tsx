@@ -72,7 +72,7 @@ export const CaptainPairingInterface = ({
     ) {
       setPairings([
         ...pairings,
-        { ...currentPairing, id: Date.now().toString() },
+        { ...currentPairing, id: crypto.randomUUID() },
       ]);
       setCurrentPairing({
         id: "",

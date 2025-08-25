@@ -24,6 +24,7 @@ import { storage } from "../lib/storage";
 import { CaptainPairingInterface } from "../components/matchplay/rydercup/CaptainPairingInterface";
 import { PreRoundComponent } from "../components/rounds/PreRoundComponent";
 import { RoundHeader } from "../components/rounds/RoundHeader";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 export const RoundPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
@@ -301,7 +302,7 @@ export const RoundPage = () => {
   // Pre-round Screen with Captain Pairing for Ryder Cup formats
   if (round.status === "created") {
     return (
-      <>
+      <ErrorBoundary resetKey={`${tour?.id}:${round?.id}`}>
         <PreRoundComponent
           tour={tour}
           round={round}
@@ -325,110 +326,112 @@ export const RoundPage = () => {
             }}
           />
         )}
-      </>
+      </ErrorBoundary>
     );
   }
 
   // Active Round Interface
   return (
-    <div className="min-h-screen bg-slate-50 safe-area-top safe-area-bottom">
-      {/* Round Header */}
-      <RoundHeader
-        tour={tour}
-        round={round}
-        formatConfig={formatConfig}
-        showLeaderboard={showLeaderboard}
-        onToggleLeaderboard={() => setShowLeaderboard(!showLeaderboard)}
-        onCompleteRound={handleCompleteRound}
-        onCaptainPairing={
-          needsCaptainPairing ? () => setShowCaptainPairing(true) : undefined
-        }
-      />
+    <ErrorBoundary resetKey={`${tour?.id}:${round?.id}`}>
+      <div className="min-h-screen bg-slate-50 safe-area-top safe-area-bottom">
+        {/* Round Header */}
+        <RoundHeader
+          tour={tour}
+          round={round}
+          formatConfig={formatConfig}
+          showLeaderboard={showLeaderboard}
+          onToggleLeaderboard={() => setShowLeaderboard(!showLeaderboard)}
+          onCompleteRound={handleCompleteRound}
+          onCaptainPairing={
+            needsCaptainPairing ? () => setShowCaptainPairing(true) : undefined
+          }
+        />
 
-      <div className="px-4 mt-4 pb-24 w-full max-w-6xl mx-auto">
-        {/* Live Leaderboard (Collapsible) */}
-        {showLeaderboard && (
-          <div className="card-spacing animate-fade-in w-full max-w-5xl mx-auto">
-            <LiveLeaderboard tour={tour} round={round} />
+        <div className="px-4 mt-4 pb-24 w-full max-w-6xl mx-auto">
+          {/* Live Leaderboard (Collapsible) */}
+          {showLeaderboard && (
+            <div className="card-spacing animate-fade-in w-full max-w-5xl mx-auto">
+              <LiveLeaderboard tour={tour} round={round} />
+            </div>
+          )}
+
+          {/* Format-Specific Scoring Interface */}
+          <div className="w-full max-w-5xl mx-auto">
+            {(() => {
+              switch (round.format) {
+                case "scramble":
+                  return (
+                    <ScrambleScoringInterface
+                      tour={tour}
+                      round={round}
+                      onTeamScoreChange={handleTeamScoreChange}
+                      onTeamTotalScoreChange={handleTeamTotalScoreChange}
+                    />
+                  );
+
+                case "best-ball":
+                  return (
+                    <BestBallScoringInterface
+                      tour={tour}
+                      round={round}
+                      onPlayerScoreChange={handlePlayerScoreChange}
+                      onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
+                    />
+                  );
+
+                case "foursomes-match-play":
+                  return (
+                    <FoursomesScoringInterface
+                      tour={tour}
+                      round={round}
+                      onMatchHoleUpdate={handleMatchHoleUpdate}
+                    />
+                  );
+
+                case "four-ball-match-play":
+                  return (
+                    <FourBallMatchPlayInterface
+                      tour={tour}
+                      round={round}
+                      onMatchHoleUpdate={handleMatchHoleUpdate}
+                    />
+                  );
+
+                case "singles-match-play":
+                  return (
+                    <SinglesMatchPlayInterface
+                      tour={tour}
+                      round={round}
+                      onMatchHoleUpdate={handleMatchHoleUpdate}
+                    />
+                  );
+
+                default:
+                  return (
+                    <IndividualScoringInterface
+                      tour={tour}
+                      round={round}
+                      onPlayerScoreChange={handlePlayerScoreChange}
+                      onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
+                    />
+                  );
+              }
+            })()}
           </div>
-        )}
-
-        {/* Format-Specific Scoring Interface */}
-        <div className="w-full max-w-5xl mx-auto">
-          {(() => {
-            switch (round.format) {
-              case "scramble":
-                return (
-                  <ScrambleScoringInterface
-                    tour={tour}
-                    round={round}
-                    onTeamScoreChange={handleTeamScoreChange}
-                    onTeamTotalScoreChange={handleTeamTotalScoreChange}
-                  />
-                );
-
-              case "best-ball":
-                return (
-                  <BestBallScoringInterface
-                    tour={tour}
-                    round={round}
-                    onPlayerScoreChange={handlePlayerScoreChange}
-                    onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
-                  />
-                );
-
-              case "foursomes-match-play":
-                return (
-                  <FoursomesScoringInterface
-                    tour={tour}
-                    round={round}
-                    onMatchHoleUpdate={handleMatchHoleUpdate}
-                  />
-                );
-
-              case "four-ball-match-play":
-                return (
-                  <FourBallMatchPlayInterface
-                    tour={tour}
-                    round={round}
-                    onMatchHoleUpdate={handleMatchHoleUpdate}
-                  />
-                );
-
-              case "singles-match-play":
-                return (
-                  <SinglesMatchPlayInterface
-                    tour={tour}
-                    round={round}
-                    onMatchHoleUpdate={handleMatchHoleUpdate}
-                  />
-                );
-
-              default:
-                return (
-                  <IndividualScoringInterface
-                    tour={tour}
-                    round={round}
-                    onPlayerScoreChange={handlePlayerScoreChange}
-                    onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
-                  />
-                );
-            }
-          })()}
         </div>
-      </div>
 
-      {/* Complete Round Confirmation */}
-      <ConfirmDialog
-        isOpen={showCompleteConfirm}
-        title="Complete Tournament Round"
-        message="Complete this tournament round? No additional scores can be entered after completion."
-        confirmLabel="Complete Round"
-        cancelLabel="Cancel"
-        onConfirm={confirmCompleteRound}
-        onCancel={cancelCompleteRound}
-        isDestructive={false}
-      />
-    </div>
+        {/* Complete Round Confirmation */}
+        <ConfirmDialog
+          isOpen={showCompleteConfirm}
+          title="Complete Tournament Round"
+          message="Complete this tournament round? No additional scores can be entered after completion."
+          confirmLabel="Complete Round"
+          cancelLabel="Cancel"
+          onConfirm={confirmCompleteRound}
+          onCancel={cancelCompleteRound}
+          isDestructive={false}
+        />
+      </div>
+    </ErrorBoundary>
   );
 };
