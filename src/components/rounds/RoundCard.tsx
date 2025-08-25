@@ -19,6 +19,9 @@ export const RoundCard = ({ round, tour }: RoundCardProps) => {
   const playersWithScores = Object.keys(round.scores).length;
   const totalPlayers = tour.players.length;
 
+  const isCompletedRound = (r: Round) =>
+    r?.status === "completed" || !!r?.completedAt;
+
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -86,7 +89,10 @@ export const RoundCard = ({ round, tour }: RoundCardProps) => {
     totalPlayers > 0 ? Math.round((playersWithScores / totalPlayers) * 100) : 0;
 
   return (
-    <>
+    <div
+      className={`rounded-xl border bg-white p-3 shadow-sm transition
+              ${!isCompletedRound(round) ? "opacity-60" : ""}`}
+    >
       <Link
         to={`/tour/${tour.id}/round/${round.id}`}
         className="block rounded-xl p-4 md:p-6 shadow-professional hover:shadow-elevated transition-all duration-200 border-2 border-slate-200 bg-white hover:border-emerald-300"
@@ -103,10 +109,17 @@ export const RoundCard = ({ round, tour }: RoundCardProps) => {
           {/* Round Info */}
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
-              <div className="min-w-0 flex-1">
-                <h3 className="text-base md:text-lg font-bold text-slate-900 truncate mb-1">
-                  {round.name}
-                </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold">{round.name}</h3>
+                {!isCompletedRound(round) ? (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                    In progress
+                  </span>
+                ) : (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-600 text-white">
+                    Completed
+                  </span>
+                )}
                 <p className="text-slate-600 font-medium text-sm md:text-base truncate flex items-center gap-1">
                   <span className="text-base">🏌️</span>
                   {round.courseName}
@@ -244,6 +257,6 @@ export const RoundCard = ({ round, tour }: RoundCardProps) => {
         onCancel={cancelDelete}
         isDestructive={true}
       />
-    </>
+    </div>
   );
 };

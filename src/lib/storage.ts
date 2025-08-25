@@ -918,7 +918,10 @@ export const storage = {
       let hasHandicapApplied = false;
 
       // Process each round with format awareness
-      tour.rounds.forEach((round) => {
+      const isCompleted = (r: Round) =>
+        r?.status === "completed" || !!r?.completedAt;
+
+      (tour.rounds || []).filter(isCompleted).forEach((round) => {
         let roundTeamScore = 0;
         let roundTeamToPar = 0;
         let roundNetScore = 0;
@@ -1165,8 +1168,12 @@ export const storage = {
 
   // Sum Stableford across all rounds in a tour for a player
   calculateTournamentStableford: (tour: Tour, playerId: string): number => {
+    const isCompleted = (r: Round) =>
+      r?.status === "completed" || !!r?.completedAt;
+
     let total = 0;
     for (const r of tour.rounds) {
+      if (!isCompleted(r)) continue;
       total += storage.calculateStablefordForPlayer(r, playerId);
     }
     return total;
@@ -1271,6 +1278,9 @@ export const storage = {
       created.push(match);
     }
 
+    if (round.status !== "completed") {
+      round.status = "in-progress";
+    }
     storage.saveTour(tour);
     return created;
   },

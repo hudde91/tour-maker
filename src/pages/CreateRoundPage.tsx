@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
 import { useCreateRound } from "../hooks/useRounds";
-import { PlayFormat, HoleInfo, RoundSettings, GOLF_FORMATS } from "../types";
+import { PlayFormat, RoundSettings, GOLF_FORMATS } from "../types";
 import { storage } from "../lib/storage";
 
 export const CreateRoundPage = () => {
@@ -137,12 +137,12 @@ export const CreateRoundPage = () => {
           ? parseInt(formData.manualTotalPar)
           : undefined;
 
-      await createRound.mutateAsync({
+      const newRound = await createRound.mutateAsync({
         ...formData,
         totalPar,
       });
 
-      navigate(`/tour/${tourId}`);
+      navigate(`/tour/${tourId}/round/${newRound.id}`);
     } catch (error) {
       console.error("Failed to create round:", error);
     }

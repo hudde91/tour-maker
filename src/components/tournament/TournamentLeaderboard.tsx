@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Tour } from "../../types";
+import { Round, Tour } from "../../types";
 import { storage } from "../../lib/storage";
 
 interface TournamentLeaderboardProps {
@@ -11,13 +11,19 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     "individual"
   );
 
+  // Count only completed rounds in TournamentLeaderboard
+  const isCompleted = (r: Round) =>
+    r?.status === "completed" || !!r?.completedAt;
+
   // Calculate tournament totals like PlayerScorecard and LiveLeaderboard
   const calculateTournamentLeaderboard = () => {
     const entries = tour.players.map((player) => {
       // Get all rounds this player has scores in
       const playerRounds = tour.rounds.filter(
         (round) =>
-          round.scores[player.id] && round.scores[player.id].totalScore > 0
+          isCompleted(round) &&
+          round.scores[player.id] &&
+          round.scores[player.id].totalScore > 0
       );
 
       // Calculate total strokes across all rounds
@@ -117,10 +123,15 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
             <span className="text-3xl">🏆</span>
             Tournament Leaderboard
           </h2>
-          <p className="text-slate-600 mt-1">
-            Overall standings across {tour.rounds.length} round
-            {tour.rounds.length !== 1 ? "s" : ""}
-          </p>
+          {(() => {
+            const completedCount = tour.rounds.filter(isCompleted).length;
+            return (
+              <p className="text-slate-600 mt-1">
+                Overall standings across {completedCount} completed round
+                {completedCount !== 1 ? "s" : ""}
+              </p>
+            );
+          })()}
         </div>
 
         <div className="flex items-center gap-4">

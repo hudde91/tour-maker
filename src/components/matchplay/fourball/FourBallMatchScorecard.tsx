@@ -27,15 +27,6 @@ export const FourBallMatchScorecard = ({
   onHoleUpdate,
 }: FourBallMatchScorecardProps) => {
   const currentHoleInfo = round.holeInfo[currentHole - 1];
-  const currentHoleData = match.holes.find(
-    (h) => h.holeNumber === currentHole
-  ) || {
-    holeNumber: currentHole,
-    teamAScore: 0,
-    teamBScore: 0,
-    result: "tie" as const,
-    matchStatus: "",
-  };
 
   // Individual player scores
   const [teamAPlayerScores, setTeamAPlayerScores] = useState<{
@@ -179,15 +170,18 @@ export const FourBallMatchScorecard = ({
           </span>
         </div>
       );
-    } else {
-      return (
-        <div className="text-center py-3">
-          <span className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold text-lg">
-            🤝 Hole Tied ({teamABest} each)
-          </span>
-        </div>
-      );
     }
+    const valid = (n: any) =>
+      typeof n === "number" && Number.isFinite(n) && n > 0;
+    if (!(valid(teamABest) && valid(teamBBest))) return null;
+
+    return (
+      <div className="text-center py-3">
+        <span className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold text-lg">
+          🤝 Hole Tied ({teamABest} each)
+        </span>
+      </div>
+    );
   };
 
   const resetAllScores = () => {

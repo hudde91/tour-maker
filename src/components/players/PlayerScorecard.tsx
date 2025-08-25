@@ -1,211 +1,189 @@
-import { Player, Tour } from "../../types";
+import { useMemo } from "react";
+import { Tour, Player, Round } from "../../types/core";
 import { storage } from "../../lib/storage";
+import PlayerScorecardHeader from "./PlayerScorecardHeader";
+import PlayerScoreGrid9 from "./PlayerScoreGrid9";
 
-interface PlayerScorecardProps {
-  player: Player;
+type Props = {
   tour: Tour;
-  isExpanded: boolean;
-  onToggle: () => void;
-}
+  player: Player;
+  isExpanded?: boolean;
+  onToggle?: () => void;
+  className?: string;
+};
+
+const isCompletedRound = (r: Round) =>
+  r?.status === "completed" || !!r?.completedAt;
 
 export const PlayerScorecard = ({
-  player,
   tour,
-  isExpanded,
+  player,
+  isExpanded = false,
   onToggle,
-}: PlayerScorecardProps) => {
-  const playerRounds = tour.rounds.filter(
-    (round) => round.scores[player.id] && round.scores[player.id].totalScore > 0
-  );
+  className = "",
+}: Props) => {
+  // Rounds där spelaren har någon totalscore/score
+  const playerRounds = useMemo(() => {
+    return (tour.rounds || []).filter((round) => {
+      const s = round.scores?.[player.id];
+      return (
+        !!s &&
+        (s.totalScore > 0 ||
+          (s.scores ?? []).some((v) => typeof v === "number" && v > 0))
+      );
+    });
+  }, [tour.rounds, player.id]);
 
-  const totalScore = playerRounds.reduce((sum, round) => {
-    return sum + (round.scores[player.id]?.totalScore || 0);
-  }, 0);
+  // Summera total strokes över rundor där totalScore finns (>0)
+  const totalStrokes = useMemo(() => {
+    return playerRounds.reduce((sum, r) => {
+      const s = r.scores?.[player.id];
+      return sum + (s?.totalScore && s.totalScore > 0 ? s.totalScore : 0);
+    }, 0);
+  }, [playerRounds, player.id]);
 
-  const team = tour.teams?.find((t) => t.id === player.teamId);
-  const isCaptain = team?.captainId === player.id;
+  // Stableford – turnering (bara completed) OCH live (alla rundor)
+  const tournamentStableford = useMemo(() => {
+    try {
+      return storage.calculateTournamentStableford(tour, player.id);
+    } catch {
+      return undefined;
+    }
+  }, [tour, player.id]);
+
+  const liveStableford = useMemo(() => {
+    try {
+      return (tour.rounds || []).reduce(
+        (sum, r) => sum + storage.calculateStablefordForPlayer(r, player.id),
+        0
+      );
+    } catch {
+      return undefined;
+    }
+  }, [tour, player.id]);
+
+  // Använd tournament om den är > 0 eller om det finns completed rundor; annars fall-back till live
+  const displayedStableford = useMemo(() => {
+    const hasCompleted = (tour.rounds || []).some(
+      (r) => r?.status === "completed" || !!r?.completedAt
+    );
+    if (
+      typeof tournamentStableford === "number" &&
+      (tournamentStableford > 0 || hasCompleted)
+    ) {
+      return tournamentStableford;
+    }
+    return typeof liveStableford === "number" ? liveStableford : undefined;
+  }, [tour.rounds, tournamentStableford, liveStableford]);
 
   return (
-    <div className="card hover:shadow-elevated transition-all duration-200">
-      {/* Player Header - Clickable */}
-      <div
-        className="flex items-center justify-between cursor-pointer"
+    <div className={`w-full ${className}`}>
+      <button
+        type="button"
         onClick={onToggle}
+        className="w-full text-left relative"
       >
-        <div className="flex items-center gap-4 flex-1 min-w-0">
-          {/* Player Avatar */}
-          <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center shadow-sm">
-            <span className="text-lg md:text-xl">👤</span>
-          </div>
+        <PlayerScorecardHeader
+          playerName={player.name}
+          totalStrokes={totalStrokes}
+          stableford={
+            typeof displayedStableford === "number"
+              ? displayedStableford
+              : undefined
+          }
+        />
+        {/* <span
+          className={`absolute right-3 top-3 inline-flex h-6 w-6 items-center justify-center rounded-md border border-slate-200 text-xs ${
+            isExpanded ? "bg-slate-50" : "bg-white"
+          }`}
+          aria-hidden
+        >
+          {isExpanded ? "▾" : "▸"}
+        </span> */}
+      </button>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-1">
-              <h3 className="text-base md:text-lg font-semibold text-slate-900 truncate">
-                {player.name}
-              </h3>
-
-              <div className="flex items-center gap-2 flex-wrap">
-                {isCaptain && (
-                  <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-200">
-                    👑 Captain
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm text-slate-600">
-              {player.handicap !== undefined && (
-                <span className="font-medium flex items-center gap-1">
-                  <span className="text-base">⛳</span>
-                  HC: {player.handicap}
-                </span>
-              )}
-
-              {team && (
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-full border border-white shadow-sm"
-                    style={{ backgroundColor: team.color }}
-                  />
-                  <span className="text-slate-700 font-medium">
-                    {team.name}
-                  </span>
-                </div>
-              )}
-
-              <span className="text-slate-500 flex items-center gap-1">
-                {playerRounds.length} round
-                {playerRounds.length !== 1 ? "s" : ""}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Summary Score & Expand Icon */}
-        <div className="flex items-center gap-3 md:gap-4">
-          {totalScore > 0 && (
-            <div className="text-right">
-              <div className="text-sm font-medium text-slate-600">
-                Total Strokes: {totalScore}
-              </div>
-            </div>
-          )}
-
-          <div
-            className={`transition-transform duration-200 ${
-              isExpanded ? "rotate-90" : ""
-            }`}
-          >
-            <span className="text-lg text-slate-400">▶️</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Expanded Scorecard */}
+      {/* Expanded content: scorecards per runda */}
       {isExpanded && (
-        <div className="mt-6 pt-6 border-t border-slate-200 animate-fade-in">
-          <div className="mb-4">
-            <p className="text-sm text-slate-600 flex items-center gap-2">
-              <span className="text-base">📊</span>
-              Round-by-round performance in {tour.name}
-            </p>
-          </div>
+        <div className="space-y-4">
+          {playerRounds.map((round) => {
+            const holesCount =
+              (typeof round.holes === "number" && round.holes > 0
+                ? round.holes
+                : (round as any).holeInfo?.length) ?? 18;
 
-          {playerRounds.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">📋</span>
-              </div>
-              <p className="text-slate-500 font-medium">
-                No completed rounds yet
-              </p>
-            </div>
-          ) : (
-            <>
-              {/* Round Scores */}
-              <div className="space-y-3 card-spacing">
-                {playerRounds.map((round, index) => {
-                  const playerScore = round.scores[player.id];
-                  const displayScore =
-                    playerScore.netScore || playerScore.totalScore;
+            const pars: number[] = Array.from(
+              { length: holesCount },
+              (_, i) => {
+                const par = (round as any).holeInfo?.[i]?.par ?? 4;
+                return typeof par === "number" ? par : 4;
+              }
+            );
 
-                  return (
-                    <div
-                      key={round.id}
-                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200"
-                    >
-                      <div className="flex-1">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-1">
-                          <span className="text-base md:text-lg font-semibold text-slate-900 flex items-center gap-2">
-                            <span className="text-base">📋</span>
-                            Round {index + 1}
-                          </span>
-                          <span className="text-sm text-slate-500">
-                            {round.name}
-                          </span>
-                          {playerScore.handicapStrokes &&
-                            playerScore.handicapStrokes > 0 && (
-                              <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-semibold">
-                                ⛳ HC Applied
-                              </span>
-                            )}
-                        </div>
-                        <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm text-slate-600">
-                          <span className="flex items-center gap-1">
-                            <span className="text-base">🏌️</span>
-                            {round.courseName}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="text-base">⛳</span>
-                            Par {storage.getTotalPar(round)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="text-base">⭐</span>
-                            Stableford{" "}
-                            {storage.calculateStablefordForPlayer(
-                              round,
-                              player.id
-                            )}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="text-base">🏕️</span>
-                            {round.holes} holes
-                          </span>
-                          {playerScore.handicapStrokes &&
-                            playerScore.handicapStrokes > 0 && (
-                              <span className="text-blue-600 font-medium flex items-center gap-1">
-                                <span className="text-base">➖</span>
-                                {playerScore.handicapStrokes} strokes
-                              </span>
-                            )}
-                          <span
-                            className={`px-2 py-1 rounded text-xs font-semibold flex items-center gap-1 ${
-                              round.status === "completed"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-emerald-100 text-emerald-800"
-                            }`}
-                          >
-                            {round.status === "completed" ? "" : "🔴"}
-                            {round.status === "completed" ? "Finished" : "Live"}
-                          </span>
-                        </div>
-                      </div>
+            const si: number[] = Array.from({ length: holesCount }, (_, i) => {
+              const idx =
+                (round as any).holeInfo?.[i]?.index ??
+                (round as any).holeInfo?.[i]?.hcp ??
+                i + 1;
+              return typeof idx === "number" ? idx : i + 1;
+            });
 
-                      <div className="text-right">
-                        <div
-                          className={`text-xl md:text-2xl font-bold mb-1 ${
-                            displayScore < 0 ? "text-red-500" : "text-slate-900"
-                          }`}
-                        >
-                          {displayScore}
-                        </div>
-                      </div>
+            const scores: number[] =
+              round.scores?.[player.id]?.scores?.slice(0, holesCount) ?? [];
+
+            return (
+              <div
+                key={round.id}
+                className="rounded-xl border bg-white shadow-sm"
+              >
+                <div className="flex items-center justify-between px-3 py-2 border-b">
+                  <div className="flex items-center gap-2">
+                    <div className="text-sm font-semibold text-slate-900">
+                      {round.name || "Round"}
                     </div>
-                  );
-                })}
+                    {!isCompletedRound(round) ? (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                        In progress
+                      </span>
+                    ) : (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-600 text-white">
+                        Completed
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs text-slate-600">
+                    Total strokes:{" "}
+                    <span className="font-semibold">
+                      {(() => {
+                        const s = round.scores?.[player.id]?.totalScore;
+                        return s && s > 0 ? s : "—";
+                      })()}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3 flex flex-col gap-3">
+                  <PlayerScoreGrid9
+                    title="Front 9"
+                    start={0}
+                    pars={pars}
+                    si={si}
+                    scores={scores}
+                    holesCount={holesCount}
+                  />
+                  {holesCount > 9 && (
+                    <PlayerScoreGrid9
+                      title="Back 9"
+                      start={9}
+                      pars={pars}
+                      si={si}
+                      scores={scores}
+                      holesCount={holesCount}
+                    />
+                  )}
+                </div>
               </div>
-            </>
-          )}
+            );
+          })}
         </div>
       )}
     </div>

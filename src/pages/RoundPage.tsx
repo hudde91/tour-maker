@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
 import {
@@ -28,6 +28,8 @@ import { RoundHeader } from "../components/rounds/RoundHeader";
 export const RoundPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
   const { data: tour, isLoading } = useTour(tourId!);
+
+  const autoOpenedRef = useRef(false);
 
   const updateScore = useUpdateScore(tourId!, roundId!);
   const updateTeamScore = useUpdateTeamScore(tourId!, roundId!);
@@ -211,7 +213,26 @@ export const RoundPage = () => {
     [round?.format, round?.scores, updateMatchHole, updateScore]
   );
 
-  // Loading State
+  useEffect(() => {
+    if (!round || !needsCaptainPairing || autoOpenedRef.current) return;
+
+    // Fungerar både med äldre "matches" och nya "sessions"
+    const hasAnyMatches = Array.isArray(round?.ryderCup?.matches)
+      ? round.ryderCup!.matches.length > 0
+      : round?.ryderCup?.sessions
+      ? Object.values(round.ryderCup.sessions).some(
+          (arr: any) => Array.isArray(arr) && arr.length > 0
+        )
+      : false;
+
+    const isCreated = round.status === "created" || !round.status;
+
+    if (isCreated && !hasAnyMatches) {
+      setShowCaptainPairing(true);
+      autoOpenedRef.current = true; // ⬅️ bara en gång per sidladdning
+    }
+  }, [round?.id, round?.status, needsCaptainPairing]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-50">
@@ -293,12 +314,15 @@ export const RoundPage = () => {
         />
 
         {/* Captain Pairing Interface */}
-        {needsCaptainPairing && (
+        {showCaptainPairing && (
           <CaptainPairingInterface
-            tour={tour}
             round={round}
-            isOpen={showCaptainPairing}
+            tour={tour}
             onClose={() => setShowCaptainPairing(false)}
+            onPaired={() => {
+              setShowCaptainPairing(false);
+              autoOpenedRef.current = true; // hindra auto-open igen
+            }}
           />
         )}
       </>
@@ -393,16 +417,6 @@ export const RoundPage = () => {
           })()}
         </div>
       </div>
-
-      {/* Captain Pairing Interface for active rounds */}
-      {needsCaptainPairing && (
-        <CaptainPairingInterface
-          tour={tour}
-          round={round}
-          isOpen={showCaptainPairing}
-          onClose={() => setShowCaptainPairing(false)}
-        />
-      )}
 
       {/* Complete Round Confirmation */}
       <ConfirmDialog

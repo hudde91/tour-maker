@@ -5,7 +5,7 @@ import { useState } from "react";
 interface CaptainPairingInterfaceProps {
   tour: Tour;
   round: Round;
-  isOpen: boolean;
+  onPaired?: () => void;
   onClose: () => void;
 }
 
@@ -18,14 +18,22 @@ interface Pairing {
 export const CaptainPairingInterface = ({
   tour,
   round,
-  isOpen,
+  onPaired,
   onClose,
 }: CaptainPairingInterfaceProps) => {
   const createSession = useCreateRyderCupSession(tour.id, round.id);
 
+  const initialSession: "foursomes" | "four-ball" | "singles" =
+    round.format === "four-ball-match-play"
+      ? "four-ball"
+      : round.format === "singles-match-play"
+      ? "singles"
+      : "foursomes";
+
   const [sessionType, setSessionType] = useState<
     "foursomes" | "four-ball" | "singles"
-  >("foursomes");
+  >(initialSession);
+
   const [pairings, setPairings] = useState<Pairing[]>([]);
   const [currentPairing, setCurrentPairing] = useState<Pairing>({
     id: "",
@@ -114,6 +122,7 @@ export const CaptainPairingInterface = ({
         pairings,
       });
       onClose();
+      onPaired?.();
     } catch (error) {
       console.error("Failed to create matches:", error);
     }
@@ -127,8 +136,6 @@ export const CaptainPairingInterface = ({
       teamBPlayerIds: [],
     });
   };
-
-  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in">

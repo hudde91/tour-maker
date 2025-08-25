@@ -16,8 +16,6 @@ export interface FormatConfig {
   requiresTeams: boolean;
 }
 
-// Update the getFormatConfig function in roundFormatManager.ts
-
 export const getFormatConfig = (round: Round): FormatConfig => {
   switch (round.format) {
     case "scramble":
@@ -52,6 +50,39 @@ export const getFormatConfig = (round: Round): FormatConfig => {
         allowsHoleByHole: true,
         allowsTotalScore: true,
         requiresTeams: true,
+      };
+
+    case "foursomes-match-play":
+      return {
+        type: "alternate-shot",
+        displayName: "Foursomes (Match Play)",
+        description: "Partners alternate shots, match play",
+        isTeamBased: true,
+        allowsHoleByHole: true,
+        allowsTotalScore: false,
+        requiresTeams: true,
+      };
+
+    case "four-ball-match-play":
+      return {
+        type: "best-ball",
+        displayName: "Four-Ball (Match Play)",
+        description: "Best score per side counts, match play",
+        isTeamBased: true,
+        allowsHoleByHole: true,
+        allowsTotalScore: false,
+        requiresTeams: true,
+      };
+
+    case "singles-match-play":
+      return {
+        type: "individual",
+        displayName: "Singles (Match Play)",
+        description: "1v1 match play",
+        isTeamBased: false,
+        allowsHoleByHole: true,
+        allowsTotalScore: false,
+        requiresTeams: false,
       };
 
     default:
