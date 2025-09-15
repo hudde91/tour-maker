@@ -26,9 +26,13 @@ export const AddPlayerSheet = ({
     if (!formData.name.trim()) return;
 
     try {
+      const normalized = (formData.handicap ?? "")
+        .toString()
+        .replace(",", ".")
+        .trim();
       await addPlayer.mutateAsync({
         name: formData.name,
-        handicap: formData.handicap ? parseInt(formData.handicap) : undefined,
+        handicap: normalized ? parseFloat(normalized) : undefined,
         teamId: formData.teamId || undefined,
       });
 
@@ -119,6 +123,9 @@ export const AddPlayerSheet = ({
                 placeholder="Enter handicap (0-54)"
                 min="0"
                 max="54"
+                step="0.1"
+                inputMode="decimal"
+                pattern="[0-9]*[.,]?[0-9]*"
               />
               <p className="form-help">
                 Official USGA handicap index (optional)

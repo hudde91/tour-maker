@@ -30,10 +30,14 @@ export const PlayerCard = ({
     if (isEditing) {
       // Save changes
       try {
+        const normalized = (editData.handicap ?? "")
+          .toString()
+          .replace(",", ".")
+          .trim();
         await updatePlayer.mutateAsync({
           ...player,
           name: editData.name.trim(),
-          handicap: editData.handicap ? parseInt(editData.handicap) : undefined,
+          handicap: normalized ? parseFloat(normalized) : undefined,
         });
         setIsEditing(false);
       } catch (error) {
@@ -115,9 +119,12 @@ export const PlayerCard = ({
                         setEditData({ ...editData, handicap: e.target.value })
                       }
                       className="input-field w-20 text-center"
-                      placeholder="0"
+                      placeholder="0.0"
                       min="0"
                       max="54"
+                      step="0.1"
+                      inputMode="decimal"
+                      pattern="[0-9]*[.,]?[0-9]*"
                     />
                   </div>
                 </div>
@@ -151,7 +158,7 @@ export const PlayerCard = ({
                           />
                         </svg>
                         <span className="font-medium">
-                          Handicap: {player.handicap}
+                          Handicap: {player.handicap?.toFixed(1)}
                         </span>
                       </div>
                     )}
