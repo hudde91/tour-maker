@@ -22,7 +22,6 @@ export const PlayerScorecard = ({
   onToggle,
   className = "",
 }: Props) => {
-  // Rounds där spelaren har någon totalscore/score
   const playerRounds = useMemo(() => {
     return (tour.rounds || []).filter((round) => {
       const s = round.scores?.[player.id];
@@ -34,7 +33,6 @@ export const PlayerScorecard = ({
     });
   }, [tour.rounds, player.id]);
 
-  // Summera total strokes över rundor där totalScore finns (>0)
   const totalStrokes = useMemo(() => {
     return playerRounds.reduce((sum, r) => {
       const s = r.scores?.[player.id];
@@ -42,7 +40,6 @@ export const PlayerScorecard = ({
     }, 0);
   }, [playerRounds, player.id]);
 
-  // Stableford – turnering (bara completed) OCH live (alla rundor)
   const tournamentStableford = useMemo(() => {
     try {
       return storage.calculateTournamentStableford(tour, player.id);
@@ -62,7 +59,6 @@ export const PlayerScorecard = ({
     }
   }, [tour, player.id]);
 
-  // Använd tournament om den är > 0 eller om det finns completed rundor; annars fall-back till live
   const displayedStableford = useMemo(() => {
     const hasCompleted = (tour.rounds || []).some(
       (r) => r?.status === "completed" || !!r?.completedAt
@@ -92,17 +88,8 @@ export const PlayerScorecard = ({
               : undefined
           }
         />
-        {/* <span
-          className={`absolute right-3 top-3 inline-flex h-6 w-6 items-center justify-center rounded-md border border-slate-200 text-xs ${
-            isExpanded ? "bg-slate-50" : "bg-white"
-          }`}
-          aria-hidden
-        >
-          {isExpanded ? "▾" : "▸"}
-        </span> */}
       </button>
 
-      {/* Expanded content: scorecards per runda */}
       {isExpanded && (
         <div className="space-y-4">
           {playerRounds.map((round) => {

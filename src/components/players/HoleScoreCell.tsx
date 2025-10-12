@@ -22,11 +22,10 @@ export default function HoleScoreCell({
         valid ? "font-semibold text-slate-900" : "text-slate-400"
       }`}
     >
-      {/* Nummer överst */}
       <span className="relative z-10 inline-block">{text}</span>
       {valid && diff !== null && (
         <>
-          {/* Birdie & Eagle (ringar) */}
+          {/* TODO: Improve the red rings here so they have a little more space between them and stay round*/}
           {diff <= -2 && (
             <>
               <span className="pointer-events-none absolute inset-0 rounded-full border border-red-500" />
@@ -36,8 +35,7 @@ export default function HoleScoreCell({
           {diff === -1 && (
             <span className="pointer-events-none absolute inset-0 rounded-full border border-red-500" />
           )}
-
-          {/* Bogey & Double bogey (fyrkanter, neutrala) */}
+          {/* TODO: Improve the squares here so they have a little more space between them */}
           {diff >= 2 && (
             <>
               <span className="pointer-events-none absolute inset-0 border border-slate-500" />

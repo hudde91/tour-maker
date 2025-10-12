@@ -14,7 +14,7 @@ interface Pairing {
   teamAPlayerIds: string[];
   teamBPlayerIds: string[];
 }
-
+// TODO CaptainPairingInterface should not be opened in a modal
 export const CaptainPairingInterface = ({
   tour,
   round,
@@ -139,20 +139,16 @@ export const CaptainPairingInterface = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Sheet */}
       <div className="relative w-full sm:w-[800px] sm:max-w-4xl bg-white rounded-t-2xl sm:rounded-xl shadow-2xl border-t sm:border border-slate-200 animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[85vh] overflow-hidden flex flex-col">
-        {/* Handle bar */}
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
           <div className="w-12 h-1.5 bg-slate-300 rounded-full"></div>
         </div>
 
-        {/* Header */}
         <div className="flex justify-between items-center px-6 py-4 sm:py-6 border-b border-slate-200">
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
@@ -182,10 +178,8 @@ export const CaptainPairingInterface = ({
           </button>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto">
           <div className="px-6 py-6 space-y-6">
-            {/* Session Type Selection */}
             <div>
               <h3 className="font-semibold text-slate-800 mb-3">
                 Match Format
@@ -228,7 +222,6 @@ export const CaptainPairingInterface = ({
               </div>
             </div>
 
-            {/* Team Overview */}
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-slate-50 rounded-lg p-4">
                 <div className="flex items-center gap-3 mb-3">
@@ -264,14 +257,12 @@ export const CaptainPairingInterface = ({
               </div>
             </div>
 
-            {/* Current Pairing Builder */}
             <div className="border border-slate-200 rounded-lg p-4">
               <h3 className="font-semibold text-slate-800 mb-4">
                 Create New Pairing
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Team A Selection */}
                 <div>
                   <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
                     <div
@@ -326,7 +317,6 @@ export const CaptainPairingInterface = ({
                   </div>
                 </div>
 
-                {/* Team B Selection */}
                 <div>
                   <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
                     <div
@@ -466,7 +456,6 @@ export const CaptainPairingInterface = ({
           </div>
         </div>
 
-        {/* Fixed Footer */}
         <div className="border-t border-slate-200 p-6 bg-slate-50">
           <div className="flex flex-col sm:flex-row gap-3">
             <button

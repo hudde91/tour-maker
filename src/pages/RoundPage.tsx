@@ -248,7 +248,6 @@ export const RoundPage = () => {
     );
   }
 
-  // Pre-round Screen with Captain Pairing for Ryder Cup formats
   if (round.status === "created") {
     return (
       <ErrorBoundary resetKey={`${tour?.id}:${round?.id}`}>
@@ -263,7 +262,6 @@ export const RoundPage = () => {
           }
         />
 
-        {/* Captain Pairing Interface */}
         {showCaptainPairing && (
           <CaptainPairingInterface
             round={round}
@@ -271,7 +269,7 @@ export const RoundPage = () => {
             onClose={() => setShowCaptainPairing(false)}
             onPaired={() => {
               setShowCaptainPairing(false);
-              autoOpenedRef.current = true; // hindra auto-open igen
+              autoOpenedRef.current = true;
             }}
           />
         )}
@@ -279,11 +277,9 @@ export const RoundPage = () => {
     );
   }
 
-  // Active Round Interface
   return (
     <ErrorBoundary resetKey={`${tour?.id}:${round?.id}`}>
       <div className="min-h-screen bg-slate-50 safe-area-top safe-area-bottom">
-        {/* Round Header */}
         <RoundHeader
           tour={tour}
           round={round}

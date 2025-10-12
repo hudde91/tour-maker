@@ -437,6 +437,7 @@ const TeamScoreCard = ({
         </h4>
 
         <div className="grid grid-cols-5 gap-2 mb-4">
+          {/* TODO: The content in this is not aligned properly on mobile, make it center aligned better */}
           {scoreOptions.slice(0, 10).map((option) => (
             <button
               key={option.score}

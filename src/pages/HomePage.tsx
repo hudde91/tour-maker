@@ -1,53 +1,8 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useTours, useDeleteTour } from "../hooks/useTours";
-import { ConfirmDialog } from "../components/ui/ConfirmDialog";
-import { useToast } from "../components/ui/Toast";
+import { useTours } from "../hooks/useTours";
 
 export const HomePage = () => {
   const { data: tours = [], isLoading } = useTours();
-  const deleteTour = useDeleteTour();
-  const { showToast, ToastComponent } = useToast();
-
-  const [deleteConfirm, setDeleteConfirm] = useState<{
-    isOpen: boolean;
-    tourId: string;
-    tourName: string;
-  }>({
-    isOpen: false,
-    tourId: "",
-    tourName: "",
-  });
-
-  const handleDeleteTour = (
-    e: React.MouseEvent,
-    tourId: string,
-    tourName: string
-  ) => {
-    e.preventDefault(); // Prevent navigation
-    e.stopPropagation(); // Stop event bubbling
-
-    setDeleteConfirm({
-      isOpen: true,
-      tourId,
-      tourName,
-    });
-  };
-
-  const confirmDelete = async () => {
-    try {
-      await deleteTour.mutateAsync(deleteConfirm.tourId);
-      setDeleteConfirm({ isOpen: false, tourId: "", tourName: "" });
-      showToast("Tournament deleted successfully", "success");
-    } catch (error) {
-      console.error("Failed to delete tournament:", error);
-      showToast("Failed to delete tournament. Please try again.", "error");
-    }
-  };
-
-  const cancelDelete = () => {
-    setDeleteConfirm({ isOpen: false, tourId: "", tourName: "" });
-  };
 
   if (isLoading) {
     return (
@@ -60,13 +15,13 @@ export const HomePage = () => {
   const getFormatIcon = (format: string) => {
     switch (format) {
       case "individual":
-        return "👤"; // Person icon - clear for individual
+        return "👤";
       case "team":
-        return "👥"; // Group icon - clear for teams
+        return "👥";
       case "ryder-cup":
-        return "🏆"; // Trophy icon - premium/championship feel
+        return "🏆";
       default:
-        return "⛳"; // Golf flag as default
+        return "⛳";
     }
   };
 
@@ -237,7 +192,6 @@ export const HomePage = () => {
                             </div>
                           </div>
 
-                          {/* Tournament Description - positioned below stats but aligned with tournament name */}
                           {tour.description && (
                             <div className="flex items-start gap-4">
                               <div className="w-12 md:w-16 flex-shrink-0"></div>
@@ -250,31 +204,6 @@ export const HomePage = () => {
                       </Link>
 
                       <div className="flex items-center gap-2 ml-2">
-                        {/* Delete Button */}
-                        <button
-                          onClick={(e) =>
-                            handleDeleteTour(e, tour.id, tour.name)
-                          }
-                          disabled={deleteTour.isPending}
-                          className="p-2 md:p-3 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 opacity-0 group-hover:opacity-100 touch-manipulation"
-                          title="Delete tournament"
-                        >
-                          <svg
-                            className="w-4 h-4 md:w-5 md:h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                        </button>
-
-                        {/* Navigation Arrow */}
                         <div className="flex-shrink-0">
                           <svg
                             className="w-5 h-5 md:w-6 md:h-6 text-slate-400 group-hover:text-emerald-600 transition-colors"
@@ -299,21 +228,6 @@ export const HomePage = () => {
           )}
         </div>
       </div>
-
-      {/* Confirm Delete Dialog */}
-      <ConfirmDialog
-        isOpen={deleteConfirm.isOpen}
-        title="Delete Tournament"
-        message={`Delete tournament "${deleteConfirm.tourName}"? All players, teams, rounds, and scores will be permanently lost. This action cannot be undone.`}
-        confirmLabel="Delete Tournament"
-        cancelLabel="Cancel"
-        onConfirm={confirmDelete}
-        onCancel={cancelDelete}
-        isDestructive={true}
-      />
-
-      {/* Toast Notifications */}
-      <ToastComponent />
     </div>
   );
 };

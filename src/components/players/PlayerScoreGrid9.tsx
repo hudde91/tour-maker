@@ -50,7 +50,7 @@ export default function PlayerScoreGrid9({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[560px] md:min-w-0 text-center">
+        <table className="m-2 w-full min-w-[560px] md:min-w-0 text-center">
           <thead>
             <tr className="text-[11px] uppercase tracking-wide text-slate-500">
               <th className="px-2 py-2 text-left">Hole</th>

@@ -106,7 +106,6 @@ export const SwipeableIndividualScoring = ({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Tab Navigation */}
       <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div className="flex">
           <button
@@ -221,7 +220,6 @@ export const SwipeableIndividualScoring = ({
               </div>
             </div>
 
-            {/* Swipeable Player Score Card */}
             <div
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
@@ -247,7 +245,6 @@ export const SwipeableIndividualScoring = ({
 
         {activeTab === "holes" && (
           <div className="p-4 space-y-4">
-            {/* Player selector for holes view */}
             <div className="card">
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-sm font-semibold text-slate-600">
@@ -275,7 +272,6 @@ export const SwipeableIndividualScoring = ({
               </div>
             </div>
 
-            {/* Swipeable hole navigation */}
             <div
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
@@ -308,7 +304,6 @@ export const SwipeableIndividualScoring = ({
   );
 };
 
-// Individual Player Score Card Component
 interface PlayerScoreCardProps {
   player: Player;
   holeInfo: HoleInfo;
@@ -372,7 +367,6 @@ const PlayerScoreCard = ({
 
   return (
     <div className="space-y-4">
-      {/* Player Header Card */}
       <div className="card bg-gradient-to-br from-emerald-50 to-teal-50">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
@@ -435,7 +429,6 @@ const PlayerScoreCard = ({
         </div>
       </div>
 
-      {/* Score Selection Card */}
       <div className="card">
         <h4 className="text-sm font-semibold text-slate-800 mb-4">
           Select Score
@@ -486,7 +479,6 @@ const PlayerScoreCard = ({
         </div>
       </div>
 
-      {/* Player Stats Card */}
       <div className="card bg-slate-50">
         <h5 className="text-sm font-semibold text-slate-800 mb-3">
           Round Stats
