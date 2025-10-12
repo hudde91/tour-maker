@@ -17,16 +17,35 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   const calculateTournamentLeaderboard = () => {
     const entries = tour.players.map((player) => {
       // Get all rounds this player has scores in
-      const playerRounds = tour.rounds.filter(
-        (round) =>
-          isCompleted(round) &&
-          round.scores[player.id] &&
-          round.scores[player.id].totalScore > 0
-      );
+      const playerRounds = tour.rounds.filter((round) => {
+        if (!isCompleted(round)) return false;
+
+        // Check for traditional stroke play scores
+        if (round.scores[player.id] && round.scores[player.id].totalScore > 0) {
+          return true;
+        }
+
+        // Check for Ryder Cup match play scores
+        if (round.isMatchPlay) {
+          return storage.hasRyderCupScores(round, player.id);
+        }
+
+        return false;
+      });
 
       // Calculate total strokes across all rounds
       const totalScore = playerRounds.reduce((sum, round) => {
-        return sum + (round.scores[player.id]?.totalScore || 0);
+        // Get score from traditional stroke play
+        if (round.scores[player.id]) {
+          return sum + (round.scores[player.id]?.totalScore || 0);
+        }
+
+        // Get score from Ryder Cup match play
+        if (round.isMatchPlay) {
+          return sum + storage.getPlayerScoreFromRyderCup(round, player.id);
+        }
+
+        return sum;
       }, 0);
 
       // Calculate total handicap strokes across all rounds

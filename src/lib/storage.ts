@@ -929,45 +929,63 @@ export const storage = {
         let roundHandicapStrokes = 0;
         let roundHasHandicap = false;
 
-        switch (round.format) {
-          case "best-ball":
-            // Calculate best ball for this round
-            for (let hole = 0; hole < round.holes; hole++) {
-              const holeScores = teamPlayers
-                .map((player) => round.scores[player.id]?.scores[hole] || 0)
-                .filter((score) => score > 0);
-
-              if (holeScores.length > 0) {
-                roundTeamScore += Math.min(...holeScores);
-              }
+        // Handle match play rounds (Ryder Cup formats)
+        if (round.isMatchPlay) {
+          // For match play, sum individual player scores from matches
+          teamPlayers.forEach((player) => {
+            const playerScore = storage.getPlayerScoreFromRyderCup(
+              round,
+              player.id
+            );
+            if (playerScore > 0) {
+              roundTeamScore += playerScore;
             }
-            roundTeamToPar = roundTeamScore - storage.getTotalPar(round);
-            break;
+          });
+          roundTeamToPar = roundTeamScore - storage.getTotalPar(round);
+        } else {
+          // Handle stroke play formats
+          switch (round.format) {
+            case "best-ball":
+              // Calculate best ball for this round
+              for (let hole = 0; hole < round.holes; hole++) {
+                const holeScores = teamPlayers
+                  .map((player) => round.scores[player.id]?.scores[hole] || 0)
+                  .filter((score) => score > 0);
 
-          case "scramble":
-            // Get scramble team score
-            const teamScoreKey = `team_${team.id}`;
-            const teamScore = round.scores[teamScoreKey];
-            if (teamScore && teamScore.isTeamScore) {
-              roundTeamScore = teamScore.totalScore;
-              roundTeamToPar = teamScore.totalToPar;
-            }
-            break;
-
-          default:
-            // Sum individual player scores
-            teamPlayers.forEach((player) => {
-              const playerScore = round.scores[player.id];
-              if (playerScore && playerScore.totalScore > 0) {
-                roundTeamScore += playerScore.totalScore;
-                roundTeamToPar += playerScore.totalToPar;
-                roundNetScore += playerScore.netScore || playerScore.totalScore;
-                roundNetToPar += playerScore.netToPar || playerScore.totalToPar;
-                roundHandicapStrokes += playerScore.handicapStrokes || 0;
-                if (playerScore.handicapStrokes) roundHasHandicap = true;
+                if (holeScores.length > 0) {
+                  roundTeamScore += Math.min(...holeScores);
+                }
               }
-            });
-            break;
+              roundTeamToPar = roundTeamScore - storage.getTotalPar(round);
+              break;
+
+            case "scramble":
+              // Get scramble team score
+              const teamScoreKey = `team_${team.id}`;
+              const teamScore = round.scores[teamScoreKey];
+              if (teamScore && teamScore.isTeamScore) {
+                roundTeamScore = teamScore.totalScore;
+                roundTeamToPar = teamScore.totalToPar;
+              }
+              break;
+
+            default:
+              // Sum individual player scores
+              teamPlayers.forEach((player) => {
+                const playerScore = round.scores[player.id];
+                if (playerScore && playerScore.totalScore > 0) {
+                  roundTeamScore += playerScore.totalScore;
+                  roundTeamToPar += playerScore.totalToPar;
+                  roundNetScore +=
+                    playerScore.netScore || playerScore.totalScore;
+                  roundNetToPar +=
+                    playerScore.netToPar || playerScore.totalToPar;
+                  roundHandicapStrokes += playerScore.handicapStrokes || 0;
+                  if (playerScore.handicapStrokes) roundHasHandicap = true;
+                }
+              });
+              break;
+          }
         }
 
         // Add this round's scores to team totals
@@ -981,10 +999,20 @@ export const storage = {
 
       // Count players with scores across all rounds
       playersWithScores = teamPlayers.filter((player) =>
-        tour.rounds.some(
-          (round) =>
-            round.scores[player.id] && round.scores[player.id].totalScore > 0
-        )
+        tour.rounds.some((round) => {
+          // Check traditional stroke play scores
+          if (
+            round.scores[player.id] &&
+            round.scores[player.id].totalScore > 0
+          ) {
+            return true;
+          }
+          // Check Ryder Cup match play scores
+          if (round.isMatchPlay) {
+            return storage.hasRyderCupScores(round, player.id);
+          }
+          return false;
+        })
       ).length;
 
       teamEntries.push({
@@ -1283,6 +1311,59 @@ export const storage = {
     }
     storage.saveTour(tour);
     return created;
+  },
+
+  // Get player's total score from Ryder Cup matches
+  getPlayerScoreFromRyderCup: (round: Round, playerId: string): number => {
+    if (!round.ryderCup || !round.ryderCup.matches) return 0;
+
+    let totalScore = 0;
+    let holesPlayed = 0;
+
+    // Find all matches where this player participated
+    for (const match of round.ryderCup.matches as any[]) {
+      const isInTeamA = match.teamA?.playerIds?.includes(playerId);
+      const isInTeamB = match.teamB?.playerIds?.includes(playerId);
+
+      if (!isInTeamA && !isInTeamB) continue;
+
+      // Sum up the player's scores from all played holes in this match
+      if (match.holes && Array.isArray(match.holes)) {
+        for (const hole of match.holes) {
+          // Only count holes that have been played (both scores > 0)
+          if (hole.teamAScore > 0 && hole.teamBScore > 0) {
+            const score = isInTeamA ? hole.teamAScore : hole.teamBScore;
+            totalScore += score;
+            holesPlayed++;
+          }
+        }
+      }
+    }
+
+    return totalScore;
+  },
+
+  // Check if player has scores in Ryder Cup matches
+  hasRyderCupScores: (round: Round, playerId: string): boolean => {
+    if (!round.ryderCup || !round.ryderCup.matches) return false;
+
+    for (const match of round.ryderCup.matches as any[]) {
+      const isInTeamA = match.teamA?.playerIds?.includes(playerId);
+      const isInTeamB = match.teamB?.playerIds?.includes(playerId);
+
+      if (!isInTeamA && !isInTeamB) continue;
+
+      // Check if any holes have been played in this match
+      if (match.holes && Array.isArray(match.holes)) {
+        for (const hole of match.holes) {
+          if (hole.teamAScore > 0 && hole.teamBScore > 0) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
   },
 
   // Update one match-play hole + recalc status/points
