@@ -12,31 +12,22 @@ export const CreateRoundPage = () => {
   const createRound = useCreateRound(tourId!);
 
   const [formData, setFormData] = useState({
-    // Basic Round Information
     name: "",
     courseName: "",
     format: "stroke-play" as PlayFormat,
-
-    // Course Details
     holes: 18,
     teeBoxes: "Championship Tees",
     slopeRating: "113",
     totalYardage: "",
-
-    // Course Layout
     holeInfo: storage.generateDefaultHoles(18),
     useManualPar: false,
     manualTotalPar: "",
-
-    // Tournament Settings
     settings: {
       strokesGiven: true,
       matchPlayFormat: "singles" as const,
       skinsValue: 1,
       teamScoring: "best-ball" as const,
     } as RoundSettings,
-
-    // Schedule
     startTime: "",
   });
 
