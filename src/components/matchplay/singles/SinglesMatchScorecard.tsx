@@ -22,15 +22,6 @@ export const SinglesMatchScorecard = ({
   onHoleUpdate,
 }: SinglesMatchScorecardProps) => {
   const currentHoleInfo = round.holeInfo[currentHole - 1];
-  const currentHoleData = match.holes.find(
-    (h) => h.holeNumber === currentHole
-  ) || {
-    holeNumber: currentHole,
-    teamAScore: 0,
-    teamBScore: 0,
-    result: "tie" as const,
-    matchStatus: "",
-  };
 
   const [playerAScore, setPlayerAScore] = useState(0);
   const [playerBScore, setPlayerBScore] = useState(0);
@@ -173,16 +164,6 @@ export const SinglesMatchScorecard = ({
               📏 {currentHoleInfo.yardage} yards
             </span>
           )}
-        </div>
-      </div>
-
-      {/* Current Match Status */}
-      <div className="text-center card-spacing">
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-          <h4 className="font-semibold text-emerald-900 mb-2">Match Status</h4>
-          <div className="text-lg font-bold text-emerald-800">
-            {currentHoleData.matchStatus || "All Square"}
-          </div>
         </div>
       </div>
 

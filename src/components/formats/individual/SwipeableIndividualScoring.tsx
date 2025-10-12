@@ -333,7 +333,7 @@ const PlayerScoreCard = ({
   const generateScoreOptions = () => {
     const options = [];
     const minScore = 1;
-    const maxScore = Math.max(10, effectivePar + 6);
+    const maxScore = Math.max(10, effectivePar + 5); // At least up to effective par + 5
 
     for (let score = minScore; score <= maxScore; score++) {
       const info = getScoreInfo(score, effectivePar);
@@ -463,62 +463,6 @@ const PlayerScoreCard = ({
               )}
             </button>
           ))}
-        </div>
-
-        {localScore > 0 && (
-          <div className="text-center mb-4">
-            <div
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold ${scoreInfo.bg} ${scoreInfo.text} border-2`}
-            >
-              <span>
-                {localScore} strokes - {scoreInfo.name}
-              </span>
-            </div>
-          </div>
-        )}
-
-        <div className="flex gap-3">
-          <button
-            onClick={() => handleScoreSelect(effectivePar)}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-100 active:bg-blue-200 text-blue-800 rounded-lg font-semibold text-sm transition-colors"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-            </svg>
-            Quick Par ({effectivePar})
-          </button>
-
-          {localScore > 0 && (
-            <button
-              onClick={() => handleScoreSelect(0)}
-              className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-200 active:bg-slate-300 text-slate-700 rounded-lg font-semibold text-sm transition-colors"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-              Clear
-            </button>
-          )}
         </div>
       </div>
 

@@ -507,16 +507,6 @@ const MatchScorecard = ({
         <div className="text-sm text-slate-600 mb-3">
           {teamAInfo.name} vs {teamBInfo.name}
         </div>
-
-        {/* Match Status */}
-        <div className="text-center">
-          <span className="inline-flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-full text-sm font-semibold text-slate-700">
-            <span className="text-base">⚔️</span>
-            {match.holes.length > 0
-              ? match.holes[match.holes.length - 1]?.matchStatus || "All Square"
-              : "All Square"}
-          </span>
-        </div>
       </div>
 
       {/* Team A Scoring */}

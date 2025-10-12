@@ -27,16 +27,10 @@ export const ScoreEntryCard = ({
       ? storage.calculateStrokesForHole(player.handicap, holeInfo.handicap)
       : 0;
 
-  // Incorrect
-  // const effectivePar = par + strokesForHole;
   const effectivePar = par;
 
   const handleScoreChange = (newScore: number) => {
     onScoreChange(newScore);
-  };
-
-  const handleClearScore = () => {
-    onScoreChange(0);
   };
 
   const scoreInfo = getScoreInfo(currentScore, effectivePar);
@@ -45,7 +39,7 @@ export const ScoreEntryCard = ({
   const generateScoreOptions = () => {
     const options = [];
     const minScore = 1;
-    const maxScore = Math.max(10, effectivePar + 6); // At least up to effective par + 6
+    const maxScore = Math.max(10, effectivePar + 5); // At least up to effective par + 5
 
     for (let score = minScore; score <= maxScore; score++) {
       const info = getScoreInfo(score, effectivePar);
@@ -191,64 +185,6 @@ export const ScoreEntryCard = ({
                 )}
               </button>
             ))}
-          </div>
-
-          {/* Score Name Display */}
-          {currentScore > 0 && (
-            <div className="text-center mb-4">
-              <div
-                className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold ${scoreInfo.badgeColor}`}
-              >
-                <span>
-                  {currentScore} strokes - {scoreInfo.name}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Quick Actions */}
-          <div className="flex gap-3">
-            <button
-              onClick={() => handleScoreChange(effectivePar)}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg font-semibold text-sm transition-colors"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-              Quick Par ({effectivePar})
-            </button>
-
-            {currentScore > 0 && (
-              <button
-                onClick={handleClearScore}
-                className="flex items-center justify-center gap-2 px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-semibold text-sm transition-colors"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-                Clear
-              </button>
-            )}
           </div>
         </div>
       </div>
