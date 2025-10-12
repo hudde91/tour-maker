@@ -5,10 +5,7 @@ import {
   useUpdateScore,
   useStartRound,
   useCompleteRound,
-  useUpdateTotalScoreWithHandicap,
   useUpdateTeamScore,
-  useUpdateTeamTotalScore,
-  useUpdateTotalScore,
 } from "../hooks/useScoring";
 import { useUpdateMatchHole } from "../hooks/useMatchPlay";
 import { LiveLeaderboard } from "../components/scoring/LiveLeaderboard";
@@ -31,14 +28,9 @@ export const RoundPage = () => {
 
   const updateScore = useUpdateScore(tourId!, roundId!);
   const updateTeamScore = useUpdateTeamScore(tourId!, roundId!);
-  const updateTeamTotalScore = useUpdateTeamTotalScore(tourId!, roundId!);
   const startRound = useStartRound(tourId!);
   const completeRound = useCompleteRound(tourId!);
-  const updateTotalScore = useUpdateTotalScore(tourId!, roundId!);
-  const updateTotalScoreWithHandicap = useUpdateTotalScoreWithHandicap(
-    tourId!,
-    roundId!
-  );
+
   const updateMatchHole = useUpdateMatchHole(tourId!, roundId!);
 
   const [showLeaderboard, setShowLeaderboard] = useState(false);
@@ -111,35 +103,6 @@ export const RoundPage = () => {
     [round?.scores, updateScore]
   );
 
-  const handlePlayerTotalScoreChange = useCallback(
-    async (
-      playerId: string,
-      totalScore: number,
-      handicapStrokes?: number,
-      stablefordPoints?: number
-    ) => {
-      try {
-        if (handicapStrokes !== undefined) {
-          await updateTotalScoreWithHandicap.mutateAsync({
-            playerId,
-            totalScore,
-            handicapStrokes,
-            stablefordPoints,
-          });
-        } else {
-          await updateTotalScore.mutateAsync({
-            playerId,
-            totalScore,
-            stablefordPoints,
-          });
-        }
-      } catch (error) {
-        console.error("Failed to update total score:", error);
-      }
-    },
-    [updateTotalScoreWithHandicap, updateTotalScore]
-  );
-
   const handleTeamScoreChange = useCallback(
     async (teamId: string, holeIndex: number, score: number) => {
       if (!tour || !round) return;
@@ -155,17 +118,6 @@ export const RoundPage = () => {
       }
     },
     [tour?.id, round?.id, round?.holes, updateTeamScore]
-  );
-
-  const handleTeamTotalScoreChange = useCallback(
-    async (teamId: string, totalScore: number) => {
-      try {
-        await updateTeamTotalScore.mutateAsync({ teamId, totalScore });
-      } catch (error) {
-        console.error("Failed to update team total score:", error);
-      }
-    },
-    [updateTeamTotalScore]
   );
 
   const handleMatchHoleUpdate = useCallback(
@@ -392,6 +344,7 @@ export const RoundPage = () => {
                       tour={tour}
                       round={round}
                       onPlayerScoreChange={handlePlayerScoreChange}
+                      onFinishRound={handleCompleteRound}
                     />
                   );
               }

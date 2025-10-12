@@ -4,14 +4,6 @@ function isValid(n: any): n is number {
   return typeof n === "number" && Number.isFinite(n) && n > 0;
 }
 
-/**
- * Visar slag för ett hål, med dekor baserat på (score - par):
- *  <= -2: 2 ringar (eagle)
- *  == -1: 1 ring  (birdie)
- *   ==  0: inget (par)
- *   == +1: 1 fyrkant (bogey)
- *  >= +2: 2 fyrkanter (double+)
- */
 export default function HoleScoreCell({
   score,
   par,

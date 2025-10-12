@@ -41,26 +41,6 @@ export const useUpdateTeamScore = (tourId: string, roundId: string) => {
   });
 };
 
-export const useUpdateTeamTotalScore = (tourId: string, roundId: string) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      teamId,
-      totalScore,
-    }: {
-      teamId: string;
-      totalScore: number;
-    }) => {
-      storage.updateTeamTotalScore(tourId, roundId, teamId, totalScore);
-      return { teamId, totalScore };
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-    },
-  });
-};
-
 export const useStartRound = (tourId: string) => {
   const queryClient = useQueryClient();
 
@@ -82,68 +62,6 @@ export const useCompleteRound = (tourId: string) => {
     mutationFn: async (roundId: string) => {
       storage.completeRound(tourId, roundId);
       return roundId;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-    },
-  });
-};
-
-export const useUpdateTotalScore = (tourId: string, roundId: string) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      playerId,
-      totalScore,
-      stablefordPoints,
-    }: {
-      playerId: string;
-      totalScore: number;
-      stablefordPoints?: number;
-    }) => {
-      storage.updatePlayerTotalScore(
-        tourId,
-        roundId,
-        playerId,
-        totalScore,
-        stablefordPoints
-      );
-      return { playerId, totalScore, stablefordPoints };
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-    },
-  });
-};
-
-export const useUpdateTotalScoreWithHandicap = (
-  tourId: string,
-  roundId: string
-) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      playerId,
-      totalScore,
-      handicapStrokes,
-      stablefordPoints,
-    }: {
-      playerId: string;
-      totalScore: number;
-      handicapStrokes?: number;
-      stablefordPoints?: number;
-    }) => {
-      storage.updatePlayerTotalScoreWithHandicap(
-        tourId,
-        roundId,
-        playerId,
-        totalScore,
-        handicapStrokes,
-        stablefordPoints
-      );
-      return { playerId, totalScore, handicapStrokes, stablefordPoints };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });

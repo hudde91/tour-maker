@@ -1306,6 +1306,12 @@ export const storage = {
     );
     if (!match) throw new Error("Match not found");
 
+    // Get team names for status messages
+    const teamAObj = tour.teams?.find((t) => t.id === match.teamA.id);
+    const teamBObj = tour.teams?.find((t) => t.id === match.teamB.id);
+    const teamAName = teamAObj?.name || "Team A";
+    const teamBName = teamBObj?.name || "Team B";
+
     const totalHoles = round.holes || 18;
     const isValid = (n: any) =>
       typeof n === "number" && Number.isFinite(n) && n > 0;
@@ -1381,7 +1387,11 @@ export const storage = {
     const holesRemaining = totalHoles - holesPlayed;
     const leadAbs = Math.abs(lead);
     const phraseCurrent = (lv: number) =>
-      lv === 0 ? "All square" : lv > 0 ? `Team A ${lv} up` : `Team B ${-lv} up`;
+      lv === 0
+        ? "All square"
+        : lv > 0
+        ? `${teamAName} ${lv} up`
+        : `${teamBName} ${-lv} up`;
     const isDormie = lead !== 0 && leadAbs === holesRemaining;
 
     // 3) Compute match-level outcome/state
@@ -1398,10 +1408,10 @@ export const storage = {
       const x = leadAbs;
       const y = holesRemaining;
       if (lead > 0) {
-        statusText = `Team A wins ${x}&${y}`;
+        statusText = `${teamAName} wins ${x}&${y}`;
         teamAPoints = 1;
       } else {
-        statusText = `Team B wins ${x}&${y}`;
+        statusText = `${teamBName} wins ${x}&${y}`;
         teamBPoints = 1;
       }
       isComplete = true;
@@ -1412,10 +1422,10 @@ export const storage = {
         teamAPoints = 0.5;
         teamBPoints = 0.5;
       } else if (lead > 0) {
-        statusText = "Team A wins 1 up";
+        statusText = `${teamAName} wins 1 up`;
         teamAPoints = 1;
       } else {
-        statusText = "Team B wins 1 up";
+        statusText = `${teamBName} wins 1 up`;
         teamBPoints = 1;
       }
       isComplete = true;
@@ -1439,6 +1449,7 @@ export const storage = {
 
     // 5) Persist match-level status/points
     (match as any).isComplete = isComplete;
+    (match as any).status = isComplete ? "completed" : "in-progress";
     (match as any).winner =
       isComplete && teamAPoints !== teamBPoints
         ? lead > 0

@@ -13,6 +13,7 @@ interface SwipeableIndividualScoringProps {
     holeIndex: number,
     score: number
   ) => void;
+  onFinishRound?: () => void;
 }
 
 type TabType = "score" | "holes" | "leaderboard";
@@ -21,6 +22,7 @@ export const SwipeableIndividualScoring = ({
   tour,
   round,
   onPlayerScoreChange,
+  onFinishRound,
 }: SwipeableIndividualScoringProps) => {
   const [currentHole, setCurrentHole] = useState(1);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
@@ -34,6 +36,17 @@ export const SwipeableIndividualScoring = ({
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
+
+  // Check if all players have completed all holes
+  const areAllScoresComplete = () => {
+    return tour.players.every((player) => {
+      const playerScore = round.scores[player.id];
+      if (!playerScore) return false;
+
+      // Check if all holes have a score > 0
+      return playerScore.scores.every((score) => score > 0);
+    });
+  };
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -62,6 +75,13 @@ export const SwipeableIndividualScoring = ({
         else if (currentHole < round.holes) {
           setCurrentHole(currentHole + 1);
           setCurrentPlayerIndex(0);
+        }
+        // If last player on last hole, check if all scores are complete
+        else if (currentHole === round.holes && onFinishRound) {
+          // Check if all scores are complete before prompting
+          if (areAllScoresComplete()) {
+            onFinishRound();
+          }
         }
         setIsTransitioning(false);
       }, 200);

@@ -48,7 +48,7 @@ export const MatchPlayLeaderboard = ({
 
       {/* Points Display */}
       <div className="grid grid-cols-2 gap-4 card-spacing">
-        {/* Team A */}
+        {/* First Team */}
         <div
           className="text-center p-6 rounded-xl border-2"
           style={{
@@ -83,7 +83,7 @@ export const MatchPlayLeaderboard = ({
           )}
         </div>
 
-        {/* Team B */}
+        {/* Second Team */}
         <div
           className="text-center p-6 rounded-xl border-2"
           style={{

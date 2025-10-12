@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Tour, Round, MatchPlayRound } from "../../../types";
 import { HoleNavigation } from "../../scoring/HoleNavigation";
 import { MatchPlayLeaderboard } from "./MatchPlayLeaderboard";
+import { useToast } from "../../ui/Toast";
 
 interface SwipeableMatchPlayScoringProps {
   tour: Tour;
@@ -30,11 +31,52 @@ export const SwipeableMatchPlayScoring = ({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("score");
 
+  // Toast notifications
+  const { showToast, ToastComponent } = useToast();
+
+  // Track completed matches to show notification only once
+  const completedMatchesRef = useRef<Set<string>>(new Set());
+
   const matches = round.ryderCup?.matches || [];
   const currentMatch = matches[currentMatchIndex];
 
+  // Get team names
+  const getTeamName = (teamId: string) => {
+    const team = tour.teams?.find((t) => t.id === teamId);
+    return team?.name || "Team";
+  };
+
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
+
+  // Check for newly completed matches and show notifications
+  useEffect(() => {
+    matches.forEach((match: any) => {
+      const isComplete = match.status === "completed" || match.isComplete;
+      const matchId = match.id;
+
+      // If match just completed and we haven't notified yet
+      if (isComplete && !completedMatchesRef.current.has(matchId)) {
+        completedMatchesRef.current.add(matchId);
+
+        // Get team names
+        const teamAName = getTeamName(match.teamA.id);
+        const teamBName = getTeamName(match.teamB.id);
+
+        // Determine winner and show notification
+        if (match.winner === "team-a") {
+          showToast(`🏆 ${teamAName} wins the match!`, "success");
+        } else if (match.winner === "team-b") {
+          showToast(`🏆 ${teamBName} wins the match!`, "success");
+        } else if (match.winner === "halved") {
+          showToast(
+            `🤝 Match halved between ${teamAName} and ${teamBName}`,
+            "info"
+          );
+        }
+      }
+    });
+  }, [matches, showToast, tour.teams]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -342,6 +384,9 @@ export const SwipeableMatchPlayScoring = ({
           </div>
         )}
       </div>
+
+      {/* Toast notifications */}
+      <ToastComponent />
     </div>
   );
 };
@@ -509,7 +554,7 @@ const MatchScorecard = ({
         </div>
       </div>
 
-      {/* Team A Scoring */}
+      {/* First Team Scoring */}
       <div
         className="card"
         style={{
@@ -567,7 +612,7 @@ const MatchScorecard = ({
         </div>
       </div>
 
-      {/* Team B Scoring */}
+      {/* Second Team Scoring */}
       <div
         className="card"
         style={{

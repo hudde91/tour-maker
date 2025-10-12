@@ -3,7 +3,7 @@ import HoleScoreCell from "./HoleScoreCell";
 
 export default function PlayerScoreGrid9({
   title,
-  start, // 0 för hål 1, 9 för hål 10
+  start,
   pars,
   si,
   scores,
