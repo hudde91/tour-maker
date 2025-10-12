@@ -13,18 +13,15 @@ import {
 import { useUpdateMatchHole } from "../hooks/useMatchPlay";
 import { LiveLeaderboard } from "../components/scoring/LiveLeaderboard";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
-import { IndividualScoringInterface } from "../components/formats/individual/IndividualScoringInterface";
-import { ScrambleScoringInterface } from "../components/formats/scramble/ScrambleScoringInterface";
-import { BestBallScoringInterface } from "../components/formats/bestball/BestBallScoringInterface";
-import { FoursomesScoringInterface } from "../components/matchplay/foursomes/FoursomesScoringInterface";
-import { FourBallMatchPlayInterface } from "../components/matchplay/fourball/FourBallMatchPlayInterface";
-import { SinglesMatchPlayInterface } from "../components/matchplay/singles/SinglesMatchPlayInterface";
 import { getFormatConfig } from "../lib/roundFormatManager";
 import { storage } from "../lib/storage";
 import { CaptainPairingInterface } from "../components/matchplay/rydercup/CaptainPairingInterface";
 import { PreRoundComponent } from "../components/rounds/PreRoundComponent";
 import { RoundHeader } from "../components/rounds/RoundHeader";
 import ErrorBoundary from "../components/common/ErrorBoundary";
+import { SwipeableIndividualScoring } from "../components/formats/individual/SwipeableIndividualScoring";
+import { SwipeableTeamScoring } from "../components/formats/SwipeableTeamScoring";
+import { SwipeableMatchPlayScoring } from "../components/matchplay/common/SwipeableMatchPlayScoring";
 
 export const RoundPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
@@ -348,71 +345,53 @@ export const RoundPage = () => {
         />
 
         <div className="px-4 mt-4 pb-24 w-full max-w-6xl mx-auto">
-          {/* Live Leaderboard (Collapsible) */}
           {showLeaderboard && (
             <div className="card-spacing animate-fade-in w-full max-w-5xl mx-auto">
               <LiveLeaderboard tour={tour} round={round} />
             </div>
           )}
 
-          {/* Format-Specific Scoring Interface */}
           <div className="w-full max-w-5xl mx-auto">
             {(() => {
               switch (round.format) {
                 case "scramble":
                   return (
-                    <ScrambleScoringInterface
+                    <SwipeableTeamScoring
                       tour={tour}
                       round={round}
+                      formatName="Scramble"
                       onTeamScoreChange={handleTeamScoreChange}
-                      onTeamTotalScoreChange={handleTeamTotalScoreChange}
                     />
                   );
 
                 case "best-ball":
                   return (
-                    <BestBallScoringInterface
+                    <SwipeableTeamScoring
                       tour={tour}
                       round={round}
-                      onPlayerScoreChange={handlePlayerScoreChange}
-                      onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
+                      formatName="Best Ball"
+                      onTeamScoreChange={handleTeamScoreChange}
                     />
                   );
 
                 case "foursomes-match-play":
-                  return (
-                    <FoursomesScoringInterface
-                      tour={tour}
-                      round={round}
-                      onMatchHoleUpdate={handleMatchHoleUpdate}
-                    />
-                  );
-
                 case "four-ball-match-play":
-                  return (
-                    <FourBallMatchPlayInterface
-                      tour={tour}
-                      round={round}
-                      onMatchHoleUpdate={handleMatchHoleUpdate}
-                    />
-                  );
-
                 case "singles-match-play":
                   return (
-                    <SinglesMatchPlayInterface
+                    <SwipeableMatchPlayScoring
                       tour={tour}
                       round={round}
                       onMatchHoleUpdate={handleMatchHoleUpdate}
+                      onFinishRound={handleCompleteRound}
                     />
                   );
 
                 default:
                   return (
-                    <IndividualScoringInterface
+                    <SwipeableIndividualScoring
                       tour={tour}
                       round={round}
                       onPlayerScoreChange={handlePlayerScoreChange}
-                      onPlayerTotalScoreChange={handlePlayerTotalScoreChange}
                     />
                   );
               }
@@ -420,7 +399,6 @@ export const RoundPage = () => {
           </div>
         </div>
 
-        {/* Complete Round Confirmation */}
         <ConfirmDialog
           isOpen={showCompleteConfirm}
           title="Complete Tournament Round"

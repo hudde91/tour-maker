@@ -96,7 +96,6 @@ export const HomePage = () => {
 
   return (
     <div className="min-h-screen golf-bg-pattern w-full">
-      {/* Hero Section - Full Width */}
       <div className="golf-hero-bg safe-area-top w-full">
         <div className="p-6 pb-12 w-full max-w-6xl mx-auto">
           <div className="text-center">
@@ -111,7 +110,6 @@ export const HomePage = () => {
       </div>
 
       <div className="px-4 -mt-6 pb-8 w-full max-w-6xl mx-auto">
-        {/* Create Tournament Card */}
         <div className="card-elevated section-spacing w-full max-w-2xl mx-auto">
           <div className="text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto card-spacing shadow-xl">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Tour, Round, MatchPlayRound } from "../../../types";
 import MatchStatusBadge from "../rydercup/MatchStatusBadge";
 
@@ -22,24 +22,44 @@ export const FoursomesMatchScorecard = ({
   onHoleUpdate,
 }: FoursomesMatchScorecardProps) => {
   const currentHoleInfo = round.holeInfo[currentHole - 1];
-  const currentHoleData = match.holes.find(
-    (h) => h.holeNumber === currentHole
-  ) || {
-    holeNumber: currentHole,
-    teamAScore: 0,
-    teamBScore: 0,
-    result: "tie" as const,
-    matchStatus: "",
-  };
 
   const [teamAScore, setTeamAScore] = useState(0);
   const [teamBScore, setTeamBScore] = useState(0);
 
+  // Refs to track current scores for saving on hole change
+  const scoresRef = useRef({ teamA: teamAScore, teamB: teamBScore });
+  const previousHoleRef = useRef(currentHole);
+
+  // Update ref whenever scores change
+  useEffect(() => {
+    scoresRef.current = { teamA: teamAScore, teamB: teamBScore };
+  }, [teamAScore, teamBScore]);
+
+  // Save scores when hole changes
+  useEffect(() => {
+    if (previousHoleRef.current !== currentHole) {
+      // Save scores from previous hole
+      const prevScores = scoresRef.current;
+
+      // Save if we have at least one valid score
+      if (prevScores.teamA > 0 || prevScores.teamB > 0) {
+        onHoleUpdate(
+          previousHoleRef.current,
+          prevScores.teamA,
+          prevScores.teamB
+        );
+      }
+
+      previousHoleRef.current = currentHole;
+    }
+  }, [currentHole, onHoleUpdate]);
+
   // Reset scores when hole changes - load existing scores if available
   useEffect(() => {
-    setTeamAScore(currentHoleData.teamAScore);
-    setTeamBScore(currentHoleData.teamBScore);
-  }, [currentHole, currentHoleData.teamAScore, currentHoleData.teamBScore]);
+    const holeData = match.holes.find((h) => h.holeNumber === currentHole);
+    setTeamAScore(holeData?.teamAScore || 0);
+    setTeamBScore(holeData?.teamBScore || 0);
+  }, [currentHole, match.holes]);
 
   const getTeamInfo = (teamId: string, playerIds: string[]) => {
     const team = tour.teams?.find((t) => t.id === teamId);
@@ -181,7 +201,7 @@ export const FoursomesMatchScorecard = ({
                   {teamAInfo.name}
                 </h4>
                 <div className="text-sm text-slate-700">
-                  {teamAInfo.players.map((player, index) => (
+                  {teamAInfo.players.map((player) => (
                     <span key={player.id} className="mr-3">
                       {player.name}
                       {teamATeePlayer?.id === player.id && (
@@ -264,7 +284,7 @@ export const FoursomesMatchScorecard = ({
                   {teamBInfo.name}
                 </h4>
                 <div className="text-sm text-slate-700">
-                  {teamBInfo.players.map((player, index) => (
+                  {teamBInfo.players.map((player) => (
                     <span key={player.id} className="mr-3">
                       {player.name}
                       {teamBTeePlayer?.id === player.id && (

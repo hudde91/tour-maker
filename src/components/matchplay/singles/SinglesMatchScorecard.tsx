@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Tour, Round, MatchPlayRound } from "../../../types";
 import MatchStatusBadge from "../rydercup/MatchStatusBadge";
 
@@ -34,6 +34,34 @@ export const SinglesMatchScorecard = ({
 
   const [playerAScore, setPlayerAScore] = useState(0);
   const [playerBScore, setPlayerBScore] = useState(0);
+
+  // Refs to track current scores for saving on hole change
+  const scoresRef = useRef({ playerA: playerAScore, playerB: playerBScore });
+  const previousHoleRef = useRef(currentHole);
+
+  // Update ref whenever scores change
+  useEffect(() => {
+    scoresRef.current = { playerA: playerAScore, playerB: playerBScore };
+  }, [playerAScore, playerBScore]);
+
+  // Save scores when hole changes
+  useEffect(() => {
+    if (previousHoleRef.current !== currentHole) {
+      // Save scores from previous hole
+      const prevScores = scoresRef.current;
+
+      // Save if we have at least one valid score
+      if (prevScores.playerA > 0 || prevScores.playerB > 0) {
+        onHoleUpdate(
+          previousHoleRef.current,
+          prevScores.playerA,
+          prevScores.playerB
+        );
+      }
+
+      previousHoleRef.current = currentHole;
+    }
+  }, [currentHole, onHoleUpdate]);
 
   // Reset scores when hole changes - load existing scores if available
   useEffect(() => {

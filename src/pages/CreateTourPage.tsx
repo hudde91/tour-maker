@@ -94,7 +94,6 @@ export const CreateTourPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Professional Header */}
       <div className="golf-hero-bg safe-area-top">
         <div className="flex items-center p-6">
           <button onClick={() => navigate(-1)} className="nav-back mr-4">
@@ -124,14 +123,12 @@ export const CreateTourPage = () => {
       <div className="px-4 -mt-4 pb-8">
         <div className="card-elevated max-w-2xl mx-auto">
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Tournament Details Section */}
             <div>
               <h2 className="section-header card-spacing">
                 Tournament Details
               </h2>
 
               <div className="space-y-6">
-                {/* Tournament Name */}
                 <div className="form-group">
                   <label className="form-label">Tournament Name *</label>
                   <input

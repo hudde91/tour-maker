@@ -1,7 +1,7 @@
 import { Team, Tour, Round } from "../../../types";
 import { ScoreEntryCard } from "../../scoring/ScoreEntryCard";
 import { TotalScoreCard } from "../../scoring/TotalScoreCard";
-import { safeMin, formatHoleScore } from "../../../lib/scoringUtils";
+import { safeMin } from "../../../lib/scoringUtils";
 
 interface BestBallTeamScorecardProps {
   team: Team;

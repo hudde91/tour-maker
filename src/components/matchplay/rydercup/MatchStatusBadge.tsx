@@ -2,7 +2,7 @@ import { getMatchStatus } from "../../../lib/uiMatchPlay";
 
 type Props = {
   match: any;
-  totalHoles?: number; // optional override, defaults to 18
+  totalHoles?: number;
   className?: string;
 };
 

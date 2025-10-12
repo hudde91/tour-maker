@@ -17,10 +17,6 @@ export const RoundCard = ({ round, tour }: RoundCardProps) => {
 
   const totalPar = storage.getTotalPar(round);
   const playersWithScores = Object.keys(round.scores).length;
-  const totalPlayers = tour.players.length;
-
-  const isCompletedRound = (r: Round) =>
-    r?.status === "completed" || !!r?.completedAt;
 
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,27 +41,23 @@ export const RoundCard = ({ round, tour }: RoundCardProps) => {
     switch (round.status) {
       case "completed":
         return {
-          emoji: "🏁",
           text: "Completed",
-          style: "bg-blue-100 text-blue-800 border-blue-200",
+          badge: "bg-emerald-100 text-emerald-700",
         };
       case "in-progress":
         return {
-          emoji: "🔴",
           text: "Live",
-          style:
-            "bg-emerald-100 text-emerald-800 border-emerald-200 animate-pulse",
+          badge: "bg-red-100 text-red-700",
         };
       default:
         return {
-          emoji: "⏳",
-          text: "Ready",
-          style: "bg-slate-100 text-slate-600 border-slate-200",
+          text: "Ready to start",
+          badge: "bg-slate-100 text-slate-600",
         };
     }
   };
 
-  const getFormatEmoji = (format: string) => {
+  const getFormatIcon = (format: string) => {
     switch (format) {
       case "stroke-play":
         return "🏌️";
@@ -85,168 +77,125 @@ export const RoundCard = ({ round, tour }: RoundCardProps) => {
   };
 
   const statusInfo = getStatusInfo();
-  const completionPercentage =
-    totalPlayers > 0 ? Math.round((playersWithScores / totalPlayers) * 100) : 0;
 
   return (
-    <div
-      className={`rounded-xl border bg-white p-3 shadow-sm transition
-              ${!isCompletedRound(round) ? "opacity-60" : ""}`}
+    <Link
+      to={`/tour/${tour.id}/round/${round.id}`}
+      className="block bg-white rounded-xl border-2 border-slate-200 hover:border-emerald-400 transition-all p-4 sm:p-5"
     >
-      <Link
-        to={`/tour/${tour.id}/round/${round.id}`}
-        className="block rounded-xl p-4 md:p-6 shadow-professional hover:shadow-elevated transition-all duration-200 border-2 border-slate-200 bg-white hover:border-emerald-300"
-      >
-        {/* Mobile-Optimized Header */}
-        <div className="flex items-start gap-3 md:gap-4 mb-4">
-          {/* Format Icon */}
-          <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
-            <span className="text-xl md:text-2xl">
-              {getFormatEmoji(round.format)}
-            </span>
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+            <span className="text-2xl">{getFormatIcon(round.format)}</span>
           </div>
 
-          {/* Round Info */}
           <div className="flex-1 min-w-0">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold">{round.name}</h3>
-                {!isCompletedRound(round) ? (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                    In progress
-                  </span>
-                ) : (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-600 text-white">
-                    Completed
-                  </span>
-                )}
-                <p className="text-slate-600 font-medium text-sm md:text-base truncate flex items-center gap-1">
-                  <span className="text-base">🏌️</span>
-                  {round.courseName}
-                </p>
-              </div>
-
-              {/* Status Badge + Delete Button */}
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <span
-                  className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-semibold border flex items-center gap-1 ${statusInfo.style}`}
-                >
-                  <span>{statusInfo.emoji}</span>
-                  {statusInfo.text}
-                </span>
-                <button
-                  onClick={handleDelete}
-                  disabled={deleteRound.isPending}
-                  className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 touch-manipulation"
-                  title="Delete round"
-                >
-                  <span className="text-base">🗑️</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Format and Settings Tags - Mobile Optimized */}
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="bg-slate-100 text-slate-700 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                <span>{getFormatEmoji(round.format)}</span>
-                {formatInfo.name}
-              </span>
-              {round.settings.strokesGiven && (
-                <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                  <span>⛳</span>
-                  Handicap Applied
-                </span>
+            <h3 className="font-bold text-lg sm:text-xl text-slate-900 mb-1 truncate">
+              {round.name}
+            </h3>
+            <p className="text-sm text-slate-600 mb-2">{round.courseName}</p>
+            <span
+              className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.badge}`}
+            >
+              {round.status === "in-progress" && (
+                <span className="inline-block w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5 animate-pulse"></span>
               )}
-            </div>
-          </div>
-        </div>
-
-        {/* Statistics Grid - Mobile: 2 cols, Desktop: 4 cols */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4">
-          <div className="text-center bg-slate-50 rounded-lg p-3">
-            <div className="text-lg md:text-xl mb-1">🏕️</div>
-            <div className="text-lg md:text-xl font-bold text-slate-900">
-              {round.holes}
-            </div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Holes
-            </div>
-          </div>
-          <div className="text-center bg-slate-50 rounded-lg p-3">
-            <div className="text-lg md:text-xl mb-1">⛳</div>
-            <div className="text-lg md:text-xl font-bold text-slate-900">
-              {totalPar}
-            </div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Par
-            </div>
-          </div>
-          <div className="text-center bg-slate-50 rounded-lg p-3">
-            <div className="text-lg md:text-xl mb-1">👥</div>
-            <div className="text-lg md:text-xl font-bold text-slate-900">
-              {playersWithScores}
-            </div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Playing
-            </div>
-          </div>
-          <div className="text-center bg-slate-50 rounded-lg p-3">
-            <div className="text-lg md:text-xl mb-1">📊</div>
-            <div className="text-lg md:text-xl font-bold text-slate-900">
-              {completionPercentage}%
-            </div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Complete
-            </div>
-          </div>
-        </div>
-
-        {/* Progress Bar - Only for in-progress rounds */}
-        {round.status === "in-progress" && (
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-slate-700 flex items-center gap-1">
-                <span className="text-base">📈</span>
-                Round Progress
-              </span>
-              <span className="text-sm text-slate-500">
-                {playersWithScores} of {totalPlayers} players
-              </span>
-            </div>
-            <div className="w-full bg-slate-200 rounded-full h-2">
-              <div
-                className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${completionPercentage}%` }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Footer - Call to Action */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t border-slate-200">
-          <div className="text-sm text-slate-600 flex items-center gap-1">
-            <span className="text-base">📅</span>
-            {round.status === "completed" && round.completedAt
-              ? `Completed ${new Date(round.completedAt).toLocaleDateString()}`
-              : round.status === "in-progress" && round.startedAt
-              ? `Started ${new Date(round.startedAt).toLocaleDateString()}`
-              : `Created ${new Date(round.createdAt).toLocaleDateString()}`}
-          </div>
-
-          <div className="flex items-center text-emerald-600 font-medium text-sm hover:text-emerald-700 transition-colors self-start sm:self-auto">
-            <span className="mr-2">
-              {round.status === "created"
-                ? "🚀 Start Round"
-                : round.status === "in-progress"
-                ? "▶️ Continue"
-                : "📊 View Results"}
+              {statusInfo.text}
             </span>
-            <span className="text-base">▶️</span>
           </div>
         </div>
-      </Link>
 
-      {/* Delete Confirmation Dialog */}
+        <button
+          onClick={handleDelete}
+          disabled={deleteRound.isPending}
+          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 flex-shrink-0"
+          title="Delete round"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div className="mb-4">
+        <span className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-medium">
+          <span>{getFormatIcon(round.format)}</span>
+          {formatInfo.name}
+          {round.settings.strokesGiven && (
+            <>
+              <span className="text-slate-300">•</span>
+              <span className="text-emerald-700">⛳ Handicap Applied</span>
+            </>
+          )}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        <div className="bg-slate-50 rounded-lg p-3 text-center">
+          <div className="text-2xl font-bold text-slate-900">{round.holes}</div>
+          <div className="text-xs text-slate-500 mt-1 uppercase tracking-wide">
+            Holes
+          </div>
+        </div>
+
+        <div className="bg-slate-50 rounded-lg p-3 text-center">
+          <div className="text-2xl font-bold text-slate-900">{totalPar}</div>
+          <div className="text-xs text-slate-500 mt-1 uppercase tracking-wide">
+            Par
+          </div>
+        </div>
+
+        <div className="bg-slate-50 rounded-lg p-3 text-center">
+          <div className="text-2xl font-bold text-slate-900">
+            {playersWithScores}
+          </div>
+          <div className="text-xs text-slate-500 mt-1 uppercase tracking-wide">
+            Playing
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+        <div className="text-sm text-slate-500">
+          {round.status === "completed" && round.completedAt
+            ? `Completed ${new Date(round.completedAt).toLocaleDateString()}`
+            : round.status === "in-progress" && round.startedAt
+            ? `Started ${new Date(round.startedAt).toLocaleDateString()}`
+            : `Created ${new Date(round.createdAt).toLocaleDateString()}`}
+        </div>
+
+        <div className="flex items-center gap-2 text-emerald-600 font-medium text-sm">
+          {round.status === "created"
+            ? "Start Round"
+            : round.status === "in-progress"
+            ? "Continue"
+            : "View Results"}
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </div>
+      </div>
+
       <ConfirmDialog
         isOpen={showDeleteConfirm}
         title="Delete Round"
@@ -257,6 +206,6 @@ export const RoundCard = ({ round, tour }: RoundCardProps) => {
         onCancel={cancelDelete}
         isDestructive={true}
       />
-    </div>
+    </Link>
   );
 };

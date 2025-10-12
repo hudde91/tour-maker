@@ -15,33 +15,115 @@
 }
 
 @layer components {
-  /* Enhanced Professional Button Styles */
+  /* ============================================
+     MOBILE-FIRST BUTTON STYLES
+     Base styles are for mobile (320px+)
+     Enhanced for tablets (640px+) and desktop (768px+)
+     ============================================ */
+
   .btn-primary {
-    @apply bg-emerald-700 hover:bg-emerald-800 focus:bg-emerald-800 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-200 active:scale-[0.98] border border-emerald-800 focus:ring-4 focus:ring-emerald-200 outline-none;
+    /* Mobile defaults (320px+) */
+    @apply bg-emerald-700 hover:bg-emerald-800 focus:bg-emerald-800 
+           text-white font-semibold py-3 px-4 text-sm
+           rounded-lg shadow-md transition-all duration-200 
+           active:scale-[0.98] border border-emerald-800 
+           focus:ring-4 focus:ring-emerald-200 outline-none;
+  }
+
+  /* Tablet/Desktop enhancement (640px+) */
+  @media (min-width: 640px) {
+    .btn-primary {
+      @apply px-6 text-base;
+    }
   }
 
   .btn-secondary {
-    @apply bg-white border-2 border-slate-300 hover:border-emerald-600 hover:bg-emerald-50 focus:border-emerald-600 focus:bg-emerald-50 text-slate-700 font-semibold py-3 px-6 rounded-lg shadow-sm transition-all duration-200 active:scale-[0.98] focus:ring-4 focus:ring-emerald-200 outline-none;
+    /* Mobile defaults (320px+) */
+    @apply bg-white border-2 border-slate-300 
+           hover:border-emerald-600 hover:bg-emerald-50 
+           focus:border-emerald-600 focus:bg-emerald-50 
+           text-slate-700 font-semibold py-3 px-4 text-sm
+           rounded-lg shadow-sm transition-all duration-200 
+           active:scale-[0.98] focus:ring-4 focus:ring-emerald-200 
+           outline-none;
+  }
+
+  /* Tablet/Desktop enhancement (640px+) */
+  @media (min-width: 640px) {
+    .btn-secondary {
+      @apply px-6 text-base;
+    }
   }
 
   .btn-danger {
-    @apply bg-red-600 hover:bg-red-700 focus:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-all duration-200 active:scale-[0.98] focus:ring-4 focus:ring-red-200 outline-none;
+    /* Mobile defaults (320px+) */
+    @apply bg-red-600 hover:bg-red-700 focus:bg-red-700 
+           text-white font-semibold py-2 px-4 text-sm
+           rounded-lg shadow-sm transition-all duration-200 
+           active:scale-[0.98] focus:ring-4 focus:ring-red-200 
+           outline-none;
   }
+
+  /* Tablet/Desktop enhancement (640px+) */
+  @media (min-width: 640px) {
+    .btn-danger {
+      @apply text-base;
+    }
+  }
+
+  /* ============================================
+     MOBILE-FIRST INPUT STYLES
+     ============================================ */
 
   .input-field {
-    @apply w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:ring-4 focus:ring-emerald-200 focus:border-emerald-500 transition-all duration-200 bg-white font-medium outline-none;
+    /* Mobile defaults (320px+) */
+    @apply w-full px-4 py-3 text-base
+           border-2 border-slate-300 rounded-lg 
+           focus:ring-4 focus:ring-emerald-200 focus:border-emerald-500 
+           transition-all duration-200 bg-white font-medium outline-none;
   }
 
-  /* Enhanced Professional Card Styles */
+  /* Desktop enhancement (768px+) */
+  @media (min-width: 768px) {
+    .input-field {
+      @apply text-base; /* Keep consistent or adjust if needed */
+    }
+  }
+
+  /* ============================================
+     MOBILE-FIRST CARD STYLES
+     ============================================ */
+
   .card {
-    @apply bg-white rounded-xl shadow-lg border border-slate-200 p-6 backdrop-blur-sm;
+    /* Mobile defaults (320px+) */
+    @apply bg-white rounded-xl shadow-lg border border-slate-200 p-4 
+           backdrop-blur-sm;
+  }
+
+  /* Tablet/Desktop enhancement (640px+) */
+  @media (min-width: 640px) {
+    .card {
+      @apply p-6;
+    }
   }
 
   .card-elevated {
-    @apply bg-white rounded-xl shadow-xl border border-slate-200 p-6 backdrop-blur-sm;
+    /* Mobile defaults (320px+) */
+    @apply bg-white rounded-xl shadow-xl border border-slate-200 p-4 
+           backdrop-blur-sm;
   }
 
-  /* Enhanced Golf Course Background Patterns */
+  /* Tablet/Desktop enhancement (640px+) */
+  @media (min-width: 640px) {
+    .card-elevated {
+      @apply p-6;
+    }
+  }
+
+  /* ============================================
+     GOLF COURSE BACKGROUND PATTERNS
+     ============================================ */
+
   .golf-bg-pattern {
     background-image: radial-gradient(
         circle at 25% 25%,
@@ -65,20 +147,57 @@
       url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="golf" patternUnits="userSpaceOnUse" width="100" height="100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/><path d="M20,50 Q50,20 80,50" stroke="rgba(255,255,255,0.05)" stroke-width="1" fill="none"/></pattern></defs><rect width="100" height="100" fill="url(%23golf)"/></svg>');
   }
 
-  /* Professional Headers */
+  /* ============================================
+     MOBILE-FIRST TYPOGRAPHY
+     ============================================ */
+
   .page-header {
-    @apply text-3xl font-bold text-slate-900 tracking-tight;
+    /* Mobile defaults (320px+) */
+    @apply text-2xl font-bold text-slate-900 tracking-tight;
+  }
+
+  /* Tablet enhancement (640px+) */
+  @media (min-width: 640px) {
+    .page-header {
+      @apply text-3xl;
+    }
+  }
+
+  /* Desktop enhancement (768px+) */
+  @media (min-width: 768px) {
+    .page-header {
+      @apply text-4xl;
+    }
   }
 
   .section-header {
-    @apply text-xl font-semibold text-slate-800 tracking-tight;
+    /* Mobile defaults (320px+) */
+    @apply text-lg font-semibold text-slate-800 tracking-tight;
+  }
+
+  /* Tablet/Desktop enhancement (640px+) */
+  @media (min-width: 640px) {
+    .section-header {
+      @apply text-xl;
+    }
   }
 
   .subsection-header {
-    @apply text-lg font-medium text-slate-700;
+    /* Mobile defaults (320px+) */
+    @apply text-base font-medium text-slate-700;
   }
 
-  /* Enhanced Status Badges */
+  /* Tablet/Desktop enhancement (640px+) */
+  @media (min-width: 640px) {
+    .subsection-header {
+      @apply text-lg;
+    }
+  }
+
+  /* ============================================
+     STATUS BADGES (No change needed - already good)
+     ============================================ */
+
   .status-active {
     @apply bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm;
   }
@@ -91,24 +210,57 @@
     @apply bg-slate-100 text-slate-600 border border-slate-200 shadow-sm;
   }
 
-  /* Enhanced Navigation */
+  /* ============================================
+     MOBILE-FIRST NAVIGATION
+     ============================================ */
+
   .nav-back {
-    @apply flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-slate-300 shadow-sm hover:bg-slate-50 focus:bg-slate-50 transition-colors focus:ring-4 focus:ring-emerald-200 outline-none;
+    /* Mobile defaults (320px+) */
+    @apply flex items-center justify-center w-10 h-10 
+           rounded-lg bg-white border border-slate-300 shadow-sm 
+           hover:bg-slate-50 focus:bg-slate-50 transition-colors 
+           focus:ring-4 focus:ring-emerald-200 outline-none;
+  }
+
+  /* Tablet/Desktop enhancement (640px+) */
+  @media (min-width: 640px) {
+    .nav-back {
+      @apply w-11 h-11; /* Slightly larger on desktop */
+    }
   }
 }
 
-/* Enhanced Professional Typography Scale */
-@layer utilities {
-  /* Professional Spacing */
-  .section-spacing {
-    @apply mb-8;
-  }
+/* ============================================
+   MOBILE-FIRST UTILITY CLASSES
+   ============================================ */
 
-  .card-spacing {
+@layer utilities {
+  /* Spacing */
+  .section-spacing {
+    /* Mobile defaults (320px+) */
     @apply mb-6;
   }
 
-  /* Enhanced Shadows with better depth */
+  /* Tablet/Desktop enhancement (640px+) */
+  @media (min-width: 640px) {
+    .section-spacing {
+      @apply mb-8;
+    }
+  }
+
+  .card-spacing {
+    /* Mobile defaults (320px+) */
+    @apply mb-4;
+  }
+
+  /* Tablet/Desktop enhancement (640px+) */
+  @media (min-width: 640px) {
+    .card-spacing {
+      @apply mb-6;
+    }
+  }
+
+  /* Enhanced Shadows */
   .shadow-professional {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
       0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.05);
@@ -120,7 +272,10 @@
   }
 }
 
-/* Enhanced Professional Modal Styling */
+/* ============================================
+   MODAL STYLING (No change needed)
+   ============================================ */
+
 .modal-backdrop {
   backdrop-filter: blur(8px);
   @apply bg-black bg-opacity-30;
@@ -130,25 +285,39 @@
   @apply bg-white shadow-2xl border border-slate-200;
 }
 
-/* Enhanced Professional Form Styling */
+/* ============================================
+   FORM STYLING
+   ============================================ */
+
 .form-group {
   @apply space-y-2;
 }
 
 .form-label {
+  /* Mobile defaults (320px+) */
   @apply block text-sm font-semibold text-slate-700 mb-2;
+}
+
+/* Tablet/Desktop enhancement (640px+) */
+@media (min-width: 640px) {
+  .form-label {
+    @apply text-base;
+  }
 }
 
 .form-help {
   @apply text-xs text-slate-500 mt-1;
 }
 
-/* Enhanced Professional Animation */
+/* ============================================
+   MOBILE-FIRST ANIMATIONS
+   ============================================ */
+
 .animate-slide-up {
-  animation: slideUpProfessional 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideUpMobile 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes slideUpProfessional {
+@keyframes slideUpMobile {
   from {
     transform: translateY(100%);
     opacity: 0;
@@ -159,53 +328,7 @@
   }
 }
 
-.animate-fade-in {
-  animation: fadeInProfessional 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes fadeInProfessional {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Toast slide-down animation */
-.animate-slide-down {
-  animation: slideDownProfessional 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes slideDownProfessional {
-  from {
-    opacity: 0;
-    transform: translateY(-100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Enhanced Scale animations */
-.animate-scale-in {
-  animation: scaleIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
+/* Desktop: Change to scale animation */
 @media (min-width: 640px) {
   .animate-slide-up {
     animation: modalAppear 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -223,26 +346,175 @@
   }
 }
 
-/* Professional Responsive Design */
-@media (max-width: 640px) {
-  .card {
-    @apply p-4;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
   }
-
-  .btn-primary,
-  .btn-secondary {
-    @apply py-3 px-4 text-sm;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
-/* Professional Input Focus States */
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   INPUT FOCUS STATES
+   ============================================ */
+
 input:focus,
 select:focus,
 textarea:focus {
   @apply ring-4 ring-emerald-200 ring-opacity-50 border-emerald-500 outline-none;
 }
 
-/* Enhanced Button Focus States */
 button:focus {
   @apply outline-none;
+}
+
+/* ============================================
+   SAFE AREA SUPPORT FOR MOBILE DEVICES
+   (iPhone notch, Android gestures, etc.)
+   ============================================ */
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* ============================================
+   BOTTOM NAVIGATION SUPPORT
+   (Add padding to prevent content overlap)
+   ============================================ */
+
+.has-bottom-nav {
+  padding-bottom: 76px; /* Height of bottom nav + safe area */
+}
+
+/* ============================================
+   TOUCH OPTIMIZATIONS
+   ============================================ */
+
+/* Prevent text selection on buttons/interactive elements */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Apply to all buttons by default */
+button {
+  @apply touch-manipulation;
+}
+
+/* Improve tap targets on mobile (minimum 44x44px) */
+@media (max-width: 639px) {
+  button,
+  a.btn-primary,
+  a.btn-secondary,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ============================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+
+/* Hardware acceleration for animations */
+.animate-slide-up,
+.animate-fade-in,
+.animate-slide-down,
+.animate-scale-in {
+  will-change: transform, opacity;
+}
+
+/* Stop hardware acceleration after animation */
+.animate-slide-up,
+.animate-fade-in,
+.animate-slide-down,
+.animate-scale-in {
+  animation-fill-mode: both;
+}
+
+/* ============================================
+   PRINT STYLES (Optional but good to have)
+   ============================================ */
+
+@media print {
+  .nav-back,
+  .btn-primary,
+  .btn-secondary,
+  button {
+    display: none;
+  }
+
+  .card,
+  .card-elevated {
+    border: 1px solid #ccc;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
 }

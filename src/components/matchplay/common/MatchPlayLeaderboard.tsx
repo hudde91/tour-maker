@@ -1,4 +1,4 @@
-import { Tour, Round, MatchPlayRound } from "../../../types";
+import { Tour, Round } from "../../../types";
 import { getMatchStatus } from "../../../lib/uiMatchPlay";
 
 interface MatchPlayLeaderboardProps {
@@ -27,27 +27,6 @@ export const MatchPlayLeaderboard = ({
       </div>
     );
   }
-
-  const getMatchStatusColor = (match: MatchPlayRound) => {
-    if (match.status === "completed") {
-      if (match.result === "team-a") return "bg-emerald-100 text-emerald-800";
-      if (match.result === "team-b") return "bg-blue-100 text-blue-800";
-      return "bg-slate-100 text-slate-600"; // tie
-    }
-    return "bg-yellow-100 text-yellow-800"; // in progress
-  };
-
-  const getMatchResultText = (match: MatchPlayRound) => {
-    if (match.status === "completed") {
-      if (match.result === "team-a") return `${teamA.name} wins`;
-      if (match.result === "team-b") return `${teamB.name} wins`;
-      return "Match tied";
-    }
-
-    // Show current match status
-    const latestHole = match.holes[match.holes.length - 1];
-    return latestHole?.matchStatus || "All Square";
-  };
 
   const completedMatches = matches.filter(
     (m) => m.status === "completed"

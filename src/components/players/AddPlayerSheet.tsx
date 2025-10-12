@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAddPlayer } from "../../hooks/usePlayers";
+import { useKeyboardAwareScroll } from "../../hooks/useKeyboardAwareScroll";
 import { Tour } from "../../types";
 
 interface AddPlayerSheetProps {
@@ -20,6 +21,8 @@ export const AddPlayerSheet = ({
     teamId: "",
   });
 
+  const formContainerRef = useKeyboardAwareScroll(isOpen);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -36,7 +39,6 @@ export const AddPlayerSheet = ({
         teamId: formData.teamId || undefined,
       });
 
-      // Reset form and close sheet
       setFormData({ name: "", handicap: "", teamId: "" });
       onClose();
     } catch (error) {
@@ -48,20 +50,16 @@ export const AddPlayerSheet = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Sheet */}
       <div className="relative w-full sm:w-96 sm:max-w-md bg-white rounded-t-2xl sm:rounded-xl shadow-2xl border-t sm:border border-slate-200 animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col">
-        {/* Handle bar */}
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
           <div className="w-12 h-1.5 bg-slate-300 rounded-full"></div>
         </div>
 
-        {/* Header */}
         <div className="flex justify-between items-center px-6 py-4 sm:py-6 border-b border-slate-200">
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
@@ -91,10 +89,12 @@ export const AddPlayerSheet = ({
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
-          <div className="px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
-            {/* Player Name */}
+          {/* 🎉 Just attach the ref here! */}
+          <div
+            ref={formContainerRef}
+            className="px-6 py-4 sm:py-6 space-y-4 sm:space-y-6"
+          >
             <div className="form-group">
               <label className="form-label">Player Name *</label>
               <input
@@ -110,7 +110,6 @@ export const AddPlayerSheet = ({
               />
             </div>
 
-            {/* Handicap */}
             <div className="form-group">
               <label className="form-label">Golf Handicap</label>
               <input
@@ -132,7 +131,6 @@ export const AddPlayerSheet = ({
               </p>
             </div>
 
-            {/* Team Selection (for team formats) */}
             {(tour.format === "team" || tour.format === "ryder-cup") &&
               tour.teams &&
               tour.teams.length > 0 && (
@@ -157,9 +155,11 @@ export const AddPlayerSheet = ({
                   </p>
                 </div>
               )}
+
+            {/* Extra padding for keyboard clearance */}
+            <div className="h-32 sm:h-0" />
           </div>
 
-          {/* Fixed Footer */}
           <div className="border-t border-slate-200 p-4 sm:p-6 bg-slate-50 sm:bg-white">
             <div className="flex flex-col sm:flex-row gap-3">
               <button

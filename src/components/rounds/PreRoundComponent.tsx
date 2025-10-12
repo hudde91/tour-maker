@@ -53,7 +53,6 @@ export const PreRoundComponent = ({
 
   return (
     <div className="min-h-screen bg-slate-50 safe-area-top">
-      {/* Header */}
       <div className="golf-hero-bg">
         <div className="p-6 w-full max-w-6xl mx-auto">
           <div className="flex items-center mb-4">
@@ -85,7 +84,6 @@ export const PreRoundComponent = ({
       </div>
 
       <div className="px-4 -mt-4 pb-8 w-full max-w-4xl mx-auto">
-        {/* Round Setup Card */}
         <div className="card-elevated card-spacing">
           <div className="text-center section-spacing">
             <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto card-spacing shadow-xl">
@@ -99,7 +97,6 @@ export const PreRoundComponent = ({
             </p>
           </div>
 
-          {/* Round Information */}
           <div className="bg-slate-50 rounded-lg p-6 card-spacing">
             <h3 className="font-semibold text-slate-900 mb-4">Round Details</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">

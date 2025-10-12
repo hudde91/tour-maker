@@ -184,7 +184,6 @@ export const CreateRoundPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 safe-area-top">
-      {/* Professional Header */}
       <div className="golf-hero-bg">
         <div className="p-6">
           <div className="flex items-center mb-4">
@@ -218,7 +217,6 @@ export const CreateRoundPage = () => {
 
       <div className="px-4 -mt-4 pb-8">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8">
-          {/* Validation Errors */}
           {validationErrors.length > 0 && (
             <div className="card-elevated border-red-200 bg-red-50">
               <div className="flex items-start gap-3">

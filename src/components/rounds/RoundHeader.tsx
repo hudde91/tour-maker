@@ -70,7 +70,6 @@ export const RoundHeader = ({
           </Link>
 
           <div className="flex items-center gap-3">
-            {/* Captain Pairing Button - Only for Ryder Cup formats */}
             {onCaptainPairing && isRyderCupFormat && (
               <button
                 onClick={onCaptainPairing}
@@ -81,7 +80,6 @@ export const RoundHeader = ({
               </button>
             )}
 
-            {/* Leaderboard Toggle */}
             <button
               onClick={onToggleLeaderboard}
               className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm"
@@ -92,7 +90,6 @@ export const RoundHeader = ({
               </span>
             </button>
 
-            {/* Complete Round Button - Only if in progress */}
             {round.status === "in-progress" && (
               <button
                 onClick={onCompleteRound}
@@ -111,11 +108,11 @@ export const RoundHeader = ({
               <h1 className="text-2xl md:text-3xl font-bold text-white">
                 {round.name}
               </h1>
-              <span
+              {/* <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold border ${getStatusColor()}`}
               >
                 {getStatusText()}
-              </span>
+              </span> */}
             </div>
             <div className="flex flex-wrap items-center gap-4 text-emerald-100">
               <span className="flex items-center gap-1">
@@ -134,11 +131,11 @@ export const RoundHeader = ({
                 </span>
                 {formatConfig.displayName}
               </span>
-              <span className="flex items-center gap-1">
+              {/* <span className="flex items-center gap-1">
                 <span className="text-base">⛳</span>
                 {round.holes} holes
-              </span>
-              {round.startTime && (
+              </span> */}
+              {/* {round.startTime && (
                 <span className="flex items-center gap-1">
                   <span className="text-base">🕐</span>
                   {new Date(round.startTime).toLocaleTimeString([], {
@@ -146,12 +143,11 @@ export const RoundHeader = ({
                     minute: "2-digit",
                   })}
                 </span>
-              )}
+              )} */}
             </div>
           </div>
 
-          {/* Tournament Info */}
-          <div className="text-right">
+          {/* <div className="text-right">
             <div className="text-emerald-100 font-medium">{tour.name}</div>
             <div className="text-sm text-emerald-200">
               {tour.players.length} Players
@@ -159,11 +155,10 @@ export const RoundHeader = ({
                 <span> • {tour.teams.length} Teams</span>
               )}
             </div>
-          </div>
+          </div> */}
         </div>
 
-        {/* Ryder Cup specific info */}
-        {isRyderCupFormat && round.ryderCup && (
+        {/* {isRyderCupFormat && round.ryderCup && (
           <div className="mt-4 p-4 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg border border-white border-opacity-20">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -191,7 +186,7 @@ export const RoundHeader = ({
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

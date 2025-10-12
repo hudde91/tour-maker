@@ -38,7 +38,7 @@ export const HoleNavigation = ({
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+    <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-slate-900">Course Navigation</h3>
         <div className="text-sm text-slate-500">
@@ -46,15 +46,15 @@ export const HoleNavigation = ({
         </div>
       </div>
 
-      {/* Compact Hole Grid */}
-      <div className="grid grid-cols-9 gap-2 card-spacing">
+      {/* Responsive Hole Grid - Fewer columns on mobile to prevent overlap */}
+      <div className="grid grid-cols-6 sm:grid-cols-9 gap-2 card-spacing">
         {holes.map((hole) => {
           const status = getHoleStatus(hole.number);
           return (
             <button
               key={hole.number}
               onClick={() => onHoleChange(hole.number)}
-              className={`relative h-12 rounded-lg border-2 font-semibold text-sm transition-all duration-200 hover:scale-105 focus:scale-105 outline-none ${getHoleStyles(
+              className={`relative h-12 sm:h-14 rounded-lg border-2 font-semibold text-xs sm:text-sm transition-all duration-200 hover:scale-105 focus:scale-105 outline-none ${getHoleStyles(
                 status
               )}`}
               aria-label={`Hole ${hole.number}, Par ${hole.par}${
@@ -63,8 +63,12 @@ export const HoleNavigation = ({
               aria-pressed={status === "current"}
             >
               <div className="flex flex-col items-center justify-center h-full">
-                <div className="font-bold">{hole.number}</div>
-                <div className="text-xs opacity-75">P{hole.par}</div>
+                <div className="font-bold text-sm sm:text-base">
+                  {hole.number}
+                </div>
+                <div className="text-[10px] sm:text-xs opacity-75">
+                  P{hole.par}
+                </div>
               </div>
               {status === "current" && (
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-white"></div>
@@ -86,25 +90,25 @@ export const HoleNavigation = ({
       </div>
 
       {/* Current Hole Info */}
-      <div className="bg-slate-50 rounded-lg p-4">
+      <div className="bg-slate-50 rounded-lg p-3 sm:p-4 mt-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold">
                 {currentHole}
               </div>
               <div>
-                <div className="font-semibold text-slate-900">
+                <div className="font-semibold text-slate-900 text-sm sm:text-base">
                   Hole {currentHole}
                 </div>
-                <div className="text-sm text-slate-600">
+                <div className="text-xs sm:text-sm text-slate-600">
                   Par {holes[currentHole - 1]?.par}
                 </div>
               </div>
             </div>
 
             {holes[currentHole - 1]?.yardage && (
-              <div className="text-sm text-slate-600">
+              <div className="text-xs sm:text-sm text-slate-600 hidden sm:block">
                 <span className="font-medium">
                   {holes[currentHole - 1].yardage}
                 </span>{" "}
@@ -118,7 +122,8 @@ export const HoleNavigation = ({
             <button
               onClick={() => currentHole > 1 && onHoleChange(currentHole - 1)}
               disabled={currentHole === 1}
-              className="w-10 h-10 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+              aria-label="Previous hole"
             >
               <svg
                 className="w-4 h-4 text-slate-600"
@@ -139,7 +144,8 @@ export const HoleNavigation = ({
                 currentHole < holes.length && onHoleChange(currentHole + 1)
               }
               disabled={currentHole === holes.length}
-              className="w-10 h-10 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+              aria-label="Next hole"
             >
               <svg
                 className="w-4 h-4 text-slate-600"

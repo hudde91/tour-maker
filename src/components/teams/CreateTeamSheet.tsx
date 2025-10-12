@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCreateTeam } from "../../hooks/useTeams";
+import { useKeyboardAwareScroll } from "../../hooks/useKeyboardAwareScroll";
 import { Tour } from "../../types";
 
 interface CreateTeamSheetProps {
@@ -32,6 +33,8 @@ export const CreateTeamSheet = ({
     color: PROFESSIONAL_TEAM_COLORS[0].color,
     captainId: "",
   });
+
+  const formContainerRef = useKeyboardAwareScroll(isOpen);
 
   // Get unassigned players and players not captains
   const availableCaptains = tour.players.filter((player) => {
@@ -69,20 +72,16 @@ export const CreateTeamSheet = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Sheet */}
       <div className="relative w-full sm:w-96 sm:max-w-md bg-white rounded-t-2xl sm:rounded-xl shadow-2xl border-t sm:border border-slate-200 animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col">
-        {/* Handle bar */}
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-12 h-1.5 bg-slate-300 rounded-full"></div>
         </div>
 
-        {/* Header */}
         <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200">
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
@@ -112,10 +111,8 @@ export const CreateTeamSheet = ({
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
-          <div className="px-6 py-6 space-y-6">
-            {/* Team Name */}
+          <div ref={formContainerRef} className="px-6 py-6 space-y-6">
             <div className="form-group">
               <label className="form-label">Team Name *</label>
               <input
@@ -131,7 +128,6 @@ export const CreateTeamSheet = ({
               />
             </div>
 
-            {/* Team Color */}
             <div className="form-group">
               <label className="form-label mb-3 sm:mb-4">Team Color</label>
               <div className="grid grid-cols-5 gap-3 sm:gap-4">
@@ -157,7 +153,6 @@ export const CreateTeamSheet = ({
               </p>
             </div>
 
-            {/* Captain Selection */}
             {availableCaptains.length > 0 && (
               <div className="form-group">
                 <label className="form-label">Team Captain</label>
@@ -181,9 +176,10 @@ export const CreateTeamSheet = ({
                 </p>
               </div>
             )}
+
+            <div className="h-32 sm:h-0" />
           </div>
 
-          {/* Fixed Footer */}
           <div className="border-t border-slate-200 p-6 bg-slate-50">
             <div className="flex flex-col gap-3">
               <button

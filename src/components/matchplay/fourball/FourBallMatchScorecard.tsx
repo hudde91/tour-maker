@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Tour, Round, MatchPlayRound } from "../../../types";
 import MatchStatusBadge from "../rydercup/MatchStatusBadge";
 import { safeMin, formatHoleScore } from "../../../lib/scoringUtils";
@@ -42,6 +42,52 @@ export const FourBallMatchScorecard = ({
     [match.teamB.playerIds[0]]: 0,
     [match.teamB.playerIds[1]]: 0,
   });
+
+  // Refs to track current scores for saving on hole change
+  const scoresRef = useRef({
+    teamA: teamAPlayerScores,
+    teamB: teamBPlayerScores,
+  });
+  const previousHoleRef = useRef(currentHole);
+
+  // Update ref whenever scores change
+  useEffect(() => {
+    scoresRef.current = { teamA: teamAPlayerScores, teamB: teamBPlayerScores };
+  }, [teamAPlayerScores, teamBPlayerScores]);
+
+  // Save scores when hole changes
+  useEffect(() => {
+    if (previousHoleRef.current !== currentHole) {
+      // Save scores from previous hole
+      const prevScores = scoresRef.current;
+      const hasAnyScores =
+        Object.values(prevScores.teamA).some((s) => s > 0) ||
+        Object.values(prevScores.teamB).some((s) => s > 0);
+
+      if (hasAnyScores) {
+        const teamABest = safeMin(Object.values(prevScores.teamA));
+        const teamBBest = safeMin(Object.values(prevScores.teamB));
+
+        // Save if we have at least one valid team score
+        if (
+          (typeof teamABest === "number" && teamABest > 0) ||
+          (typeof teamBBest === "number" && teamBBest > 0)
+        ) {
+          onHoleUpdate(
+            previousHoleRef.current,
+            typeof teamABest === "number" ? teamABest : 0,
+            typeof teamBBest === "number" ? teamBBest : 0,
+            {
+              teamA: prevScores.teamA,
+              teamB: prevScores.teamB,
+            }
+          );
+        }
+      }
+
+      previousHoleRef.current = currentHole;
+    }
+  }, [currentHole, onHoleUpdate]);
 
   // Reset player scores when hole changes - load existing scores if available
   useEffect(() => {
@@ -436,7 +482,6 @@ export const FourBallMatchScorecard = ({
           </div>
         </div>
 
-        {/* Tournament Points */}
         <div className="pt-4 border-t border-slate-200">
           <div className="flex justify-center items-center gap-8">
             <div className="text-center">
