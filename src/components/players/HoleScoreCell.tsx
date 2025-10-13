@@ -28,7 +28,7 @@ export default function HoleScoreCell({
           {diff <= -2 && (
             <>
               <span className="pointer-events-none absolute inset-0.5 rounded-full border-2 border-red-500" />
-              <span className="pointer-events-none absolute -inset-1 rounded-full border-2 border-red-500" />
+              <span className="pointer-events-none absolute -inset-0.5 rounded-full border-2 border-red-500" />
             </>
           )}
 
@@ -39,7 +39,7 @@ export default function HoleScoreCell({
           {diff >= 2 && (
             <>
               <span className="pointer-events-none absolute inset-0.5 border-2 border-slate-500 rounded-sm" />
-              <span className="pointer-events-none absolute -inset-1 border-2 border-slate-500 rounded-sm" />
+              <span className="pointer-events-none absolute -inset-0.5 border-2 border-slate-500 rounded-sm" />
             </>
           )}
 

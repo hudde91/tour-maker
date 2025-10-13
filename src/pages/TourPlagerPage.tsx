@@ -2,6 +2,7 @@ import { AddPlayerSheet } from "@/components/players/AddPlayerSheet";
 import { PlayerScorecard } from "@/components/players/PlayerScorecard";
 import { CreateTeamSheet } from "@/components/teams/CreateTeamSheet";
 import { TeamCard } from "@/components/teams/TeamCard";
+import { TeamStandings } from "@/components/teams/TeamStandings";
 import { useTour } from "@/hooks/useTours";
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -53,6 +54,7 @@ export const TourPlayersPage = () => {
   }
 
   const isTeamFormat = tour.format === "team" || tour.format === "ryder-cup";
+  const isRyderCup = tour.format === "ryder-cup";
 
   return (
     <div className="min-h-screen bg-slate-50 safe-area-top">
@@ -86,10 +88,16 @@ export const TourPlayersPage = () => {
 
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
-              Players
+              {isTeamFormat ? "Teams & Players" : "Players"}
             </h1>
             <p className="text-emerald-100 text-sm md:text-base">
               {tour.players.length} player{tour.players.length !== 1 ? "s" : ""}{" "}
+              {isTeamFormat &&
+                tour.teams &&
+                tour.teams.length > 0 &&
+                `• ${tour.teams.length} team${
+                  tour.teams.length !== 1 ? "s" : ""
+                }`}{" "}
               in {tour.name}
             </p>
           </div>
@@ -97,47 +105,12 @@ export const TourPlayersPage = () => {
       </div>
 
       <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
-        <div className="card-elevated card-spacing">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="section-header">All Players</h2>
-            <span className="text-sm text-slate-500">
-              {tour.players.length} total
-            </span>
-          </div>
+        {/* Team Standings - Show for Ryder Cup and Team formats */}
+        {isTeamFormat && tour.teams && tour.teams.length > 0 && (
+          <TeamStandings tour={tour} />
+        )}
 
-          {tour.players.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-4xl">👥</span>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-700 mb-3">
-                No Players Yet
-              </h3>
-              <p className="text-slate-500 mb-6">
-                Add players to get your tournament started
-              </p>
-              <button
-                onClick={() => setShowAddPlayer(true)}
-                className="btn-primary"
-              >
-                Add First Player
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {tour.players.map((player) => (
-                <PlayerScorecard
-                  key={player.id}
-                  player={player}
-                  tour={tour}
-                  isExpanded={expandedPlayer === player.id}
-                  onToggle={() => handlePlayerToggle(player.id)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
+        {/* Teams Section */}
         {isTeamFormat && (
           <div className="card card-spacing">
             <div className="flex justify-between items-center mb-4">
@@ -216,6 +189,103 @@ export const TourPlayersPage = () => {
             )}
           </div>
         )}
+
+        {/* All Players Section - Different display based on format */}
+        <div className="card-elevated card-spacing">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h2 className="section-header">All Players</h2>
+              {isTeamFormat && (
+                <p className="text-slate-600 text-xs mt-1">
+                  {isRyderCup
+                    ? "Individual scores shown on Leaderboard tab"
+                    : "View individual player details"}
+                </p>
+              )}
+            </div>
+            <span className="text-sm text-slate-500">
+              {tour.players.length} total
+            </span>
+          </div>
+
+          {tour.players.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-4xl">👥</span>
+              </div>
+              <h3 className="text-xl font-semibold text-slate-700 mb-3">
+                No Players Yet
+              </h3>
+              <p className="text-slate-500 mb-6">
+                Add players to get your tournament started
+              </p>
+              <button
+                onClick={() => setShowAddPlayer(true)}
+                className="btn-primary"
+              >
+                Add First Player
+              </button>
+            </div>
+          ) : isTeamFormat ? (
+            // For team formats, show simplified player list
+            <div className="space-y-2">
+              {tour.players.map((player) => {
+                const team = tour.teams?.find((t) => t.id === player.teamId);
+                const isCaptain = team?.captainId === player.id;
+
+                return (
+                  <div
+                    key={player.id}
+                    className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:border-slate-300 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-semibold text-slate-700">
+                        {player.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-slate-900">
+                            {player.name}
+                          </span>
+                          {isCaptain && <span className="text-base">👑</span>}
+                        </div>
+                        {team && (
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <div
+                              className="w-3 h-3 rounded-full"
+                              style={{ backgroundColor: team.color }}
+                            />
+                            <span className="text-sm text-slate-600">
+                              {team.name}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {player.handicap !== undefined && (
+                      <div className="text-sm text-slate-600">
+                        HC {player.handicap}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            // For individual format, show detailed scorecards
+            <div className="space-y-4">
+              {tour.players.map((player) => (
+                <PlayerScorecard
+                  key={player.id}
+                  player={player}
+                  tour={tour}
+                  isExpanded={expandedPlayer === player.id}
+                  onToggle={() => handlePlayerToggle(player.id)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <AddPlayerSheet

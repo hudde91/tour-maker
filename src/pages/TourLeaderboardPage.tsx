@@ -1,3 +1,4 @@
+import { RyderCupTournamentLeaderboard } from "@/components/tournament/RyderCupTournamentLeaderboard";
 import { TournamentLeaderboard } from "@/components/tournament/TournamentLeaderboard";
 import { useTour } from "@/hooks/useTours";
 import { useParams, Link } from "react-router-dom";
@@ -49,6 +50,8 @@ export const TourLeaderboardPage = () => {
   const hasCompletedRounds = tour.rounds.some(
     (r) => r.status === "completed" || r.completedAt
   );
+
+  const isRyderCup = tour.format === "ryder-cup";
 
   return (
     <div className="min-h-screen bg-slate-50 safe-area-top">
@@ -148,6 +151,8 @@ export const TourLeaderboardPage = () => {
               View Rounds
             </Link>
           </div>
+        ) : isRyderCup ? (
+          <RyderCupTournamentLeaderboard tour={tour} />
         ) : (
           <TournamentLeaderboard tour={tour} />
         )}

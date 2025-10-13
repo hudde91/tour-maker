@@ -1,5 +1,3 @@
-// Helper for UI: returns English status text + a simple code.
-// Uses match.statusText/statusCode if present, otherwise derives from holes.
 export function getMatchStatus(
   match: any,
   totalHoles: number = 18

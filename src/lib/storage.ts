@@ -1,10 +1,6 @@
 import { nanoid } from "nanoid";
 import {
   MatchPlayRound,
-  MatchPlayHole,
-  MatchResult,
-  HoleResult,
-  MatchStatusInfo,
   Tour,
   Round,
   Player,
@@ -18,105 +14,6 @@ const STORAGE_KEYS = {
   TOURS: "golf-tours",
   ACTIVE_TOUR: "active-tour-id",
 } as const;
-
-export const matchPlayUtils = {
-  // Calculate match status (1-up, 2-down, All Square, etc.)
-  calculateMatchStatus: (
-    holes: MatchPlayHole[],
-    totalHoles: number
-  ): MatchStatusInfo => {
-    let teamAWins = 0;
-    let teamBWins = 0;
-    let holesPlayed = 0;
-
-    // Count wins for each team
-    holes.forEach((hole) => {
-      if (hole.teamAScore > 0 && hole.teamBScore > 0) {
-        holesPlayed++;
-        if (hole.result === "team-a") teamAWins++;
-        else if (hole.result === "team-b") teamBWins++;
-        // ties don't count toward wins
-      }
-    });
-
-    const holesRemaining = totalHoles - holesPlayed;
-    const lead = Math.abs(teamAWins - teamBWins);
-    const leadingTeam =
-      teamAWins > teamBWins
-        ? "team-a"
-        : teamBWins > teamAWins
-        ? "team-b"
-        : "tied";
-
-    // Determine if match can still be won
-    const maxPossibleCatchUp = holesRemaining;
-    const canTrailingTeamWin = lead <= maxPossibleCatchUp;
-
-    // Check if match is completed (someone won or tie impossible)
-    const isCompleted = !canTrailingTeamWin || holesRemaining === 0;
-
-    // Generate status string
-    let status: string;
-    let result: MatchResult | undefined;
-
-    if (isCompleted) {
-      if (teamAWins > teamBWins) {
-        result = "team-a";
-        const margin = lead > 1 ? ` ${lead}&${holesRemaining}` : "";
-        status = `Team A Wins${margin}`;
-      } else if (teamBWins > teamAWins) {
-        result = "team-b";
-        const margin = lead > 1 ? ` ${lead}&${holesRemaining}` : "";
-        status = `Team B Wins${margin}`;
-      } else {
-        result = "tie";
-        status = "Match Tied";
-      }
-    } else {
-      // Match ongoing
-      if (leadingTeam === "tied") {
-        status = "All Square";
-      } else if (lead === holesRemaining) {
-        status = "Dormie"; // leading by exactly holes remaining
-      } else {
-        const teamLabel = leadingTeam === "team-a" ? "Team A" : "Team B";
-        status = `${teamLabel} ${lead}-up`;
-      }
-    }
-
-    return {
-      holesRemaining,
-      leadingTeam,
-      lead,
-      status,
-      canWin: canTrailingTeamWin,
-      isCompleted,
-      result,
-    };
-  },
-
-  // Determine hole result based on scores
-  calculateHoleResult: (teamAScore: number, teamBScore: number): HoleResult => {
-    if (teamAScore === 0 || teamBScore === 0) return "tie"; // no score yet
-    if (teamAScore < teamBScore) return "team-a";
-    if (teamBScore < teamAScore) return "team-b";
-    return "tie";
-  },
-
-  // Calculate points awarded (1 for win, 0.5 for tie, 0 for loss)
-  calculateMatchPoints: (result: MatchResult) => {
-    switch (result) {
-      case "team-a":
-        return { teamA: 1, teamB: 0 };
-      case "team-b":
-        return { teamA: 0, teamB: 1 };
-      case "tie":
-        return { teamA: 0.5, teamB: 0.5 };
-      default:
-        return { teamA: 0, teamB: 0 };
-    }
-  },
-};
 
 // Helper function to calculate strokes for a specific hole using proper golf handicap system
 const calculateStrokesForHole = (
@@ -134,28 +31,6 @@ const calculateStrokesForHole = (
   // Player gets base strokes on every hole, plus 1 extra stroke
   // if this hole's handicap <= remaining strokes
   return baseStrokes + (holeHandicap <= remainingStrokes ? 1 : 0);
-};
-
-const calculateHandicapStrokes = (
-  player: Player,
-  round: Round,
-  isHoleByHole: boolean = true
-): number => {
-  if (!round.settings.strokesGiven || !player.handicap) return 0;
-
-  if (isHoleByHole) {
-    // Calculate hole-by-hole strokes using proper golf handicap system
-    let totalStrokes = 0;
-    round.holeInfo.forEach((hole) => {
-      if (hole.handicap && player.handicap !== undefined) {
-        totalStrokes += calculateStrokesForHole(player.handicap, hole.handicap);
-      }
-    });
-    return totalStrokes;
-  } else {
-    // For total score entry, use full handicap
-    return player.handicap;
-  }
 };
 
 export const storage = {
@@ -506,56 +381,6 @@ export const storage = {
     storage.saveTour(tour);
   },
 
-  // Update team total score directly (for scramble completed rounds)
-  updateTeamTotalScore: (
-    tourId: string,
-    roundId: string,
-    teamId: string,
-    totalScore: number
-  ): void => {
-    const tour = storage.getTour(tourId);
-    if (!tour) return;
-
-    const round = tour.rounds.find((r) => r.id === roundId);
-    if (!round) return;
-
-    const totalPar = storage.getTotalPar(round);
-    const totalToPar = totalScore - totalPar;
-
-    // Create distributed score array for team
-    const averageScore = totalScore / round.holes;
-    const scores = new Array(round.holes).fill(Math.round(averageScore));
-
-    // Adjust the scores to match the exact total
-    let currentTotal = scores.reduce((sum, score) => sum + score, 0);
-    let difference = totalScore - currentTotal;
-
-    let holeIndex = 0;
-    while (difference !== 0 && holeIndex < round.holes) {
-      if (difference > 0) {
-        scores[holeIndex]++;
-        difference--;
-      } else if (difference < 0 && scores[holeIndex] > 1) {
-        scores[holeIndex]--;
-        difference++;
-      }
-      holeIndex = (holeIndex + 1) % round.holes;
-    }
-
-    const teamScoreKey = `team_${teamId}`;
-    round.scores[teamScoreKey] = {
-      playerId: teamScoreKey,
-      scores,
-      totalScore,
-      totalToPar,
-      isTeamScore: true,
-      teamId,
-    };
-
-    storage.saveTour(tour);
-  },
-
-  // Start round
   startRound: (tourId: string, roundId: string): void => {
     const tour = storage.getTour(tourId);
     if (!tour) return;
@@ -611,139 +436,6 @@ export const storage = {
       round.status = "completed";
       round.completedAt = new Date().toISOString();
     }
-
-    storage.saveTour(tour);
-  },
-
-  // Update player total score directly (for completed rounds)
-  updatePlayerTotalScore: (
-    tourId: string,
-    roundId: string,
-    playerId: string,
-    totalScore: number,
-    stablefordPointsManual?: number
-  ): void => {
-    const tour = storage.getTour(tourId);
-    if (!tour) return;
-
-    const round = tour.rounds.find((r) => r.id === roundId);
-    const player = tour.players.find((p) => p.id === playerId);
-    if (!round || !player) return;
-
-    const totalPar = storage.getTotalPar(round);
-    const totalToPar = totalScore - totalPar;
-
-    // Calculate handicap strokes
-    const handicapStrokes = calculateHandicapStrokes(player, round);
-    const netScore =
-      handicapStrokes > 0 ? totalScore - handicapStrokes : undefined;
-    const netToPar = netScore ? netScore - totalPar : undefined;
-
-    // Create a distributed score array
-    const averageScore = totalScore / round.holes;
-    const scores = new Array(round.holes).fill(Math.round(averageScore));
-
-    // Adjust the scores to match the exact total
-    let currentTotal = scores.reduce((sum, score) => sum + score, 0);
-    let difference = totalScore - currentTotal;
-
-    let holeIndex = 0;
-    while (difference !== 0 && holeIndex < round.holes) {
-      if (difference > 0) {
-        scores[holeIndex]++;
-        difference--;
-      } else if (difference < 0 && scores[holeIndex] > 1) {
-        scores[holeIndex]--;
-        difference++;
-      }
-      holeIndex = (holeIndex + 1) % round.holes;
-    }
-
-    round.scores[playerId] = {
-      playerId,
-      scores,
-      totalScore,
-      totalToPar,
-      handicapStrokes,
-      netScore,
-      netToPar,
-      stablefordManual: stablefordPointsManual,
-    };
-
-    storage.saveTour(tour);
-  },
-
-  updatePlayerTotalScoreWithHandicap: (
-    tourId: string,
-    roundId: string,
-    playerId: string,
-    totalScore: number,
-    manualHandicapStrokes?: number,
-    stablefordPointsManual?: number
-  ): void => {
-    const tour = storage.getTour(tourId);
-    if (!tour) return;
-
-    const round = tour.rounds.find((r) => r.id === roundId);
-    const player = tour.players.find((p) => p.id === playerId);
-    if (!round || !player) return;
-
-    const totalPar = storage.getTotalPar(round);
-    const totalToPar = totalScore - totalPar;
-
-    // Use manual handicap strokes if provided, otherwise calculate
-    let handicapStrokes = 0;
-    if (round.settings.strokesGiven) {
-      if (manualHandicapStrokes !== undefined) {
-        handicapStrokes = manualHandicapStrokes;
-      } else if (player.handicap) {
-        // Calculate hole-by-hole strokes as fallback using proper golf handicap system
-        round.holeInfo.forEach((hole) => {
-          if (hole.handicap && player.handicap !== undefined) {
-            handicapStrokes += calculateStrokesForHole(
-              player.handicap,
-              hole.handicap
-            );
-          }
-        });
-      }
-    }
-
-    // Calculate net scores
-    const netScore =
-      handicapStrokes > 0 ? totalScore - handicapStrokes : undefined;
-    const netToPar = netScore ? netScore - totalPar : undefined;
-
-    // Create distributed score array
-    const averageScore = totalScore / round.holes;
-    const scores = new Array(round.holes).fill(Math.round(averageScore));
-
-    // Adjust the scores to match the exact total
-    let currentTotal = scores.reduce((sum, score) => sum + score, 0);
-    let difference = totalScore - currentTotal;
-
-    let holeIndex = 0;
-    while (difference !== 0 && holeIndex < round.holes) {
-      if (difference > 0) {
-        scores[holeIndex]++;
-        difference--;
-      } else if (difference < 0 && scores[holeIndex] > 1) {
-        scores[holeIndex]--;
-        difference++;
-      }
-      holeIndex = (holeIndex + 1) % round.holes;
-    }
-
-    round.scores[playerId] = {
-      playerId,
-      scores,
-      totalScore,
-      totalToPar,
-      handicapStrokes: handicapStrokes > 0 ? handicapStrokes : undefined,
-      netScore,
-      netToPar,
-      stablefordManual: stablefordPointsManual,
-    };
 
     storage.saveTour(tour);
   },

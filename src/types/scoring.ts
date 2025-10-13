@@ -43,6 +43,7 @@ export interface TeamLeaderboardEntry {
   playersWithScores: number;
   totalPlayers: number;
   position: number;
+  ryderCupPoints?: number;
 }
 
 export interface Leaderboard {
