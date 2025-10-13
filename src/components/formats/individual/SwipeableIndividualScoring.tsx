@@ -238,6 +238,7 @@ export const SwipeableIndividualScoring = ({
                   onPlayerScoreChange(currentPlayer.id, currentHole - 1, score)
                 }
                 strokesGiven={round.settings.strokesGiven}
+                round={round}
               />
             </div>
           </div>
@@ -311,6 +312,7 @@ interface PlayerScoreCardProps {
   currentHole: number;
   onScoreChange: (score: number) => void;
   strokesGiven: boolean;
+  round: Round;
 }
 
 const PlayerScoreCard = ({
@@ -320,6 +322,7 @@ const PlayerScoreCard = ({
   currentHole,
   onScoreChange,
   strokesGiven,
+  round,
 }: PlayerScoreCardProps) => {
   const currentScore = playerScore?.scores[currentHole - 1] || 0;
   const [localScore, setLocalScore] = useState(currentScore);
@@ -434,29 +437,40 @@ const PlayerScoreCard = ({
           Select Score
         </h4>
 
-        <div className="grid grid-cols-5 gap-2 mb-4">
+        <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 mb-4">
           {scoreOptions.slice(0, 10).map((option) => (
             <button
               key={option.score}
               type="button"
               onClick={() => handleScoreSelect(option.score)}
-              className={`relative p-4 rounded-xl border-2 font-bold text-center transition-all duration-200 hover:scale-105 active:scale-95 outline-none shadow-sm hover:shadow-md ${
+              disabled={round.status === "completed"}
+              className={`relative p-3 sm:p-4 rounded-xl border-2 font-bold 
+                  flex flex-col items-center justify-center min-h-[72px] sm:min-h-[80px]
+                  transition-all duration-200 hover:scale-105 active:scale-95 
+                  outline-none shadow-sm hover:shadow-md ${
+                    round.status === "completed"
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  } ${
                 localScore === option.score
                   ? `${option.bg} ${option.text} border-emerald-400 ring-2 ring-emerald-300 scale-105`
                   : "bg-white text-slate-700 border-slate-300 active:border-slate-400"
               }`}
             >
-              <div className="text-xl font-bold mb-1">{option.score}</div>
-              <div className="text-xs leading-tight">
-                {option.score === effectivePar
+              <div className="text-xl sm:text-2xl font-bold mb-0.5">
+                {option.score}
+              </div>
+
+              <div className="text-[10px] sm:text-xs font-medium leading-tight text-center">
+                {option.score === par
                   ? "Par"
-                  : option.score === effectivePar + 1
+                  : option.score === par + 1
                   ? "Bogey"
-                  : option.score === effectivePar + 2
-                  ? "Dbl"
-                  : option.score === effectivePar - 1
+                  : option.score === par + 2
+                  ? "Double"
+                  : option.score === par - 1
                   ? "Birdie"
-                  : option.score === effectivePar - 2
+                  : option.score === par - 2
                   ? "Eagle"
                   : option.score === 1
                   ? "Ace!"

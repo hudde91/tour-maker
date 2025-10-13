@@ -1207,6 +1207,38 @@ export const storage = {
     return total;
   },
 
+  calculateMatchesWon: (tour: Tour, playerId: string): number => {
+    let matchesWon = 0;
+
+    for (const round of tour.rounds) {
+      // Only count completed match play rounds
+      if (!round.isMatchPlay || !round.ryderCup) continue;
+      if (round.status !== "completed" && !round.completedAt) continue;
+
+      for (const match of round.ryderCup.matches as any[]) {
+        const isInTeamA = match.teamA?.playerIds?.includes(playerId);
+        const isInTeamB = match.teamB?.playerIds?.includes(playerId);
+
+        if (!isInTeamA && !isInTeamB) continue;
+
+        // Only count completed matches
+        if (!match.isComplete) continue;
+
+        // Check if this player's team won
+        if (match.winner === "team-a" && isInTeamA) {
+          matchesWon += 1;
+        } else if (match.winner === "team-b" && isInTeamB) {
+          matchesWon += 1;
+        } else if (match.winner === "halved") {
+          // Halved matches count as 0.5 for each side
+          matchesWon += 0.5;
+        }
+      }
+    }
+
+    return matchesWon;
+  },
+
   // Add a Ryder Cup session with pairings; ensures sessions & matches are tracked
   addRyderCupSession: (
     tourId: string,

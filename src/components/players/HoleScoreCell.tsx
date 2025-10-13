@@ -25,25 +25,26 @@ export default function HoleScoreCell({
       <span className="relative z-10 inline-block">{text}</span>
       {valid && diff !== null && (
         <>
-          {/* TODO: Improve the red rings here so they have a little more space between them and stay round*/}
           {diff <= -2 && (
             <>
-              <span className="pointer-events-none absolute inset-0 rounded-full border border-red-500" />
-              <span className="pointer-events-none absolute -inset-0.5 rounded-full border border-red-500" />
+              <span className="pointer-events-none absolute inset-0.5 rounded-full border-2 border-red-500" />
+              <span className="pointer-events-none absolute -inset-1 rounded-full border-2 border-red-500" />
             </>
           )}
+
           {diff === -1 && (
-            <span className="pointer-events-none absolute inset-0 rounded-full border border-red-500" />
+            <span className="pointer-events-none absolute inset-0.5 rounded-full border-2 border-red-500" />
           )}
-          {/* TODO: Improve the squares here so they have a little more space between them */}
+
           {diff >= 2 && (
             <>
-              <span className="pointer-events-none absolute inset-0 border border-slate-500" />
-              <span className="pointer-events-none absolute -inset-0.5 border border-slate-500" />
+              <span className="pointer-events-none absolute inset-0.5 border-2 border-slate-500 rounded-sm" />
+              <span className="pointer-events-none absolute -inset-1 border-2 border-slate-500 rounded-sm" />
             </>
           )}
+
           {diff === 1 && (
-            <span className="pointer-events-none absolute inset-0 border border-slate-500" />
+            <span className="pointer-events-none absolute inset-0.5 border-2 border-slate-500 rounded-sm" />
           )}
         </>
       )}

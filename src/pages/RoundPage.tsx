@@ -1,5 +1,5 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useCallback, useMemo } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
 import {
   useUpdateScore,
@@ -8,11 +8,9 @@ import {
   useUpdateTeamScore,
 } from "../hooks/useScoring";
 import { useUpdateMatchHole } from "../hooks/useMatchPlay";
-import { LiveLeaderboard } from "../components/scoring/LiveLeaderboard";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { getFormatConfig } from "../lib/roundFormatManager";
 import { storage } from "../lib/storage";
-import { CaptainPairingInterface } from "../components/matchplay/rydercup/CaptainPairingInterface";
 import { PreRoundComponent } from "../components/rounds/PreRoundComponent";
 import { RoundHeader } from "../components/rounds/RoundHeader";
 import ErrorBoundary from "../components/common/ErrorBoundary";
@@ -24,7 +22,7 @@ export const RoundPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
   const { data: tour, isLoading } = useTour(tourId!);
 
-  const autoOpenedRef = useRef(false);
+  const navigate = useNavigate();
 
   const updateScore = useUpdateScore(tourId!, roundId!);
   const updateTeamScore = useUpdateTeamScore(tourId!, roundId!);
@@ -33,9 +31,7 @@ export const RoundPage = () => {
 
   const updateMatchHole = useUpdateMatchHole(tourId!, roundId!);
 
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
-  const [showCaptainPairing, setShowCaptainPairing] = useState(false);
 
   // Memoize round to prevent recreation on every render
   const round = useMemo(() => {
@@ -163,26 +159,6 @@ export const RoundPage = () => {
     [round?.format, round?.scores, updateMatchHole, updateScore]
   );
 
-  useEffect(() => {
-    if (!round || !needsCaptainPairing || autoOpenedRef.current) return;
-
-    // Fungerar både med äldre "matches" och nya "sessions"
-    const hasAnyMatches = Array.isArray(round?.ryderCup?.matches)
-      ? round.ryderCup!.matches.length > 0
-      : round?.ryderCup?.sessions
-      ? Object.values(round.ryderCup.sessions).some(
-          (arr: any) => Array.isArray(arr) && arr.length > 0
-        )
-      : false;
-
-    const isCreated = round.status === "created" || !round.status;
-
-    if (isCreated && !hasAnyMatches) {
-      setShowCaptainPairing(true);
-      autoOpenedRef.current = true; // ⬅️ bara en gång per sidladdning
-    }
-  }, [round?.id, round?.status, needsCaptainPairing]);
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-50">
@@ -258,21 +234,11 @@ export const RoundPage = () => {
           onStartRound={handleStartRound}
           isStarting={startRound.isPending}
           onCaptainPairing={
-            needsCaptainPairing ? () => setShowCaptainPairing(true) : undefined
+            needsCaptainPairing
+              ? () => navigate(`/tour/${tourId}/round/${roundId}/pairing`)
+              : undefined
           }
         />
-
-        {showCaptainPairing && (
-          <CaptainPairingInterface
-            round={round}
-            tour={tour}
-            onClose={() => setShowCaptainPairing(false)}
-            onPaired={() => {
-              setShowCaptainPairing(false);
-              autoOpenedRef.current = true;
-            }}
-          />
-        )}
       </ErrorBoundary>
     );
   }
@@ -284,21 +250,10 @@ export const RoundPage = () => {
           tour={tour}
           round={round}
           formatConfig={formatConfig}
-          showLeaderboard={showLeaderboard}
-          onToggleLeaderboard={() => setShowLeaderboard(!showLeaderboard)}
           onCompleteRound={handleCompleteRound}
-          onCaptainPairing={
-            needsCaptainPairing ? () => setShowCaptainPairing(true) : undefined
-          }
         />
 
         <div className="px-4 mt-4 pb-24 w-full max-w-6xl mx-auto">
-          {showLeaderboard && (
-            <div className="card-spacing animate-fade-in w-full max-w-5xl mx-auto">
-              <LiveLeaderboard tour={tour} round={round} />
-            </div>
-          )}
-
           <div className="w-full max-w-5xl mx-auto">
             {(() => {
               switch (round.format) {

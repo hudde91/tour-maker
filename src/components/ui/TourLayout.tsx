@@ -11,9 +11,9 @@ export const TourLayout = () => {
 
   const tabs = [
     {
-      id: "leaderboard",
-      label: "Leaderboard",
-      icon: "🏆",
+      id: "players",
+      label: "Players",
+      icon: "👥",
       path: `/tour/${tourId}`,
     },
     {
@@ -24,10 +24,10 @@ export const TourLayout = () => {
       badge: activeRoundsCount, // Show badge if there are active rounds
     },
     {
-      id: "players",
-      label: "Players",
-      icon: "👥",
-      path: `/tour/${tourId}/players`,
+      id: "leaderboard",
+      label: "Leaderboard",
+      icon: "🏆",
+      path: `/tour/${tourId}/leaderboard`,
     },
     {
       id: "settings",

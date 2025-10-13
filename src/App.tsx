@@ -10,6 +10,7 @@ import { TourLeaderboardPage } from "./pages/TourLeaderboardPage";
 import { TourPlayersPage } from "./pages/TourPlagerPage";
 import { TourRoundsPage } from "./pages/TourRoundPage";
 import { TourSettingsPage } from "./pages/TourSettingsPage";
+import { RyderCupPairingPage } from "./pages/RyderCupPairingPage";
 function App() {
   const location = useLocation();
 
@@ -22,9 +23,9 @@ function App() {
           <Route path="/create" element={<CreateTourPage />} />
 
           <Route path="/tour/:tourId" element={<TourLayout />}>
-            <Route index element={<TourLeaderboardPage />} />
+            <Route index element={<TourPlayersPage />} />
             <Route path="rounds" element={<TourRoundsPage />} />
-            <Route path="players" element={<TourPlayersPage />} />
+            <Route path="leaderboard" element={<TourLeaderboardPage />} />
             <Route path="settings" element={<TourSettingsPage />} />
           </Route>
 
@@ -33,7 +34,10 @@ function App() {
             element={<CreateRoundPage />}
           />
           <Route path="/tour/:tourId/round/:roundId" element={<RoundPage />} />
-
+          <Route
+            path="/tour/:tourId/round/:roundId/pairing"
+            element={<RyderCupPairingPage />}
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </ErrorBoundary>

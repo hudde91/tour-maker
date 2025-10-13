@@ -90,7 +90,6 @@ export const AddPlayerSheet = ({
         </div>
 
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
-          {/* 🎉 Just attach the ref here! */}
           <div
             ref={formContainerRef}
             className="px-6 py-4 sm:py-6 space-y-4 sm:space-y-6"
@@ -125,10 +124,9 @@ export const AddPlayerSheet = ({
                 step="0.1"
                 inputMode="decimal"
                 pattern="[0-9]*[.,]?[0-9]*"
+                required
               />
-              <p className="form-help">
-                Official USGA handicap index (optional)
-              </p>
+              <p className="form-help">Official USGA handicap index</p>
             </div>
 
             {(tour.format === "team" || tour.format === "ryder-cup") &&
@@ -156,7 +154,6 @@ export const AddPlayerSheet = ({
                 </div>
               )}
 
-            {/* Extra padding for keyboard clearance */}
             <div className="h-32 sm:h-0" />
           </div>
 

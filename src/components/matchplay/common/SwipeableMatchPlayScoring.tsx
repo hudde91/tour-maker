@@ -50,7 +50,13 @@ export const SwipeableMatchPlayScoring = ({
   const minSwipeDistance = 50;
 
   // Check for newly completed matches and show notifications
+  // Only show if the round is NOT already completed (avoid showing on page load for completed rounds)
   useEffect(() => {
+    // Don't show winner toasts if round is already completed
+    if (round.status === "completed") {
+      return;
+    }
+
     matches.forEach((match: any) => {
       const isComplete = match.status === "completed" || match.isComplete;
       const matchId = match.id;
@@ -76,7 +82,7 @@ export const SwipeableMatchPlayScoring = ({
         }
       }
     });
-  }, [matches, showToast, tour.teams]);
+  }, [matches, showToast, tour.teams, round.status]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -483,11 +489,15 @@ const MatchScorecard = ({
 
   const getScoreButtonClass = (score: number, currentTeamScore: number) => {
     const isSelected = score === currentTeamScore;
-    return `p-3 rounded-lg font-bold text-center transition-all border-2 ${
-      isSelected
-        ? "bg-emerald-600 text-white border-emerald-600 scale-105"
-        : "bg-white text-slate-700 border-slate-300 active:border-slate-400 active:scale-95"
-    }`;
+    const baseClasses =
+      "p-3 rounded-lg font-bold text-center transition-all border-2";
+    const disabledClasses =
+      round.status === "completed" ? "opacity-50 cursor-not-allowed" : "";
+
+    if (isSelected) {
+      return `${baseClasses} bg-emerald-600 text-white border-emerald-600 scale-105 ${disabledClasses}`;
+    }
+    return `${baseClasses} bg-white text-slate-700 border-slate-300 active:border-slate-400 active:scale-95 ${disabledClasses}`;
   };
 
   const getHoleResultDisplay = () => {
@@ -592,6 +602,7 @@ const MatchScorecard = ({
                   setTimeout(() => handleScoreUpdate(), 100);
                 }
               }}
+              disabled={round.status === "completed"}
               className={getScoreButtonClass(score, teamAScore)}
             >
               {score}
@@ -650,6 +661,7 @@ const MatchScorecard = ({
                   setTimeout(() => handleScoreUpdate(), 100);
                 }
               }}
+              disabled={round.status === "completed"}
               className={getScoreButtonClass(score, teamBScore)}
             >
               {score}

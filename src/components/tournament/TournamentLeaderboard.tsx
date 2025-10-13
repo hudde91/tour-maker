@@ -59,6 +59,14 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
           ? totalScore - totalHandicapStrokes
           : undefined;
 
+      // Calculate total par across completed rounds
+      const totalPar = playerRounds.reduce((sum, round) => {
+        return sum + storage.getTotalPar(round);
+      }, 0);
+
+      const totalToPar = totalScore - totalPar;
+      const netToPar = netScore ? netScore - totalPar : undefined;
+
       const team = tour.teams?.find((t) => t.id === player.teamId);
       const isCaptain = team?.captainId === player.id;
 
@@ -66,6 +74,8 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
         player,
         totalScore,
         netScore,
+        totalToPar,
+        netToPar,
         handicapStrokes:
           totalHandicapStrokes > 0 ? totalHandicapStrokes : undefined,
         roundsPlayed: playerRounds.length,
@@ -78,22 +88,87 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     // Filter out players with no scores
     const playersWithScores = entries.filter((entry) => entry.totalScore > 0);
 
-    // Sort by Tournament Stableford (desc)
-    playersWithScores.sort((a, b) => {
-      const aSf = storage.calculateTournamentStableford(
-        tour as any,
-        a.player.id
-      );
-      const bSf = storage.calculateTournamentStableford(
-        tour as any,
-        b.player.id
-      );
-      if (aSf !== bSf) return bSf - aSf;
-      return (a.totalScore || 0) - (b.totalScore || 0);
-    });
-    // Set positions
+    // ===== FORMAT-SPECIFIC SORTING =====
+    const completedRounds = tour.rounds.filter(isCompleted);
+    const isRyderCup = tour.format === "ryder-cup";
+    const hasSomeStableford = completedRounds.some(
+      (r) =>
+        r.format === "stroke-play" && (r.settings as any)?.stablefordScoring
+    );
+    const isMatchPlay = completedRounds.some((r) => r.isMatchPlay);
+    const hasHandicaps = completedRounds.some((r) => r.settings.strokesGiven);
+
+    if (isRyderCup) {
+      // Ryder Cup: Individual leaderboard is less relevant
+      // Sort by total strokes as a fallback, but team view is primary
+      playersWithScores.sort((a, b) => {
+        return (a.totalScore || 0) - (b.totalScore || 0);
+      });
+    } else if (hasSomeStableford) {
+      // Stableford: Sort by HIGHEST Stableford points
+      playersWithScores.sort((a, b) => {
+        const aSf = storage.calculateTournamentStableford(tour, a.player.id);
+        const bSf = storage.calculateTournamentStableford(tour, b.player.id);
+        if (aSf !== bSf) return bSf - aSf; // Higher is better
+        return (a.totalScore || 0) - (b.totalScore || 0); // Lower strokes as tiebreaker
+      });
+    } else if (isMatchPlay) {
+      // Match Play: Sort by matches won
+      playersWithScores.sort((a, b) => {
+        const aMatchesWon = storage.calculateMatchesWon
+          ? storage.calculateMatchesWon(tour, a.player.id)
+          : 0;
+        const bMatchesWon = storage.calculateMatchesWon
+          ? storage.calculateMatchesWon(tour, b.player.id)
+          : 0;
+        if (aMatchesWon !== bMatchesWon) return bMatchesWon - aMatchesWon;
+        return (a.totalScore || 0) - (b.totalScore || 0);
+      });
+    } else {
+      // Stroke Play (default): Sort by LOWEST total strokes
+      // Use NET score if handicaps are applied, otherwise GROSS
+      playersWithScores.sort((a, b) => {
+        if (hasHandicaps) {
+          const aScore = a.netScore ?? a.totalScore;
+          const bScore = b.netScore ?? b.totalScore;
+          return aScore - bScore; // Lower is better
+        } else {
+          return (a.totalScore || 0) - (b.totalScore || 0); // Lower is better
+        }
+      });
+    }
+
+    // Set positions (handle ties)
+    let currentPosition = 1;
     playersWithScores.forEach((entry, index) => {
-      entry.position = index + 1;
+      if (index > 0) {
+        const prev = playersWithScores[index - 1];
+        // Determine if there's a tie based on scoring method
+        let isTied = false;
+
+        if (hasSomeStableford) {
+          const prevSf = storage.calculateTournamentStableford(
+            tour,
+            prev.player.id
+          );
+          const currSf = storage.calculateTournamentStableford(
+            tour,
+            entry.player.id
+          );
+          isTied = prevSf === currSf;
+        } else if (hasHandicaps) {
+          isTied =
+            (prev.netScore ?? prev.totalScore) ===
+            (entry.netScore ?? entry.totalScore);
+        } else {
+          isTied = prev.totalScore === entry.totalScore;
+        }
+
+        if (!isTied) {
+          currentPosition = index + 1;
+        }
+      }
+      entry.position = currentPosition;
     });
 
     return playersWithScores;
@@ -106,6 +181,15 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   const teamsWithScores = teamLeaderboard.filter(
     (entry) => entry.totalScore > 0
   );
+
+  // Determine format characteristics for display
+  const completedRounds = tour.rounds.filter(isCompleted);
+  const isRyderCup = tour.format === "ryder-cup";
+  const hasSomeStableford = completedRounds.some(
+    (r) => r.format === "stroke-play" && (r.settings as any)?.stablefordScoring
+  );
+  const isMatchPlay = completedRounds.some((r) => r.isMatchPlay && !isRyderCup);
+  const hasHandicaps = completedRounds.some((r) => r.settings.strokesGiven);
 
   // If no scores at all, show empty state
   if (playersWithScores.length === 0) {
@@ -146,6 +230,9 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
               <p className="text-slate-600 text-sm sm:text-base mt-1">
                 Overall standings across {completedCount} completed round
                 {completedCount !== 1 ? "s" : ""}
+                {hasSomeStableford && " • Stableford Scoring"}
+                {isMatchPlay && " • Match Play"}
+                {hasHandicaps && " • Net Scoring"}
               </p>
             );
           })()}
@@ -263,10 +350,18 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
         <div className="space-y-3">
           {playersWithScores.slice(0, 10).map((entry, index) => {
             const isLeader = index === 0;
-            const stablefordPoints = storage.calculateTournamentStableford(
-              tour,
-              entry.player.id
-            );
+            const stablefordPoints = hasSomeStableford
+              ? storage.calculateTournamentStableford(tour, entry.player.id)
+              : 0;
+            const matchesWon =
+              isMatchPlay && storage.calculateMatchesWon
+                ? storage.calculateMatchesWon(tour, entry.player.id)
+                : 0;
+
+            // Determine display score
+            const displayScore = hasHandicaps
+              ? entry.netScore ?? entry.totalScore
+              : entry.totalScore;
 
             return (
               <div
@@ -329,20 +424,59 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                     </div>
                   </div>
 
-                  {/* Score Display */}
+                  {/* Score Display - FORMAT AWARE */}
                   <div className="text-right flex-shrink-0">
-                    <div className="text-3xl font-bold text-slate-900 mb-1">
-                      {stablefordPoints}
-                    </div>
-                    <div className="text-xs text-slate-500">
-                      Total strokes: {entry.totalScore}
-                      {entry.handicapStrokes && entry.handicapStrokes > 0
-                        ? ` (-${entry.handicapStrokes} HC)`
-                        : ""}
-                    </div>
-                    <div className="text-xs text-emerald-600 font-medium mt-1">
-                      Stableford: {stablefordPoints}
-                    </div>
+                    {hasSomeStableford ? (
+                      // Stableford Format
+                      <>
+                        <div className="text-3xl font-bold text-emerald-600 mb-1">
+                          {stablefordPoints}
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          {entry.totalScore} strokes
+                        </div>
+                        <div className="text-xs text-emerald-600 font-medium mt-1">
+                          Stableford Points
+                        </div>
+                      </>
+                    ) : isMatchPlay ? (
+                      // Match Play Format
+                      <>
+                        <div className="text-3xl font-bold text-slate-900 mb-1">
+                          {matchesWon}
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          Matches Won
+                        </div>
+                        {entry.totalScore > 0 && (
+                          <div className="text-xs text-slate-400 mt-1">
+                            {entry.totalScore} total strokes
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      // Stroke Play Format
+                      <>
+                        <div className="text-3xl font-bold text-slate-900 mb-1">
+                          {displayScore}
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          {entry.totalScore} strokes
+                          {entry.netScore && entry.handicapStrokes
+                            ? ` (-${entry.handicapStrokes} HC)`
+                            : ""}
+                        </div>
+                        <div className="text-xs text-emerald-600 font-medium mt-1">
+                          {hasHandicaps && entry.netToPar !== undefined
+                            ? `${entry.netToPar > 0 ? "+" : ""}${
+                                entry.netToPar
+                              } vs Par (Net)`
+                            : `${entry.totalToPar > 0 ? "+" : ""}${
+                                entry.totalToPar
+                              } vs Par`}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
