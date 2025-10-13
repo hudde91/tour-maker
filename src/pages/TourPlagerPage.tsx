@@ -2,7 +2,6 @@ import { AddPlayerSheet } from "@/components/players/AddPlayerSheet";
 import { PlayerScorecard } from "@/components/players/PlayerScorecard";
 import { CreateTeamSheet } from "@/components/teams/CreateTeamSheet";
 import { TeamCard } from "@/components/teams/TeamCard";
-import { TeamStandings } from "@/components/teams/TeamStandings";
 import { useTour } from "@/hooks/useTours";
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -105,12 +104,6 @@ export const TourPlayersPage = () => {
       </div>
 
       <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
-        {/* Team Standings - Show for Ryder Cup and Team formats */}
-        {isTeamFormat && tour.teams && tour.teams.length > 0 && (
-          <TeamStandings tour={tour} />
-        )}
-
-        {/* Teams Section */}
         {isTeamFormat && (
           <div className="card card-spacing">
             <div className="flex justify-between items-center mb-4">
