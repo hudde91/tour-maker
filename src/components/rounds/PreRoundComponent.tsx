@@ -56,7 +56,7 @@ export const PreRoundComponent = ({
       <div className="golf-hero-bg">
         <div className="p-6 w-full max-w-6xl mx-auto">
           <div className="flex items-center mb-4">
-            <Link to={`/tour/${tour.id}`} className="nav-back mr-4">
+            <Link to={`/tour/${tour.id}/rounds`} className="nav-back mr-4">
               <svg
                 className="w-5 h-5 text-slate-600"
                 fill="none"
@@ -277,7 +277,7 @@ export const PreRoundComponent = ({
           {/* Action Buttons */}
           <div className="flex gap-4">
             <Link
-              to={`/tour/${tour.id}`}
+              to={`/tour/${tour.id}/rounds`}
               className="btn-secondary flex-1 text-center"
             >
               Back to Tournament

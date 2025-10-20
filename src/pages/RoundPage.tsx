@@ -215,7 +215,7 @@ export const RoundPage = () => {
               The tournament round you're looking for doesn't exist or has been
               removed.
             </p>
-            <Link to={`/tour/${tourId}`} className="btn-primary">
+            <Link to={`/tour/${tourId}/rounds`} className="btn-primary">
               Back to Tournament
             </Link>
           </div>

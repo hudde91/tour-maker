@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Tour, Round, MatchPlayRound } from "../../../types";
+import { Tour, Round } from "../../../types";
 import { HoleNavigation } from "../../scoring/HoleNavigation";
 import { MatchPlayLeaderboard } from "./MatchPlayLeaderboard";
 import { useToast } from "../../ui/Toast";
@@ -44,6 +44,29 @@ export const SwipeableMatchPlayScoring = ({
   const getTeamName = (teamId: string) => {
     const team = tour.teams?.find((t) => t.id === teamId);
     return team?.name || "Team";
+  };
+
+  // Convert match play holes to playerScores format for HoleNavigation
+  const getMatchPlayScores = () => {
+    const scores: Record<string, number[]> = {};
+
+    // For each match, create a "player" entry
+    matches.forEach((match: any, index: number) => {
+      const teamAScores: number[] = [];
+      const teamBScores: number[] = [];
+
+      // Get scores for each hole
+      for (let i = 0; i < round.holes; i++) {
+        const hole = match.holes?.[i];
+        teamAScores.push(hole?.teamAScore || 0);
+        teamBScores.push(hole?.teamBScore || 0);
+      }
+
+      scores[`match-${index}-teamA`] = teamAScores;
+      scores[`match-${index}-teamB`] = teamBScores;
+    });
+
+    return scores;
   };
 
   // Minimum swipe distance (in px)
@@ -135,12 +158,6 @@ export const SwipeableMatchPlayScoring = ({
         setIsTransitioning(false);
       }, 200);
     }
-  };
-
-  const getPlayerNames = (playerIds: string[]) => {
-    return playerIds
-      .map((id) => tour.players.find((p) => p.id === id)?.name || "Unknown")
-      .join(" & ");
   };
 
   const handleMatchHoleUpdate = (
@@ -244,143 +261,63 @@ export const SwipeableMatchPlayScoring = ({
                   d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                 />
               </svg>
-              Points
+              Leaderboard
             </div>
           </button>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-4">
+      <div className="flex-1 overflow-y-auto">
         {activeTab === "score" && (
-          <div className="space-y-4 p-4">
-            <div className="card">
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="text-sm font-semibold text-slate-600">
-                  Match {currentMatchIndex + 1} of {matches.length}
-                </h3>
-                {currentMatchIndex < matches.length - 1 ? (
-                  <div className="text-xs text-slate-500">
-                    Swipe to{" "}
-                    {getPlayerNames(
-                      matches[currentMatchIndex + 1].teamA.playerIds
-                    )}{" "}
-                    vs{" "}
-                    {getPlayerNames(
-                      matches[currentMatchIndex + 1].teamB.playerIds
-                    )}{" "}
-                    →
-                  </div>
-                ) : currentHole < round.holes ? (
-                  <div className="text-xs text-slate-500">
-                    Swipe to Hole {currentHole + 1} →
-                  </div>
-                ) : (
-                  <div className="text-xs text-emerald-600 font-semibold">
-                    Swipe to Finish Round →
-                  </div>
-                )}
+          <div
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            className={`transition-opacity duration-200 ${
+              isTransitioning ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <div className="p-4 space-y-4">
+              <MatchScoringCard
+                match={currentMatch}
+                tour={tour}
+                round={round}
+                currentHole={currentHole}
+                onHoleUpdate={handleMatchHoleUpdate}
+              />
+            </div>
+
+            <div className="p-4 bg-slate-50 border-t border-slate-200">
+              <div className="text-center text-sm text-slate-600 mb-2">
+                Match {currentMatchIndex + 1} of {matches.length}
               </div>
               <div className="flex gap-2">
-                {matches.map((_, index) => (
+                {matches.map((_, idx) => (
                   <div
-                    key={index}
-                    className={`h-2 rounded-full flex-1 transition-all duration-300 ${
-                      index === currentMatchIndex
-                        ? "bg-emerald-600"
-                        : index < currentMatchIndex
-                        ? "bg-emerald-300"
-                        : "bg-slate-200"
+                    key={idx}
+                    className={`flex-1 h-2 rounded ${
+                      idx === currentMatchIndex
+                        ? "bg-emerald-500"
+                        : "bg-slate-300"
                     }`}
                   />
                 ))}
               </div>
-            </div>
-
-            {/* Swipeable Match Scorecard */}
-            <div
-              onTouchStart={onTouchStart}
-              onTouchMove={onTouchMove}
-              onTouchEnd={onTouchEnd}
-              className={`transition-opacity duration-200 ${
-                isTransitioning ? "opacity-50" : "opacity-100"
-              }`}
-              style={{ touchAction: "pan-y" }}
-            >
-              {currentMatch && (
-                <MatchScorecard
-                  match={currentMatch}
-                  tour={tour}
-                  round={round}
-                  currentHole={currentHole}
-                  onHoleUpdate={handleMatchHoleUpdate}
-                  onFinishRound={onFinishRound}
-                />
-              )}
+              <div className="text-center text-xs text-slate-500 mt-2">
+                Swipe to navigate between matches
+              </div>
             </div>
           </div>
         )}
 
         {activeTab === "holes" && (
-          <div className="p-4 space-y-4">
-            {/* Match selector for holes view */}
-            <div className="card">
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="text-sm font-semibold text-slate-600">
-                  Match {currentMatchIndex + 1} of {matches.length}
-                </h3>
-                {currentMatchIndex < matches.length - 1 && (
-                  <div className="text-xs text-slate-500">
-                    Swipe to{" "}
-                    {getPlayerNames(
-                      matches[currentMatchIndex + 1].teamA.playerIds
-                    )}{" "}
-                    vs{" "}
-                    {getPlayerNames(
-                      matches[currentMatchIndex + 1].teamB.playerIds
-                    )}{" "}
-                    →
-                  </div>
-                )}
-              </div>
-              <div className="flex gap-2">
-                {matches.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`h-2 rounded-full flex-1 transition-all duration-300 ${
-                      index === currentMatchIndex
-                        ? "bg-emerald-600"
-                        : index < currentMatchIndex
-                        ? "bg-emerald-300"
-                        : "bg-slate-200"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Swipeable hole navigation */}
-            <div
-              onTouchStart={onTouchStart}
-              onTouchMove={onTouchMove}
-              onTouchEnd={onTouchEnd}
-              className={`transition-opacity duration-200 ${
-                isTransitioning ? "opacity-50" : "opacity-100"
-              }`}
-              style={{ touchAction: "pan-y" }}
-            >
-              {currentMatch && (
-                <HoleNavigation
-                  holes={round.holeInfo}
-                  currentHole={currentHole}
-                  onHoleChange={setCurrentHole}
-                  playerScores={{
-                    [currentMatch.id]: currentMatch.holes.map((h) =>
-                      h.teamAScore > 0 && h.teamBScore > 0 ? 1 : 0
-                    ),
-                  }}
-                />
-              )}
-            </div>
+          <div className="p-4">
+            <HoleNavigation
+              holes={round.holeInfo}
+              currentHole={currentHole}
+              onHoleChange={setCurrentHole}
+              playerScores={getMatchPlayScores()}
+            />
           </div>
         )}
 
@@ -391,14 +328,14 @@ export const SwipeableMatchPlayScoring = ({
         )}
       </div>
 
-      {/* Toast notifications */}
       <ToastComponent />
     </div>
   );
 };
 
-interface MatchScorecardProps {
-  match: MatchPlayRound;
+// Enhanced Match Scoring Card with dormy completion logic
+interface MatchScoringCardProps {
+  match: any;
   tour: Tour;
   round: Round;
   currentHole: number;
@@ -407,64 +344,30 @@ interface MatchScorecardProps {
     teamAScore: number,
     teamBScore: number
   ) => void;
-  onFinishRound?: () => void;
 }
 
-const MatchScorecard = ({
+const MatchScoringCard = ({
   match,
   tour,
   round,
   currentHole,
   onHoleUpdate,
-}: MatchScorecardProps) => {
-  const currentHoleInfo = round.holeInfo[currentHole - 1];
-  const currentHoleData = match.holes.find(
-    (h) => h.holeNumber === currentHole
-  ) || {
-    holeNumber: currentHole,
-    teamAScore: 0,
-    teamBScore: 0,
-    result: "tie" as const,
-    matchStatus: "",
+}: MatchScoringCardProps) => {
+  const currentHoleInfo = round.holeInfo[currentHole - 1] || {
+    number: currentHole,
+    par: 4,
+    yardage: 400,
   };
 
-  const [teamAScore, setTeamAScore] = useState(currentHoleData.teamAScore);
-  const [teamBScore, setTeamBScore] = useState(currentHoleData.teamBScore);
+  const existingHole = match.holes?.[currentHole - 1];
+  const [teamAScore, setTeamAScore] = useState(existingHole?.teamAScore || 0);
+  const [teamBScore, setTeamBScore] = useState(existingHole?.teamBScore || 0);
 
-  // Refs to track current scores for saving on hole change
-  const scoresRef = useRef({ teamA: teamAScore, teamB: teamBScore });
-  const previousHoleRef = useRef(currentHole);
-
-  // Update ref whenever scores change
   useEffect(() => {
-    scoresRef.current = { teamA: teamAScore, teamB: teamBScore };
-  }, [teamAScore, teamBScore]);
-
-  // Save scores when hole changes
-  useEffect(() => {
-    if (previousHoleRef.current !== currentHole) {
-      // Save scores from previous hole
-      const prevScores = scoresRef.current;
-
-      // Save if we have at least one valid score
-      if (prevScores.teamA > 0 || prevScores.teamB > 0) {
-        onHoleUpdate(
-          previousHoleRef.current,
-          prevScores.teamA,
-          prevScores.teamB
-        );
-      }
-
-      previousHoleRef.current = currentHole;
-    }
-  }, [currentHole, onHoleUpdate]);
-
-  // Reset scores when hole changes or match changes
-  useEffect(() => {
-    const holeData = match.holes.find((h) => h.holeNumber === currentHole);
-    setTeamAScore(holeData?.teamAScore || 0);
-    setTeamBScore(holeData?.teamBScore || 0);
-  }, [currentHole, match.id]);
+    const hole = match.holes?.[currentHole - 1];
+    setTeamAScore(hole?.teamAScore || 0);
+    setTeamBScore(hole?.teamBScore || 0);
+  }, [currentHole, match.holes]);
 
   const getTeamInfo = (teamId: string, playerIds: string[]) => {
     const team = tour.teams?.find((t) => t.id === teamId);
@@ -481,6 +384,9 @@ const MatchScorecard = ({
   const teamAInfo = getTeamInfo(match.teamA.id, match.teamA.playerIds);
   const teamBInfo = getTeamInfo(match.teamB.id, match.teamB.playerIds);
 
+  // Check if match is completed (won by dormy or finished)
+  const isMatchComplete = match.status === "completed" || match.isComplete;
+
   const handleScoreUpdate = () => {
     if (teamAScore > 0 && teamBScore > 0) {
       onHoleUpdate(currentHole, teamAScore, teamBScore);
@@ -491,8 +397,10 @@ const MatchScorecard = ({
     const isSelected = score === currentTeamScore;
     const baseClasses =
       "p-3 rounded-lg font-bold text-center transition-all border-2";
-    const disabledClasses =
-      round.status === "completed" ? "opacity-50 cursor-not-allowed" : "";
+
+    // Disable scoring if round is completed OR match is completed
+    const isDisabled = round.status === "completed" || isMatchComplete;
+    const disabledClasses = isDisabled ? "opacity-50 cursor-not-allowed" : "";
 
     if (isSelected) {
       return `${baseClasses} bg-emerald-600 text-white border-emerald-600 scale-105 ${disabledClasses}`;
@@ -550,18 +458,45 @@ const MatchScorecard = ({
           </div>
           <span
             className={`px-3 py-1 rounded-full text-xs font-semibold ${
-              match.status === "completed"
+              isMatchComplete
                 ? "bg-green-100 text-green-800"
                 : "bg-yellow-100 text-yellow-800"
             }`}
           >
-            {match.status === "completed" ? "Completed" : "In Progress"}
+            {isMatchComplete ? "Completed" : "In Progress"}
           </span>
         </div>
 
         <div className="text-sm text-slate-600 mb-3">
           {teamAInfo.name} vs {teamBInfo.name}
         </div>
+
+        {/* Display match result if completed */}
+        {isMatchComplete && match.resultSummary && (
+          <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center gap-2">
+              <svg
+                className="w-5 h-5 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span className="text-green-800 font-semibold">
+                {match.resultSummary}
+              </span>
+            </div>
+            <div className="text-xs text-green-700 mt-1">
+              Match completed - scoring disabled
+            </div>
+          </div>
+        )}
       </div>
 
       {/* First Team Scoring */}
@@ -602,7 +537,7 @@ const MatchScorecard = ({
                   setTimeout(() => handleScoreUpdate(), 100);
                 }
               }}
-              disabled={round.status === "completed"}
+              disabled={round.status === "completed" || isMatchComplete}
               className={getScoreButtonClass(score, teamAScore)}
             >
               {score}
@@ -661,7 +596,7 @@ const MatchScorecard = ({
                   setTimeout(() => handleScoreUpdate(), 100);
                 }
               }}
-              disabled={round.status === "completed"}
+              disabled={round.status === "completed" || isMatchComplete}
               className={getScoreButtonClass(score, teamBScore)}
             >
               {score}
@@ -679,23 +614,42 @@ const MatchScorecard = ({
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
             <div className="text-xl font-bold text-slate-900">
-              {match.holes.filter((h) => h.result === "team-a").length}
+              {match.holes.filter((h: any) => h.result === "team-a").length}
             </div>
             <div className="text-xs text-slate-500">{teamAInfo.name} Wins</div>
           </div>
           <div>
             <div className="text-xl font-bold text-slate-900">
-              {match.holes.filter((h) => h.result === "tie").length}
+              {match.holes.filter((h: any) => h.result === "tie").length}
             </div>
             <div className="text-xs text-slate-500">Ties</div>
           </div>
           <div>
             <div className="text-xl font-bold text-slate-900">
-              {match.holes.filter((h) => h.result === "team-b").length}
+              {match.holes.filter((h: any) => h.result === "team-b").length}
             </div>
             <div className="text-xs text-slate-500">{teamBInfo.name} Wins</div>
           </div>
         </div>
+
+        {/* Show current match status */}
+        {match.statusText && (
+          <div className="mt-3 pt-3 border-t border-slate-200">
+            <div className="text-center">
+              <span
+                className={`text-sm font-semibold ${
+                  match.statusCode === "dormie"
+                    ? "text-amber-700"
+                    : match.statusCode === "complete"
+                    ? "text-green-700"
+                    : "text-slate-700"
+                }`}
+              >
+                {match.statusText}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

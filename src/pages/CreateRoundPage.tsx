@@ -4,6 +4,7 @@ import { useTour } from "../hooks/useTours";
 import { useCreateRound } from "../hooks/useRounds";
 import { PlayFormat, RoundSettings, GOLF_FORMATS } from "../types";
 import { storage } from "../lib/storage";
+import { PageHeader } from "../components/ui/PageHeader";
 
 export const CreateRoundPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -173,38 +174,23 @@ export const CreateRoundPage = () => {
     0
   );
 
+  const breadcrumbs = tour
+    ? [
+        { label: "Home", path: "/", icon: "🏠" },
+        { label: tour.name, path: `/tour/${tourId}`, icon: "⛳" },
+        { label: "Rounds", path: `/tour/${tourId}/rounds`, icon: "📋" },
+        { label: "Create Round", icon: "➕" },
+      ]
+    : [];
+
   return (
     <div className="min-h-screen bg-slate-50 safe-area-top">
-      <div className="golf-hero-bg">
-        <div className="p-6">
-          <div className="flex items-center mb-4">
-            <button
-              onClick={() => navigate(`/tour/${tourId}`)}
-              className="nav-back mr-4"
-            >
-              <svg
-                className="w-5 h-5 text-slate-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-            </button>
-            <div>
-              <h1 className="text-2xl font-bold text-white">
-                Create New Round
-              </h1>
-              <p className="text-emerald-100 mt-1">{tour.name}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="Create New Round"
+        subtitle={tour?.name}
+        breadcrumbs={breadcrumbs}
+        backPath={`/tour/${tourId}/rounds`}
+      />
 
       <div className="px-4 -mt-4 pb-8">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8">

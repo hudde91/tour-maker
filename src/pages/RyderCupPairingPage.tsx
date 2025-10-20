@@ -63,7 +63,7 @@ export const RyderCupPairingPage = () => {
               The round you're looking for doesn't exist.
             </p>
             <button
-              onClick={() => navigate(`/tour/${tourId}`)}
+              onClick={() => navigate(`/tour/${tourId}/rounds`)}
               className="btn-primary"
             >
               Back to Tournament
