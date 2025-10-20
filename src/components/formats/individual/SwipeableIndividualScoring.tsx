@@ -188,19 +188,94 @@ export const SwipeableIndividualScoring = ({
 
       <div className="flex-1 overflow-y-auto pb-4">
         {activeTab === "score" && (
-          <div className="space-y-4 p-4">
-            <div className="card">
+          <div
+            className="space-y-4 p-4"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            style={{ touchAction: "pan-y" }}
+          >
+            <div
+              className={`card relative transition-opacity duration-200 ${
+                isTransitioning ? "opacity-50" : "opacity-100"
+              }`}
+            >
+              {/* Swipe indicators - Left arrow */}
+              {currentPlayerIndex > 0 || currentHole > 1 ? (
+                <div className="absolute left-2 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
+                  <svg
+                    className="w-6 h-6 text-slate-400 animate-pulse"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.5}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </div>
+              ) : null}
+
+              {/* Swipe indicators - Right arrow */}
+              {currentPlayerIndex < tour.players.length - 1 ||
+              currentHole < round.holes ? (
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
+                  <svg
+                    className="w-6 h-6 text-slate-400 animate-pulse"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.5}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              ) : null}
+
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-sm font-semibold text-slate-600">
                   Player {currentPlayerIndex + 1} of {tour.players.length}
                 </h3>
                 {currentPlayerIndex < tour.players.length - 1 ? (
-                  <div className="text-xs text-slate-500">
-                    Swipe to {tour.players[currentPlayerIndex + 1].name} →
+                  <div className="text-xs text-slate-500 flex items-center gap-1">
+                    Swipe to {tour.players[currentPlayerIndex + 1].name}
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
                   </div>
                 ) : currentHole < round.holes ? (
-                  <div className="text-xs text-slate-500">
-                    Swipe to Hole {currentHole + 1} →
+                  <div className="text-xs text-slate-500 flex items-center gap-1">
+                    Swipe to Hole {currentHole + 1}
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
                   </div>
                 ) : null}
               </div>
@@ -220,27 +295,17 @@ export const SwipeableIndividualScoring = ({
               </div>
             </div>
 
-            <div
-              onTouchStart={onTouchStart}
-              onTouchMove={onTouchMove}
-              onTouchEnd={onTouchEnd}
-              className={`transition-opacity duration-200 ${
-                isTransitioning ? "opacity-50" : "opacity-100"
-              }`}
-              style={{ touchAction: "pan-y" }}
-            >
-              <PlayerScoreCard
-                player={currentPlayer}
-                holeInfo={currentHoleInfo}
-                playerScore={round.scores[currentPlayer.id]}
-                currentHole={currentHole}
-                onScoreChange={(score) =>
-                  onPlayerScoreChange(currentPlayer.id, currentHole - 1, score)
-                }
-                strokesGiven={round.settings.strokesGiven}
-                round={round}
-              />
-            </div>
+            <PlayerScoreCard
+              player={currentPlayer}
+              holeInfo={currentHoleInfo}
+              playerScore={round.scores[currentPlayer.id]}
+              currentHole={currentHole}
+              onScoreChange={(score) =>
+                onPlayerScoreChange(currentPlayer.id, currentHole - 1, score)
+              }
+              strokesGiven={round.settings.strokesGiven}
+              round={round}
+            />
           </div>
         )}
 

@@ -24,11 +24,10 @@ export const SwipeableMatchPlayScoring = ({
   onMatchHoleUpdate,
   onFinishRound,
 }: SwipeableMatchPlayScoringProps) => {
-  const [currentHole, setCurrentHole] = useState(1);
-  const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+  // Each match now tracks its own current hole independently
+  const [matchHoles, setMatchHoles] = useState<Record<string, number>>({});
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("score");
 
   // Toast notifications
@@ -38,7 +37,47 @@ export const SwipeableMatchPlayScoring = ({
   const completedMatchesRef = useRef<Set<string>>(new Set());
 
   const matches = round.ryderCup?.matches || [];
-  const currentMatch = matches[currentMatchIndex];
+
+  // Initialize match holes on mount
+  useEffect(() => {
+    const initialHoles: Record<string, number> = {};
+    matches.forEach((match: any) => {
+      if (!matchHoles[match.id]) {
+        // Find the first unscored hole or default to hole 1
+        let firstUnscoredHole = 1;
+        if (match.holes) {
+          for (let i = 0; i < match.holes.length; i++) {
+            const hole = match.holes[i];
+            if (!hole || hole.teamAScore === 0 || hole.teamBScore === 0) {
+              firstUnscoredHole = i + 1;
+              break;
+            }
+          }
+          // If all holes are scored, stay on the last hole
+          if (firstUnscoredHole === 1 && match.holes.length > 0) {
+            const allScored = match.holes.every(
+              (h: any) => h && h.teamAScore > 0 && h.teamBScore > 0
+            );
+            if (allScored) {
+              firstUnscoredHole = match.holes.length;
+            }
+          }
+        }
+        initialHoles[match.id] = firstUnscoredHole;
+      }
+    });
+    if (Object.keys(initialHoles).length > 0) {
+      setMatchHoles((prev) => ({ ...prev, ...initialHoles }));
+    }
+  }, [matches]);
+
+  const getCurrentHoleForMatch = (matchId: string) => {
+    return matchHoles[matchId] || 1;
+  };
+
+  const setCurrentHoleForMatch = (matchId: string, hole: number) => {
+    setMatchHoles((prev) => ({ ...prev, [matchId]: hole }));
+  };
 
   // Get team names
   const getTeamName = (teamId: string) => {
@@ -47,24 +86,24 @@ export const SwipeableMatchPlayScoring = ({
   };
 
   // Convert match play holes to playerScores format for HoleNavigation
-  const getMatchPlayScores = () => {
+  const getMatchPlayScores = (matchId: string) => {
     const scores: Record<string, number[]> = {};
+    const match = matches.find((m: any) => m.id === matchId);
 
-    // For each match, create a "player" entry
-    matches.forEach((match: any, index: number) => {
-      const teamAScores: number[] = [];
-      const teamBScores: number[] = [];
+    if (!match) return scores;
 
-      // Get scores for each hole
-      for (let i = 0; i < round.holes; i++) {
-        const hole = match.holes?.[i];
-        teamAScores.push(hole?.teamAScore || 0);
-        teamBScores.push(hole?.teamBScore || 0);
-      }
+    const teamAScores: number[] = [];
+    const teamBScores: number[] = [];
 
-      scores[`match-${index}-teamA`] = teamAScores;
-      scores[`match-${index}-teamB`] = teamBScores;
-    });
+    // Get scores for each hole
+    for (let i = 0; i < round.holes; i++) {
+      const hole = match.holes?.[i];
+      teamAScores.push(hole?.teamAScore || 0);
+      teamBScores.push(hole?.teamBScore || 0);
+    }
+
+    scores[`${matchId}-teamA`] = teamAScores;
+    scores[`${matchId}-teamB`] = teamBScores;
 
     return scores;
   };
@@ -106,68 +145,6 @@ export const SwipeableMatchPlayScoring = ({
       }
     });
   }, [matches, showToast, tour.teams, round.status]);
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        // If not the last match, move to next match
-        if (currentMatchIndex < matches.length - 1) {
-          setCurrentMatchIndex(currentMatchIndex + 1);
-        }
-        // If last match and not last hole, move to next hole and reset to first match
-        else if (currentHole < round.holes) {
-          setCurrentHole(currentHole + 1);
-          setCurrentMatchIndex(0);
-        }
-        // If last match on last hole, trigger finish round
-        else if (currentHole === round.holes && onFinishRound) {
-          onFinishRound();
-        }
-        setIsTransitioning(false);
-      }, 200);
-    }
-
-    if (isRightSwipe) {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        // If not the first match, move to previous match
-        if (currentMatchIndex > 0) {
-          setCurrentMatchIndex(currentMatchIndex - 1);
-        }
-        // If first match and not first hole, move to previous hole and go to last match
-        else if (currentHole > 1) {
-          setCurrentHole(currentHole - 1);
-          setCurrentMatchIndex(matches.length - 1);
-        }
-        setIsTransitioning(false);
-      }, 200);
-    }
-  };
-
-  const handleMatchHoleUpdate = (
-    holeNumber: number,
-    teamAScore: number,
-    teamBScore: number
-  ) => {
-    if (!currentMatch) return;
-    onMatchHoleUpdate(currentMatch.id, holeNumber, teamAScore, teamBScore);
-  };
 
   if (matches.length === 0) {
     return (
@@ -267,57 +244,58 @@ export const SwipeableMatchPlayScoring = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-4">
         {activeTab === "score" && (
-          <div
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-            className={`transition-opacity duration-200 ${
-              isTransitioning ? "opacity-0" : "opacity-100"
-            }`}
-          >
-            <div className="p-4 space-y-4">
-              <MatchScoringCard
-                match={currentMatch}
-                tour={tour}
-                round={round}
-                currentHole={currentHole}
-                onHoleUpdate={handleMatchHoleUpdate}
-              />
-            </div>
-
-            <div className="p-4 bg-slate-50 border-t border-slate-200">
-              <div className="text-center text-sm text-slate-600 mb-2">
-                Match {currentMatchIndex + 1} of {matches.length}
-              </div>
-              <div className="flex gap-2">
-                {matches.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className={`flex-1 h-2 rounded ${
-                      idx === currentMatchIndex
-                        ? "bg-emerald-500"
-                        : "bg-slate-300"
-                    }`}
-                  />
-                ))}
-              </div>
-              <div className="text-center text-xs text-slate-500 mt-2">
-                Swipe to navigate between matches
-              </div>
-            </div>
+          <div className="p-4 space-y-4">
+            {matches.map((match: any) => {
+              const currentHole = getCurrentHoleForMatch(match.id);
+              return (
+                <MatchScoringCard
+                  key={match.id}
+                  match={match}
+                  tour={tour}
+                  round={round}
+                  currentHole={currentHole}
+                  onHoleUpdate={(holeNumber, teamAScore, teamBScore) => {
+                    onMatchHoleUpdate(
+                      match.id,
+                      holeNumber,
+                      teamAScore,
+                      teamBScore
+                    );
+                  }}
+                  onHoleChange={(newHole) =>
+                    setCurrentHoleForMatch(match.id, newHole)
+                  }
+                />
+              );
+            })}
           </div>
         )}
 
         {activeTab === "holes" && (
-          <div className="p-4">
-            <HoleNavigation
-              holes={round.holeInfo}
-              currentHole={currentHole}
-              onHoleChange={setCurrentHole}
-              playerScores={getMatchPlayScores()}
-            />
+          <div className="p-4 space-y-4">
+            {matches.map((match: any) => {
+              const currentHole = getCurrentHoleForMatch(match.id);
+              const teamAName = getTeamName(match.teamA.id);
+              const teamBName = getTeamName(match.teamB.id);
+
+              return (
+                <div key={match.id} className="card">
+                  <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                    {teamAName} vs {teamBName}
+                  </h3>
+                  <HoleNavigation
+                    holes={round.holeInfo}
+                    currentHole={currentHole}
+                    onHoleChange={(newHole) =>
+                      setCurrentHoleForMatch(match.id, newHole)
+                    }
+                    playerScores={getMatchPlayScores(match.id)}
+                  />
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -344,6 +322,7 @@ interface MatchScoringCardProps {
     teamAScore: number,
     teamBScore: number
   ) => void;
+  onHoleChange: (newHole: number) => void;
 }
 
 const MatchScoringCard = ({
@@ -352,6 +331,7 @@ const MatchScoringCard = ({
   round,
   currentHole,
   onHoleUpdate,
+  onHoleChange,
 }: MatchScoringCardProps) => {
   const currentHoleInfo = round.holeInfo[currentHole - 1] || {
     number: currentHole,
@@ -368,6 +348,20 @@ const MatchScoringCard = ({
     setTeamAScore(hole?.teamAScore || 0);
     setTeamBScore(hole?.teamBScore || 0);
   }, [currentHole, match.holes]);
+
+  // Auto-save and advance when both scores are entered
+  useEffect(() => {
+    if (teamAScore > 0 && teamBScore > 0) {
+      const existingHole = match.holes?.[currentHole - 1];
+      // Only update if scores changed
+      if (
+        existingHole?.teamAScore !== teamAScore ||
+        existingHole?.teamBScore !== teamBScore
+      ) {
+        handleScoreUpdate();
+      }
+    }
+  }, [teamAScore, teamBScore]);
 
   const getTeamInfo = (teamId: string, playerIds: string[]) => {
     const team = tour.teams?.find((t) => t.id === teamId);
@@ -390,6 +384,13 @@ const MatchScoringCard = ({
   const handleScoreUpdate = () => {
     if (teamAScore > 0 && teamBScore > 0) {
       onHoleUpdate(currentHole, teamAScore, teamBScore);
+
+      // Auto-advance to next hole if not on last hole and match not complete
+      if (currentHole < round.holes && !isMatchComplete) {
+        setTimeout(() => {
+          onHoleChange(currentHole + 1);
+        }, 300); // Small delay for visual feedback
+      }
     }
   };
 
@@ -471,6 +472,97 @@ const MatchScoringCard = ({
           {teamAInfo.name} vs {teamBInfo.name}
         </div>
 
+        {/* Match Status Display */}
+        {match.statusText && (
+          <div className="mb-3 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-200">
+            <div className="flex items-center justify-center gap-2">
+              <svg
+                className="w-5 h-5 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+              <span className="font-bold text-blue-900 text-lg">
+                {match.statusText}
+              </span>
+            </div>
+            {match.statusCode === "dormie" && (
+              <div className="text-center text-xs text-blue-700 mt-1">
+                Match can be decided this hole
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Hole Navigation */}
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <button
+            onClick={() => currentHole > 1 && onHoleChange(currentHole - 1)}
+            disabled={currentHole === 1}
+            className={`flex items-center gap-1 px-3 py-2 rounded-lg font-medium transition-all ${
+              currentHole === 1
+                ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                : "bg-slate-200 text-slate-700 hover:bg-slate-300 active:scale-95"
+            }`}
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            <span className="text-sm">Previous</span>
+          </button>
+
+          <div className="flex-1 text-center">
+            <div className="text-2xl font-bold text-emerald-600">
+              Hole {currentHole}
+            </div>
+            <div className="text-xs text-slate-500">of {round.holes}</div>
+          </div>
+
+          <button
+            onClick={() =>
+              currentHole < round.holes && onHoleChange(currentHole + 1)
+            }
+            disabled={currentHole === round.holes}
+            className={`flex items-center gap-1 px-3 py-2 rounded-lg font-medium transition-all ${
+              currentHole === round.holes
+                ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                : "bg-slate-200 text-slate-700 hover:bg-slate-300 active:scale-95"
+            }`}
+          >
+            <span className="text-sm">Next</span>
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div>
+
         {/* Display match result if completed */}
         {isMatchComplete && match.resultSummary && (
           <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
@@ -531,12 +623,7 @@ const MatchScoringCard = ({
           {Array.from({ length: 8 }, (_, i) => i + 1).map((score) => (
             <button
               key={score}
-              onClick={() => {
-                setTeamAScore(score);
-                if (teamBScore > 0) {
-                  setTimeout(() => handleScoreUpdate(), 100);
-                }
-              }}
+              onClick={() => setTeamAScore(score)}
               disabled={round.status === "completed" || isMatchComplete}
               className={getScoreButtonClass(score, teamAScore)}
             >
