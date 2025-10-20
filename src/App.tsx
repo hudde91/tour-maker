@@ -7,8 +7,8 @@ import { CreateRoundPage } from "./pages/CreateRoundPage";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import { TourLayout } from "./components/ui/TourLayout";
 import { TourLeaderboardPage } from "./pages/TourLeaderboardPage";
-import { TourPlayersPage } from "./pages/TourPlagerPage";
-import { TourRoundsPage } from "./pages/TourRoundPage";
+import { TourPlayersPage } from "./pages/TourPlayersPage";
+import { TourRoundsPage } from "./pages/TourRoundsPage";
 import { TourSettingsPage } from "./pages/TourSettingsPage";
 import { RyderCupPairingPage } from "./pages/RyderCupPairingPage";
 function App() {

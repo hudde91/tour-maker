@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
 import { CaptainPairingInterface } from "../components/matchplay/rydercup/CaptainPairingInterface";
+import { PageHeader } from "../components/ui/PageHeader";
 
 export const RyderCupPairingPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
@@ -74,40 +75,22 @@ export const RyderCupPairingPage = () => {
     );
   }
 
+  const breadcrumbs = [
+    { label: "Home", path: "/", icon: "🏠" },
+    { label: tour.name, path: `/tour/${tourId}`, icon: "⛳" },
+    { label: "Rounds", path: `/tour/${tourId}/rounds`, icon: "📋" },
+    { label: round.name, path: `/tour/${tourId}/round/${roundId}`, icon: "🏌️" },
+    { label: "Setup Pairings", icon: "⚔️" },
+  ];
+
   return (
     <div className="min-h-screen bg-slate-50 safe-area-top pb-20">
-      <div className="golf-hero-bg">
-        <div className="p-4 md:p-6 w-full max-w-6xl mx-auto">
-          <div className="flex items-center gap-4 mb-4">
-            <button
-              onClick={() => navigate(`/tour/${tourId}/round/${roundId}`)}
-              className="nav-back"
-            >
-              <svg
-                className="w-5 h-5 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-            </button>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white">
-                Setup Pairings
-              </h1>
-              <p className="text-emerald-100 text-sm md:text-base">
-                {round.name} • {tour.name}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="Setup Pairings"
+        subtitle={`${round.name} • ${tour.name}`}
+        breadcrumbs={breadcrumbs}
+        backPath={`/tour/${tourId}/round/${roundId}`}
+      />
 
       <div className="px-4 py-6 max-w-6xl mx-auto -mt-4">
         <CaptainPairingInterface

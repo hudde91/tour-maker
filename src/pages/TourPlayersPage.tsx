@@ -5,6 +5,7 @@ import { TeamCard } from "@/components/teams/TeamCard";
 import { useTour } from "@/hooks/useTours";
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export const TourPlayersPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -55,53 +56,38 @@ export const TourPlayersPage = () => {
   const isTeamFormat = tour.format === "team" || tour.format === "ryder-cup";
   const isRyderCup = tour.format === "ryder-cup";
 
+  const breadcrumbs = [
+    { label: "Home", path: "/", icon: "🏠" },
+    { label: tour.name, path: `/tour/${tourId}`, icon: "⛳" },
+    { label: isTeamFormat ? "Teams & Players" : "Players", icon: "👥" },
+  ];
+
+  const playerCount = tour.players.length;
+  const teamCount = tour.teams?.length || 0;
+  const subtitle =
+    isTeamFormat && teamCount > 0
+      ? `${playerCount} player${
+          playerCount !== 1 ? "s" : ""
+        } • ${teamCount} team${teamCount !== 1 ? "s" : ""}`
+      : `${playerCount} player${playerCount !== 1 ? "s" : ""}`;
+
   return (
     <div className="min-h-screen bg-slate-50 safe-area-top">
-      <div className="golf-hero-bg">
-        <div className="p-4 md:p-6 w-full max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-3">
-            <Link to="/" className="nav-back">
-              <svg
-                className="w-5 h-5 text-slate-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-            </Link>
-
-            <button
-              onClick={() => setShowAddPlayer(true)}
-              className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm"
-            >
-              <span className="text-base">➕</span>
-              <span>Add Player</span>
-            </button>
-          </div>
-
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
-              {isTeamFormat ? "Teams & Players" : "Players"}
-            </h1>
-            <p className="text-emerald-100 text-sm md:text-base">
-              {tour.players.length} player{tour.players.length !== 1 ? "s" : ""}{" "}
-              {isTeamFormat &&
-                tour.teams &&
-                tour.teams.length > 0 &&
-                `• ${tour.teams.length} team${
-                  tour.teams.length !== 1 ? "s" : ""
-                }`}{" "}
-              in {tour.name}
-            </p>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title={isTeamFormat ? "Teams & Players" : "Players"}
+        subtitle={subtitle}
+        breadcrumbs={breadcrumbs}
+        backPath="/"
+        actions={
+          <button
+            onClick={() => setShowAddPlayer(true)}
+            className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm shadow-lg"
+          >
+            <span className="text-base">➕</span>
+            <span>Add Player</span>
+          </button>
+        }
+      />
 
       <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
         {isTeamFormat && (
