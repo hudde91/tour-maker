@@ -1,11 +1,13 @@
 import { RoundCard } from "@/components/rounds/RoundCard";
 import { useTour } from "@/hooks/useTours";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const TourRoundsPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
   const { data: tour, isLoading } = useTour(tourId!);
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -77,20 +79,17 @@ export const TourRoundsPage = () => {
 
       <div className="px-4 pt-6 pb-8 w-full max-w-6xl mx-auto">
         {tour.rounds.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm p-6 text-center py-12">
-            <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">🏌️</span>
-            </div>
-            <h3 className="text-xl font-bold text-slate-700 mb-3">
-              No Rounds Yet
-            </h3>
-            <p className="text-slate-500 mb-6 max-w-md mx-auto">
-              Create your first round to start playing golf in this tournament
-            </p>
-            <Link to={`/tour/${tourId}/create-round`} className="btn-primary">
-              Create First Round
-            </Link>
-          </div>
+          <EmptyState
+            icon="🏌️"
+            title="No Rounds Yet"
+            description="Create your first round to start playing golf in this tournament"
+            action={{
+              label: "Create First Round",
+              onClick: () => navigate(`/tour/${tourId}/create-round`),
+              variant: "primary",
+            }}
+            size="large"
+          />
         ) : (
           <>
             {activeRounds.length > 0 && (

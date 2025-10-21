@@ -5,6 +5,8 @@ import { useCreateRound } from "../hooks/useRounds";
 import { PlayFormat, RoundSettings, GOLF_FORMATS } from "../types";
 import { storage } from "../lib/storage";
 import { PageHeader } from "../components/ui/PageHeader";
+import { GolfTermTooltip } from "../components/ui/Tooltip";
+import { FormatExplainer } from "../components/ui/FormatExplainer";
 
 export const CreateRoundPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -304,6 +306,11 @@ export const CreateRoundPage = () => {
                   </div>
                 </div>
 
+                {/* Format Explainer */}
+                <div className="mt-4">
+                  <FormatExplainer format={formData.format} variant="inline" />
+                </div>
+
                 {/* Ryder Cup Formats - Only show for Ryder Cup tournaments */}
                 {tour.format === "ryder-cup" && (
                   <div>
@@ -408,7 +415,13 @@ export const CreateRoundPage = () => {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Slope Rating</label>
+                <label className="form-label">
+                  <GolfTermTooltip term="slope-rating">
+                    <span className="border-b border-dotted border-slate-400 cursor-help">
+                      Slope Rating
+                    </span>
+                  </GolfTermTooltip>
+                </label>
                 <input
                   type="number"
                   value={formData.slopeRating}

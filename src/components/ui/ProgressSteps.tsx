@@ -11,6 +11,7 @@ interface ProgressStepsProps {
   className?: string;
 }
 
+// TODO: This is not used, implement where needed
 export const ProgressSteps = ({
   steps,
   currentStep,

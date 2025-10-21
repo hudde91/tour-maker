@@ -6,6 +6,7 @@ import { useTour } from "@/hooks/useTours";
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const TourPlayersPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -110,23 +111,17 @@ export const TourPlayersPage = () => {
             </div>
 
             {!tour.teams || tour.teams.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-4xl">🏗️</span>
-                </div>
-                <h3 className="text-xl font-semibold text-slate-700 mb-3">
-                  No Teams Created
-                </h3>
-                <p className="text-slate-500 mb-6">
-                  Create teams to organize your tournament competition
-                </p>
-                <button
-                  onClick={() => setShowCreateTeam(true)}
-                  className="btn-primary"
-                >
-                  Create First Team
-                </button>
-              </div>
+              <EmptyState
+                icon="🏗️"
+                title="No Teams Created"
+                description="Create teams to organize your tournament competition"
+                action={{
+                  label: "Create First Team",
+                  onClick: () => setShowCreateTeam(true),
+                  variant: "primary",
+                }}
+                size="medium"
+              />
             ) : (
               <div className="space-y-6">
                 {tour.teams.map((team) => (
@@ -188,23 +183,17 @@ export const TourPlayersPage = () => {
           </div>
 
           {tour.players.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-4xl">👥</span>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-700 mb-3">
-                No Players Yet
-              </h3>
-              <p className="text-slate-500 mb-6">
-                Add players to get your tournament started
-              </p>
-              <button
-                onClick={() => setShowAddPlayer(true)}
-                className="btn-primary"
-              >
-                Add First Player
-              </button>
-            </div>
+            <EmptyState
+              icon="👥"
+              title="No Players Yet"
+              description="Add players to get your tournament started"
+              action={{
+                label: "Add First Player",
+                onClick: () => setShowAddPlayer(true),
+                variant: "primary",
+              }}
+              size="medium"
+            />
           ) : isTeamFormat ? (
             // For team formats, show simplified player list
             <div className="space-y-2">

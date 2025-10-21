@@ -1,8 +1,20 @@
 import { Link } from "react-router-dom";
 import { useTours } from "../hooks/useTours";
+import { useState, useEffect } from "react";
+import { HowItWorksModal } from "@/components/ui/Howitworksmodal";
 
 export const HomePage = () => {
   const { data: tours = [], isLoading } = useTours();
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
+
+  // Show "How It Works" for first-time users
+  useEffect(() => {
+    const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
+    if (!hasSeenWelcome && tours.length === 0 && !isLoading) {
+      setShowHowItWorks(true);
+      localStorage.setItem("hasSeenWelcome", "true");
+    }
+  }, [tours.length, isLoading]);
 
   if (isLoading) {
     return (
@@ -83,8 +95,20 @@ export const HomePage = () => {
             >
               Create Tournament
             </Link>
+            <button
+              onClick={() => setShowHowItWorks(true)}
+              className="btn-secondary text-lg mt-8 py-4 px-8 w-full sm:w-auto"
+            >
+              How It Works
+            </button>
           </div>
         </div>
+
+        {/* How It Works Modal */}
+        <HowItWorksModal
+          isOpen={showHowItWorks}
+          onClose={() => setShowHowItWorks(false)}
+        />
 
         {/* Tournaments Section */}
         <div className="section-spacing">

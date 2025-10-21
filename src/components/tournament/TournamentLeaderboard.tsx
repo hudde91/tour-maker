@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Round, Tour } from "../../types";
 import { storage } from "../../lib/storage";
+import {
+  LeaderboardFilters,
+  LeaderboardView,
+  LeaderboardSort,
+} from "./LeaderboardFilters";
 
 interface TournamentLeaderboardProps {
   tour: Tour;
@@ -10,16 +15,44 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   const [leaderboardView, setLeaderboardView] = useState<"individual" | "team">(
     "individual"
   );
+  const [view, setView] = useState<LeaderboardView>("overall");
+  const [sort, setSort] = useState<LeaderboardSort>("score-asc");
+  const [selectedRoundId, setSelectedRoundId] = useState<string>(
+    tour.rounds[0]?.id || ""
+  );
 
   const isCompleted = (r: Round) =>
     r?.status === "completed" || !!r?.completedAt;
 
+  // Determine which rounds to include based on view
+  let roundsToInclude: Round[] = [];
+  if (view === "overall") {
+    roundsToInclude = tour.rounds.filter(isCompleted);
+  } else if (view === "current-round") {
+    // Get the most recent active or completed round
+    const activeRound = tour.rounds.find((r) => r.status === "in-progress");
+    const latestCompletedRound = [...tour.rounds]
+      .filter(isCompleted)
+      .sort(
+        (a, b) =>
+          new Date(b.completedAt || 0).getTime() -
+          new Date(a.completedAt || 0).getTime()
+      )[0];
+    roundsToInclude = activeRound
+      ? [activeRound]
+      : latestCompletedRound
+      ? [latestCompletedRound]
+      : [];
+  } else if (view === "by-round") {
+    const selectedRound = tour.rounds.find((r) => r.id === selectedRoundId);
+    roundsToInclude =
+      selectedRound && isCompleted(selectedRound) ? [selectedRound] : [];
+  }
+
   const calculateTournamentLeaderboard = () => {
     const entries = tour.players.map((player) => {
-      // Get all rounds this player has scores in
-      const playerRounds = tour.rounds.filter((round) => {
-        if (!isCompleted(round)) return false;
-
+      // Get all rounds this player has scores in (from filtered rounds)
+      const playerRounds = roundsToInclude.filter((round) => {
         // Check for traditional stroke play scores
         if (round.scores[player.id] && round.scores[player.id].totalScore > 0) {
           return true;
@@ -171,6 +204,19 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       entry.position = currentPosition;
     });
 
+    // Apply custom sorting if different from default
+    if (sort === "score-desc") {
+      playersWithScores.reverse();
+    } else if (sort === "name-asc") {
+      playersWithScores.sort((a, b) =>
+        a.player.name.localeCompare(b.player.name)
+      );
+    } else if (sort === "name-desc") {
+      playersWithScores.sort((a, b) =>
+        b.player.name.localeCompare(a.player.name)
+      );
+    }
+
     return playersWithScores;
   };
 
@@ -203,71 +249,75 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
           <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto card-spacing">
             <span className="text-4xl">📊</span>
           </div>
-          <h3 className="text-xl font-semibold text-slate-700 mb-3">
-            Tournament Not Started
+          <h3 className="text-xl font-semibold text-slate-700 card-spacing">
+            No Scores Yet
           </h3>
-          <p className="text-slate-500">
-            The leaderboard will show overall standings as players complete
-            rounds
+          <p className="text-slate-500 card-spacing max-w-md mx-auto">
+            Complete rounds to see the leaderboard
           </p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="card max-w-5xl mx-auto p-4 sm:p-6">
-      {/* Tournament Leaderboard Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <span className="text-2xl">🏆</span>
-            Tournament Leaderboard
-          </h2>
-          {(() => {
-            const completedCount = tour.rounds.filter(isCompleted).length;
-            return (
-              <p className="text-slate-600 text-sm sm:text-base mt-1">
-                Overall standings across {completedCount} completed round
-                {completedCount !== 1 ? "s" : ""}
-                {hasSomeStableford && " • Stableford Scoring"}
-                {isMatchPlay && " • Match Play"}
-                {hasHandicaps && " • Net Scoring"}
-              </p>
-            );
-          })()}
-        </div>
+  const completedRoundsList = tour.rounds.filter(isCompleted);
 
-        <div className="flex items-center gap-4">
-          {/* Toggle for team tournaments */}
-          {(tour.format === "team" || tour.format === "ryder-cup") &&
-            tour.teams &&
-            tour.teams.length > 0 && (
-              <div className="bg-slate-100 rounded-lg p-1">
-                <button
-                  onClick={() => setLeaderboardView("individual")}
-                  className={`px-4 py-2 rounded text-sm font-medium transition-all ${
-                    leaderboardView === "individual"
-                      ? "bg-emerald-600 text-white"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  👤 Individual
-                </button>
-                <button
-                  onClick={() => setLeaderboardView("team")}
-                  className={`px-4 py-2 rounded text-sm font-medium transition-all ${
-                    leaderboardView === "team"
-                      ? "bg-emerald-600 text-white"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  👥 Team
-                </button>
-              </div>
-            )}
-        </div>
+  return (
+    <div className="card max-w-5xl mx-auto space-y-6">
+      <div>
+        <h2 className="section-header flex items-center gap-3 mb-2">
+          <span className="text-3xl">🏆</span>
+          Tournament Leaderboard
+        </h2>
+        <p className="text-slate-500 text-sm">
+          {view === "overall"
+            ? `Overall standings across ${
+                completedRoundsList.length
+              } completed round${completedRoundsList.length !== 1 ? "s" : ""}`
+            : view === "current-round"
+            ? "Current round standings"
+            : "Round-specific standings"}
+        </p>
       </div>
+
+      {/* Filters */}
+      <LeaderboardFilters
+        view={view}
+        onViewChange={setView}
+        sort={sort}
+        onSortChange={setSort}
+        rounds={completedRoundsList}
+        selectedRoundId={selectedRoundId}
+        onRoundSelect={setSelectedRoundId}
+        isStableford={hasSomeStableford}
+        isMatchPlay={isMatchPlay}
+      />
+
+      {/* Team/Individual Toggle */}
+      {tour.format === "team" && teamsWithScores.length > 0 && (
+        <div className="flex gap-3">
+          <button
+            onClick={() => setLeaderboardView("individual")}
+            className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
+              leaderboardView === "individual"
+                ? "bg-emerald-600 text-white shadow-md"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            }`}
+          >
+            Individual
+          </button>
+          <button
+            onClick={() => setLeaderboardView("team")}
+            className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
+              leaderboardView === "team"
+                ? "bg-emerald-600 text-white shadow-md"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            }`}
+          >
+            Team
+          </button>
+        </div>
+      )}
 
       {/* Leaderboard Content */}
       {leaderboardView === "team" &&
@@ -421,6 +471,34 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                         {entry.roundsPlayed} round
                         {entry.roundsPlayed !== 1 ? "s" : ""}
                       </span>
+
+                      {/* Show "Thru X holes" for active rounds */}
+                      {view === "current-round" &&
+                        (() => {
+                          const activeRound = roundsToInclude[0];
+                          if (
+                            activeRound &&
+                            activeRound.status === "in-progress"
+                          ) {
+                            const playerScores =
+                              activeRound.scores[entry.player.id];
+                            if (playerScores) {
+                              // Count non-zero scores to determine holes completed
+                              const holesCompleted = playerScores.scores.filter(
+                                (score) => score > 0
+                              ).length;
+                              if (holesCompleted > 0 && holesCompleted < 18) {
+                                return (
+                                  <span className="text-emerald-600 font-medium flex items-center gap-1">
+                                    <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                                    Thru {holesCompleted}
+                                  </span>
+                                );
+                              }
+                            }
+                          }
+                          return null;
+                        })()}
                     </div>
                   </div>
 
@@ -466,7 +544,21 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                             ? ` (-${entry.handicapStrokes} HC)`
                             : ""}
                         </div>
-                        <div className="text-xs text-emerald-600 font-medium mt-1">
+                        <div
+                          className={`text-xs font-medium mt-1 ${
+                            hasHandicaps && entry.netToPar !== undefined
+                              ? entry.netToPar < 0
+                                ? "text-emerald-600"
+                                : entry.netToPar > 0
+                                ? "text-red-600"
+                                : "text-slate-600"
+                              : entry.totalToPar < 0
+                              ? "text-emerald-600"
+                              : entry.totalToPar > 0
+                              ? "text-red-600"
+                              : "text-slate-600"
+                          }`}
+                        >
                           {hasHandicaps && entry.netToPar !== undefined
                             ? `${entry.netToPar > 0 ? "+" : ""}${
                                 entry.netToPar
