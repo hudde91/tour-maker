@@ -6,7 +6,8 @@ export type LeaderboardSort =
   | "score-desc"
   | "name-asc"
   | "name-desc"
-  | "points-desc";
+  | "points-desc"
+  | "holes-desc";
 
 interface LeaderboardFiltersProps {
   view: LeaderboardView;
@@ -37,7 +38,6 @@ export const LeaderboardFilters = ({
 }: LeaderboardFiltersProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // TODO: Remove name sort options
   const getSortLabel = (sortType: LeaderboardSort) => {
     switch (sortType) {
       case "score-asc":
@@ -50,29 +50,17 @@ export const LeaderboardFilters = ({
         return "↓ Name (Z-A)";
       case "points-desc":
         return "↓ Points (High to Low)";
+      case "holes-desc":
+        return "↓ Holes Won (High to Low)";
       default:
         return "Sort";
     }
   };
 
-  // TODO: Implement this function and feature so user can sort by different views
-  const getViewLabel = (viewType: LeaderboardView) => {
-    switch (viewType) {
-      case "overall":
-        return "Overall";
-      case "current-round":
-        return "Current Round";
-      case "by-round":
-        return "By Round";
-      default:
-        return "View";
-    }
-  };
-
   const defaultSortOptions: LeaderboardSort[] = isStableford
-    ? ["points-desc", "name-asc", "name-desc"]
+    ? ["points-desc", "score-asc", "name-asc", "name-desc"]
     : isMatchPlay
-    ? ["score-desc", "name-asc", "name-desc"]
+    ? ["holes-desc", "score-desc", "name-asc", "name-desc"]
     : ["score-asc", "score-desc", "name-asc", "name-desc"];
 
   return (
