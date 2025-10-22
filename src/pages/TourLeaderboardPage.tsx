@@ -72,7 +72,7 @@ export const TourLeaderboardPage = () => {
       />
 
       <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto">
-        <div className="card-elevated card-spacing">
+        <div className="card-elevated card-spacing mt-1">
           <div className="grid grid-cols-3 gap-3 md:gap-4">
             <div className="bg-slate-50 rounded-lg p-3 md:p-4 text-center">
               <div className="text-xl md:text-2xl mb-1">👥</div>
