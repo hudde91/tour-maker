@@ -274,14 +274,6 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     // Apply custom sorting if different from default
     if (sort === "score-desc") {
       playersWithScores.reverse();
-    } else if (sort === "name-asc") {
-      playersWithScores.sort((a, b) =>
-        a.player.name.localeCompare(b.player.name)
-      );
-    } else if (sort === "name-desc") {
-      playersWithScores.sort((a, b) =>
-        b.player.name.localeCompare(a.player.name)
-      );
     } else if (sort === "holes-desc" && isMatchPlay) {
       // Sort by matches won in match play (using existing function)
       playersWithScores.sort((a, b) => {

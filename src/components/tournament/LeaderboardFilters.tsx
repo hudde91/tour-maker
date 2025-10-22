@@ -4,8 +4,6 @@ export type LeaderboardView = "overall" | "current-round" | "by-round";
 export type LeaderboardSort =
   | "score-asc"
   | "score-desc"
-  | "name-asc"
-  | "name-desc"
   | "points-desc"
   | "holes-desc";
 
@@ -44,24 +42,20 @@ export const LeaderboardFilters = ({
         return "↑ Score (Low to High)";
       case "score-desc":
         return "↓ Score (High to Low)";
-      case "name-asc":
-        return "↑ Name (A-Z)";
-      case "name-desc":
-        return "↓ Name (Z-A)";
       case "points-desc":
         return "↓ Points (High to Low)";
       case "holes-desc":
-        return "↓ Holes Won (High to Low)";
+        return "↓ Matches Won (High to Low)";
       default:
         return "Sort";
     }
   };
 
   const defaultSortOptions: LeaderboardSort[] = isStableford
-    ? ["points-desc", "score-asc", "name-asc", "name-desc"]
+    ? ["points-desc", "score-asc", "score-desc"]
     : isMatchPlay
-    ? ["holes-desc", "score-desc", "name-asc", "name-desc"]
-    : ["score-asc", "score-desc", "name-asc", "name-desc"];
+    ? ["holes-desc", "score-desc", "score-asc"]
+    : ["score-asc", "score-desc"];
 
   return (
     <div className="bg-white rounded-lg border border-slate-200 p-4 space-y-3">
