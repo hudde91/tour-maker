@@ -248,32 +248,71 @@ export const CreateTourPage = () => {
 
               {/* Format-specific Information */}
               {formData.format === "ryder-cup" && (
-                <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <div className="p-1 bg-amber-100 rounded">
-                      <svg
-                        className="w-4 h-4 text-amber-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
+                <div className="mt-6 space-y-3">
+                  <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <div className="p-1 bg-emerald-100 rounded">
+                        <svg
+                          className="w-4 h-4 text-emerald-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-emerald-900 mb-1">
+                          First Time? Try the Setup Wizard!
+                        </h4>
+                        <p className="text-sm text-emerald-800 mb-3">
+                          Our guided wizard will walk you through creating your
+                          Ryder Cup tournament with pre-filled templates and
+                          helpful tips.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => navigate("/create/ryder-cup-wizard")}
+                          className="btn-primary text-sm"
+                        >
+                          Use Setup Wizard
+                        </button>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-amber-900 mb-1">
-                        Ryder Cup Format
-                      </h4>
-                      <p className="text-sm text-amber-800">
-                        This premium format includes team captains, strategic
-                        player selection, and multiple competition formats
-                        within a single tournament.
-                      </p>
+                  </div>
+
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <div className="p-1 bg-amber-100 rounded">
+                        <svg
+                          className="w-4 h-4 text-amber-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-amber-900 mb-1">
+                          Advanced Setup
+                        </h4>
+                        <p className="text-sm text-amber-800">
+                          Continue with manual setup if you prefer complete
+                          control. This format includes team captains, strategic
+                          player selection, and multiple competition formats.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>

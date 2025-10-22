@@ -12,6 +12,7 @@ import { TourRoundsPage } from "./pages/TourRoundsPage";
 import { TourSettingsPage } from "./pages/TourSettingsPage";
 import { RyderCupPairingPage } from "./pages/RyderCupPairingPage";
 import { TeamDashboard } from "./pages/TeamDashboard";
+import { RyderCupSetupWizard } from "./components/rydercup/RyderCupSetupWizard";
 function App() {
   const location = useLocation();
 
@@ -22,6 +23,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
 
           <Route path="/create" element={<CreateTourPage />} />
+          <Route path="/create/ryder-cup-wizard" element={<RyderCupSetupWizard />} />
 
           <Route path="/tour/:tourId" element={<TourLayout />}>
             <Route index element={<TourPlayersPage />} />

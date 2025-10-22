@@ -1,5 +1,7 @@
 import { Tour } from "@/types";
 import { useMemo } from "react";
+import { VisualPointTally } from "../rydercup/VisualPointTally";
+import { SessionSummaryView } from "../rydercup/SessionSummaryView";
 
 interface RyderCupTournamentLeaderboardProps {
   tour: Tour;
@@ -79,6 +81,17 @@ export const RyderCupTournamentLeaderboard = ({
     return matches;
   }, [tour.rounds]);
 
+  // Get all matches for SessionSummaryView
+  const allRawMatches = useMemo(() => {
+    const matches: any[] = [];
+    tour.rounds.forEach((round) => {
+      if (round.ryderCup?.matches) {
+        matches.push(...round.ryderCup.matches);
+      }
+    });
+    return matches;
+  }, [tour.rounds]);
+
   const championDecided = teamAPoints >= target || teamBPoints >= target;
 
   return (
@@ -94,95 +107,17 @@ export const RyderCupTournamentLeaderboard = ({
         </p>
       </div>
 
-      {/* Points Display */}
-      <div className="grid grid-cols-2 gap-4 card-spacing">
-        {/* Team A */}
-        <div
-          className={`text-center p-6 rounded-xl border-2 transition-all ${
-            championDecided && teamAPoints >= target
-              ? "border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50"
-              : ""
-          }`}
-          style={
-            !championDecided || teamAPoints < target
-              ? {
-                  borderColor: teamA.color,
-                  backgroundColor: teamA.color + "10",
-                }
-              : undefined
-          }
-        >
-          <div
-            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg"
-            style={{ backgroundColor: teamA.color }}
-          >
-            <span className="text-2xl text-white font-bold">A</span>
-          </div>
-          <h4 className="text-lg font-bold text-slate-900 mb-1">
-            {teamA.name}
-          </h4>
-          <div
-            className="text-5xl font-bold mb-2"
-            style={{ color: teamA.color }}
-          >
-            {teamAPoints}
-          </div>
-          <div className="text-sm text-slate-600">
-            {teamAPoints === 1 ? "1 point" : `${teamAPoints} points`}
-          </div>
-          {teamAPoints >= target && (
-            <div className="mt-3">
-              <span className="bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full text-sm font-bold inline-flex items-center gap-2">
-                <span className="text-lg">🏆</span>
-                CHAMPION!
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Team B */}
-        <div
-          className={`text-center p-6 rounded-xl border-2 transition-all ${
-            championDecided && teamBPoints >= target
-              ? "border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50"
-              : ""
-          }`}
-          style={
-            !championDecided || teamBPoints < target
-              ? {
-                  borderColor: teamB.color,
-                  backgroundColor: teamB.color + "10",
-                }
-              : undefined
-          }
-        >
-          <div
-            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg"
-            style={{ backgroundColor: teamB.color }}
-          >
-            <span className="text-2xl text-white font-bold">B</span>
-          </div>
-          <h4 className="text-lg font-bold text-slate-900 mb-1">
-            {teamB.name}
-          </h4>
-          <div
-            className="text-5xl font-bold mb-2"
-            style={{ color: teamB.color }}
-          >
-            {teamBPoints}
-          </div>
-          <div className="text-sm text-slate-600">
-            {teamBPoints === 1 ? "1 point" : `${teamBPoints} points`}
-          </div>
-          {teamBPoints >= target && (
-            <div className="mt-3">
-              <span className="bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full text-sm font-bold inline-flex items-center gap-2">
-                <span className="text-lg">🏆</span>
-                CHAMPION!
-              </span>
-            </div>
-          )}
-        </div>
+      {/* Visual Point Tally */}
+      <div className="card-spacing">
+        <VisualPointTally
+          teamAName={teamA.name}
+          teamBName={teamB.name}
+          teamAPoints={teamAPoints}
+          teamBPoints={teamBPoints}
+          targetPoints={target}
+          teamAColor={teamA.color}
+          teamBColor={teamB.color}
+        />
       </div>
 
       {/* Progress Bar */}
@@ -204,6 +139,23 @@ export const RyderCupTournamentLeaderboard = ({
               }}
             />
           </div>
+        </div>
+      )}
+
+      {/* Session Summary View */}
+      {allRawMatches.length > 0 && (
+        <div className="card-spacing">
+          <h4 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <span className="text-lg">📅</span>
+            Session Breakdown
+          </h4>
+          <SessionSummaryView
+            matches={allRawMatches}
+            teamAName={teamA.name}
+            teamBName={teamB.name}
+            teamAColor={teamA.color}
+            teamBColor={teamB.color}
+          />
         </div>
       )}
 

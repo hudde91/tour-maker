@@ -1,6 +1,7 @@
 import { useCreateRyderCupSession } from "../../../hooks/useMatchPlay";
 import { Tour, Round } from "../../../types";
 import { useState, useMemo } from "react";
+import { VisualPairingBoard } from "../../rydercup/VisualPairingBoard";
 
 interface CaptainPairingInterfaceProps {
   tour: Tour;
@@ -309,71 +310,19 @@ export const CaptainPairingInterface = ({
         </div>
       </div>
 
-      {/* Created Pairings */}
-      {pairings.length > 0 && (
-        <div className="card-elevated">
-          <h3 className="font-semibold text-slate-800 mb-4">
-            Created Pairings ({pairings.length})
-          </h3>
-          <div className="space-y-3">
-            {pairings.map((pairing, index) => (
-              <div
-                key={pairing.id}
-                className="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-200 rounded-lg"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-4">
-                    <span className="font-semibold text-slate-900">
-                      Match {index + 1}:
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="text-sm font-medium"
-                        style={{ color: teamA.color }}
-                      >
-                        {pairing.teamAPlayerIds
-                          .map(
-                            (id) => tour.players.find((p) => p.id === id)?.name
-                          )
-                          .join(" & ")}
-                      </span>
-                      <span className="text-slate-400">vs</span>
-                      <span
-                        className="text-sm font-medium"
-                        style={{ color: teamB.color }}
-                      >
-                        {pairing.teamBPlayerIds
-                          .map(
-                            (id) => tour.players.find((p) => p.id === id)?.name
-                          )
-                          .join(" & ")}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => removePairing(pairing.id)}
-                  className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Created Pairings - Visual Board */}
+      <div className="card-elevated">
+        <VisualPairingBoard
+          pairings={pairings}
+          allPlayers={tour.players}
+          teamAName={teamA.name}
+          teamBName={teamB.name}
+          teamAColor={teamA.color}
+          teamBColor={teamB.color}
+          format={sessionType}
+          onRemovePairing={removePairing}
+        />
+      </div>
 
       {/* Status and warnings */}
       {pairings.length > 0 && !allPlayersPaired && (
