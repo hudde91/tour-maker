@@ -172,8 +172,21 @@ export const TeamDashboard = () => {
           </div>
         </div>
 
+        {/* Ryder Cup Info - when rounds exist but no stroke play stats */}
+        {teamStats.roundsPlayed > 0 && teamStats.averageScore === 0 && (
+          <div className="card-elevated card-spacing">
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 text-center">
+              <p className="text-lg font-semibold text-blue-900 mb-2">⚔️ Ryder Cup Tournament</p>
+              <p className="text-slate-600">
+                This team has participated in {teamStats.roundsPlayed} Ryder Cup round{teamStats.roundsPlayed > 1 ? 's' : ''}.
+                Traditional stroke play statistics are not available for match play tournaments.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Performance Stats */}
-        {teamStats.roundsPlayed > 0 && (
+        {teamStats.roundsPlayed > 0 && teamStats.averageScore > 0 && (
           <div className="card-elevated card-spacing">
             <h2 className="text-xl font-bold text-slate-900 mb-4">
               Performance Statistics
@@ -314,7 +327,7 @@ export const TeamDashboard = () => {
                       Player
                     </th>
                     <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">
-                      Rounds
+                      Stroke Play
                     </th>
                     <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">
                       Avg Score
@@ -349,16 +362,16 @@ export const TeamDashboard = () => {
                           </div>
                         </td>
                         <td className="text-center py-3 px-4 text-slate-700">
-                          {stat.roundsPlayed}
+                          {stat.roundsPlayed > 0 ? stat.roundsPlayed : "-"}
                         </td>
                         <td className="text-center py-3 px-4 font-semibold text-slate-900">
-                          {stat.averageScore.toFixed(1)}
+                          {stat.roundsPlayed > 0 ? stat.averageScore.toFixed(1) : "-"}
                         </td>
                         <td className="text-center py-3 px-4 font-semibold text-emerald-700">
-                          {stat.bestScore}
+                          {stat.roundsPlayed > 0 ? stat.bestScore : "-"}
                         </td>
                         <td className="text-center py-3 px-4 font-semibold text-blue-700">
-                          {formatToPar(stat.toPar)}
+                          {stat.roundsPlayed > 0 ? formatToPar(stat.toPar) : "-"}
                         </td>
                         <td className="text-center py-3 px-4 text-slate-600">
                           {stat.player.handicap !== undefined

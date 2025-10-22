@@ -112,6 +112,21 @@ export const calculateTeamStats = (
   // Calculate team-level stats based on format
   let teamRoundScores: number[] = [];
   let teamToPar = 0;
+  let ryderCupRoundsCount = 0;
+
+  // Check for Ryder Cup rounds where team players participated
+  const ryderCupRounds = tour.rounds.filter((round) => {
+    if (round.isMatchPlay && round.ryderCup?.matches) {
+      return round.ryderCup.matches.some((match) =>
+        teamPlayers.some(player =>
+          match.teamA.playerIds.includes(player.id) ||
+          match.teamB.playerIds.includes(player.id)
+        )
+      );
+    }
+    return false;
+  });
+  ryderCupRoundsCount = ryderCupRounds.length;
 
   // Check if any rounds use team scoring formats (scramble/alternate-shot)
   const teamScoringRounds = tour.rounds.filter((round) => {
@@ -189,11 +204,12 @@ export const calculateTeamStats = (
     }, 0);
   }
 
-  const roundsPlayed = teamRoundScores.length;
+  const strokePlayRoundsCount = teamRoundScores.length;
+  const totalRoundsPlayed = strokePlayRoundsCount + ryderCupRoundsCount;
   const totalScore = teamRoundScores.reduce((sum, score) => sum + score, 0);
-  const averageScore = roundsPlayed > 0 ? totalScore / roundsPlayed : 0;
-  const bestScore = roundsPlayed > 0 ? Math.min(...teamRoundScores) : 0;
-  const worstScore = roundsPlayed > 0 ? Math.max(...teamRoundScores) : 0;
+  const averageScore = strokePlayRoundsCount > 0 ? totalScore / strokePlayRoundsCount : 0;
+  const bestScore = strokePlayRoundsCount > 0 ? Math.min(...teamRoundScores) : 0;
+  const worstScore = strokePlayRoundsCount > 0 ? Math.max(...teamRoundScores) : 0;
 
   // Get recent scores (last 3 rounds) for momentum calculation
   const recentScores = teamRoundScores.slice(-3);
@@ -229,7 +245,7 @@ export const calculateTeamStats = (
 
   return {
     team,
-    roundsPlayed,
+    roundsPlayed: totalRoundsPlayed, // Total rounds including Ryder Cup
     totalScore,
     averageScore,
     bestScore,
