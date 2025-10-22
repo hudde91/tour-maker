@@ -411,10 +411,43 @@ const PlayerDetailView = ({ playerStats, tour, team }: PlayerDetailViewProps) =>
   const { player, roundsPlayed, averageScore, bestScore, toPar, bestRound } = playerStats;
   const isCaptain = team.captainId === player.id;
 
-  // Get all rounds for this player
+  // Get all rounds for this player (including Ryder Cup rounds)
   const playerRounds = tour.rounds.filter((round: any) => {
+    // Check for Ryder Cup/match play rounds
+    if (round.isMatchPlay && round.ryderCup?.matches) {
+      return round.ryderCup.matches.some((match: any) =>
+        match.teamA.playerIds.includes(player.id) ||
+        match.teamB.playerIds.includes(player.id)
+      );
+    }
+    // Check for regular rounds
     return round.scores[player.id] !== undefined;
   }).map((round: any) => {
+    // For Ryder Cup/match play rounds, show participation info instead of score
+    if (round.isMatchPlay && round.ryderCup?.matches) {
+      const playerMatches = round.ryderCup.matches.filter((match: any) =>
+        match.teamA.playerIds.includes(player.id) ||
+        match.teamB.playerIds.includes(player.id)
+      );
+
+      const matchesPlayed = playerMatches.length;
+      const matchesWon = playerMatches.filter((match: any) => {
+        const isTeamA = match.teamA.playerIds.includes(player.id);
+        return (isTeamA && match.winner === 'team-a') || (!isTeamA && match.winner === 'team-b');
+      }).length;
+
+      return {
+        round,
+        isMatchPlay: true,
+        matchesPlayed,
+        matchesWon,
+        score: 0,
+        toPar: 0,
+        par: round.totalPar || round.holeInfo.reduce((s: number, h: any) => s + h.par, 0),
+      };
+    }
+
+    // Regular stroke play round
     const score = round.scores[player.id];
     const totalScore = score.totalScore || 0;
     const par = round.totalPar || round.holeInfo.reduce((s: number, h: any) => s + h.par, 0);
@@ -422,6 +455,7 @@ const PlayerDetailView = ({ playerStats, tour, team }: PlayerDetailViewProps) =>
 
     return {
       round,
+      isMatchPlay: false,
       score: totalScore,
       toPar: roundToPar,
       par,
@@ -453,41 +487,55 @@ const PlayerDetailView = ({ playerStats, tour, team }: PlayerDetailViewProps) =>
       </div>
 
       {/* Player Statistics */}
-      {roundsPlayed > 0 ? (
+      {roundsPlayed > 0 || playerRounds.length > 0 ? (
         <>
-          <div className="card-elevated card-spacing">
-            <h3 className="text-xl font-bold text-slate-900 mb-4">Performance Stats</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center gap-2 text-blue-700 mb-1">
-                  <span>🏌️</span>
-                  <span className="text-sm font-medium">Rounds</span>
+          {roundsPlayed > 0 && (
+            <div className="card-elevated card-spacing">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">Performance Stats</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center gap-2 text-blue-700 mb-1">
+                    <span>🏌️</span>
+                    <span className="text-sm font-medium">Stroke Play</span>
+                  </div>
+                  <p className="text-2xl font-bold text-blue-900">{roundsPlayed}</p>
                 </div>
-                <p className="text-2xl font-bold text-blue-900">{roundsPlayed}</p>
-              </div>
-              <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-                <div className="flex items-center gap-2 text-emerald-700 mb-1">
-                  <span>📊</span>
-                  <span className="text-sm font-medium">Avg Score</span>
+                <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+                  <div className="flex items-center gap-2 text-emerald-700 mb-1">
+                    <span>📊</span>
+                    <span className="text-sm font-medium">Avg Score</span>
+                  </div>
+                  <p className="text-2xl font-bold text-emerald-900">{averageScore.toFixed(1)}</p>
                 </div>
-                <p className="text-2xl font-bold text-emerald-900">{averageScore.toFixed(1)}</p>
-              </div>
-              <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-                <div className="flex items-center gap-2 text-purple-700 mb-1">
-                  <span>🏆</span>
-                  <span className="text-sm font-medium">Best Score</span>
+                <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                  <div className="flex items-center gap-2 text-purple-700 mb-1">
+                    <span>🏆</span>
+                    <span className="text-sm font-medium">Best Score</span>
+                  </div>
+                  <p className="text-2xl font-bold text-purple-900">{bestScore}</p>
                 </div>
-                <p className="text-2xl font-bold text-purple-900">{bestScore}</p>
-              </div>
-              <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
-                <div className="flex items-center gap-2 text-amber-700 mb-1">
-                  <span>⛳</span>
-                  <span className="text-sm font-medium">To Par</span>
+                <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                  <div className="flex items-center gap-2 text-amber-700 mb-1">
+                    <span>⛳</span>
+                    <span className="text-sm font-medium">To Par</span>
+                  </div>
+                  <p className="text-2xl font-bold text-amber-900">{formatToPar(toPar)}</p>
                 </div>
-                <p className="text-2xl font-bold text-amber-900">{formatToPar(toPar)}</p>
               </div>
             </div>
-          </div>
+          )}
+
+          {roundsPlayed === 0 && playerRounds.length > 0 && (
+            <div className="card-elevated card-spacing">
+              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 text-center">
+                <p className="text-sm text-blue-700 mb-1">⚔️ Match Play Only</p>
+                <p className="text-slate-600 text-sm">
+                  This player has participated in {playerRounds.length} Ryder Cup round{playerRounds.length > 1 ? 's' : ''}.
+                  Stroke play statistics are not available for match play rounds.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Round History */}
           <div className="card-elevated card-spacing">
@@ -501,25 +549,45 @@ const PlayerDetailView = ({ playerStats, tour, team }: PlayerDetailViewProps) =>
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">{index === 0 && roundData.score === bestScore ? "🏆" : "📋"}</span>
+                        <span className="text-2xl">
+                          {roundData.isMatchPlay ? "⚔️" :
+                           (index === 0 && roundData.score === bestScore ? "🏆" : "📋")}
+                        </span>
                         <div>
                           <h4 className="font-semibold text-slate-900">{roundData.round.name}</h4>
                           <p className="text-sm text-slate-600">{roundData.round.courseName}</p>
                           <p className="text-xs text-slate-500">
-                            Par {roundData.par} • {roundData.round.holes} holes
+                            {roundData.isMatchPlay ? (
+                              <>Match Play • {roundData.round.holes} holes</>
+                            ) : (
+                              <>Par {roundData.par} • {roundData.round.holes} holes</>
+                            )}
                           </p>
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-3xl font-bold text-slate-900">{roundData.score}</p>
-                      <p className={`text-sm font-semibold ${
-                        roundData.toPar < 0 ? "text-emerald-600" :
-                        roundData.toPar > 0 ? "text-red-600" :
-                        "text-slate-600"
-                      }`}>
-                        {formatToPar(roundData.toPar)}
-                      </p>
+                      {roundData.isMatchPlay ? (
+                        <>
+                          <p className="text-2xl font-bold text-slate-900">
+                            {roundData.matchesWon}/{roundData.matchesPlayed}
+                          </p>
+                          <p className="text-sm font-semibold text-slate-600">
+                            Matches Won
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-3xl font-bold text-slate-900">{roundData.score}</p>
+                          <p className={`text-sm font-semibold ${
+                            roundData.toPar < 0 ? "text-emerald-600" :
+                            roundData.toPar > 0 ? "text-red-600" :
+                            "text-slate-600"
+                          }`}>
+                            {formatToPar(roundData.toPar)}
+                          </p>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

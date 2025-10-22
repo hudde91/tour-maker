@@ -54,10 +54,24 @@ export const calculateTeamStats = (
   // Calculate player stats
   const playerStats: PlayerStats[] = teamPlayers.map((player) => {
     const playerRounds = tour.rounds.filter((round) => {
+      // For match play/Ryder Cup rounds, check if player is in any match
+      if (round.isMatchPlay && round.ryderCup?.matches) {
+        return round.ryderCup.matches.some((match) =>
+          match.teamA.playerIds.includes(player.id) ||
+          match.teamB.playerIds.includes(player.id)
+        );
+      }
+      // For regular rounds, check scores object
       return round.scores[player.id] !== undefined;
     });
 
     const roundScores = playerRounds.map((round) => {
+      // For match play/Ryder Cup rounds, we don't have individual stroke scores
+      // We'll return 0 for now as match play is about holes won, not strokes
+      if (round.isMatchPlay) {
+        return 0;
+      }
+
       const score = round.scores[player.id];
       // PlayerScore interface has totalScore property
       if (typeof score === "object" && score.totalScore !== undefined) {
@@ -67,24 +81,27 @@ export const calculateTeamStats = (
       return typeof score === "number" ? score : 0;
     });
 
-    const totalScore = roundScores.reduce((sum, score) => sum + score, 0);
-    const bestScore = roundScores.length > 0 ? Math.min(...roundScores) : 0;
-    const bestRoundIndex = roundScores.indexOf(bestScore);
-    const bestRound =
-      bestRoundIndex >= 0 ? playerRounds[bestRoundIndex] : undefined;
+    // Only calculate scores for non-match-play rounds
+    const strokePlayRounds = playerRounds.filter(r => !r.isMatchPlay);
+    const strokePlayScores = roundScores.filter((_, index) => !playerRounds[index].isMatchPlay);
 
-    // Calculate to par
-    const playerToPar = playerRounds.reduce((sum, round, index) => {
+    const totalScore = strokePlayScores.reduce((sum, score) => sum + score, 0);
+    const bestScore = strokePlayScores.length > 0 ? Math.min(...strokePlayScores) : 0;
+    const bestRoundIndex = strokePlayScores.indexOf(bestScore);
+    const bestRound = bestRoundIndex >= 0 ? strokePlayRounds[bestRoundIndex] : undefined;
+
+    // Calculate to par (only for stroke play rounds)
+    const playerToPar = strokePlayRounds.reduce((sum, round, index) => {
       const par = round.totalPar || round.holeInfo.reduce((s, h) => s + h.par, 0);
-      return sum + (roundScores[index] - par);
+      return sum + (strokePlayScores[index] - par);
     }, 0);
 
     return {
       player,
-      roundsPlayed: playerRounds.length,
+      roundsPlayed: strokePlayRounds.length, // Only count stroke play rounds
       totalScore,
-      averageScore: roundScores.length > 0 ? totalScore / roundScores.length : 0,
-      bestScore: roundScores.length > 0 ? bestScore : 0,
+      averageScore: strokePlayScores.length > 0 ? totalScore / strokePlayScores.length : 0,
+      bestScore: strokePlayScores.length > 0 ? bestScore : 0,
       bestRound,
       toPar: playerToPar,
     };
