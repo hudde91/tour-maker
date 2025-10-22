@@ -204,7 +204,7 @@ export const calculateTeamStats = (
     averageScore,
     bestScore,
     worstScore,
-    toPar,
+    toPar: teamToPar,
     bestPerformers,
     momentum,
     recentScores,
