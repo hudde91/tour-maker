@@ -61,7 +61,12 @@ export const calculateTeamStats = (
     const roundScores = playerRounds.map((round) => {
       const scoreKey = `player_${player.id}`;
       const score = round.scores[scoreKey];
-      return typeof score === "object" ? score.total : score;
+      // PlayerScore interface has totalScore property
+      if (typeof score === "object" && score.totalScore !== undefined) {
+        return score.totalScore;
+      }
+      // Fallback for legacy format
+      return typeof score === "number" ? score : 0;
     });
 
     const totalScore = roundScores.reduce((sum, score) => sum + score, 0);
@@ -71,7 +76,7 @@ export const calculateTeamStats = (
       bestRoundIndex >= 0 ? playerRounds[bestRoundIndex] : undefined;
 
     // Calculate to par
-    const toPar = playerRounds.reduce((sum, round, index) => {
+    const playerToPar = playerRounds.reduce((sum, round, index) => {
       const par = round.totalPar || round.holeInfo.reduce((s, h) => s + h.par, 0);
       return sum + (roundScores[index] - par);
     }, 0);
@@ -83,7 +88,7 @@ export const calculateTeamStats = (
       averageScore: roundScores.length > 0 ? totalScore / roundScores.length : 0,
       bestScore: roundScores.length > 0 ? bestScore : 0,
       bestRound,
-      toPar,
+      toPar: playerToPar,
     };
   });
 
@@ -101,7 +106,10 @@ export const calculateTeamStats = (
     teamRoundScores = teamRounds.map((round) => {
       const scoreKey = `team_${teamId}`;
       const score = round.scores[scoreKey];
-      return typeof score === "object" ? score.total : score;
+      if (typeof score === "object" && score.totalScore !== undefined) {
+        return score.totalScore;
+      }
+      return typeof score === "number" ? score : 0;
     });
 
     teamToPar = teamRounds.reduce((sum, round, index) => {
@@ -129,8 +137,9 @@ export const calculateTeamStats = (
             .map((player) => {
               const scoreKey = `player_${player.id}`;
               const score = round.scores[scoreKey];
-              if (typeof score === "object" && score.holes?.[holeIndex]) {
-                return score.holes[holeIndex];
+              // PlayerScore has scores array, not holes
+              if (typeof score === "object" && score.scores?.[holeIndex] !== undefined) {
+                return score.scores[holeIndex];
               }
               return null;
             })
@@ -147,7 +156,10 @@ export const calculateTeamStats = (
         return teamPlayers.reduce((sum, player) => {
           const scoreKey = `player_${player.id}`;
           const score = round.scores[scoreKey];
-          const roundScore = typeof score === "object" ? score.total : score || 0;
+          if (typeof score === "object" && score.totalScore !== undefined) {
+            return sum + score.totalScore;
+          }
+          const roundScore = typeof score === "number" ? score : 0;
           return sum + roundScore;
         }, 0);
       }

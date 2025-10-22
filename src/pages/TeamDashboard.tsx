@@ -1,5 +1,6 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
+import { PageHeader } from "../components/ui/PageHeader";
 import {
   calculateTeamStats,
   formatToPar,
@@ -14,11 +15,13 @@ export const TeamDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="page-layout">
-        <div className="max-w-6xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-slate-200 rounded w-1/3 mb-6"></div>
-            <div className="h-64 bg-slate-200 rounded"></div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <span className="text-3xl">👥</span>
+          </div>
+          <div className="text-lg font-semibold text-slate-700">
+            Loading team...
           </div>
         </div>
       </div>
@@ -27,9 +30,22 @@ export const TeamDashboard = () => {
 
   if (!tour || !teamId) {
     return (
-      <div className="page-layout">
-        <div className="max-w-6xl mx-auto text-center">
-          <p className="text-slate-600">Team not found</p>
+      <div className="min-h-screen bg-slate-50 safe-area-top">
+        <div className="p-4 md:p-6">
+          <div className="card text-center py-12">
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-4xl">❌</span>
+            </div>
+            <h3 className="text-xl font-semibold text-slate-700 mb-3">
+              Team Not Found
+            </h3>
+            <p className="text-slate-500 mb-6">
+              The team you're looking for doesn't exist or has been removed.
+            </p>
+            <button onClick={() => navigate(-1)} className="btn-primary">
+              Go Back
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -39,15 +55,22 @@ export const TeamDashboard = () => {
 
   if (!teamStats) {
     return (
-      <div className="page-layout">
-        <div className="max-w-6xl mx-auto text-center">
-          <p className="text-slate-600">Team not found</p>
-          <button
-            onClick={() => navigate(`/tour/${tourId}/players`)}
-            className="mt-4 btn-secondary"
-          >
-            Back to Teams
-          </button>
+      <div className="min-h-screen bg-slate-50 safe-area-top">
+        <div className="p-4 md:p-6">
+          <div className="card text-center py-12">
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-4xl">❌</span>
+            </div>
+            <h3 className="text-xl font-semibold text-slate-700 mb-3">
+              Team Not Found
+            </h3>
+            <p className="text-slate-500 mb-6">
+              The team you're looking for doesn't exist or has been removed.
+            </p>
+            <button onClick={() => navigate(-1)} className="btn-primary">
+              Go Back
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -56,40 +79,23 @@ export const TeamDashboard = () => {
   const { team, momentum, bestPerformers, playerStats } = teamStats;
   const captain = tour.players.find((p) => p.id === team.captainId);
 
-  return (
-    <div className="page-layout">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate(`/tour/${tourId}/players`)}
-              className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-              title="Back to teams"
-            >
-              <span className="text-xl">←</span>
-            </button>
-            <div className="flex items-center gap-4">
-              <div
-                className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg"
-                style={{ backgroundColor: team.color }}
-              >
-                <span className="text-3xl">👥</span>
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-slate-900">{team.name}</h1>
-                <p className="text-slate-600">Team Dashboard</p>
-              </div>
-            </div>
-          </div>
-          <Link
-            to={`/tour/${tourId}/leaderboard`}
-            className="btn-secondary"
-          >
-            View Leaderboard
-          </Link>
-        </div>
+  const breadcrumbs = [
+    { label: "Home", path: "/", icon: "🏠" },
+    { label: tour.name, path: `/tour/${tourId}`, icon: "⛳" },
+    { label: "Teams", path: `/tour/${tourId}/players`, icon: "👥" },
+    { label: team.name, icon: "🏆" },
+  ];
 
+  return (
+    <div className="min-h-screen bg-slate-50 safe-area-top">
+      <PageHeader
+        title={team.name}
+        subtitle="Team Dashboard"
+        breadcrumbs={breadcrumbs}
+        onBack={() => navigate(-1)}
+      />
+
+      <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
         {/* Team Overview */}
         <div className="card-elevated card-spacing">
           <h2 className="text-xl font-bold text-slate-900 mb-4">Team Overview</h2>
