@@ -2,7 +2,8 @@ import { Tour, Team, Player, Round } from "../types";
 
 export interface PlayerStats {
   player: Player;
-  roundsPlayed: number;
+  roundsPlayed: number; // Stroke play rounds only
+  totalRoundsParticipated: number; // All rounds including match play
   totalScore: number;
   averageScore: number;
   bestScore: number;
@@ -99,6 +100,7 @@ export const calculateTeamStats = (
     return {
       player,
       roundsPlayed: strokePlayRounds.length, // Only count stroke play rounds
+      totalRoundsParticipated: playerRounds.length, // Total rounds including match play
       totalScore,
       averageScore: strokePlayScores.length > 0 ? totalScore / strokePlayScores.length : 0,
       bestScore: strokePlayScores.length > 0 ? bestScore : 0,
@@ -219,6 +221,7 @@ export const calculateTeamStats = (
   }
 
   // Sort players by average score to find best performers (top 3)
+  // Only include players with stroke play rounds for performance comparison
   const bestPerformers = [...playerStats]
     .filter((ps) => ps.roundsPlayed > 0)
     .sort((a, b) => a.averageScore - b.averageScore)
@@ -235,7 +238,8 @@ export const calculateTeamStats = (
     bestPerformers,
     momentum,
     recentScores,
-    playerStats: playerStats.filter((ps) => ps.roundsPlayed > 0),
+    // Include all players who participated in any rounds (stroke play or match play)
+    playerStats: playerStats.filter((ps) => ps.totalRoundsParticipated > 0),
   };
 };
 
