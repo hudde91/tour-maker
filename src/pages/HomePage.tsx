@@ -89,18 +89,20 @@ export const HomePage = () => {
               Set up a professional golf tournament with players, teams, and
               multiple rounds
             </p>
-            <Link
-              to="/create"
-              className="btn-primary text-lg py-4 px-8 shadow-lg w-full sm:w-auto"
-            >
-              Create Tournament
-            </Link>
-            <button
-              onClick={() => setShowHowItWorks(true)}
-              className="btn-secondary text-lg mt-8 py-4 px-8 w-full sm:w-auto"
-            >
-              How It Works
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center">
+              <Link
+                to="/create"
+                className="btn-primary text-lg py-4 px-8 shadow-lg w-full sm:w-auto"
+              >
+                Create Tournament
+              </Link>
+              <button
+                onClick={() => setShowHowItWorks(true)}
+                className="btn-secondary text-lg py-4 px-8 w-full sm:w-auto"
+              >
+                How It Works
+              </button>
+            </div>
           </div>
         </div>
 
