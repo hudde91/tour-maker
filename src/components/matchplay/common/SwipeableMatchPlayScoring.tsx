@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Tour, Round } from "../../../types";
 import { HoleNavigation } from "../../scoring/HoleNavigation";
 import { MatchPlayLeaderboard } from "./MatchPlayLeaderboard";
-import { useToast } from "../../ui/Toast";
 
 interface SwipeableMatchPlayScoringProps {
   tour: Tour;
@@ -22,19 +21,9 @@ export const SwipeableMatchPlayScoring = ({
   tour,
   round,
   onMatchHoleUpdate,
-  onFinishRound,
 }: SwipeableMatchPlayScoringProps) => {
-  // Each match now tracks its own current hole independently
   const [matchHoles, setMatchHoles] = useState<Record<string, number>>({});
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("score");
-
-  // Toast notifications
-  const { showToast, ToastComponent } = useToast();
-
-  // Track completed matches to show notification only once
-  const completedMatchesRef = useRef<Set<string>>(new Set());
 
   const matches = round.ryderCup?.matches || [];
 
@@ -107,44 +96,6 @@ export const SwipeableMatchPlayScoring = ({
 
     return scores;
   };
-
-  // Minimum swipe distance (in px)
-  const minSwipeDistance = 50;
-
-  // Check for newly completed matches and show notifications
-  // Only show if the round is NOT already completed (avoid showing on page load for completed rounds)
-  useEffect(() => {
-    // Don't show winner toasts if round is already completed
-    if (round.status === "completed") {
-      return;
-    }
-
-    matches.forEach((match: any) => {
-      const isComplete = match.status === "completed" || match.isComplete;
-      const matchId = match.id;
-
-      // If match just completed and we haven't notified yet
-      if (isComplete && !completedMatchesRef.current.has(matchId)) {
-        completedMatchesRef.current.add(matchId);
-
-        // Get team names
-        const teamAName = getTeamName(match.teamA.id);
-        const teamBName = getTeamName(match.teamB.id);
-
-        // Determine winner and show notification
-        if (match.winner === "team-a") {
-          showToast(`🏆 ${teamAName} wins the match!`, "success");
-        } else if (match.winner === "team-b") {
-          showToast(`🏆 ${teamBName} wins the match!`, "success");
-        } else if (match.winner === "halved") {
-          showToast(
-            `🤝 Match halved between ${teamAName} and ${teamBName}`,
-            "info"
-          );
-        }
-      }
-    });
-  }, [matches, showToast, tour.teams, round.status]);
 
   if (matches.length === 0) {
     return (
@@ -305,8 +256,6 @@ export const SwipeableMatchPlayScoring = ({
           </div>
         )}
       </div>
-
-      <ToastComponent />
     </div>
   );
 };
@@ -389,7 +338,7 @@ const MatchScoringCard = ({
       if (currentHole < round.holes && !isMatchComplete) {
         setTimeout(() => {
           onHoleChange(currentHole + 1);
-        }, 300); // Small delay for visual feedback
+        }, 500); // Small delay for visual feedback
       }
     }
   };

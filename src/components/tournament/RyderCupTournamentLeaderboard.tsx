@@ -178,7 +178,7 @@ export const RyderCupTournamentLeaderboard = ({
                     {round.name}
                   </h5>
                   <div className="space-y-2">
-                    {round.ryderCup!.matches.map((match, index) => {
+                    {round.ryderCup!.matches.map((match) => {
                       const getPlayerNames = (playerIds: string[]) =>
                         playerIds
                           .map(
