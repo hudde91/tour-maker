@@ -245,11 +245,13 @@ export const RyderCupTournamentLeaderboard = ({
                           : null;
 
                       // Calculate holes completed for in-progress matches
-                      const holesCompleted = !isComplete && match.holes
-                        ? match.holes.filter(
-                            (hole) => hole.teamAScore > 0 || hole.teamBScore > 0
-                          ).length
-                        : 0;
+                      const holesCompleted =
+                        !isComplete && match.holes
+                          ? match.holes.filter(
+                              (hole) =>
+                                hole.teamAScore > 0 || hole.teamBScore > 0
+                            ).length
+                          : 0;
 
                       return (
                         <div
@@ -280,7 +282,7 @@ export const RyderCupTournamentLeaderboard = ({
                                   <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
                                   In Progress
                                 </span>
-                                {holesCompleted > 0 && holesCompleted < 18 && (
+                                {holesCompleted < 18 && (
                                   <span className="text-xs text-slate-600 font-medium">
                                     Thru {holesCompleted}
                                   </span>
