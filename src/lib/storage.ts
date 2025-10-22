@@ -289,6 +289,26 @@ export const storage = {
     storage.saveTour(tour);
   },
 
+  reorderTeamPlayers: (
+    tourId: string,
+    teamId: string,
+    playerIds: string[]
+  ): void => {
+    const tour = storage.getTour(tourId);
+    if (!tour || !tour.teams) return;
+
+    const team = tour.teams.find((t) => t.id === teamId);
+    if (team) {
+      // Validate that all playerIds belong to the team
+      const validPlayerIds = playerIds.filter((pid) =>
+        team.playerIds.includes(pid)
+      );
+      team.playerIds = validPlayerIds;
+    }
+
+    storage.saveTour(tour);
+  },
+
   // Delete round
   deleteRound: (tourId: string, roundId: string): void => {
     const tour = storage.getTour(tourId);

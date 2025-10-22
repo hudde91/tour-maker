@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Team, Tour } from "../../types";
 import {
   useUpdateTeam,
   useDeleteTeam,
   useAssignPlayerToTeam,
+  useSetTeamCaptain,
+  useReorderTeamPlayers,
 } from "../../hooks/useTeams";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 
@@ -16,10 +19,13 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
   const updateTeam = useUpdateTeam(tour.id);
   const deleteTeam = useDeleteTeam(tour.id);
   const assignPlayer = useAssignPlayerToTeam(tour.id);
+  const setTeamCaptain = useSetTeamCaptain(tour.id);
+  const reorderPlayers = useReorderTeamPlayers(tour.id);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(team.name);
   const [showPlayerAssignment, setShowPlayerAssignment] = useState(false);
+  const [showCaptainSelect, setShowCaptainSelect] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
     type: "team" | "player";
@@ -30,9 +36,10 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
     type: "team",
   });
 
-  const teamPlayers = tour.players.filter(
-    (player) => player.teamId === team.id
-  );
+  // Sort team players by their order in team.playerIds
+  const teamPlayers = team.playerIds
+    .map((playerId) => tour.players.find((p) => p.id === playerId))
+    .filter((p): p is NonNullable<typeof p> => p !== undefined);
   const captain = teamPlayers.find((player) => player.id === team.captainId);
   const unassignedPlayers = tour.players.filter((player) => !player.teamId);
 
@@ -92,6 +99,47 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
       setShowPlayerAssignment(false);
     } catch (error) {
       console.error("Failed to assign player:", error);
+    }
+  };
+
+  const handleChangeCaptain = async (newCaptainId: string) => {
+    try {
+      await setTeamCaptain.mutateAsync({ teamId: team.id, captainId: newCaptainId });
+      setShowCaptainSelect(false);
+    } catch (error) {
+      console.error("Failed to change captain:", error);
+    }
+  };
+
+  const handleMovePlayerUp = async (playerId: string) => {
+    const currentIndex = team.playerIds.indexOf(playerId);
+    if (currentIndex > 0) {
+      const newPlayerIds = [...team.playerIds];
+      [newPlayerIds[currentIndex - 1], newPlayerIds[currentIndex]] = [
+        newPlayerIds[currentIndex],
+        newPlayerIds[currentIndex - 1],
+      ];
+      try {
+        await reorderPlayers.mutateAsync({ teamId: team.id, playerIds: newPlayerIds });
+      } catch (error) {
+        console.error("Failed to reorder players:", error);
+      }
+    }
+  };
+
+  const handleMovePlayerDown = async (playerId: string) => {
+    const currentIndex = team.playerIds.indexOf(playerId);
+    if (currentIndex < team.playerIds.length - 1) {
+      const newPlayerIds = [...team.playerIds];
+      [newPlayerIds[currentIndex], newPlayerIds[currentIndex + 1]] = [
+        newPlayerIds[currentIndex + 1],
+        newPlayerIds[currentIndex],
+      ];
+      try {
+        await reorderPlayers.mutateAsync({ teamId: team.id, playerIds: newPlayerIds });
+      } catch (error) {
+        console.error("Failed to reorder players:", error);
+      }
     }
   };
 
@@ -155,12 +203,19 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2 self-start sm:self-auto">
+            <Link
+              to={`/tour/${tour.id}/team/${team.id}`}
+              className="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              title="Team dashboard"
+            >
+              <span className="text-base">📊</span>
+            </Link>
             <button
               onClick={() => setIsEditing(!isEditing)}
               className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
               title="Edit team"
             >
-              <span className="text-base">Edit</span>
+              <span className="text-base">✏️</span>
             </button>
             <button
               onClick={handleDeleteTeam}
@@ -172,8 +227,54 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
           </div>
         </div>
 
+        {/* Captain Management Section */}
+        {teamPlayers.length > 0 && (
+          <div className="card-spacing border-t border-slate-200">
+            <button
+              onClick={() => setShowCaptainSelect(!showCaptainSelect)}
+              className="w-full flex items-center justify-between p-3 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-200"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-base">👑</span>
+                <span className="font-medium text-slate-900">
+                  {captain ? `Captain: ${captain.name}` : "Select Captain"}
+                </span>
+              </div>
+              <span className="text-slate-400">{showCaptainSelect ? "▲" : "▼"}</span>
+            </button>
+
+            {showCaptainSelect && (
+              <div className="mt-3 space-y-2 bg-white border border-slate-200 rounded-lg p-3 shadow-sm">
+                {teamPlayers.map((player) => (
+                  <button
+                    key={player.id}
+                    onClick={() => handleChangeCaptain(player.id)}
+                    className={`w-full text-left p-3 rounded-lg transition-colors border ${
+                      team.captainId === player.id
+                        ? "bg-amber-50 border-amber-300"
+                        : "hover:bg-slate-50 border-slate-200"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-base">👤</span>
+                        <span className="font-medium text-slate-900">
+                          {player.name}
+                        </span>
+                      </div>
+                      {team.captainId === player.id && (
+                        <span className="text-amber-500 text-base">👑</span>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="space-y-3">
-          {teamPlayers.map((player) => (
+          {teamPlayers.map((player, index) => (
             <div
               key={player.id}
               className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200"
@@ -204,6 +305,35 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
               </div>
 
               <div className="flex items-center gap-2">
+                {/* Reorder buttons */}
+                {teamPlayers.length > 1 && (
+                  <div className="flex flex-col gap-1">
+                    <button
+                      onClick={() => handleMovePlayerUp(player.id)}
+                      disabled={index === 0}
+                      className={`p-1 rounded transition-colors ${
+                        index === 0
+                          ? "text-slate-300 cursor-not-allowed"
+                          : "text-slate-500 hover:text-slate-700 hover:bg-slate-200"
+                      }`}
+                      title="Move up"
+                    >
+                      <span className="text-xs">▲</span>
+                    </button>
+                    <button
+                      onClick={() => handleMovePlayerDown(player.id)}
+                      disabled={index === teamPlayers.length - 1}
+                      className={`p-1 rounded transition-colors ${
+                        index === teamPlayers.length - 1
+                          ? "text-slate-300 cursor-not-allowed"
+                          : "text-slate-500 hover:text-slate-700 hover:bg-slate-200"
+                      }`}
+                      title="Move down"
+                    >
+                      <span className="text-xs">▼</span>
+                    </button>
+                  </div>
+                )}
                 <button
                   onClick={() =>
                     handleRemovePlayerClick(player.id, player.name)
