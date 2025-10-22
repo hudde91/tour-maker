@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export type LeaderboardView = "overall" | "current-round" | "by-round";
 export type LeaderboardSort =
   | "score-asc"
@@ -34,7 +32,6 @@ export const LeaderboardFilters = ({
   isStableford = false,
   isMatchPlay = false,
 }: LeaderboardFiltersProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const getSortLabel = (sortType: LeaderboardSort) => {
     switch (sortType) {
@@ -128,54 +125,20 @@ export const LeaderboardFilters = ({
       {/* Sort Options */}
       {showSortOptions && (
         <div>
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full flex items-center justify-between text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide"
+          <label className="text-xs font-medium text-slate-500 mb-2 block uppercase tracking-wide">
+            Sort By
+          </label>
+          <select
+            value={sort}
+            onChange={(e) => onSortChange(e.target.value as LeaderboardSort)}
+            className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
-            <span>Sort By</span>
-            <svg
-              className={`w-4 h-4 transition-transform ${
-                isExpanded ? "rotate-180" : ""
-              }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-
-          {isExpanded && (
-            <div className="space-y-2">
-              {defaultSortOptions.map((option) => (
-                <button
-                  key={option}
-                  onClick={() => {
-                    onSortChange(option);
-                    setIsExpanded(false);
-                  }}
-                  className={`w-full px-3 py-2 rounded-lg text-sm font-medium text-left transition-all ${
-                    sort === option
-                      ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                      : "bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200"
-                  }`}
-                >
-                  {getSortLabel(option)}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {!isExpanded && (
-            <div className="px-3 py-2 bg-slate-100 rounded-lg text-sm font-medium text-slate-700">
-              {getSortLabel(sort)}
-            </div>
-          )}
+            {defaultSortOptions.map((option) => (
+              <option key={option} value={option}>
+                {getSortLabel(option)}
+              </option>
+            ))}
+          </select>
         </div>
       )}
     </div>
