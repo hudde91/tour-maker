@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
 import { useTour } from "../hooks/useTours";
 import { PageHeader } from "../components/ui/PageHeader";
 import {
@@ -6,12 +7,14 @@ import {
   formatToPar,
   getMomentumIndicator,
   getMomentumColorClass,
+  PlayerStats,
 } from "../lib/teamStats";
 
 export const TeamDashboard = () => {
   const { tourId, teamId } = useParams<{ tourId: string; teamId: string }>();
   const navigate = useNavigate();
   const { data: tour, isLoading } = useTour(tourId!);
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -78,6 +81,9 @@ export const TeamDashboard = () => {
 
   const { team, momentum, bestPerformers, playerStats } = teamStats;
   const captain = tour.players.find((p) => p.id === team.captainId);
+  const selectedPlayerStats = selectedPlayerId
+    ? playerStats.find(ps => ps.player.id === selectedPlayerId)
+    : null;
 
   const breadcrumbs = [
     { label: "Home", path: "/", icon: "🏠" },
@@ -96,6 +102,42 @@ export const TeamDashboard = () => {
       />
 
       <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
+        {/* Player Selection */}
+        <div className="card-elevated card-spacing">
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            View Statistics For:
+          </label>
+          <select
+            value={selectedPlayerId || "team"}
+            onChange={(e) => setSelectedPlayerId(e.target.value === "team" ? null : e.target.value)}
+            className="input-field w-full md:w-auto min-w-[250px]"
+          >
+            <option value="team">📊 Team Overview</option>
+            <optgroup label="Team Members">
+              {team.playerIds.map((playerId) => {
+                const player = tour.players.find(p => p.id === playerId);
+                if (!player) return null;
+                const isCaptain = team.captainId === playerId;
+                return (
+                  <option key={playerId} value={playerId}>
+                    {isCaptain ? "👑 " : "👤 "}{player.name}
+                  </option>
+                );
+              })}
+            </optgroup>
+          </select>
+        </div>
+
+        {selectedPlayerStats ? (
+          // Individual Player View
+          <PlayerDetailView
+            playerStats={selectedPlayerStats}
+            tour={tour}
+            team={team}
+          />
+        ) : (
+          // Team Overview
+          <>
         {/* Team Overview */}
         <div className="card-elevated card-spacing">
           <h2 className="text-xl font-bold text-slate-900 mb-4">Team Overview</h2>
@@ -351,7 +393,151 @@ export const TeamDashboard = () => {
             </div>
           </div>
         )}
+        </>
+        )}
       </div>
     </div>
+  );
+};
+
+// Player Detail View Component
+interface PlayerDetailViewProps {
+  playerStats: PlayerStats;
+  tour: any;
+  team: any;
+}
+
+const PlayerDetailView = ({ playerStats, tour, team }: PlayerDetailViewProps) => {
+  const { player, roundsPlayed, averageScore, bestScore, toPar, bestRound } = playerStats;
+  const isCaptain = team.captainId === player.id;
+
+  // Get all rounds for this player
+  const playerRounds = tour.rounds.filter((round: any) => {
+    return round.scores[player.id] !== undefined;
+  }).map((round: any) => {
+    const score = round.scores[player.id];
+    const totalScore = score.totalScore || 0;
+    const par = round.totalPar || round.holeInfo.reduce((s: number, h: any) => s + h.par, 0);
+    const roundToPar = totalScore - par;
+
+    return {
+      round,
+      score: totalScore,
+      toPar: roundToPar,
+      par,
+    };
+  });
+
+  return (
+    <>
+      {/* Player Header */}
+      <div className="card-elevated card-spacing">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+            <span className="text-3xl">👤</span>
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-slate-900">{player.name}</h2>
+              {isCaptain && (
+                <span className="bg-amber-100 text-amber-800 text-sm px-3 py-1 rounded-full font-semibold border border-amber-200">
+                  👑 Captain
+                </span>
+              )}
+            </div>
+            {player.handicap !== undefined && (
+              <p className="text-slate-600">Handicap: {player.handicap}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Player Statistics */}
+      {roundsPlayed > 0 ? (
+        <>
+          <div className="card-elevated card-spacing">
+            <h3 className="text-xl font-bold text-slate-900 mb-4">Performance Stats</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center gap-2 text-blue-700 mb-1">
+                  <span>🏌️</span>
+                  <span className="text-sm font-medium">Rounds</span>
+                </div>
+                <p className="text-2xl font-bold text-blue-900">{roundsPlayed}</p>
+              </div>
+              <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+                <div className="flex items-center gap-2 text-emerald-700 mb-1">
+                  <span>📊</span>
+                  <span className="text-sm font-medium">Avg Score</span>
+                </div>
+                <p className="text-2xl font-bold text-emerald-900">{averageScore.toFixed(1)}</p>
+              </div>
+              <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                <div className="flex items-center gap-2 text-purple-700 mb-1">
+                  <span>🏆</span>
+                  <span className="text-sm font-medium">Best Score</span>
+                </div>
+                <p className="text-2xl font-bold text-purple-900">{bestScore}</p>
+              </div>
+              <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <div className="flex items-center gap-2 text-amber-700 mb-1">
+                  <span>⛳</span>
+                  <span className="text-sm font-medium">To Par</span>
+                </div>
+                <p className="text-2xl font-bold text-amber-900">{formatToPar(toPar)}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Round History */}
+          <div className="card-elevated card-spacing">
+            <h3 className="text-xl font-bold text-slate-900 mb-4">Round History</h3>
+            <div className="space-y-3">
+              {playerRounds.map((roundData, index) => (
+                <div
+                  key={roundData.round.id}
+                  className="p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{index === 0 && roundData.score === bestScore ? "🏆" : "📋"}</span>
+                        <div>
+                          <h4 className="font-semibold text-slate-900">{roundData.round.name}</h4>
+                          <p className="text-sm text-slate-600">{roundData.round.courseName}</p>
+                          <p className="text-xs text-slate-500">
+                            Par {roundData.par} • {roundData.round.holes} holes
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-3xl font-bold text-slate-900">{roundData.score}</p>
+                      <p className={`text-sm font-semibold ${
+                        roundData.toPar < 0 ? "text-emerald-600" :
+                        roundData.toPar > 0 ? "text-red-600" :
+                        "text-slate-600"
+                      }`}>
+                        {formatToPar(roundData.toPar)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="card-elevated card-spacing text-center py-12">
+          <span className="text-6xl mb-4 block">📊</span>
+          <h3 className="text-xl font-bold text-slate-900 mb-2">
+            No Rounds Yet
+          </h3>
+          <p className="text-slate-600">
+            {player.name} hasn't played any rounds yet.
+          </p>
+        </div>
+      )}
+    </>
   );
 };

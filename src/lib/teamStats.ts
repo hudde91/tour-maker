@@ -54,13 +54,11 @@ export const calculateTeamStats = (
   // Calculate player stats
   const playerStats: PlayerStats[] = teamPlayers.map((player) => {
     const playerRounds = tour.rounds.filter((round) => {
-      const scoreKey = `player_${player.id}`;
-      return round.scores[scoreKey] !== undefined;
+      return round.scores[player.id] !== undefined;
     });
 
     const roundScores = playerRounds.map((round) => {
-      const scoreKey = `player_${player.id}`;
-      const score = round.scores[scoreKey];
+      const score = round.scores[player.id];
       // PlayerScore interface has totalScore property
       if (typeof score === "object" && score.totalScore !== undefined) {
         return score.totalScore;
@@ -121,8 +119,7 @@ export const calculateTeamStats = (
     const commonRounds = tour.rounds.filter((round) => {
       // Check if at least one team player has a score
       return teamPlayers.some((player) => {
-        const scoreKey = `player_${player.id}`;
-        return round.scores[scoreKey] !== undefined;
+        return round.scores[player.id] !== undefined;
       });
     });
 
@@ -135,8 +132,7 @@ export const calculateTeamStats = (
         for (let holeIndex = 0; holeIndex < holes; holeIndex++) {
           const holeScores = teamPlayers
             .map((player) => {
-              const scoreKey = `player_${player.id}`;
-              const score = round.scores[scoreKey];
+              const score = round.scores[player.id];
               // PlayerScore has scores array, not holes
               if (typeof score === "object" && score.scores?.[holeIndex] !== undefined) {
                 return score.scores[holeIndex];
@@ -154,8 +150,7 @@ export const calculateTeamStats = (
       } else {
         // Sum all player scores for the round
         return teamPlayers.reduce((sum, player) => {
-          const scoreKey = `player_${player.id}`;
-          const score = round.scores[scoreKey];
+          const score = round.scores[player.id];
           if (typeof score === "object" && score.totalScore !== undefined) {
             return sum + score.totalScore;
           }
