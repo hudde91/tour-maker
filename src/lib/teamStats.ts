@@ -94,14 +94,15 @@ export const calculateTeamStats = (
   let teamRoundScores: number[] = [];
   let teamToPar = 0;
 
-  if (tour.format === "scramble" || tour.format === "alternate-shot") {
-    // Team formats use team scores
-    const teamRounds = tour.rounds.filter((round) => {
-      const scoreKey = `team_${teamId}`;
-      return round.scores[scoreKey] !== undefined;
-    });
+  // Check if any rounds use team scoring formats (scramble/alternate-shot)
+  const teamScoringRounds = tour.rounds.filter((round) => {
+    const scoreKey = `team_${teamId}`;
+    return round.scores[scoreKey] !== undefined && round.scores[scoreKey].isTeamScore;
+  });
 
-    teamRoundScores = teamRounds.map((round) => {
+  if (teamScoringRounds.length > 0) {
+    // Team formats use team scores (scramble, alternate-shot, etc.)
+    teamRoundScores = teamScoringRounds.map((round) => {
       const scoreKey = `team_${teamId}`;
       const score = round.scores[scoreKey];
       if (typeof score === "object" && score.totalScore !== undefined) {
@@ -110,12 +111,12 @@ export const calculateTeamStats = (
       return typeof score === "number" ? score : 0;
     });
 
-    teamToPar = teamRounds.reduce((sum, round, index) => {
+    teamToPar = teamScoringRounds.reduce((sum, round, index) => {
       const par = round.totalPar || round.holeInfo.reduce((s, h) => s + h.par, 0);
       return sum + (teamRoundScores[index] - par);
     }, 0);
   } else {
-    // Individual or best ball formats - sum player scores
+    // Individual-based scoring - check each round's format
     const commonRounds = tour.rounds.filter((round) => {
       // Check if at least one team player has a score
       return teamPlayers.some((player) => {
@@ -124,7 +125,7 @@ export const calculateTeamStats = (
     });
 
     teamRoundScores = commonRounds.map((round) => {
-      if (tour.format === "best-ball") {
+      if (round.format === "best-ball") {
         // Best ball: take the lowest score per hole
         const holes = round.holeInfo.length;
         let bestBallTotal = 0;
@@ -133,7 +134,7 @@ export const calculateTeamStats = (
           const holeScores = teamPlayers
             .map((player) => {
               const score = round.scores[player.id];
-              // PlayerScore has scores array, not holes
+              // PlayerScore has scores array
               if (typeof score === "object" && score.scores?.[holeIndex] !== undefined) {
                 return score.scores[holeIndex];
               }
@@ -148,7 +149,7 @@ export const calculateTeamStats = (
 
         return bestBallTotal;
       } else {
-        // Sum all player scores for the round
+        // Sum all player scores for the round (stroke play, etc.)
         return teamPlayers.reduce((sum, player) => {
           const score = round.scores[player.id];
           if (typeof score === "object" && score.totalScore !== undefined) {
@@ -162,7 +163,9 @@ export const calculateTeamStats = (
 
     teamToPar = commonRounds.reduce((sum, round, index) => {
       const par = round.totalPar || round.holeInfo.reduce((s, h) => s + h.par, 0);
-      const parForTeam = tour.format === "best-ball" ? par : par * teamPlayers.length;
+      // For best-ball, par is just the course par
+      // For individual formats, multiply par by number of players
+      const parForTeam = round.format === "best-ball" ? par : par * teamPlayers.length;
       return sum + (teamRoundScores[index] - parForTeam);
     }, 0);
   }
