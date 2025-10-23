@@ -5,7 +5,17 @@ export interface ScoreInfo {
   badgeColor: string;
 }
 
-export const getScoreInfo = (score: number, par: number): ScoreInfo => {
+export const getScoreInfo = (score: number | null, par: number): ScoreInfo => {
+  // Handle conceded holes
+  if (score === null) {
+    return {
+      bg: "bg-slate-100 border-slate-300",
+      text: "text-slate-600",
+      name: "Conceded",
+      badgeColor: "bg-slate-400 text-white",
+    };
+  }
+
   if (score === 0 || !score) {
     return {
       bg: "bg-slate-100 border-slate-200",
