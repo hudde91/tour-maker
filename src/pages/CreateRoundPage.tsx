@@ -69,6 +69,20 @@ export const CreateRoundPage = () => {
     setValidationErrors([]);
   };
 
+  const handleClosestToPinChange = (holeNumber: number, checked: boolean) => {
+    const updatedHoles = formData.holeInfo.map((hole) =>
+      hole.number === holeNumber ? { ...hole, closestToPin: checked } : hole
+    );
+    setFormData({ ...formData, holeInfo: updatedHoles });
+  };
+
+  const handleLongestDriveChange = (holeNumber: number, checked: boolean) => {
+    const updatedHoles = formData.holeInfo.map((hole) =>
+      hole.number === holeNumber ? { ...hole, longestDrive: checked } : hole
+    );
+    setFormData({ ...formData, holeInfo: updatedHoles });
+  };
+
   const validateHandicaps = () => {
     const errors: string[] = [];
     const handicaps = formData.holeInfo
@@ -536,6 +550,12 @@ export const CreateRoundPage = () => {
                         <th className="text-left py-2 px-3 font-medium text-slate-700">
                           HCP
                         </th>
+                        <th className="text-center py-2 px-3 font-medium text-slate-700">
+                          Closest Pin
+                        </th>
+                        <th className="text-center py-2 px-3 font-medium text-slate-700">
+                          Longest Drive
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -599,6 +619,32 @@ export const CreateRoundPage = () => {
                               min="1"
                               max="18"
                               placeholder={hole.number.toString()}
+                            />
+                          </td>
+                          <td className="py-2 px-3 text-center">
+                            <input
+                              type="checkbox"
+                              checked={hole.closestToPin || false}
+                              onChange={(e) =>
+                                handleClosestToPinChange(
+                                  hole.number,
+                                  e.target.checked
+                                )
+                              }
+                              className="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+                            />
+                          </td>
+                          <td className="py-2 px-3 text-center">
+                            <input
+                              type="checkbox"
+                              checked={hole.longestDrive || false}
+                              onChange={(e) =>
+                                handleLongestDriveChange(
+                                  hole.number,
+                                  e.target.checked
+                                )
+                              }
+                              className="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
                             />
                           </td>
                         </tr>

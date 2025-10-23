@@ -168,3 +168,33 @@ export const updateTeamScore = (
 
   saveTour(tour);
 };
+
+/**
+ * Update competition winner for a hole
+ */
+export const updateCompetitionWinner = (
+  tourId: string,
+  roundId: string,
+  holeNumber: number,
+  competitionType: 'closestToPin' | 'longestDrive',
+  winnerId: string | null
+): void => {
+  const tour = getTour(tourId);
+  if (!tour) return;
+
+  const round = tour.rounds.find((r) => r.id === roundId);
+  if (!round) return;
+
+  // Initialize competitionWinners if it doesn't exist
+  if (!round.competitionWinners) {
+    round.competitionWinners = {
+      closestToPin: {},
+      longestDrive: {},
+    };
+  }
+
+  // Update the winner for this hole and competition type
+  round.competitionWinners[competitionType][holeNumber] = winnerId;
+
+  saveTour(tour);
+};

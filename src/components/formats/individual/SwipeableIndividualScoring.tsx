@@ -5,6 +5,8 @@ import { storage } from "@/lib/storage";
 import { formatUtils } from "@/types/formats";
 import { Tour, Round, Player, HoleInfo, PlayerScore } from "@/types";
 import { useState, useEffect } from "react";
+import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
+import { useParams } from "react-router-dom";
 
 interface SwipeableIndividualScoringProps {
   tour: Tour;
@@ -25,6 +27,9 @@ export const SwipeableIndividualScoring = ({
   onPlayerScoreChange,
   onFinishRound,
 }: SwipeableIndividualScoringProps) => {
+  const { tourId } = useParams<{ tourId: string }>();
+  const updateCompetitionWinner = useUpdateCompetitionWinner(tourId!, round.id);
+
   const [currentHole, setCurrentHole] = useState(1);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -306,6 +311,14 @@ export const SwipeableIndividualScoring = ({
               }
               strokesGiven={round.settings.strokesGiven}
               round={round}
+              tour={tour}
+              onCompetitionWinnerChange={(holeNumber, competitionType, winnerId) => {
+                updateCompetitionWinner.mutate({
+                  holeNumber,
+                  competitionType,
+                  winnerId,
+                });
+              }}
             />
           </div>
         )}
@@ -379,6 +392,8 @@ interface PlayerScoreCardProps {
   onScoreChange: (score: number | null) => void;
   strokesGiven: boolean;
   round: Round;
+  tour: Tour;
+  onCompetitionWinnerChange?: (holeNumber: number, competitionType: 'closestToPin' | 'longestDrive', winnerId: string | null) => void;
 }
 
 const PlayerScoreCard = ({
@@ -389,6 +404,8 @@ const PlayerScoreCard = ({
   onScoreChange,
   strokesGiven,
   round,
+  tour,
+  onCompetitionWinnerChange,
 }: PlayerScoreCardProps) => {
   const currentScore = playerScore?.scores[currentHole - 1];
   const [localScore, setLocalScore] = useState<number | null>(currentScore ?? 0);
@@ -486,6 +503,26 @@ const PlayerScoreCard = ({
                 <span>•</span>
                 <span>{holeInfo.yardage} yards</span>
               </div>
+              {(holeInfo.closestToPin || holeInfo.longestDrive) && (
+                <div className="flex items-center gap-2 mt-2">
+                  {holeInfo.closestToPin && (
+                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
+                      </svg>
+                      Closest to Pin
+                    </span>
+                  )}
+                  {holeInfo.longestDrive && (
+                    <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd"/>
+                      </svg>
+                      Longest Drive
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -606,6 +643,113 @@ const PlayerScoreCard = ({
           )}
         </button>
       </div>
+
+      {/* Competition Winner Selection */}
+      {(holeInfo.closestToPin || holeInfo.longestDrive) && onCompetitionWinnerChange && (
+        <div className="space-y-3">
+          {holeInfo.closestToPin && (
+            <div className="card border-2 border-blue-200 bg-blue-50">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
+                </svg>
+                <h5 className="text-sm font-semibold text-blue-900">Closest to Pin Winner</h5>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {tour.players.map((p) => {
+                  const isWinner = round.competitionWinners?.closestToPin?.[currentHole] === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => onCompetitionWinnerChange(currentHole, 'closestToPin', isWinner ? null : p.id)}
+                      disabled={round.status === "completed"}
+                      className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
+                        round.status === "completed"
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      } ${
+                        isWinner
+                          ? "bg-blue-600 text-white border-blue-700 shadow-md"
+                          : "bg-white text-slate-700 border-slate-300 hover:border-blue-400"
+                      }`}
+                    >
+                      {p.name}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => onCompetitionWinnerChange(currentHole, 'closestToPin', null)}
+                  disabled={round.status === "completed"}
+                  className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
+                    round.status === "completed"
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  } ${
+                    !round.competitionWinners?.closestToPin?.[currentHole]
+                      ? "bg-slate-100 text-slate-700 border-slate-400"
+                      : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
+                  }`}
+                >
+                  None
+                </button>
+              </div>
+            </div>
+          )}
+
+          {holeInfo.longestDrive && (
+            <div className="card border-2 border-amber-200 bg-amber-50">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd"/>
+                </svg>
+                <h5 className="text-sm font-semibold text-amber-900">Longest Drive Winner</h5>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {tour.players.map((p) => {
+                  const isWinner = round.competitionWinners?.longestDrive?.[currentHole] === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => onCompetitionWinnerChange(currentHole, 'longestDrive', isWinner ? null : p.id)}
+                      disabled={round.status === "completed"}
+                      className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
+                        round.status === "completed"
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      } ${
+                        isWinner
+                          ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                          : "bg-white text-slate-700 border-slate-300 hover:border-amber-400"
+                      }`}
+                    >
+                      {p.name}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => onCompetitionWinnerChange(currentHole, 'longestDrive', null)}
+                  disabled={round.status === "completed"}
+                  className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
+                    round.status === "completed"
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  } ${
+                    !round.competitionWinners?.longestDrive?.[currentHole]
+                      ? "bg-slate-100 text-slate-700 border-slate-400"
+                      : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
+                  }`}
+                >
+                  None
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="card bg-slate-50">
         <h5 className="text-sm font-semibold text-slate-800 mb-3">

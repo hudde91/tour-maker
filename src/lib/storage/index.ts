@@ -40,6 +40,7 @@ export {
   isTeamScoringFormat,
   getTeamScore,
   updateTeamScore,
+  updateCompetitionWinner,
 } from "./rounds";
 
 // Players

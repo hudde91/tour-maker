@@ -68,3 +68,25 @@ export const useCompleteRound = (tourId: string) => {
     },
   });
 };
+
+export const useUpdateCompetitionWinner = (tourId: string, roundId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      holeNumber,
+      competitionType,
+      winnerId,
+    }: {
+      holeNumber: number;
+      competitionType: 'closestToPin' | 'longestDrive';
+      winnerId: string | null;
+    }) => {
+      storage.updateCompetitionWinner(tourId, roundId, holeNumber, competitionType, winnerId);
+      return { holeNumber, competitionType, winnerId };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+    },
+  });
+};

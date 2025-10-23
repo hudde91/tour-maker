@@ -9,6 +9,8 @@ export interface HoleInfo {
   par: number;
   yardage?: number;
   handicap?: number;
+  closestToPin?: boolean;
+  longestDrive?: boolean;
 }
 
 export interface RoundSettings {
@@ -54,6 +56,12 @@ export interface Round {
   status: "created" | "in-progress" | "completed";
   ryderCup?: RyderCupTournament;
   isMatchPlay?: boolean; // flag to indicate match play vs stroke play
+
+  // Competition winners: hole number -> player ID (or null for no winner)
+  competitionWinners?: {
+    closestToPin: Record<number, string | null>;
+    longestDrive: Record<number, string | null>;
+  };
 }
 
 export interface Player {
