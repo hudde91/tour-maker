@@ -2,6 +2,7 @@ import { HoleNavigation } from "@/components/scoring/HoleNavigation";
 import { LiveLeaderboard } from "@/components/scoring/LiveLeaderboard";
 import { getScoreInfo } from "@/lib/scoreUtils";
 import { storage } from "@/lib/storage";
+import { formatUtils } from "@/types/formats";
 import { Tour, Round, Player, HoleInfo, PlayerScore } from "@/types";
 import { useState, useEffect } from "react";
 
@@ -405,7 +406,8 @@ const PlayerScoreCard = ({
       : 0;
 
   const effectivePar = par;
-  const scoreInfo = getScoreInfo(localScore, effectivePar);
+  const isMatchPlay = formatUtils.isMatchPlay(round.format);
+  const scoreInfo = getScoreInfo(localScore, effectivePar, isMatchPlay);
 
   const handleScoreSelect = (score: number | null) => {
     setLocalScore(score);
@@ -419,7 +421,7 @@ const PlayerScoreCard = ({
     const maxScore = Math.max(10, effectivePar + 5); // At least up to effective par + 5
 
     for (let score = minScore; score <= maxScore; score++) {
-      const info = getScoreInfo(score, effectivePar);
+      const info = getScoreInfo(score, effectivePar, isMatchPlay);
       options.push({
         score,
         name: info.name,

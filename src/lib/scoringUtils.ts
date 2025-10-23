@@ -17,3 +17,13 @@ export function formatHoleScore(n: number | null | undefined): string {
   }
   return typeof n === "number" && Number.isFinite(n) ? String(n) : "—";
 }
+
+/**
+ * Get the actual stroke count for a conceded hole based on format
+ * @param par - The par for the hole
+ * @param isMatchPlay - Whether this is a match play format
+ * @returns The number of strokes to count (0 for match play, 2x par for stroke play)
+ */
+export function getConcededHoleStrokes(par: number, isMatchPlay: boolean): number {
+  return isMatchPlay ? 0 : par * 2;
+}

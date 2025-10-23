@@ -5,13 +5,15 @@ export interface ScoreInfo {
   badgeColor: string;
 }
 
-export const getScoreInfo = (score: number | null, par: number): ScoreInfo => {
+export const getScoreInfo = (score: number | null, par: number, isMatchPlay?: boolean): ScoreInfo => {
   // Handle conceded holes
   if (score === null) {
+    const concededScore = isMatchPlay ? 0 : par * 2;
+    const countingText = isMatchPlay ? "0 strokes" : `${concededScore} strokes (2×Par)`;
     return {
       bg: "bg-slate-100 border-slate-300",
       text: "text-slate-600",
-      name: "Conceded",
+      name: `Conceded (counts as ${countingText})`,
       badgeColor: "bg-slate-400 text-white",
     };
   }
