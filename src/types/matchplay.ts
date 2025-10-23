@@ -32,7 +32,7 @@ export interface MatchPlayHole {
   teamAScore: number;
   teamBScore: number;
   result: HoleResult; // who won this hole
-  matchStatus: string; // "1-up", "2-down", "All Square", "Dormie", etc.
+  matchStatus?: string; // "1-up", "2-down", "All Square", "Dormie", etc. (optional for unplayed holes)
 }
 
 export interface MatchPlayRound {

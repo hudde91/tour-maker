@@ -16,6 +16,7 @@ export interface RoundSettings {
   matchPlayFormat?: "singles" | "teams";
   skinsValue?: number;
   teamScoring?: "best-ball" | "scramble" | "alternate-shot";
+  stablefordScoring?: boolean;
 
   // Ryder Cup settings
   ryderCupSession?:
