@@ -31,6 +31,11 @@ export interface LeaderboardEntry {
   handicapStrokes?: number; // total handicap strokes applied
   roundsPlayed: number;
   position: number;
+  team?: Team; // player's team (if applicable)
+  isCaptain?: boolean; // whether player is team captain
+  positionChange?: number; // position change from previous round (positive = moved up)
+  currentRoundScore?: number; // score from most recent round
+  currentRoundToPar?: number; // to par from most recent round
 }
 
 export interface TeamLeaderboardEntry {

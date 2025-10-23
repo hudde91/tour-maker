@@ -1,5 +1,6 @@
 import { Tour, Round, TeamLeaderboardEntry } from "../../types";
 import { safeMin } from "../scoringUtils";
+import { isRoundCompleted } from "../roundUtils";
 import { getTotalPar } from "./rounds";
 import { getPlayerScoreFromRyderCup, hasRyderCupScores } from "./matchplay";
 import { calculateStrokesForHole } from "./players";
@@ -186,10 +187,7 @@ export const calculateTournamentTeamLeaderboard = (tour: Tour): TeamLeaderboardE
     let hasHandicapApplied = false;
 
     // Process each round with format awareness
-    const isCompleted = (r: Round) =>
-      r?.status === "completed" || !!r?.completedAt;
-
-    (tour.rounds || []).filter(isCompleted).forEach((round) => {
+    (tour.rounds || []).filter(isRoundCompleted).forEach((round) => {
       let roundTeamScore = 0;
       let roundTeamToPar = 0;
       let roundNetScore = 0;
@@ -424,12 +422,9 @@ export const calculateStablefordForPlayer = (round: Round, playerId: string): nu
  * Sum Stableford across all rounds in a tour for a player
  */
 export const calculateTournamentStableford = (tour: Tour, playerId: string): number => {
-  const isCompleted = (r: Round) =>
-    r?.status === "completed" || !!r?.completedAt;
-
   let total = 0;
   for (const r of tour.rounds) {
-    if (!isCompleted(r)) continue;
+    if (!isRoundCompleted(r)) continue;
     total += calculateStablefordForPlayer(r, playerId);
   }
   return total;

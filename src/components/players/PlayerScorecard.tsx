@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Tour, Player, Round } from "../../types/core";
 import { storage } from "../../lib/storage";
+import { isRoundCompleted } from "../../lib/roundUtils";
 import PlayerScorecardHeader from "./PlayerScorecardHeader";
 import PlayerScoreGrid9 from "./PlayerScoreGrid9";
 
@@ -11,9 +12,6 @@ type Props = {
   onToggle?: () => void;
   className?: string;
 };
-
-const isCompletedRound = (r: Round) =>
-  r?.status === "completed" || !!r?.completedAt;
 
 export const PlayerScorecard = ({
   tour,
@@ -127,7 +125,7 @@ export const PlayerScorecard = ({
                     <div className="text-sm font-semibold text-slate-900">
                       {round.name || "Round"}
                     </div>
-                    {!isCompletedRound(round) ? (
+                    {!isRoundCompleted(round) ? (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
                         In progress
                       </span>

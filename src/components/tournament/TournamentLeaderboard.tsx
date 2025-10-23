@@ -1,30 +1,21 @@
 import { useState } from "react";
-import { Round, Tour } from "../../types";
+import { Round, Tour, LeaderboardEntry } from "../../types";
 import { storage } from "../../lib/storage";
 import {
   LeaderboardFilters,
   LeaderboardView,
   LeaderboardSort,
 } from "./LeaderboardFilters";
+import {
+  isRoundCompleted,
+  isStablefordScoring,
+  hasHandicapsEnabled,
+  isMatchPlayRound,
+  getCompletedRounds,
+} from "../../lib/roundUtils";
 
 interface TournamentLeaderboardProps {
   tour: Tour;
-}
-
-interface LeaderboardEntry {
-  player: any;
-  totalScore: number;
-  netScore?: number;
-  totalToPar: number;
-  netToPar?: number;
-  handicapStrokes?: number;
-  roundsPlayed: number;
-  position: number;
-  team?: any;
-  isCaptain?: boolean;
-  positionChange?: number; // Positive = moved up, Negative = moved down
-  currentRoundScore?: number; // Score from most recent round
-  currentRoundToPar?: number; // To par from most recent round
 }
 
 export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
@@ -37,15 +28,12 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     tour.rounds[0]?.id || ""
   );
 
-  const isCompleted = (r: Round) =>
-    r?.status === "completed" || !!r?.completedAt;
-
   // Determine which rounds to include based on view
   let roundsToInclude: Round[] = [];
   let previousRoundsToInclude: Round[] = []; // For position change calculation
 
   if (view === "overall") {
-    roundsToInclude = tour.rounds.filter(isCompleted);
+    roundsToInclude = getCompletedRounds(tour.rounds);
     // For position change, compare to all rounds except the most recent
     if (roundsToInclude.length > 1) {
       previousRoundsToInclude = roundsToInclude.slice(0, -1);
@@ -54,7 +42,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     // Get the most recent active or completed round
     const activeRound = tour.rounds.find((r) => r.status === "in-progress");
     const latestCompletedRound = [...tour.rounds]
-      .filter(isCompleted)
+      .filter(isRoundCompleted)
       .sort(
         (a, b) =>
           new Date(b.completedAt || 0).getTime() -
@@ -66,7 +54,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       ? [latestCompletedRound]
       : [];
     // For position change in current round, compare to overall standings before this round
-    const allCompleted = tour.rounds.filter(isCompleted);
+    const allCompleted = getCompletedRounds(tour.rounds);
     if (roundsToInclude.length > 0 && allCompleted.length > 0) {
       const currentRoundId = roundsToInclude[0].id;
       previousRoundsToInclude = allCompleted.filter(r => r.id !== currentRoundId);
@@ -74,14 +62,14 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   } else if (view === "by-round") {
     const selectedRound = tour.rounds.find((r) => r.id === selectedRoundId);
     roundsToInclude =
-      selectedRound && isCompleted(selectedRound) ? [selectedRound] : [];
+      selectedRound && isRoundCompleted(selectedRound) ? [selectedRound] : [];
     // For position change in specific round, compare to all previous rounds
     if (selectedRound) {
       const selectedRoundIndex = tour.rounds.findIndex(r => r.id === selectedRoundId);
       if (selectedRoundIndex > 0) {
         previousRoundsToInclude = tour.rounds
           .slice(0, selectedRoundIndex)
-          .filter(isCompleted);
+          .filter(isRoundCompleted);
       }
     }
   }
@@ -173,14 +161,11 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     const playersWithScores = entries.filter((entry) => entry.totalScore > 0);
 
     // ===== FORMAT-SPECIFIC SORTING =====
-    const completedRounds = tour.rounds.filter(isCompleted);
+    const completedRounds = getCompletedRounds(tour.rounds);
     const isRyderCup = tour.format === "ryder-cup";
-    const hasSomeStableford = completedRounds.some(
-      (r) =>
-        r.format === "stroke-play" && (r.settings as any)?.stablefordScoring
-    );
-    const isMatchPlay = completedRounds.some((r) => r.isMatchPlay);
-    const hasHandicaps = completedRounds.some((r) => r.settings.strokesGiven);
+    const hasSomeStableford = completedRounds.some(isStablefordScoring);
+    const isMatchPlay = completedRounds.some(isMatchPlayRound);
+    const hasHandicaps = completedRounds.some(hasHandicapsEnabled);
 
     if (isRyderCup) {
       // Ryder Cup: Individual leaderboard is less relevant
@@ -300,13 +285,11 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   );
 
   // Determine format characteristics for display
-  const completedRounds = tour.rounds.filter(isCompleted);
+  const completedRounds = getCompletedRounds(tour.rounds);
   const isRyderCup = tour.format === "ryder-cup";
-  const hasSomeStableford = completedRounds.some(
-    (r) => r.format === "stroke-play" && (r.settings as any)?.stablefordScoring
-  );
-  const isMatchPlay = completedRounds.some((r) => r.isMatchPlay && !isRyderCup);
-  const hasHandicaps = completedRounds.some((r) => r.settings.strokesGiven);
+  const hasSomeStableford = completedRounds.some(isStablefordScoring);
+  const isMatchPlay = completedRounds.some((r) => isMatchPlayRound(r) && !isRyderCup);
+  const hasHandicaps = completedRounds.some(hasHandicapsEnabled);
 
   // If no scores at all, show empty state
   if (playersWithScores.length === 0) {
@@ -331,7 +314,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     );
   }
 
-  const completedRoundsList = tour.rounds.filter(isCompleted);
+  const completedRoundsList = getCompletedRounds(tour.rounds);
 
   return (
     <div className="card max-w-5xl mx-auto space-y-6">
