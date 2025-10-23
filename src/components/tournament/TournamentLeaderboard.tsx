@@ -712,27 +712,30 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
           holeNumber: number;
           playerId: string;
           roundName: string;
+          distance?: number;
         }[] = [];
 
         roundsToInclude.forEach((round) => {
           if (round.competitionWinners) {
-            Object.entries(round.competitionWinners.closestToPin).forEach(([holeNum, playerId]) => {
-              if (playerId) {
+            Object.entries(round.competitionWinners.closestToPin).forEach(([holeNum, winner]) => {
+              if (winner?.playerId) {
                 competitionWinners.push({
                   type: 'closestToPin',
                   holeNumber: parseInt(holeNum),
-                  playerId,
+                  playerId: winner.playerId,
                   roundName: round.name,
+                  distance: winner.distance,
                 });
               }
             });
-            Object.entries(round.competitionWinners.longestDrive).forEach(([holeNum, playerId]) => {
-              if (playerId) {
+            Object.entries(round.competitionWinners.longestDrive).forEach(([holeNum, winner]) => {
+              if (winner?.playerId) {
                 competitionWinners.push({
                   type: 'longestDrive',
                   holeNumber: parseInt(holeNum),
-                  playerId,
+                  playerId: winner.playerId,
                   roundName: round.name,
+                  distance: winner.distance,
                 });
               }
             });
@@ -769,14 +772,15 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                       const player = tour.players.find(p => p.id === winner.playerId);
                       return (
                         <div key={idx} className="bg-white rounded-lg p-3 flex items-center justify-between">
-                          <div>
+                          <div className="flex-1">
                             <div className="font-medium text-slate-900">{player?.name || 'Unknown'}</div>
                             <div className="text-xs text-slate-600">
                               Hole {winner.holeNumber}
                               {roundsToInclude.length > 1 && ` • ${winner.roundName}`}
+                              {winner.distance && ` • ${winner.distance} ft`}
                             </div>
                           </div>
-                          <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-6 h-6 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
                           </svg>
                         </div>
@@ -800,14 +804,15 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                       const player = tour.players.find(p => p.id === winner.playerId);
                       return (
                         <div key={idx} className="bg-white rounded-lg p-3 flex items-center justify-between">
-                          <div>
+                          <div className="flex-1">
                             <div className="font-medium text-slate-900">{player?.name || 'Unknown'}</div>
                             <div className="text-xs text-slate-600">
                               Hole {winner.holeNumber}
                               {roundsToInclude.length > 1 && ` • ${winner.roundName}`}
+                              {winner.distance && ` • ${winner.distance} yds`}
                             </div>
                           </div>
-                          <svg className="w-6 h-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-6 h-6 text-amber-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
                           </svg>
                         </div>

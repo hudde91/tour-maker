@@ -112,24 +112,27 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
           type: 'closestToPin' | 'longestDrive';
           holeNumber: number;
           playerId: string;
+          distance?: number;
         }[] = [];
 
         if (round.competitionWinners) {
-          Object.entries(round.competitionWinners.closestToPin).forEach(([holeNum, playerId]) => {
-            if (playerId) {
+          Object.entries(round.competitionWinners.closestToPin).forEach(([holeNum, winner]) => {
+            if (winner?.playerId) {
               competitionWinners.push({
                 type: 'closestToPin',
                 holeNumber: parseInt(holeNum),
-                playerId,
+                playerId: winner.playerId,
+                distance: winner.distance,
               });
             }
           });
-          Object.entries(round.competitionWinners.longestDrive).forEach(([holeNum, playerId]) => {
-            if (playerId) {
+          Object.entries(round.competitionWinners.longestDrive).forEach(([holeNum, winner]) => {
+            if (winner?.playerId) {
               competitionWinners.push({
                 type: 'longestDrive',
                 holeNumber: parseInt(holeNum),
-                playerId,
+                playerId: winner.playerId,
+                distance: winner.distance,
               });
             }
           });
@@ -165,11 +168,14 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
                       const player = tour.players.find(p => p.id === winner.playerId);
                       return (
                         <div key={idx} className="bg-white rounded-lg p-2 flex items-center justify-between">
-                          <div>
+                          <div className="flex-1">
                             <div className="font-medium text-slate-900 text-sm">{player?.name || 'Unknown'}</div>
-                            <div className="text-xs text-slate-600">Hole {winner.holeNumber}</div>
+                            <div className="text-xs text-slate-600">
+                              Hole {winner.holeNumber}
+                              {winner.distance && <span className="ml-1">• {winner.distance} ft</span>}
+                            </div>
                           </div>
-                          <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-5 h-5 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
                           </svg>
                         </div>
@@ -193,11 +199,14 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
                       const player = tour.players.find(p => p.id === winner.playerId);
                       return (
                         <div key={idx} className="bg-white rounded-lg p-2 flex items-center justify-between">
-                          <div>
+                          <div className="flex-1">
                             <div className="font-medium text-slate-900 text-sm">{player?.name || 'Unknown'}</div>
-                            <div className="text-xs text-slate-600">Hole {winner.holeNumber}</div>
+                            <div className="text-xs text-slate-600">
+                              Hole {winner.holeNumber}
+                              {winner.distance && <span className="ml-1">• {winner.distance} yds</span>}
+                            </div>
                           </div>
-                          <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-5 h-5 text-amber-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
                           </svg>
                         </div>

@@ -57,10 +57,10 @@ export interface Round {
   ryderCup?: RyderCupTournament;
   isMatchPlay?: boolean; // flag to indicate match play vs stroke play
 
-  // Competition winners: hole number -> player ID (or null for no winner)
+  // Competition winners: hole number -> winner info with distance
   competitionWinners?: {
-    closestToPin: Record<number, string | null>;
-    longestDrive: Record<number, string | null>;
+    closestToPin: Record<number, { playerId: string; distance?: number } | null>;
+    longestDrive: Record<number, { playerId: string; distance?: number } | null>;
   };
 }
 

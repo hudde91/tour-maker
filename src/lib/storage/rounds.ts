@@ -177,7 +177,8 @@ export const updateCompetitionWinner = (
   roundId: string,
   holeNumber: number,
   competitionType: 'closestToPin' | 'longestDrive',
-  winnerId: string | null
+  winnerId: string | null,
+  distance?: number
 ): void => {
   const tour = getTour(tourId);
   if (!tour) return;
@@ -194,7 +195,14 @@ export const updateCompetitionWinner = (
   }
 
   // Update the winner for this hole and competition type
-  round.competitionWinners[competitionType][holeNumber] = winnerId;
+  if (winnerId === null) {
+    round.competitionWinners[competitionType][holeNumber] = null;
+  } else {
+    round.competitionWinners[competitionType][holeNumber] = {
+      playerId: winnerId,
+      distance: distance,
+    };
+  }
 
   saveTour(tour);
 };

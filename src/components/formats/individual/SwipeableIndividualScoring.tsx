@@ -312,11 +312,12 @@ export const SwipeableIndividualScoring = ({
               strokesGiven={round.settings.strokesGiven}
               round={round}
               tour={tour}
-              onCompetitionWinnerChange={(holeNumber, competitionType, winnerId) => {
+              onCompetitionWinnerChange={(holeNumber, competitionType, winnerId, distance) => {
                 updateCompetitionWinner.mutate({
                   holeNumber,
                   competitionType,
                   winnerId,
+                  distance,
                 });
               }}
             />
@@ -393,7 +394,7 @@ interface PlayerScoreCardProps {
   strokesGiven: boolean;
   round: Round;
   tour: Tour;
-  onCompetitionWinnerChange?: (holeNumber: number, competitionType: 'closestToPin' | 'longestDrive', winnerId: string | null) => void;
+  onCompetitionWinnerChange?: (holeNumber: number, competitionType: 'closestToPin' | 'longestDrive', winnerId: string | null, distance?: number) => void;
 }
 
 const PlayerScoreCard = ({
@@ -409,12 +410,19 @@ const PlayerScoreCard = ({
 }: PlayerScoreCardProps) => {
   const currentScore = playerScore?.scores[currentHole - 1];
   const [localScore, setLocalScore] = useState<number | null>(currentScore ?? 0);
+  const [closestToPinDistance, setClosestToPinDistance] = useState<string>('');
+  const [longestDriveDistance, setLongestDriveDistance] = useState<string>('');
   const par = holeInfo.par;
 
-  // Reset local score when hole changes
+  // Reset local score and distances when hole changes
   useEffect(() => {
     setLocalScore(playerScore?.scores[currentHole - 1] ?? 0);
-  }, [currentHole, playerScore]);
+    // Load existing distances if they exist
+    const ctpWinner = round.competitionWinners?.closestToPin?.[currentHole];
+    const ldWinner = round.competitionWinners?.longestDrive?.[currentHole];
+    setClosestToPinDistance(ctpWinner?.distance?.toString() || '');
+    setLongestDriveDistance(ldWinner?.distance?.toString() || '');
+  }, [currentHole, playerScore, round.competitionWinners]);
 
   // Calculate strokes for this hole
   const strokesForHole =
@@ -655,14 +663,17 @@ const PlayerScoreCard = ({
                 </svg>
                 <h5 className="text-sm font-semibold text-blue-900">Closest to Pin Winner</h5>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 mb-3">
                 {tour.players.map((p) => {
-                  const isWinner = round.competitionWinners?.closestToPin?.[currentHole] === p.id;
+                  const isWinner = round.competitionWinners?.closestToPin?.[currentHole]?.playerId === p.id;
                   return (
                     <button
                       key={p.id}
                       type="button"
-                      onClick={() => onCompetitionWinnerChange(currentHole, 'closestToPin', isWinner ? null : p.id)}
+                      onClick={() => {
+                        const distance = closestToPinDistance ? parseFloat(closestToPinDistance) : undefined;
+                        onCompetitionWinnerChange(currentHole, 'closestToPin', isWinner ? null : p.id, distance);
+                      }}
                       disabled={round.status === "completed"}
                       className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
                         round.status === "completed"
@@ -695,6 +706,29 @@ const PlayerScoreCard = ({
                   None
                 </button>
               </div>
+              <div>
+                <label className="block text-xs font-medium text-blue-900 mb-1">
+                  Distance from Pin (feet/meters)
+                </label>
+                <input
+                  type="number"
+                  value={closestToPinDistance}
+                  onChange={(e) => setClosestToPinDistance(e.target.value)}
+                  onBlur={() => {
+                    // Update when user finishes typing
+                    const currentWinner = round.competitionWinners?.closestToPin?.[currentHole];
+                    if (currentWinner?.playerId) {
+                      const distance = closestToPinDistance ? parseFloat(closestToPinDistance) : undefined;
+                      onCompetitionWinnerChange(currentHole, 'closestToPin', currentWinner.playerId, distance);
+                    }
+                  }}
+                  disabled={round.status === "completed"}
+                  placeholder="Enter distance"
+                  className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  step="0.1"
+                  min="0"
+                />
+              </div>
             </div>
           )}
 
@@ -706,14 +740,17 @@ const PlayerScoreCard = ({
                 </svg>
                 <h5 className="text-sm font-semibold text-amber-900">Longest Drive Winner</h5>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 mb-3">
                 {tour.players.map((p) => {
-                  const isWinner = round.competitionWinners?.longestDrive?.[currentHole] === p.id;
+                  const isWinner = round.competitionWinners?.longestDrive?.[currentHole]?.playerId === p.id;
                   return (
                     <button
                       key={p.id}
                       type="button"
-                      onClick={() => onCompetitionWinnerChange(currentHole, 'longestDrive', isWinner ? null : p.id)}
+                      onClick={() => {
+                        const distance = longestDriveDistance ? parseFloat(longestDriveDistance) : undefined;
+                        onCompetitionWinnerChange(currentHole, 'longestDrive', isWinner ? null : p.id, distance);
+                      }}
                       disabled={round.status === "completed"}
                       className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
                         round.status === "completed"
@@ -745,6 +782,29 @@ const PlayerScoreCard = ({
                 >
                   None
                 </button>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-amber-900 mb-1">
+                  Drive Distance (yards/meters)
+                </label>
+                <input
+                  type="number"
+                  value={longestDriveDistance}
+                  onChange={(e) => setLongestDriveDistance(e.target.value)}
+                  onBlur={() => {
+                    // Update when user finishes typing
+                    const currentWinner = round.competitionWinners?.longestDrive?.[currentHole];
+                    if (currentWinner?.playerId) {
+                      const distance = longestDriveDistance ? parseFloat(longestDriveDistance) : undefined;
+                      onCompetitionWinnerChange(currentHole, 'longestDrive', currentWinner.playerId, distance);
+                    }
+                  }}
+                  disabled={round.status === "completed"}
+                  placeholder="Enter distance"
+                  className="w-full px-3 py-2 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                  step="0.1"
+                  min="0"
+                />
               </div>
             </div>
           )}

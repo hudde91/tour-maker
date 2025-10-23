@@ -77,13 +77,15 @@ export const useUpdateCompetitionWinner = (tourId: string, roundId: string) => {
       holeNumber,
       competitionType,
       winnerId,
+      distance,
     }: {
       holeNumber: number;
       competitionType: 'closestToPin' | 'longestDrive';
       winnerId: string | null;
+      distance?: number;
     }) => {
-      storage.updateCompetitionWinner(tourId, roundId, holeNumber, competitionType, winnerId);
-      return { holeNumber, competitionType, winnerId };
+      storage.updateCompetitionWinner(tourId, roundId, holeNumber, competitionType, winnerId, distance);
+      return { holeNumber, competitionType, winnerId, distance };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
