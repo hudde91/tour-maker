@@ -1,6 +1,7 @@
 import { Player } from "../../types";
 import { getTour, saveTour } from "./tours";
 import { getTotalPar } from "./rounds";
+import { formatUtils } from "../../types/formats";
 
 /**
  * Player storage operations
@@ -54,8 +55,25 @@ export const updatePlayerScore = (
   const player = tour.players.find((p) => p.id === playerId);
   if (!round || !player) return;
 
-  // Calculate total score (excluding conceded holes marked as null)
-  const totalScore = scores.reduce<number>((sum, score) => sum + (score ?? 0), 0);
+  const isMatchPlay = formatUtils.isMatchPlay(round.format);
+
+  // Calculate total score
+  // For match play: conceded holes = 0 strokes
+  // For stroke play: conceded holes = 2x par
+  const totalScore = scores.reduce<number>((sum, score, index) => {
+    if (score !== null) {
+      return sum + score;
+    }
+    // Handle conceded holes
+    if (isMatchPlay) {
+      return sum; // 0 strokes in match play
+    } else {
+      // 2x par for stroke play
+      const holePar = round.holeInfo[index]?.par || 4;
+      return sum + (holePar * 2);
+    }
+  }, 0);
+
   const totalPar = getTotalPar(round);
   const totalToPar = totalScore - totalPar;
 

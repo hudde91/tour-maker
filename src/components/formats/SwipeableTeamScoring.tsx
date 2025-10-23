@@ -1,5 +1,6 @@
 import { getScoreInfo } from "@/lib/scoreUtils";
 import { storage } from "@/lib/storage";
+import { formatUtils } from "@/types/formats";
 import { Tour, Round, Team } from "@/types";
 import { useState, useEffect } from "react";
 import { HoleNavigation } from "../scoring/HoleNavigation";
@@ -418,7 +419,8 @@ const TeamScoreCard = ({
     setLocalScore(teamScore?.scores[currentHole - 1] || 0);
   }, [currentHole, teamScore]);
 
-  const scoreInfo = getScoreInfo(localScore, par);
+  const isMatchPlay = formatUtils.isMatchPlay(round.format);
+  const scoreInfo = getScoreInfo(localScore, par, isMatchPlay);
 
   // Get team members
   const teamMembers = team.playerIds
@@ -437,7 +439,7 @@ const TeamScoreCard = ({
     const maxScore = Math.max(10, par + 5); // At least up to par + 5
 
     for (let score = minScore; score <= maxScore; score++) {
-      const info = getScoreInfo(score, par);
+      const info = getScoreInfo(score, par, isMatchPlay);
       options.push({
         score,
         name: info.name,

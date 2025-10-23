@@ -2,6 +2,7 @@ import { HoleNavigation } from "@/components/scoring/HoleNavigation";
 import { LiveLeaderboard } from "@/components/scoring/LiveLeaderboard";
 import { getScoreInfo } from "@/lib/scoreUtils";
 import { storage } from "@/lib/storage";
+import { formatUtils } from "@/types/formats";
 import { Tour, Round, Player, HoleInfo, PlayerScore } from "@/types";
 import { useState, useEffect } from "react";
 
@@ -11,7 +12,7 @@ interface SwipeableIndividualScoringProps {
   onPlayerScoreChange: (
     playerId: string,
     holeIndex: number,
-    score: number
+    score: number | null
   ) => void;
   onFinishRound?: () => void;
 }
@@ -375,7 +376,7 @@ interface PlayerScoreCardProps {
   holeInfo: HoleInfo;
   playerScore: PlayerScore;
   currentHole: number;
-  onScoreChange: (score: number) => void;
+  onScoreChange: (score: number | null) => void;
   strokesGiven: boolean;
   round: Round;
 }
@@ -389,13 +390,13 @@ const PlayerScoreCard = ({
   strokesGiven,
   round,
 }: PlayerScoreCardProps) => {
-  const currentScore = playerScore?.scores[currentHole - 1] || 0;
-  const [localScore, setLocalScore] = useState(currentScore);
+  const currentScore = playerScore?.scores[currentHole - 1];
+  const [localScore, setLocalScore] = useState<number | null>(currentScore ?? 0);
   const par = holeInfo.par;
 
   // Reset local score when hole changes
   useEffect(() => {
-    setLocalScore(playerScore?.scores[currentHole - 1] || 0);
+    setLocalScore(playerScore?.scores[currentHole - 1] ?? 0);
   }, [currentHole, playerScore]);
 
   // Calculate strokes for this hole
@@ -405,9 +406,10 @@ const PlayerScoreCard = ({
       : 0;
 
   const effectivePar = par;
-  const scoreInfo = getScoreInfo(localScore, effectivePar);
+  const isMatchPlay = formatUtils.isMatchPlay(round.format);
+  const scoreInfo = getScoreInfo(localScore, effectivePar, isMatchPlay);
 
-  const handleScoreSelect = (score: number) => {
+  const handleScoreSelect = (score: number | null) => {
     setLocalScore(score);
     onScoreChange(score);
   };
@@ -419,7 +421,7 @@ const PlayerScoreCard = ({
     const maxScore = Math.max(10, effectivePar + 5); // At least up to effective par + 5
 
     for (let score = minScore; score <= maxScore; score++) {
-      const info = getScoreInfo(score, effectivePar);
+      const info = getScoreInfo(score, effectivePar, isMatchPlay);
       options.push({
         score,
         name: info.name,
@@ -491,7 +493,7 @@ const PlayerScoreCard = ({
             <div
               className={`text-4xl font-bold px-5 py-3 rounded-xl border-2 shadow-md transition-all duration-200 ${scoreInfo.bg} ${scoreInfo.text}`}
             >
-              {localScore || "–"}
+              {localScore === null ? "-" : localScore || "–"}
             </div>
           </div>
         </div>
@@ -509,9 +511,9 @@ const PlayerScoreCard = ({
               type="button"
               onClick={() => handleScoreSelect(option.score)}
               disabled={round.status === "completed"}
-              className={`relative p-3 sm:p-4 rounded-xl border-2 font-bold 
+              className={`relative p-3 sm:p-4 rounded-xl border-2 font-bold
                   flex flex-col items-center justify-center min-h-[72px] sm:min-h-[80px]
-                  transition-all duration-200 hover:scale-105 active:scale-95 
+                  transition-all duration-200 hover:scale-105 active:scale-95
                   outline-none shadow-sm hover:shadow-md ${
                     round.status === "completed"
                       ? "opacity-50 cursor-not-allowed"
@@ -556,6 +558,53 @@ const PlayerScoreCard = ({
             </button>
           ))}
         </div>
+
+        {/* Concede Button */}
+        <button
+          type="button"
+          onClick={() => handleScoreSelect(null)}
+          disabled={round.status === "completed"}
+          className={`w-full p-3 rounded-xl border-2 font-semibold
+            flex items-center justify-center gap-2
+            transition-all duration-200 hover:scale-[1.02] active:scale-95
+            outline-none shadow-sm hover:shadow-md ${
+              round.status === "completed"
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            } ${
+            localScore === null
+              ? "bg-slate-100 text-slate-700 border-slate-400 ring-2 ring-slate-300"
+              : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
+          }`}
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          <span>Concede Hole</span>
+          {localScore === null && (
+            <svg
+              className="w-5 h-5 text-emerald-600"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          )}
+        </button>
       </div>
 
       <div className="card bg-slate-50">
