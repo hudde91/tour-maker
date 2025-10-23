@@ -150,7 +150,7 @@ export const calculateProgress = (tour: Tour, round: Round) => {
     entitiesWithScores =
       tour.teams?.filter((team) => {
         const teamScore = round.scores[`team_${team.id}`];
-        return teamScore && teamScore.scores.some((score) => score > 0);
+        return teamScore && teamScore.scores.some((score) => score !== null && score > 0);
       }).length || 0;
   } else if (config.type === "best-ball") {
     // For best ball, count teams that have at least one player with scores
@@ -159,13 +159,13 @@ export const calculateProgress = (tour: Tour, round: Round) => {
         const teamPlayers = tour.players.filter((p) => p.teamId === team.id);
         return teamPlayers.some((player) => {
           const playerScore = round.scores[player.id];
-          return playerScore && playerScore.scores.some((score) => score > 0);
+          return playerScore && playerScore.scores.some((score) => score !== null && score > 0);
         });
       }).length || 0;
   } else {
     // Count individual players with scores
     entitiesWithScores = Object.keys(round.scores).filter((playerId) =>
-      round.scores[playerId].scores.some((score) => score > 0)
+      round.scores[playerId].scores.some((score) => score !== null && score > 0)
     ).length;
   }
 

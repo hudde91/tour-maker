@@ -45,7 +45,7 @@ export const updatePlayerScore = (
   tourId: string,
   roundId: string,
   playerId: string,
-  scores: number[]
+  scores: (number | null)[]
 ): void => {
   const tour = getTour(tourId);
   if (!tour) return;
@@ -54,7 +54,8 @@ export const updatePlayerScore = (
   const player = tour.players.find((p) => p.id === playerId);
   if (!round || !player) return;
 
-  const totalScore = scores.reduce((sum, score) => sum + score, 0);
+  // Calculate total score (excluding conceded holes marked as null)
+  const totalScore = scores.reduce<number>((sum, score) => sum + (score ?? 0), 0);
   const totalPar = getTotalPar(round);
   const totalToPar = totalScore - totalPar;
 

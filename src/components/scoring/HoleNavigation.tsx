@@ -4,7 +4,7 @@ interface HoleNavigationProps {
   holes: HoleInfo[];
   currentHole: number;
   onHoleChange: (holeNumber: number) => void;
-  playerScores: Record<string, number[]>;
+  playerScores: Record<string, (number | null)[]>;
 }
 
 export const HoleNavigation = ({
@@ -16,7 +16,10 @@ export const HoleNavigation = ({
   const getHoleStatus = (holeNumber: number) => {
     const holeIndex = holeNumber - 1;
     const hasAnyScores = Object.values(playerScores).some(
-      (scores) => scores[holeIndex] && scores[holeIndex] > 0
+      (scores) => {
+        const score = scores[holeIndex];
+        return score !== null && score !== undefined && score > 0;
+      }
     );
 
     if (holeNumber === currentHole) return "current";

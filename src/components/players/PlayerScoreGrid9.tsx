@@ -13,7 +13,7 @@ export default function PlayerScoreGrid9({
   start: number;
   pars: number[];
   si: number[];
-  scores: number[];
+  scores: (number | null)[];
   holesCount: number;
 }) {
   const end = Math.min(start + 9, holesCount);
@@ -29,10 +29,11 @@ export default function PlayerScoreGrid9({
   const subtotalStrokes = useMemo(
     () =>
       idx.reduce(
-        (a, i) =>
-          typeof scores[i] === "number" && scores[i]! > 0
-            ? a + (scores[i] as number)
-            : a,
+        (a, i) => {
+          const score = scores[i];
+          // Count numeric scores, skip null (conceded) and 0 (not played)
+          return typeof score === "number" && score > 0 ? a + score : a;
+        },
         0
       ),
     [idx, scores]
@@ -90,7 +91,7 @@ export default function PlayerScoreGrid9({
               {idx.map((i) => (
                 <HoleScoreCell
                   key={`sc-${i}`}
-                  score={scores[i] as number}
+                  score={scores[i]}
                   par={pars[i]}
                 />
               ))}

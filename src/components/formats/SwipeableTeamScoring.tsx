@@ -573,7 +573,7 @@ const TeamScoreCard = ({
           </div>
           <div>
             <div className="text-2xl font-bold text-slate-900">
-              {teamScore?.scores.filter((s) => s > 0).length}
+              {teamScore?.scores.filter((s) => s !== null && s > 0).length}
             </div>
             <div className="text-xs text-slate-500 uppercase tracking-wide mt-1">
               Holes
@@ -583,7 +583,7 @@ const TeamScoreCard = ({
             <div className="text-2xl font-bold text-slate-900">
               {(() => {
                 const scores = teamScore?.scores || [];
-                const holesPlayed = scores.filter((s) => s > 0).length;
+                const holesPlayed = scores.filter((s) => s !== null && s > 0).length;
                 if (holesPlayed === 0) return "–";
                 const totalScore = teamScore?.totalScore || 0;
                 const totalPar = round.holeInfo

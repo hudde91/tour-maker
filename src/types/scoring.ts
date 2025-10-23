@@ -2,7 +2,7 @@ import { Player, Team } from "./core";
 
 export interface PlayerScore {
   playerId: string;
-  scores: number[]; // score per hole
+  scores: (number | null)[]; // score per hole, null = conceded hole in match play
   totalScore: number; // gross score
   totalToPar: number; // gross score to par
   handicapStrokes?: number; // handicap strokes applied
@@ -54,4 +54,46 @@ export interface TeamLeaderboardEntry {
 export interface Leaderboard {
   individual: LeaderboardEntry[];
   team?: TeamLeaderboardEntry[];
+}
+
+// Player statistics for detailed analysis
+export interface DetailedPlayerStats {
+  playerId: string;
+  roundId: string;
+  // Scoring breakdown
+  birdieCount: number;
+  parCount: number;
+  bogeyCount: number;
+  doubleBogeyOrWorse: number;
+  eagleOrBetter: number;
+  // Best/worst holes
+  bestHole: { holeNumber: number; score: number; toPar: number } | null;
+  worstHole: { holeNumber: number; score: number; toPar: number } | null;
+  // Streaks (consecutive pars, birdies, etc.)
+  currentStreak: {
+    type: "birdie" | "par" | "bogey" | "under-par" | "over-par" | "none";
+    length: number;
+  };
+  // Round summaries
+  front9: RoundSummary;
+  back9: RoundSummary;
+}
+
+// Summary for 9-hole segments
+export interface RoundSummary {
+  score: number;
+  toPar: number;
+  birdies: number;
+  pars: number;
+  bogeys: number;
+  holesPlayed: number; // May be less than 9 if round incomplete
+}
+
+// Hole winner information (for skins/match play)
+export interface HoleWinner {
+  holeNumber: number;
+  winnerIds: string[]; // multiple winners if tied
+  score: number;
+  toPar: number;
+  isTied: boolean;
 }

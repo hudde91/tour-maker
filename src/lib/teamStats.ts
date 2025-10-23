@@ -1,4 +1,5 @@
 import { Tour, Team, Player, Round } from "../types";
+import { calculateAggregatePlayerStats } from "./playerStatsUtils";
 
 export interface PlayerStats {
   player: Player;
@@ -9,6 +10,12 @@ export interface PlayerStats {
   bestScore: number;
   bestRound?: Round;
   toPar: number;
+  // Detailed scoring statistics (across all stroke play rounds)
+  birdieCount?: number;
+  parCount?: number;
+  bogeyCount?: number;
+  doubleBogeyOrWorse?: number;
+  eagleOrBetter?: number;
 }
 
 export interface TeamStats {
@@ -97,6 +104,9 @@ export const calculateTeamStats = (
       return sum + (strokePlayScores[index] - par);
     }, 0);
 
+    // Calculate aggregate detailed statistics
+    const aggregateStats = calculateAggregatePlayerStats(strokePlayRounds, player.id);
+
     return {
       player,
       roundsPlayed: strokePlayRounds.length, // Only count stroke play rounds
@@ -106,6 +116,12 @@ export const calculateTeamStats = (
       bestScore: strokePlayScores.length > 0 ? bestScore : 0,
       bestRound,
       toPar: playerToPar,
+      // Add detailed stats
+      birdieCount: aggregateStats.totalBirdies,
+      parCount: aggregateStats.totalPars,
+      bogeyCount: aggregateStats.totalBogeys,
+      doubleBogeyOrWorse: aggregateStats.totalDoubleBogeyOrWorse,
+      eagleOrBetter: aggregateStats.totalEagleOrBetter,
     };
   });
 
