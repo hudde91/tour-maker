@@ -11,5 +11,9 @@ export function safeMin(
 
 // Optional UI helper (so you never print Infinity/NaN/null)
 export function formatHoleScore(n: number | null | undefined): string {
+  // Explicitly check for null (conceded hole in match play)
+  if (n === null) {
+    return "-";
+  }
   return typeof n === "number" && Number.isFinite(n) ? String(n) : "—";
 }

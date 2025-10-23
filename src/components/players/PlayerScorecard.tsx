@@ -2,8 +2,10 @@ import { useMemo } from "react";
 import { Tour, Player, Round } from "../../types/core";
 import { storage } from "../../lib/storage";
 import { isRoundCompleted } from "../../lib/roundUtils";
+import { calculateDetailedPlayerStats } from "../../lib/playerStatsUtils";
 import PlayerScorecardHeader from "./PlayerScorecardHeader";
 import PlayerScoreGrid9 from "./PlayerScoreGrid9";
+import { RoundStatistics } from "./RoundStatistics";
 
 type Props = {
   tour: Tour;
@@ -112,8 +114,11 @@ export const PlayerScorecard = ({
               return typeof idx === "number" ? idx : i + 1;
             });
 
-            const scores: number[] =
+            const scores: (number | null)[] =
               round.scores?.[player.id]?.scores?.slice(0, holesCount) ?? [];
+
+            // Calculate detailed statistics for this round
+            const roundStats = calculateDetailedPlayerStats(round, player.id);
 
             return (
               <div
@@ -164,6 +169,11 @@ export const PlayerScorecard = ({
                       scores={scores}
                       holesCount={holesCount}
                     />
+                  )}
+
+                  {/* Display detailed statistics if available */}
+                  {roundStats && (
+                    <RoundStatistics stats={roundStats} className="mt-2" />
                   )}
                 </div>
               </div>

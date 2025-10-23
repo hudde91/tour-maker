@@ -10,7 +10,7 @@ export const useUpdateScore = (tourId: string, roundId: string) => {
       scores,
     }: {
       playerId: string;
-      scores: number[];
+      scores: (number | null)[];
     }) => {
       storage.updatePlayerScore(tourId, roundId, playerId, scores);
       return { playerId, scores };

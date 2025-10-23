@@ -568,7 +568,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                             if (playerScores) {
                               // Count non-zero scores to determine holes completed
                               const holesCompleted = playerScores.scores.filter(
-                                (score) => score > 0
+                                (score) => score !== null && score > 0
                               ).length;
                               if (holesCompleted > 0 && holesCompleted < 18) {
                                 return (

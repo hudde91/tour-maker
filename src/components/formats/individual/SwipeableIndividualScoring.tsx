@@ -44,7 +44,7 @@ export const SwipeableIndividualScoring = ({
       if (!playerScore) return false;
 
       // Check if all holes have a score > 0
-      return playerScore.scores.every((score) => score > 0);
+      return playerScore.scores.every((score) => score !== null && score > 0);
     });
   };
 
@@ -573,7 +573,7 @@ const PlayerScoreCard = ({
           </div>
           <div>
             <div className="text-2xl font-bold text-slate-900">
-              {playerScore?.scores.filter((s) => s > 0).length}
+              {playerScore?.scores.filter((s) => s !== null && s > 0).length}
             </div>
             <div className="text-xs text-slate-500 uppercase tracking-wide mt-1">
               Holes
@@ -583,7 +583,7 @@ const PlayerScoreCard = ({
             <div className="text-2xl font-bold text-slate-900">
               {(() => {
                 const scores = playerScore?.scores || [];
-                const holesPlayed = scores.filter((s) => s > 0).length;
+                const holesPlayed = scores.filter((s) => s !== null && s > 0).length;
                 if (holesPlayed === 0) return "–";
                 const totalScore = playerScore?.totalScore || 0;
                 const totalPar = scores
