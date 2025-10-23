@@ -19,13 +19,6 @@ interface ExtendedMatchPlayRound extends MatchPlayRound {
 }
 
 /**
- * Extended match play hole interface for internal use
- */
-interface ExtendedMatchPlayHole extends MatchPlayHole {
-  matchStatus?: string;
-}
-
-/**
  * Create a new match play round
  */
 export const createMatchPlayRound = (
@@ -300,7 +293,7 @@ export const updateMatchHole = (
     0,
     Math.min(totalHoles - 1, (data.holeNumber || 1) - 1)
   );
-  const hole = match.holes[idx] as ExtendedMatchPlayHole;
+  const hole = match.holes[idx];
   hole.holeNumber = data.holeNumber;
   hole.teamAScore = data.teamAScore;
   hole.teamBScore = data.teamBScore;
@@ -320,7 +313,7 @@ export const updateMatchHole = (
   let bWins = 0;
   let holesPlayed = 0;
   for (let i = 0; i < totalHoles; i++) {
-    const h = match.holes[i] as ExtendedMatchPlayHole;
+    const h = match.holes[i];
     if (!(isValid(h.teamAScore) && isValid(h.teamBScore))) {
       continue;
     }
