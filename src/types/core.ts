@@ -9,6 +9,8 @@ export interface HoleInfo {
   par: number;
   yardage?: number;
   handicap?: number;
+  closestToPin?: boolean;
+  longestDrive?: boolean;
 }
 
 export interface RoundSettings {
@@ -54,6 +56,13 @@ export interface Round {
   status: "created" | "in-progress" | "completed";
   ryderCup?: RyderCupTournament;
   isMatchPlay?: boolean; // flag to indicate match play vs stroke play
+
+  // Competition winners: hole number -> array of winner entries
+  // Individual rounds have 1 entry per hole, Match Play has 1 entry per match per hole
+  competitionWinners?: {
+    closestToPin: Record<number, Array<{ playerId: string; distance?: number; matchId?: string }>>;
+    longestDrive: Record<number, Array<{ playerId: string; distance?: number; matchId?: string }>>;
+  };
 }
 
 export interface Player {
