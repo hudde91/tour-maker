@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Round, Tour, LeaderboardEntry } from "../../types";
 import { storage } from "../../lib/storage";
 import {
@@ -13,6 +13,10 @@ import {
   isMatchPlayRound,
   getCompletedRounds,
 } from "../../lib/roundUtils";
+import { VirtualizedLeaderboard } from "./VirtualizedLeaderboard";
+
+// Threshold for enabling virtualization - improves performance for large tournaments
+const VIRTUALIZATION_THRESHOLD = 50;
 
 interface TournamentLeaderboardProps {
   tour: Tour;
@@ -28,53 +32,75 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     tour.rounds[0]?.id || ""
   );
 
-  // Determine which rounds to include based on view
-  let roundsToInclude: Round[] = [];
-  let previousRoundsToInclude: Round[] = []; // For position change calculation
+  // Memoize event handlers to prevent unnecessary re-renders
+  const handleViewChange = useCallback((newView: LeaderboardView) => {
+    setView(newView);
+  }, []);
 
-  if (view === "overall") {
-    roundsToInclude = getCompletedRounds(tour.rounds);
-    // For position change, compare to all rounds except the most recent
-    if (roundsToInclude.length > 1) {
-      previousRoundsToInclude = roundsToInclude.slice(0, -1);
-    }
-  } else if (view === "current-round") {
-    // Get the most recent active or completed round
-    const activeRound = tour.rounds.find((r) => r.status === "in-progress");
-    const latestCompletedRound = [...tour.rounds]
-      .filter(isRoundCompleted)
-      .sort(
-        (a, b) =>
-          new Date(b.completedAt || 0).getTime() -
-          new Date(a.completedAt || 0).getTime()
-      )[0];
-    roundsToInclude = activeRound
-      ? [activeRound]
-      : latestCompletedRound
-      ? [latestCompletedRound]
-      : [];
-    // For position change in current round, compare to overall standings before this round
-    const allCompleted = getCompletedRounds(tour.rounds);
-    if (roundsToInclude.length > 0 && allCompleted.length > 0) {
-      const currentRoundId = roundsToInclude[0].id;
-      previousRoundsToInclude = allCompleted.filter(r => r.id !== currentRoundId);
-    }
-  } else if (view === "by-round") {
-    const selectedRound = tour.rounds.find((r) => r.id === selectedRoundId);
-    roundsToInclude =
-      selectedRound && isRoundCompleted(selectedRound) ? [selectedRound] : [];
-    // For position change in specific round, compare to all previous rounds
-    if (selectedRound) {
-      const selectedRoundIndex = tour.rounds.findIndex(r => r.id === selectedRoundId);
-      if (selectedRoundIndex > 0) {
-        previousRoundsToInclude = tour.rounds
-          .slice(0, selectedRoundIndex)
-          .filter(isRoundCompleted);
+  const handleSortChange = useCallback((newSort: LeaderboardSort) => {
+    setSort(newSort);
+  }, []);
+
+  const handleRoundSelect = useCallback((roundId: string) => {
+    setSelectedRoundId(roundId);
+  }, []);
+
+  const handleLeaderboardViewChange = useCallback((newView: "individual" | "team") => {
+    setLeaderboardView(newView);
+  }, []);
+
+  // Memoize rounds to include based on view - prevents recalculation on every render
+  const { roundsToInclude, previousRoundsToInclude } = useMemo(() => {
+    let rounds: Round[] = [];
+    let previousRounds: Round[] = [];
+
+    if (view === "overall") {
+      rounds = getCompletedRounds(tour.rounds);
+      // For position change, compare to all rounds except the most recent
+      if (rounds.length > 1) {
+        previousRounds = rounds.slice(0, -1);
+      }
+    } else if (view === "current-round") {
+      // Get the most recent active or completed round
+      const activeRound = tour.rounds.find((r) => r.status === "in-progress");
+      const latestCompletedRound = [...tour.rounds]
+        .filter(isRoundCompleted)
+        .sort(
+          (a, b) =>
+            new Date(b.completedAt || 0).getTime() -
+            new Date(a.completedAt || 0).getTime()
+        )[0];
+      rounds = activeRound
+        ? [activeRound]
+        : latestCompletedRound
+        ? [latestCompletedRound]
+        : [];
+      // For position change in current round, compare to overall standings before this round
+      const allCompleted = getCompletedRounds(tour.rounds);
+      if (rounds.length > 0 && allCompleted.length > 0) {
+        const currentRoundId = rounds[0].id;
+        previousRounds = allCompleted.filter(r => r.id !== currentRoundId);
+      }
+    } else if (view === "by-round") {
+      const selectedRound = tour.rounds.find((r) => r.id === selectedRoundId);
+      rounds =
+        selectedRound && isRoundCompleted(selectedRound) ? [selectedRound] : [];
+      // For position change in specific round, compare to all previous rounds
+      if (selectedRound) {
+        const selectedRoundIndex = tour.rounds.findIndex(r => r.id === selectedRoundId);
+        if (selectedRoundIndex > 0) {
+          previousRounds = tour.rounds
+            .slice(0, selectedRoundIndex)
+            .filter(isRoundCompleted);
+        }
       }
     }
-  }
 
-  const calculateTournamentLeaderboard = (useRounds: Round[] = roundsToInclude): LeaderboardEntry[] => {
+    return { roundsToInclude: rounds, previousRoundsToInclude: previousRounds };
+  }, [view, selectedRoundId, tour.rounds]);
+
+  // Memoize the expensive leaderboard calculation function
+  const calculateTournamentLeaderboard = useCallback((useRounds: Round[] = roundsToInclude): LeaderboardEntry[] => {
     const entries: LeaderboardEntry[] = tour.players.map((player) => {
       // Get all rounds this player has scores in (from filtered rounds)
       const playerRounds = useRounds.filter((round) => {
@@ -274,10 +300,17 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     }
 
     return playersWithScores;
-  };
+  }, [tour.players, tour.rounds, tour.format, view, roundsToInclude, previousRoundsToInclude, sort]);
 
-  const individualLeaderboard = calculateTournamentLeaderboard();
-  const teamLeaderboard = storage.calculateTeamLeaderboard(tour);
+  // Memoize the individual leaderboard calculation - this is expensive!
+  const individualLeaderboard = useMemo(() => {
+    return calculateTournamentLeaderboard();
+  }, [calculateTournamentLeaderboard]);
+
+  // Memoize the team leaderboard calculation
+  const teamLeaderboard = useMemo(() => {
+    return storage.calculateTeamLeaderboard(tour);
+  }, [tour]);
 
   const playersWithScores = individualLeaderboard;
   const teamsWithScores = teamLeaderboard.filter(
@@ -290,6 +323,25 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   const hasSomeStableford = completedRounds.some(isStablefordScoring);
   const isMatchPlay = completedRounds.some((r) => isMatchPlayRound(r) && !isRyderCup);
   const hasHandicaps = completedRounds.some(hasHandicapsEnabled);
+
+  // Pre-calculate stableford and matches won for all players to avoid repeated calls in render loop
+  const playerStablefordPoints = useMemo(() => {
+    if (!hasSomeStableford) return new Map<string, number>();
+    const points = new Map<string, number>();
+    playersWithScores.forEach(entry => {
+      points.set(entry.player.id, storage.calculateTournamentStableford(tour, entry.player.id));
+    });
+    return points;
+  }, [hasSomeStableford, playersWithScores, tour]);
+
+  const playerMatchesWon = useMemo(() => {
+    if (!isMatchPlay || !storage.calculateMatchesWon) return new Map<string, number>();
+    const matches = new Map<string, number>();
+    playersWithScores.forEach(entry => {
+      matches.set(entry.player.id, storage.calculateMatchesWon(tour, entry.player.id));
+    });
+    return matches;
+  }, [isMatchPlay, playersWithScores, tour]);
 
   // If no scores at all, show empty state
   if (playersWithScores.length === 0) {
@@ -337,12 +389,12 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       {/* Filters */}
       <LeaderboardFilters
         view={view}
-        onViewChange={setView}
+        onViewChange={handleViewChange}
         sort={sort}
-        onSortChange={setSort}
+        onSortChange={handleSortChange}
         rounds={completedRoundsList}
         selectedRoundId={selectedRoundId}
-        onRoundSelect={setSelectedRoundId}
+        onRoundSelect={handleRoundSelect}
         isStableford={hasSomeStableford}
         isMatchPlay={isMatchPlay}
       />
@@ -351,7 +403,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       {tour.format === "team" && teamsWithScores.length > 0 && (
         <div className="flex gap-3">
           <button
-            onClick={() => setLeaderboardView("individual")}
+            onClick={() => handleLeaderboardViewChange("individual")}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
               leaderboardView === "individual"
                 ? "bg-emerald-600 text-white shadow-md"
@@ -361,7 +413,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
             Individual
           </button>
           <button
-            onClick={() => setLeaderboardView("team")}
+            onClick={() => handleLeaderboardViewChange("team")}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
               leaderboardView === "team"
                 ? "bg-emerald-600 text-white shadow-md"
@@ -449,17 +501,36 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
             })
           )}
         </div>
+      ) : playersWithScores.length > VIRTUALIZATION_THRESHOLD ? (
+        /* Virtualized Individual Tournament Leaderboard for large player counts */
+        <div>
+          <div className="mb-3 text-sm text-slate-600 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
+            <svg className="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>
+              Performance mode enabled for {playersWithScores.length} players - scroll to view all entries
+            </span>
+          </div>
+          <VirtualizedLeaderboard
+            entries={playersWithScores}
+            tour={tour}
+            hasSomeStableford={hasSomeStableford}
+            isMatchPlay={isMatchPlay}
+            hasHandicaps={hasHandicaps}
+            view={view}
+            roundsToInclude={roundsToInclude}
+            playerStablefordPoints={playerStablefordPoints}
+            playerMatchesWon={playerMatchesWon}
+          />
+        </div>
       ) : (
-        /* Individual Tournament Leaderboard */
+        /* Standard Individual Tournament Leaderboard (top 10) */
         <div className="space-y-3">
           {playersWithScores.slice(0, 10).map((entry, index) => {
-            const stablefordPoints = hasSomeStableford
-              ? storage.calculateTournamentStableford(tour, entry.player.id)
-              : 0;
-            const matchesWon =
-              isMatchPlay && storage.calculateMatchesWon
-                ? storage.calculateMatchesWon(tour, entry.player.id)
-                : 0;
+            // Use pre-calculated values instead of calling expensive functions in the loop
+            const stablefordPoints = playerStablefordPoints.get(entry.player.id) || 0;
+            const matchesWon = playerMatchesWon.get(entry.player.id) || 0;
 
             // Determine display score
             const displayScore = hasHandicaps

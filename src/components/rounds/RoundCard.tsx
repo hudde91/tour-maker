@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Link } from "react-router-dom";
 import { Round, Tour, GOLF_FORMATS } from "../../types";
 import { useDeleteRound } from "../../hooks/useRounds";
@@ -10,7 +10,7 @@ interface RoundCardProps {
   tour: Tour;
 }
 
-export const RoundCard = ({ round, tour }: RoundCardProps) => {
+const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
   const deleteRound = useDeleteRound(tour.id);
   const formatInfo = GOLF_FORMATS[round.format];
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -209,3 +209,15 @@ export const RoundCard = ({ round, tour }: RoundCardProps) => {
     </Link>
   );
 };
+
+// Memoize RoundCard to prevent unnecessary re-renders
+export const RoundCard = memo(RoundCardComponent, (prevProps, nextProps) => {
+  // Only re-render if round or tour.id changes
+  return (
+    prevProps.round.id === nextProps.round.id &&
+    prevProps.round.status === nextProps.round.status &&
+    prevProps.round.name === nextProps.round.name &&
+    Object.keys(prevProps.round.scores).length === Object.keys(nextProps.round.scores).length &&
+    prevProps.tour.id === nextProps.tour.id
+  );
+});

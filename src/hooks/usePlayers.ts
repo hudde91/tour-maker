@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { nanoid } from "nanoid";
 import { storage } from "../lib/storage";
 import { Player } from "../types";
+import { invalidateTourCache } from "../lib/cache";
 
 export const useAddPlayer = (tourId: string) => {
   const queryClient = useQueryClient();
@@ -24,6 +25,7 @@ export const useAddPlayer = (tourId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      invalidateTourCache(tourId); // Invalidate calculation cache
     },
   });
 };
@@ -38,6 +40,7 @@ export const useRemovePlayer = (tourId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      invalidateTourCache(tourId); // Invalidate calculation cache
     },
   });
 };
@@ -52,6 +55,7 @@ export const useUpdatePlayer = (tourId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      invalidateTourCache(tourId); // Invalidate calculation cache
     },
   });
 };

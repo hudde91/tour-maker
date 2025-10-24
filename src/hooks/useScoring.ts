@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { storage } from "../lib/storage";
+import { invalidateTourCache } from "../lib/cache";
 
 export const useUpdateScore = (tourId: string, roundId: string) => {
   const queryClient = useQueryClient();
@@ -17,6 +18,7 @@ export const useUpdateScore = (tourId: string, roundId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      invalidateTourCache(tourId); // Invalidate calculation cache
     },
   });
 };
@@ -37,6 +39,7 @@ export const useUpdateTeamScore = (tourId: string, roundId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      invalidateTourCache(tourId); // Invalidate calculation cache
     },
   });
 };
@@ -51,6 +54,7 @@ export const useStartRound = (tourId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      invalidateTourCache(tourId); // Invalidate calculation cache
     },
   });
 };
@@ -65,6 +69,7 @@ export const useCompleteRound = (tourId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      invalidateTourCache(tourId); // Invalidate calculation cache
     },
   });
 };
@@ -91,6 +96,7 @@ export const useUpdateCompetitionWinner = (tourId: string, roundId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      invalidateTourCache(tourId); // Invalidate calculation cache
     },
   });
 };
