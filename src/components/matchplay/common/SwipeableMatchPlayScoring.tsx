@@ -719,43 +719,48 @@ const MatchScoringCard = ({
       </div>
 
       {/* Competition Winner Selection */}
-      {(currentHoleInfo.closestToPin || currentHoleInfo.longestDrive) && onCompetitionWinnerChange && (
-        <div className="space-y-3">
-          {currentHoleInfo.closestToPin && (
-            <div className="card border-2 border-blue-200 bg-blue-50">
-              <div className="flex items-center gap-2 mb-3">
-                <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
-                </svg>
-                <h5 className="text-sm font-semibold text-blue-900">Closest to Pin Winner</h5>
-              </div>
-              <div className="grid grid-cols-2 gap-2 mb-3">
-                {tour.players.map((p) => {
-                  const winners = round.competitionWinners?.closestToPin?.[currentHole] || [];
-                  const isWinner = winners.some(w => w.matchId === match.id && w.playerId === p.id);
-                  return (
-                    <button
-                      key={p.id}
-                      type="button"
-                      onClick={() => {
-                        const distance = closestToPinDistance ? parseFloat(closestToPinDistance) : undefined;
-                        onCompetitionWinnerChange(currentHole, 'closestToPin', isWinner ? null : p.id, distance);
-                      }}
-                      disabled={round.status === "completed"}
-                      className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
-                        round.status === "completed"
-                          ? "opacity-50 cursor-not-allowed"
-                          : ""
-                      } ${
-                        isWinner
-                          ? "bg-blue-600 text-white border-blue-700 shadow-md"
-                          : "bg-white text-slate-700 border-slate-300 hover:border-blue-400"
-                      }`}
-                    >
-                      {p.name}
-                    </button>
-                  );
-                })}
+      {(currentHoleInfo.closestToPin || currentHoleInfo.longestDrive) && onCompetitionWinnerChange && (() => {
+        // Get only players in this match
+        const matchPlayerIds = [...match.teamA.playerIds, ...match.teamB.playerIds];
+        const matchPlayers = tour.players.filter(p => matchPlayerIds.includes(p.id));
+
+        return (
+          <div className="space-y-3">
+            {currentHoleInfo.closestToPin && (
+              <div className="card border-2 border-blue-200 bg-blue-50">
+                <div className="flex items-center gap-2 mb-3">
+                  <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
+                  </svg>
+                  <h5 className="text-sm font-semibold text-blue-900">Closest to Pin Winner</h5>
+                </div>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  {matchPlayers.map((p) => {
+                    const winners = round.competitionWinners?.closestToPin?.[currentHole] || [];
+                    const isWinner = winners.some(w => w.matchId === match.id && w.playerId === p.id);
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => {
+                          const distance = closestToPinDistance ? parseFloat(closestToPinDistance) : undefined;
+                          onCompetitionWinnerChange(currentHole, 'closestToPin', isWinner ? null : p.id, distance);
+                        }}
+                        disabled={round.status === "completed"}
+                        className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
+                          round.status === "completed"
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        } ${
+                          isWinner
+                            ? "bg-blue-600 text-white border-blue-700 shadow-md"
+                            : "bg-white text-slate-700 border-slate-300 hover:border-blue-400"
+                        }`}
+                      >
+                        {p.name}
+                      </button>
+                    );
+                  })}
                 <button
                   type="button"
                   onClick={() => onCompetitionWinnerChange(currentHole, 'closestToPin', null)}
@@ -808,7 +813,7 @@ const MatchScoringCard = ({
                 <h5 className="text-sm font-semibold text-amber-900">Longest Drive Winner</h5>
               </div>
               <div className="grid grid-cols-2 gap-2 mb-3">
-                {tour.players.map((p) => {
+                {matchPlayers.map((p) => {
                   const winners = round.competitionWinners?.longestDrive?.[currentHole] || [];
                   const isWinner = winners.some(w => w.matchId === match.id && w.playerId === p.id);
                   return (
@@ -876,8 +881,9 @@ const MatchScoringCard = ({
               </div>
             </div>
           )}
-        </div>
-      )}
+          </div>
+        );
+      })()}
     </div>
   );
 };
