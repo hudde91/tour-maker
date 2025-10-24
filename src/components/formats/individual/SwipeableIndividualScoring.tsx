@@ -39,6 +39,7 @@ export const SwipeableIndividualScoring = ({
 
   const currentPlayer = tour.players[currentPlayerIndex];
   const currentHoleInfo = round.holeInfo[currentHole - 1];
+  const isLastPlayer = currentPlayerIndex === tour.players.length - 1;
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
@@ -312,14 +313,14 @@ export const SwipeableIndividualScoring = ({
               strokesGiven={round.settings.strokesGiven}
               round={round}
               tour={tour}
-              onCompetitionWinnerChange={(holeNumber, competitionType, winnerId, distance) => {
+              onCompetitionWinnerChange={isLastPlayer ? (holeNumber, competitionType, winnerId, distance) => {
                 updateCompetitionWinner.mutate({
                   holeNumber,
                   competitionType,
                   winnerId,
                   distance,
                 });
-              }}
+              } : undefined}
             />
           </div>
         )}
