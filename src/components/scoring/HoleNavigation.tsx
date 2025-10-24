@@ -125,11 +125,11 @@ export const HoleNavigation = ({
             <button
               onClick={() => currentHole > 1 && onHoleChange(currentHole - 1)}
               disabled={currentHole === 1}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
               aria-label="Previous hole"
             >
               <svg
-                className="w-4 h-4 text-slate-600"
+                className="w-5 h-5 text-slate-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -147,11 +147,11 @@ export const HoleNavigation = ({
                 currentHole < holes.length && onHoleChange(currentHole + 1)
               }
               disabled={currentHole === holes.length}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
               aria-label="Next hole"
             >
               <svg
-                className="w-4 h-4 text-slate-600"
+                className="w-5 h-5 text-slate-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

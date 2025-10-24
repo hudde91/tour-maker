@@ -215,17 +215,17 @@
      ============================================ */
 
   .nav-back {
-    /* Mobile defaults (320px+) */
-    @apply flex items-center justify-center w-10 h-10 
-           rounded-lg bg-white border border-slate-300 shadow-sm 
-           hover:bg-slate-50 focus:bg-slate-50 transition-colors 
+    /* Mobile defaults (320px+) - 44x44px touch target */
+    @apply flex items-center justify-center w-11 h-11
+           rounded-lg bg-white border border-slate-300 shadow-sm
+           hover:bg-slate-50 focus:bg-slate-50 transition-colors
            focus:ring-4 focus:ring-emerald-200 outline-none;
   }
 
   /* Tablet/Desktop enhancement (640px+) */
   @media (min-width: 640px) {
     .nav-back {
-      @apply w-11 h-11; /* Slightly larger on desktop */
+      @apply w-12 h-12; /* Larger on desktop */
     }
   }
 }

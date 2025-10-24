@@ -117,7 +117,7 @@ export const SwipeableIndividualScoring = ({
         <div className="flex">
           <button
             onClick={() => setActiveTab("score")}
-            className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
+            className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
               activeTab === "score"
                 ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
@@ -142,7 +142,7 @@ export const SwipeableIndividualScoring = ({
           </button>
           <button
             onClick={() => setActiveTab("holes")}
-            className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
+            className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
               activeTab === "holes"
                 ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
@@ -167,7 +167,7 @@ export const SwipeableIndividualScoring = ({
           </button>
           <button
             onClick={() => setActiveTab("leaderboard")}
-            className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
+            className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
               activeTab === "leaderboard"
                 ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
