@@ -116,7 +116,7 @@ export const VisualPointTally = ({
               left: `${(targetPoints / maxPoints) * 100}%`,
             }}
           >
-            <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap">
+            <div className="absolute left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap">
               Target: {targetPoints}
             </div>
           </div>

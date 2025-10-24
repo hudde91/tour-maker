@@ -504,7 +504,7 @@ const MatchScoringCard = ({
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            <span className="text-sm">Previous</span>
+            <span className="text-sm">Prev</span>
           </button>
 
           <div className="flex-1 text-center">
