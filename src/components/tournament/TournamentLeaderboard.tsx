@@ -717,25 +717,42 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
 
         roundsToInclude.forEach((round) => {
           if (round.competitionWinners) {
-            Object.entries(round.competitionWinners.closestToPin).forEach(([holeNum, winner]) => {
-              if (winner?.playerId) {
+            // For each hole, determine the overall winner from all match entries
+            Object.entries(round.competitionWinners.closestToPin).forEach(([holeNum, winners]) => {
+              if (winners && winners.length > 0) {
+                // Find the winner with the shortest distance (or first if no distances)
+                const overallWinner = winners.reduce((best, current) => {
+                  if (!best.distance && !current.distance) return best;
+                  if (!current.distance) return best;
+                  if (!best.distance) return current;
+                  return current.distance < best.distance ? current : best;
+                });
+
                 competitionWinners.push({
                   type: 'closestToPin',
                   holeNumber: parseInt(holeNum),
-                  playerId: winner.playerId,
+                  playerId: overallWinner.playerId,
                   roundName: round.name,
-                  distance: winner.distance,
+                  distance: overallWinner.distance,
                 });
               }
             });
-            Object.entries(round.competitionWinners.longestDrive).forEach(([holeNum, winner]) => {
-              if (winner?.playerId) {
+            Object.entries(round.competitionWinners.longestDrive).forEach(([holeNum, winners]) => {
+              if (winners && winners.length > 0) {
+                // Find the winner with the longest distance (or first if no distances)
+                const overallWinner = winners.reduce((best, current) => {
+                  if (!best.distance && !current.distance) return best;
+                  if (!current.distance) return best;
+                  if (!best.distance) return current;
+                  return current.distance > best.distance ? current : best;
+                });
+
                 competitionWinners.push({
                   type: 'longestDrive',
                   holeNumber: parseInt(holeNum),
-                  playerId: winner.playerId,
+                  playerId: overallWinner.playerId,
                   roundName: round.name,
-                  distance: winner.distance,
+                  distance: overallWinner.distance,
                 });
               }
             });
