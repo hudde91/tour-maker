@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Player, Tour } from "../../types";
 import { useRemovePlayer, useUpdatePlayer } from "../../hooks/usePlayers";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
@@ -9,7 +9,8 @@ interface PlayerCardProps {
   showTeamInfo?: boolean;
 }
 
-export const PlayerCard = ({
+// Memoize PlayerCard to prevent unnecessary re-renders when other players in the list change
+const PlayerCardComponent = ({
   player,
   tour,
   showTeamInfo = true,
@@ -285,3 +286,17 @@ export const PlayerCard = ({
     </>
   );
 };
+
+// Export memoized component with custom comparison function
+export const PlayerCard = memo(PlayerCardComponent, (prevProps, nextProps) => {
+  // Only re-render if player data, tour teams, or showTeamInfo changes
+  return (
+    prevProps.player.id === nextProps.player.id &&
+    prevProps.player.name === nextProps.player.name &&
+    prevProps.player.handicap === nextProps.player.handicap &&
+    prevProps.player.teamId === nextProps.player.teamId &&
+    prevProps.showTeamInfo === nextProps.showTeamInfo &&
+    // Check if team data has changed (for captain status and team info)
+    JSON.stringify(prevProps.tour.teams) === JSON.stringify(nextProps.tour.teams)
+  );
+});
