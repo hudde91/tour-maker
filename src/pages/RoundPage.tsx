@@ -82,7 +82,7 @@ export const RoundPage = () => {
   }, []);
 
   const handlePlayerScoreChange = useCallback(
-    async (playerId: string, holeIndex: number, score: number) => {
+    async (playerId: string, holeIndex: number, score: number | null) => {
       if (!round) return;
       const playerScore = round.scores[playerId];
       if (!playerScore) return;
@@ -102,7 +102,7 @@ export const RoundPage = () => {
   const handleTeamScoreChange = useCallback(
     async (teamId: string, holeIndex: number, score: number) => {
       if (!tour || !round) return;
-      const teamScore = storage.getTeamScore(tour, round.id, teamId);
+      const teamScore = storage.getTeamScore(tour.id, round.id, teamId);
       const currentScores = teamScore?.scores || new Array(round.holes).fill(0);
       const newScores = [...currentScores];
       newScores[holeIndex] = score;
