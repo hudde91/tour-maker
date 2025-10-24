@@ -2,7 +2,7 @@ import { getScoreInfo } from "@/lib/scoreUtils";
 import { storage } from "@/lib/storage";
 import { formatUtils } from "@/types/formats";
 import { Tour, Round, Team } from "@/types";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { HoleNavigation } from "../scoring/HoleNavigation";
 import { LiveLeaderboard } from "../scoring/LiveLeaderboard";
 interface SwipeableTeamScoringProps {
@@ -372,7 +372,7 @@ export const SwipeableTeamScoring = ({
                 onHoleChange={setCurrentHole}
                 playerScores={{
                   [currentTeam.id]:
-                    storage.getTeamScore(tour, round.id, currentTeam.id)
+                    storage.getTeamScore(tour.id, round.id, currentTeam.id)
                       ?.scores || [],
                 }}
               />
@@ -409,7 +409,7 @@ const TeamScoreCard = ({
   holeInfo,
   onScoreChange,
 }: TeamScoreCardProps) => {
-  const teamScore = storage.getTeamScore(tour, round.id, team.id);
+  const teamScore = storage.getTeamScore(tour.id, round.id, team.id);
   const currentScore = teamScore?.scores[currentHole - 1] || 0;
   const [localScore, setLocalScore] = useState(currentScore);
   const par = holeInfo.par;
