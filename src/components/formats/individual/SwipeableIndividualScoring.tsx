@@ -569,6 +569,8 @@ const PlayerScoreCard = ({
                   } ${
                 localScore === option.score
                   ? `${option.bg} ${option.text} border-emerald-400 ring-2 ring-emerald-300 scale-105`
+                  : option.score === par
+                  ? "bg-blue-50 text-slate-700 border-blue-300 active:border-blue-400"
                   : "bg-white text-slate-700 border-slate-300 active:border-slate-400"
               }`}
             >
