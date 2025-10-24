@@ -171,6 +171,8 @@ export const updateTeamScore = (
 
 /**
  * Update competition winner for a hole
+ * For individual rounds, pass no matchId (stores one entry per hole)
+ * For match play rounds, pass matchId (stores one entry per match per hole)
  */
 export const updateCompetitionWinner = (
   tourId: string,
@@ -178,7 +180,8 @@ export const updateCompetitionWinner = (
   holeNumber: number,
   competitionType: 'closestToPin' | 'longestDrive',
   winnerId: string | null,
-  distance?: number
+  distance?: number,
+  matchId?: string
 ): void => {
   const tour = getTour(tourId);
   if (!tour) return;
@@ -194,14 +197,34 @@ export const updateCompetitionWinner = (
     };
   }
 
-  // Update the winner for this hole and competition type
+  // Initialize array for this hole if it doesn't exist
+  if (!round.competitionWinners[competitionType][holeNumber]) {
+    round.competitionWinners[competitionType][holeNumber] = [];
+  }
+
+  const entries = round.competitionWinners[competitionType][holeNumber];
+
+  // Find existing entry for this match (or no matchId for individual)
+  const existingIndex = entries.findIndex(entry => entry.matchId === matchId);
+
   if (winnerId === null) {
-    round.competitionWinners[competitionType][holeNumber] = null;
+    // Remove entry if winner is null
+    if (existingIndex >= 0) {
+      entries.splice(existingIndex, 1);
+    }
   } else {
-    round.competitionWinners[competitionType][holeNumber] = {
+    // Update or add entry
+    const newEntry = {
       playerId: winnerId,
       distance: distance,
+      ...(matchId && { matchId }),
     };
+
+    if (existingIndex >= 0) {
+      entries[existingIndex] = newEntry;
+    } else {
+      entries.push(newEntry);
+    }
   }
 
   saveTour(tour);

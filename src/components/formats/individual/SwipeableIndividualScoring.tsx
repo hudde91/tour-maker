@@ -418,9 +418,11 @@ const PlayerScoreCard = ({
   // Reset local score and distances when hole changes
   useEffect(() => {
     setLocalScore(playerScore?.scores[currentHole - 1] ?? 0);
-    // Load existing distances if they exist
-    const ctpWinner = round.competitionWinners?.closestToPin?.[currentHole];
-    const ldWinner = round.competitionWinners?.longestDrive?.[currentHole];
+    // Load existing distances if they exist (individual rounds have single entry)
+    const ctpWinners = round.competitionWinners?.closestToPin?.[currentHole] || [];
+    const ldWinners = round.competitionWinners?.longestDrive?.[currentHole] || [];
+    const ctpWinner = ctpWinners[0]; // Individual rounds have only one entry
+    const ldWinner = ldWinners[0];
     setClosestToPinDistance(ctpWinner?.distance?.toString() || '');
     setLongestDriveDistance(ldWinner?.distance?.toString() || '');
   }, [currentHole, playerScore, round.competitionWinners]);
@@ -666,7 +668,8 @@ const PlayerScoreCard = ({
               </div>
               <div className="grid grid-cols-2 gap-2 mb-3">
                 {tour.players.map((p) => {
-                  const isWinner = round.competitionWinners?.closestToPin?.[currentHole]?.playerId === p.id;
+                  const winners = round.competitionWinners?.closestToPin?.[currentHole] || [];
+                  const isWinner = winners.some(w => w.playerId === p.id);
                   return (
                     <button
                       key={p.id}
@@ -699,7 +702,7 @@ const PlayerScoreCard = ({
                       ? "opacity-50 cursor-not-allowed"
                       : ""
                   } ${
-                    !round.competitionWinners?.closestToPin?.[currentHole]
+                    !(round.competitionWinners?.closestToPin?.[currentHole] || []).length
                       ? "bg-slate-100 text-slate-700 border-slate-400"
                       : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
                   }`}
@@ -717,7 +720,8 @@ const PlayerScoreCard = ({
                   onChange={(e) => setClosestToPinDistance(e.target.value)}
                   onBlur={() => {
                     // Update when user finishes typing
-                    const currentWinner = round.competitionWinners?.closestToPin?.[currentHole];
+                    const winners = round.competitionWinners?.closestToPin?.[currentHole] || [];
+                    const currentWinner = winners[0]; // Individual rounds have only one entry
                     if (currentWinner?.playerId) {
                       const distance = closestToPinDistance ? parseFloat(closestToPinDistance) : undefined;
                       onCompetitionWinnerChange(currentHole, 'closestToPin', currentWinner.playerId, distance);
@@ -743,7 +747,8 @@ const PlayerScoreCard = ({
               </div>
               <div className="grid grid-cols-2 gap-2 mb-3">
                 {tour.players.map((p) => {
-                  const isWinner = round.competitionWinners?.longestDrive?.[currentHole]?.playerId === p.id;
+                  const winners = round.competitionWinners?.longestDrive?.[currentHole] || [];
+                  const isWinner = winners.some(w => w.playerId === p.id);
                   return (
                     <button
                       key={p.id}
@@ -776,7 +781,7 @@ const PlayerScoreCard = ({
                       ? "opacity-50 cursor-not-allowed"
                       : ""
                   } ${
-                    !round.competitionWinners?.longestDrive?.[currentHole]
+                    !(round.competitionWinners?.longestDrive?.[currentHole] || []).length
                       ? "bg-slate-100 text-slate-700 border-slate-400"
                       : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
                   }`}
@@ -794,7 +799,8 @@ const PlayerScoreCard = ({
                   onChange={(e) => setLongestDriveDistance(e.target.value)}
                   onBlur={() => {
                     // Update when user finishes typing
-                    const currentWinner = round.competitionWinners?.longestDrive?.[currentHole];
+                    const winners = round.competitionWinners?.longestDrive?.[currentHole] || [];
+                    const currentWinner = winners[0]; // Individual rounds have only one entry
                     if (currentWinner?.playerId) {
                       const distance = longestDriveDistance ? parseFloat(longestDriveDistance) : undefined;
                       onCompetitionWinnerChange(currentHole, 'longestDrive', currentWinner.playerId, distance);
