@@ -47,9 +47,9 @@ export const TourLeaderboardPage = () => {
     );
   }
 
-  // Check if tournament has any completed rounds
+  // Check if tournament has any completed or in-progress rounds
   const hasCompletedRounds = tour.rounds.some(
-    (r) => r.status === "completed" || r.completedAt
+    (r) => r.status === "completed" || r.completedAt || r.status === "in-progress"
   );
 
   const isRyderCup = tour.format === "ryder-cup";
