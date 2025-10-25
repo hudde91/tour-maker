@@ -8,11 +8,12 @@ import { test, expect } from '@playwright/test';
 test.describe('Tour Creation', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    // Clear localStorage before each test and set hasSeenWelcome to prevent modal
+    // Clear localStorage and set hasSeenWelcome to prevent modal, then reload
     await page.evaluate(() => {
       localStorage.clear();
       localStorage.setItem('hasSeenWelcome', 'true');
     });
+    await page.reload();
   });
 
   test('should create a new individual tour', async ({ page }) => {
@@ -150,6 +151,7 @@ test.describe('Tour Navigation', () => {
       localStorage.clear();
       localStorage.setItem('hasSeenWelcome', 'true');
     });
+    await page.reload();
   });
 
   test('should navigate between tour tabs', async ({ page }) => {

@@ -12,6 +12,7 @@ test.describe('Scoring Workflow', () => {
       localStorage.clear();
       localStorage.setItem('hasSeenWelcome', 'true');
     });
+    await page.reload();
 
     // Set up a tour with players and a round
     await page.click('text=Create Tour');
@@ -165,6 +166,7 @@ test.describe('Team Scoring', () => {
       localStorage.clear();
       localStorage.setItem('hasSeenWelcome', 'true');
     });
+    await page.reload();
 
     // Set up a team tour
     await page.click('text=Create Tour');

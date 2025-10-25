@@ -15,6 +15,7 @@ test.describe('Mobile Gestures', () => {
       localStorage.clear();
       localStorage.setItem('hasSeenWelcome', 'true');
     });
+    await page.reload();
 
     // Create a basic tour with a round
     await page.click('text=Create Tour');
@@ -271,6 +272,7 @@ test.describe('Data Persistence', () => {
       localStorage.clear();
       localStorage.setItem('hasSeenWelcome', 'true');
     });
+    await page.reload();
 
     // Create a tour
     await page.click('text=Create Tour');
@@ -309,6 +311,7 @@ test.describe('Data Persistence', () => {
       localStorage.clear();
       localStorage.setItem('hasSeenWelcome', 'true');
     });
+    await page.reload();
 
     // Set up tour and round
     await page.click('text=Create Tour');
