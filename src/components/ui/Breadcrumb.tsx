@@ -14,17 +14,17 @@ interface BreadcrumbProps {
 export const Breadcrumb = ({ items, className = "" }: BreadcrumbProps) => {
   return (
     <nav
-      className={`flex items-center space-x-2 text-sm ${className}`}
+      className={`flex flex-wrap items-center gap-2 text-sm ${className}`}
       aria-label="Breadcrumb"
     >
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
 
         return (
-          <div key={index} className="flex items-center">
+          <div key={index} className="flex items-center gap-2">
             {index > 0 && (
               <svg
-                className="w-4 h-4 text-slate-400 mx-1"
+                className="w-4 h-4 text-slate-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -44,14 +44,14 @@ export const Breadcrumb = ({ items, className = "" }: BreadcrumbProps) => {
                 className="flex items-center gap-1.5 text-slate-600 hover:text-emerald-700 transition-colors font-medium"
               >
                 {item.icon && <span className="text-base">{item.icon}</span>}
-                <span className="truncate max-w-[150px] sm:max-w-none">
+                <span className="truncate max-w-[120px] sm:max-w-[200px] md:max-w-none">
                   {item.label}
                 </span>
               </Link>
             ) : (
               <span className="flex items-center gap-1.5 text-slate-900 font-semibold">
                 {item.icon && <span className="text-base">{item.icon}</span>}
-                <span className="truncate max-w-[150px] sm:max-w-none">
+                <span className="truncate max-w-[120px] sm:max-w-[200px] md:max-w-none">
                   {item.label}
                 </span>
               </span>
