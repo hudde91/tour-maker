@@ -39,8 +39,8 @@ test.describe('Scoring Workflow', () => {
     // Create round
     await page.click('[data-testid="tab-rounds"]');
     await page.click('[data-testid="create-round-button"]');
-    await page.click('text=9 Holes');
-    await page.click('button:has-text("Create Round")');
+    await page.click('[data-testid="holes-9"]');
+    await page.click('[data-testid="submit-round-button"]');
   });
 
   test('should start a round and enter scores', async ({ page }) => {
@@ -209,8 +209,8 @@ test.describe('Team Scoring', () => {
     // Create best ball round
     await page.click('[data-testid="tab-rounds"]');
     await page.click('[data-testid="create-round-button"]');
-    await page.click('text=Best Ball');
-    await page.click('button:has-text("Create Round")');
+    await page.click('[data-testid="format-best-ball"]');
+    await page.click('[data-testid="submit-round-button"]');
   });
 
   test('should score best ball format correctly', async ({ page }) => {

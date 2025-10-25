@@ -34,7 +34,7 @@ test.describe('Mobile Gestures', () => {
 
     await page.click('[data-testid="tab-rounds"]');
     await page.click('[data-testid="create-round-button"]');
-    await page.click('button:has-text("Create Round")');
+    await page.click('[data-testid="submit-round-button"]');
     await page.click('button:has-text("Start Round")');
   });
 
@@ -336,7 +336,7 @@ test.describe('Data Persistence', () => {
 
     await page.click('[data-testid="tab-rounds"]');
     await page.click('[data-testid="create-round-button"]');
-    await page.click('button:has-text("Create Round")');
+    await page.click('[data-testid="submit-round-button"]');
     await page.click('button:has-text("Start Round")');
 
     // Enter some scores

@@ -120,14 +120,14 @@ test.describe('Tour Creation', () => {
     await page.click('[data-testid="create-round-button"]');
 
     // Configure round
-    await page.click('text=18 Holes');
+    await page.click('[data-testid="holes-18"]');
     await page.click('text=Stroke Play');
 
     // Enable handicaps
     await page.check('input[type="checkbox"]:has-text("Use Handicaps")');
 
     // Create round
-    await page.click('button:has-text("Create Round")');
+    await page.click('[data-testid="submit-round-button"]');
 
     // Verify round was created
     await expect(page.locator('text=Round 1')).toBeVisible();
