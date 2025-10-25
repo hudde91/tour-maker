@@ -285,6 +285,7 @@ export const CreateRoundPage = () => {
                       .map(([key, format]) => (
                         <label
                           key={key}
+                          data-testid={`format-${key}`}
                           className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
                             formData.format === key
                               ? "border-emerald-500 bg-emerald-50"
@@ -303,6 +304,7 @@ export const CreateRoundPage = () => {
                               })
                             }
                             className="sr-only"
+                            data-testid={`format-${key}-radio`}
                           />
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
@@ -343,6 +345,7 @@ export const CreateRoundPage = () => {
                         .map(([key, format]) => (
                           <label
                             key={key}
+                            data-testid={`format-${key}`}
                             className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
                               formData.format === key
                                 ? "border-amber-500 bg-amber-50"
@@ -361,6 +364,7 @@ export const CreateRoundPage = () => {
                                 })
                               }
                               className="sr-only"
+                              data-testid={`format-${key}-radio`}
                             />
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
@@ -416,6 +420,7 @@ export const CreateRoundPage = () => {
                       key={holeCount}
                       type="button"
                       onClick={() => handleHoleCountChange(holeCount)}
+                      data-testid={`holes-${holeCount}`}
                       className={`flex-1 p-3 border-2 rounded-lg font-medium transition-all ${
                         formData.holes === holeCount
                           ? "border-emerald-500 bg-emerald-50 text-emerald-700"
@@ -761,6 +766,7 @@ export const CreateRoundPage = () => {
                 !formData.courseName.trim()
               }
               className="btn-primary flex-1 disabled:opacity-50"
+              data-testid="submit-round-button"
             >
               {createRound.isPending ? "Creating Round..." : "Create Round"}
             </button>
