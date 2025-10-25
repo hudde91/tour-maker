@@ -8,7 +8,10 @@ import { test, expect } from '@playwright/test';
 test.describe('Scoring Workflow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('hasSeenWelcome', 'true');
+    });
 
     // Set up a tour with players and a round
     await page.click('text=Create Tour');
@@ -158,7 +161,10 @@ test.describe('Scoring Workflow', () => {
 test.describe('Team Scoring', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('hasSeenWelcome', 'true');
+    });
 
     // Set up a team tour
     await page.click('text=Create Tour');

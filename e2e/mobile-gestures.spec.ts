@@ -11,7 +11,10 @@ test.use({ ...devices['iPhone 12'] });
 test.describe('Mobile Gestures', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('hasSeenWelcome', 'true');
+    });
 
     // Create a basic tour with a round
     await page.click('text=Create Tour');
@@ -264,7 +267,10 @@ test.describe('Mobile Gestures', () => {
 test.describe('Data Persistence', () => {
   test('should persist tour data across page refreshes', async ({ page }) => {
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('hasSeenWelcome', 'true');
+    });
 
     // Create a tour
     await page.click('text=Create Tour');
@@ -299,7 +305,10 @@ test.describe('Data Persistence', () => {
 
   test('should persist scoring data during round', async ({ page }) => {
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('hasSeenWelcome', 'true');
+    });
 
     // Set up tour and round
     await page.click('text=Create Tour');
