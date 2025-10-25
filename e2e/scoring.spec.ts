@@ -24,7 +24,7 @@ test.describe('Scoring Workflow', () => {
     await page.waitForURL(/\/tour\//);
 
     // Add players
-    await page.click('text=Players');
+    await page.click('[data-testid="tab-players"]');
     await page.click('[data-testid="add-player-button"]');
     await page.fill('[data-testid="player-name-input"]', 'Player 1');
     await page.fill('[data-testid="player-handicap-input"]', '10');
@@ -37,8 +37,8 @@ test.describe('Scoring Workflow', () => {
 
 
     // Create round
-    await page.click('text=Rounds');
-    await page.click('text=Create Round');
+    await page.click('[data-testid="tab-rounds"]');
+    await page.click('[data-testid="create-round-button"]');
     await page.click('text=9 Holes');
     await page.click('button:has-text("Create Round")');
   });
@@ -110,7 +110,7 @@ test.describe('Scoring Workflow', () => {
     }
 
     // View leaderboard
-    await page.click('text=Leaderboard');
+    await page.click('[data-testid="tab-leaderboard"]');
 
     // Verify players are ranked correctly
     const leaderboardItems = page.locator('[data-testid="leaderboard-entry"]');
@@ -188,7 +188,7 @@ test.describe('Team Scoring', () => {
     await page.fill('input[name="teamName"]', 'Team A');
     await page.click('button:has-text("Save")');
 
-    await page.click('text=Players');
+    await page.click('[data-testid="tab-players"]');
     await page.click('[data-testid="add-player-button"]');
     await page.fill('[data-testid="player-name-input"]', 'Player A1');
     await page.fill('[data-testid="player-handicap-input"]', '10');
@@ -207,8 +207,8 @@ test.describe('Team Scoring', () => {
     await page.click('text=Team A');
 
     // Create best ball round
-    await page.click('text=Rounds');
-    await page.click('text=Create Round');
+    await page.click('[data-testid="tab-rounds"]');
+    await page.click('[data-testid="create-round-button"]');
     await page.click('text=Best Ball');
     await page.click('button:has-text("Create Round")');
   });

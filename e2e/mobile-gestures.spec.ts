@@ -26,14 +26,14 @@ test.describe('Mobile Gestures', () => {
 
     await page.waitForURL(/\/tour\//);
 
-    await page.click('text=Players');
+    await page.click('[data-testid="tab-players"]');
     await page.click('[data-testid="add-player-button"]');
     await page.fill('[data-testid="player-name-input"]', 'Mobile Player');
     await page.fill('[data-testid="player-handicap-input"]', '10');
     await page.click('[data-testid="submit-player-button"]');
 
-    await page.click('text=Rounds');
-    await page.click('text=Create Round');
+    await page.click('[data-testid="tab-rounds"]');
+    await page.click('[data-testid="create-round-button"]');
     await page.click('button:has-text("Create Round")');
     await page.click('button:has-text("Start Round")');
   });
@@ -287,7 +287,7 @@ test.describe('Data Persistence', () => {
     await page.waitForURL(/\/tour\//);
 
     // Add a player
-    await page.click('text=Players');
+    await page.click('[data-testid="tab-players"]');
     await page.click('[data-testid="add-player-button"]');
     await page.fill('[data-testid="player-name-input"]', 'Test Player');
     await page.fill('[data-testid="player-handicap-input"]', '12');
@@ -304,7 +304,7 @@ test.describe('Data Persistence', () => {
 
     // Navigate back to players
     await page.click('text=Persistence Test');
-    await page.click('text=Players');
+    await page.click('[data-testid="tab-players"]');
 
     // Verify player still exists
     await expect(page.locator('text=Test Player')).toBeVisible();
@@ -328,14 +328,14 @@ test.describe('Data Persistence', () => {
 
     await page.waitForURL(/\/tour\//);
 
-    await page.click('text=Players');
+    await page.click('[data-testid="tab-players"]');
     await page.click('[data-testid="add-player-button"]');
     await page.fill('[data-testid="player-name-input"]', 'Scorer');
     await page.fill('[data-testid="player-handicap-input"]', '0');
     await page.click('[data-testid="submit-player-button"]');
 
-    await page.click('text=Rounds');
-    await page.click('text=Create Round');
+    await page.click('[data-testid="tab-rounds"]');
+    await page.click('[data-testid="create-round-button"]');
     await page.click('button:has-text("Create Round")');
     await page.click('button:has-text("Start Round")');
 

@@ -81,7 +81,7 @@ test.describe('Tour Creation', () => {
     await page.waitForURL(/\/tour\//);
 
     // Navigate to players tab
-    await page.click('text=Players');
+    await page.click('[data-testid="tab-players"]');
 
     // Add first player
     await page.click('[data-testid="add-player-button"]');
@@ -114,10 +114,10 @@ test.describe('Tour Creation', () => {
     await page.waitForURL(/\/tour\//);
 
     // Navigate to rounds tab
-    await page.click('text=Rounds');
+    await page.click('[data-testid="tab-rounds"]');
 
     // Create new round
-    await page.click('text=Create Round');
+    await page.click('[data-testid="create-round-button"]');
 
     // Configure round
     await page.click('text=18 Holes');
@@ -181,16 +181,16 @@ test.describe('Tour Navigation', () => {
     await page.waitForURL(/\/tour\//);
 
     // Test navigation between tabs
-    await page.click('text=Players');
+    await page.click('[data-testid="tab-players"]');
     await expect(page).toHaveURL(/\/players$/);
 
-    await page.click('text=Rounds');
+    await page.click('[data-testid="tab-rounds"]');
     await expect(page).toHaveURL(/\/rounds$/);
 
-    await page.click('text=Leaderboard');
+    await page.click('[data-testid="tab-leaderboard"]');
     await expect(page).toHaveURL(/\/leaderboard$/);
 
-    await page.click('text=Settings');
+    await page.click('[data-testid="tab-settings"]');
     await expect(page).toHaveURL(/\/settings$/);
   });
 
