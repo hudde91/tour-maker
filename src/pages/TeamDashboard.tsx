@@ -421,7 +421,7 @@ interface PlayerDetailViewProps {
 }
 
 const PlayerDetailView = ({ playerStats, tour, team }: PlayerDetailViewProps) => {
-  const { player, roundsPlayed, averageScore, bestScore, toPar, bestRound } = playerStats;
+  const { player, roundsPlayed, averageScore, bestScore, toPar } = playerStats;
   const isCaptain = team.captainId === player.id;
 
   // Get all rounds for this player (including Ryder Cup rounds)
@@ -554,7 +554,7 @@ const PlayerDetailView = ({ playerStats, tour, team }: PlayerDetailViewProps) =>
           <div className="card-elevated card-spacing">
             <h3 className="text-xl font-bold text-slate-900 mb-4">Round History</h3>
             <div className="space-y-3">
-              {playerRounds.map((roundData, index) => (
+              {playerRounds.map((roundData: any, index: number) => (
                 <div
                   key={roundData.round.id}
                   className="p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors"
