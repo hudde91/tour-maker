@@ -30,6 +30,7 @@ export const BottomNav = ({ tabs }: BottomNavProps) => {
             <Link
               key={tab.id}
               to={tab.path}
+              data-testid={`tab-${tab.id}`}
               className={`flex flex-col items-center justify-center py-2 px-1 transition-all duration-200 relative ${
                 isActive
                   ? "text-emerald-600"

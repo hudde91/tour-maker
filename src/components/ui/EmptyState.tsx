@@ -6,6 +6,7 @@ interface EmptyStateProps {
     label: string;
     onClick: () => void;
     variant?: "primary" | "secondary";
+    testId?: string;
   };
   secondaryAction?: {
     label: string;
@@ -80,6 +81,7 @@ export const EmptyState = ({
               className={
                 action.variant === "secondary" ? "btn-secondary" : "btn-primary"
               }
+              data-testid={action.testId}
             >
               {action.label}
             </button>

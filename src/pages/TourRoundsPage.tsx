@@ -70,6 +70,7 @@ export const TourRoundsPage = () => {
           <Link
             to={`/tour/${tourId}/create-round`}
             className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm shadow-lg"
+            data-testid="create-round-button"
           >
             <span className="text-base">➕</span>
             <span>Add Round</span>
@@ -87,6 +88,7 @@ export const TourRoundsPage = () => {
               label: "Create First Round",
               onClick: () => navigate(`/tour/${tourId}/create-round`),
               variant: "primary",
+              testId: "create-first-round-button",
             }}
             size="large"
           />
