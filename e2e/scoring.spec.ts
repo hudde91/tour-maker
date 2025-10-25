@@ -15,7 +15,7 @@ test.describe('Scoring Workflow', () => {
     await page.reload();
 
     // Set up a tour with players and a round
-    await page.click('text=Create Tour');
+    await page.click('text=Create Tournament');
     await page.fill('input[name="name"]', 'Scoring Test Tour');
     await page.click('text=Individual');
     await page.click('button:has-text("Create")');
@@ -169,7 +169,7 @@ test.describe('Team Scoring', () => {
     await page.reload();
 
     // Set up a team tour
-    await page.click('text=Create Tour');
+    await page.click('text=Create Tournament');
     await page.fill('input[name="name"]', 'Team Scoring Tour');
     await page.click('text=Team');
     await page.click('button:has-text("Create")');

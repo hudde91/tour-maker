@@ -18,7 +18,7 @@ test.describe('Tour Creation', () => {
 
   test('should create a new individual tour', async ({ page }) => {
     // Click create tour button
-    await page.click('text=Create Tour');
+    await page.click('text=Create Tournament');
 
     // Fill in tour details
     await page.fill('input[name="name"]', 'Summer Championship');
@@ -36,7 +36,7 @@ test.describe('Tour Creation', () => {
 
   test('should create a team tour and add teams', async ({ page }) => {
     // Create tour
-    await page.click('text=Create Tour');
+    await page.click('text=Create Tournament');
     await page.fill('input[name="name"]', 'Team Championship');
     await page.click('text=Team');
     await page.click('button:has-text("Create")');
@@ -64,7 +64,7 @@ test.describe('Tour Creation', () => {
 
   test('should add players to a tour', async ({ page }) => {
     // Create tour
-    await page.click('text=Create Tour');
+    await page.click('text=Create Tournament');
     await page.fill('input[name="name"]', 'Player Test Tour');
     await page.click('text=Individual');
     await page.click('button:has-text("Create")');
@@ -95,7 +95,7 @@ test.describe('Tour Creation', () => {
 
   test('should create and configure a round', async ({ page }) => {
     // Create tour
-    await page.click('text=Create Tour');
+    await page.click('text=Create Tournament');
     await page.fill('input[name="name"]', 'Round Test Tour');
     await page.click('text=Individual');
     await page.click('button:has-text("Create")');
@@ -122,7 +122,7 @@ test.describe('Tour Creation', () => {
 
   test('should delete a tour', async ({ page }) => {
     // Create tour
-    await page.click('text=Create Tour');
+    await page.click('text=Create Tournament');
     await page.fill('input[name="name"]', 'Tour to Delete');
     await page.click('text=Individual');
     await page.click('button:has-text("Create")');
@@ -156,7 +156,7 @@ test.describe('Tour Navigation', () => {
 
   test('should navigate between tour tabs', async ({ page }) => {
     // Create a tour
-    await page.click('text=Create Tour');
+    await page.click('text=Create Tournament');
     await page.fill('input[name="name"]', 'Navigation Test');
     await page.click('text=Individual');
     await page.click('button:has-text("Create")');
@@ -177,7 +177,7 @@ test.describe('Tour Navigation', () => {
 
   test('should show breadcrumb navigation', async ({ page }) => {
     // Create a tour
-    await page.click('text=Create Tour');
+    await page.click('text=Create Tournament');
     await page.fill('input[name="name"]', 'Breadcrumb Test');
     await page.click('text=Individual');
     await page.click('button:has-text("Create")');

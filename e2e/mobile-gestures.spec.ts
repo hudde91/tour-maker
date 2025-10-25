@@ -18,7 +18,7 @@ test.describe('Mobile Gestures', () => {
     await page.reload();
 
     // Create a basic tour with a round
-    await page.click('text=Create Tour');
+    await page.click('text=Create Tournament');
     await page.fill('input[name="name"]', 'Mobile Test Tour');
     await page.click('text=Individual');
     await page.click('button:has-text("Create")');
@@ -275,7 +275,7 @@ test.describe('Data Persistence', () => {
     await page.reload();
 
     // Create a tour
-    await page.click('text=Create Tour');
+    await page.click('text=Create Tournament');
     await page.fill('input[name="name"]', 'Persistence Test');
     await page.click('text=Individual');
     await page.click('button:has-text("Create")');
@@ -314,7 +314,7 @@ test.describe('Data Persistence', () => {
     await page.reload();
 
     // Set up tour and round
-    await page.click('text=Create Tour');
+    await page.click('text=Create Tournament');
     await page.fill('input[name="name"]', 'Score Persistence');
     await page.click('text=Individual');
     await page.click('button:has-text("Create")');
