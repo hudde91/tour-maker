@@ -19,9 +19,12 @@ test.describe('Mobile Gestures', () => {
 
     // Create a basic tour with a round
     await page.click('text=Create Tournament');
-    await page.fill('input[name="name"]', 'Mobile Test Tour');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.waitForURL('/create');
+
+    await page.fill('input[type="text"]', 'Mobile Test Tour');
+    await page.click('button[type="submit"]:has-text("Create Tournament")');
+
+    await page.waitForURL(/\/tour\//);
 
     await page.click('text=Players');
     await page.click('text=Add Player');
@@ -276,9 +279,12 @@ test.describe('Data Persistence', () => {
 
     // Create a tour
     await page.click('text=Create Tournament');
-    await page.fill('input[name="name"]', 'Persistence Test');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.waitForURL('/create');
+
+    await page.fill('input[type="text"]', 'Persistence Test');
+    await page.click('button[type="submit"]:has-text("Create Tournament")');
+
+    await page.waitForURL(/\/tour\//);
 
     // Add a player
     await page.click('text=Players');
@@ -315,9 +321,12 @@ test.describe('Data Persistence', () => {
 
     // Set up tour and round
     await page.click('text=Create Tournament');
-    await page.fill('input[name="name"]', 'Score Persistence');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.waitForURL('/create');
+
+    await page.fill('input[type="text"]', 'Score Persistence');
+    await page.click('button[type="submit"]:has-text("Create Tournament")');
+
+    await page.waitForURL(/\/tour\//);
 
     await page.click('text=Players');
     await page.click('text=Add Player');

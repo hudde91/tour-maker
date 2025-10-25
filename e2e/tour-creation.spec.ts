@@ -20,14 +20,17 @@ test.describe('Tour Creation', () => {
     // Click create tour button
     await page.click('text=Create Tournament');
 
-    // Fill in tour details
-    await page.fill('input[name="name"]', 'Summer Championship');
+    // Wait for navigation to create page
+    await page.waitForURL('/create');
 
-    // Select individual format
-    await page.click('text=Individual');
+    // Fill in tour details
+    await page.fill('input[type="text"]', 'Summer Championship');
+
+    // Select individual format (already selected by default)
+    // Individual Championship is the default selection
 
     // Submit the form
-    await page.click('button:has-text("Create")');
+    await page.click('button[type="submit"]:has-text("Create Tournament")');
 
     // Verify we're on the tour page
     await expect(page).toHaveURL(/\/tour\//);
@@ -37,9 +40,14 @@ test.describe('Tour Creation', () => {
   test('should create a team tour and add teams', async ({ page }) => {
     // Create tour
     await page.click('text=Create Tournament');
-    await page.fill('input[name="name"]', 'Team Championship');
-    await page.click('text=Team');
-    await page.click('button:has-text("Create")');
+    await page.waitForURL('/create');
+
+    await page.fill('input[type="text"]', 'Team Championship');
+    await page.click('text=Team Competition');
+    await page.click('button[type="submit"]:has-text("Create Tournament")');
+
+    // Wait for navigation to tour page
+    await page.waitForURL(/\/tour\//);
 
     // Navigate to teams tab
     await page.click('text=Teams');
@@ -65,9 +73,12 @@ test.describe('Tour Creation', () => {
   test('should add players to a tour', async ({ page }) => {
     // Create tour
     await page.click('text=Create Tournament');
-    await page.fill('input[name="name"]', 'Player Test Tour');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.waitForURL('/create');
+
+    await page.fill('input[type="text"]', 'Player Test Tour');
+    await page.click('button[type="submit"]:has-text("Create Tournament")');
+
+    await page.waitForURL(/\/tour\//);
 
     // Navigate to players tab
     await page.click('text=Players');
@@ -96,9 +107,12 @@ test.describe('Tour Creation', () => {
   test('should create and configure a round', async ({ page }) => {
     // Create tour
     await page.click('text=Create Tournament');
-    await page.fill('input[name="name"]', 'Round Test Tour');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.waitForURL('/create');
+
+    await page.fill('input[type="text"]', 'Round Test Tour');
+    await page.click('button[type="submit"]:has-text("Create Tournament")');
+
+    await page.waitForURL(/\/tour\//);
 
     // Navigate to rounds tab
     await page.click('text=Rounds');
@@ -123,9 +137,12 @@ test.describe('Tour Creation', () => {
   test('should delete a tour', async ({ page }) => {
     // Create tour
     await page.click('text=Create Tournament');
-    await page.fill('input[name="name"]', 'Tour to Delete');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.waitForURL('/create');
+
+    await page.fill('input[type="text"]', 'Tour to Delete');
+    await page.click('button[type="submit"]:has-text("Create Tournament")');
+
+    await page.waitForURL(/\/tour\//);
 
     // Go back to home
     await page.click('text=Tours');
@@ -157,9 +174,12 @@ test.describe('Tour Navigation', () => {
   test('should navigate between tour tabs', async ({ page }) => {
     // Create a tour
     await page.click('text=Create Tournament');
-    await page.fill('input[name="name"]', 'Navigation Test');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.waitForURL('/create');
+
+    await page.fill('input[type="text"]', 'Navigation Test');
+    await page.click('button[type="submit"]:has-text("Create Tournament")');
+
+    await page.waitForURL(/\/tour\//);
 
     // Test navigation between tabs
     await page.click('text=Players');
@@ -178,9 +198,12 @@ test.describe('Tour Navigation', () => {
   test('should show breadcrumb navigation', async ({ page }) => {
     // Create a tour
     await page.click('text=Create Tournament');
-    await page.fill('input[name="name"]', 'Breadcrumb Test');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.waitForURL('/create');
+
+    await page.fill('input[type="text"]', 'Breadcrumb Test');
+    await page.click('button[type="submit"]:has-text("Create Tournament")');
+
+    await page.waitForURL(/\/tour\//);
 
     // Verify breadcrumbs exist
     await expect(page.locator('nav[aria-label="Breadcrumb"]')).toBeVisible();
