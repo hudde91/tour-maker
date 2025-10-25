@@ -133,6 +133,8 @@ export const CreateTourPage = () => {
                   <label className="form-label">Tournament Name *</label>
                   <input
                     type="text"
+                    name="tournamentName"
+                    data-testid="tournament-name-input"
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
@@ -150,6 +152,8 @@ export const CreateTourPage = () => {
                 <div className="form-group">
                   <label className="form-label">Description</label>
                   <textarea
+                    name="tournamentDescription"
+                    data-testid="tournament-description-input"
                     value={formData.description}
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
@@ -179,6 +183,7 @@ export const CreateTourPage = () => {
                         ? "border-emerald-500 bg-emerald-50 shadow-md"
                         : "border-slate-200 bg-white hover:border-slate-300"
                     }`}
+                    data-testid={`format-${format.value}`}
                   >
                     <input
                       type="radio"
@@ -192,6 +197,7 @@ export const CreateTourPage = () => {
                         })
                       }
                       className="sr-only"
+                      data-testid={`format-${format.value}-radio`}
                     />
 
                     {/* Selection Indicator */}
@@ -332,6 +338,7 @@ export const CreateTourPage = () => {
                 type="submit"
                 disabled={createTour.isPending || !formData.name.trim()}
                 className="btn-primary flex-1 disabled:opacity-50"
+                data-testid="submit-tournament-button"
               >
                 {createTour.isPending
                   ? "Creating Tournament..."

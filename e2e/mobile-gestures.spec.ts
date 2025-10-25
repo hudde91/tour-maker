@@ -18,20 +18,19 @@ test.describe('Mobile Gestures', () => {
     await page.reload();
 
     // Create a basic tour with a round
-    await page.click('text=Create Tournament');
+    await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
-    await page.fill('input[type="text"]', 'Mobile Test Tour');
-    await page.click('button[type="submit"]:has-text("Create Tournament")');
+    await page.fill('[data-testid="tournament-name-input"]', 'Mobile Test Tour');
+    await page.click('[data-testid="submit-tournament-button"]');
 
     await page.waitForURL(/\/tour\//);
 
     await page.click('text=Players');
-    await page.click('text=Add Player');
-    await page.waitForSelector('h2:has-text("Add Player")');
-    await page.fill('input[type="text"]', 'Mobile Player');
-    await page.fill('input[type="number"]', '10');
-    await page.click('button[type="submit"]:has-text("Add Player")');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Mobile Player');
+    await page.fill('[data-testid="player-handicap-input"]', '10');
+    await page.click('[data-testid="submit-player-button"]');
 
     await page.click('text=Rounds');
     await page.click('text=Create Round');
@@ -279,21 +278,20 @@ test.describe('Data Persistence', () => {
     await page.reload();
 
     // Create a tour
-    await page.click('text=Create Tournament');
+    await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
-    await page.fill('input[type="text"]', 'Persistence Test');
-    await page.click('button[type="submit"]:has-text("Create Tournament")');
+    await page.fill('[data-testid="tournament-name-input"]', 'Persistence Test');
+    await page.click('[data-testid="submit-tournament-button"]');
 
     await page.waitForURL(/\/tour\//);
 
     // Add a player
     await page.click('text=Players');
-    await page.click('text=Add Player');
-    await page.waitForSelector('h2:has-text("Add Player")');
-    await page.fill('input[type="text"]', 'Test Player');
-    await page.fill('input[type="number"]', '12');
-    await page.click('button[type="submit"]:has-text("Add Player")');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Test Player');
+    await page.fill('[data-testid="player-handicap-input"]', '12');
+    await page.click('[data-testid="submit-player-button"]');
 
     // Verify player was added
     await expect(page.locator('text=Test Player')).toBeVisible();
@@ -322,20 +320,19 @@ test.describe('Data Persistence', () => {
     await page.reload();
 
     // Set up tour and round
-    await page.click('text=Create Tournament');
+    await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
-    await page.fill('input[type="text"]', 'Score Persistence');
-    await page.click('button[type="submit"]:has-text("Create Tournament")');
+    await page.fill('[data-testid="tournament-name-input"]', 'Score Persistence');
+    await page.click('[data-testid="submit-tournament-button"]');
 
     await page.waitForURL(/\/tour\//);
 
     await page.click('text=Players');
-    await page.click('text=Add Player');
-    await page.waitForSelector('h2:has-text("Add Player")');
-    await page.fill('input[type="text"]', 'Scorer');
-    await page.fill('input[type="number"]', '0');
-    await page.click('button[type="submit"]:has-text("Add Player")');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Scorer');
+    await page.fill('[data-testid="player-handicap-input"]', '0');
+    await page.click('[data-testid="submit-player-button"]');
 
     await page.click('text=Rounds');
     await page.click('text=Create Round');

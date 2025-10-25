@@ -15,27 +15,25 @@ test.describe('Scoring Workflow', () => {
     await page.reload();
 
     // Set up a tour with players and a round
-    await page.click('text=Create Tournament');
+    await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
-    await page.fill('input[type="text"]', 'Scoring Test Tour');
-    await page.click('button[type="submit"]:has-text("Create Tournament")');
+    await page.fill('[data-testid="tournament-name-input"]', 'Scoring Test Tour');
+    await page.click('[data-testid="submit-tournament-button"]');
 
     await page.waitForURL(/\/tour\//);
 
     // Add players
     await page.click('text=Players');
-    await page.click('text=Add Player');
-    await page.waitForSelector('h2:has-text("Add Player")');
-    await page.fill('input[type="text"]', 'Player 1');
-    await page.fill('input[type="number"]', '10');
-    await page.click('button[type="submit"]:has-text("Add Player")');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Player 1');
+    await page.fill('[data-testid="player-handicap-input"]', '10');
+    await page.click('[data-testid="submit-player-button"]');
 
-    await page.click('button:has-text("Add Player")');
-    await page.waitForSelector('h2:has-text("Add Player")');
-    await page.fill('input[type="text"]', 'Player 2');
-    await page.fill('input[type="number"]', '15');
-    await page.click('button[type="submit"]:has-text("Add Player")');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Player 2');
+    await page.fill('[data-testid="player-handicap-input"]', '15');
+    await page.click('[data-testid="submit-player-button"]');
 
 
     // Create round
@@ -175,12 +173,12 @@ test.describe('Team Scoring', () => {
     await page.reload();
 
     // Set up a team tour
-    await page.click('text=Create Tournament');
+    await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
-    await page.fill('input[type="text"]', 'Team Scoring Tour');
-    await page.click('text=Team Competition');
-    await page.click('button[type="submit"]:has-text("Create Tournament")');
+    await page.fill('[data-testid="tournament-name-input"]', 'Team Scoring Tour');
+    await page.click('[data-testid="format-team"]');
+    await page.click('[data-testid="submit-tournament-button"]');
 
     await page.waitForURL(/\/tour\//);
 
@@ -191,17 +189,15 @@ test.describe('Team Scoring', () => {
     await page.click('button:has-text("Save")');
 
     await page.click('text=Players');
-    await page.click('text=Add Player');
-    await page.waitForSelector('h2:has-text("Add Player")');
-    await page.fill('input[type="text"]', 'Player A1');
-    await page.fill('input[type="number"]', '10');
-    await page.click('button[type="submit"]:has-text("Add Player")');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Player A1');
+    await page.fill('[data-testid="player-handicap-input"]', '10');
+    await page.click('[data-testid="submit-player-button"]');
 
-    await page.click('button:has-text("Add Player")');
-    await page.waitForSelector('h2:has-text("Add Player")');
-    await page.fill('input[type="text"]', 'Player A2');
-    await page.fill('input[type="number"]', '15');
-    await page.click('button[type="submit"]:has-text("Add Player")');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Player A2');
+    await page.fill('[data-testid="player-handicap-input"]', '15');
+    await page.click('[data-testid="submit-player-button"]');
 
     // Assign players to team
     await page.click('[aria-label="Assign Player A1 to team"]');
