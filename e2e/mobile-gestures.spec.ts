@@ -28,9 +28,10 @@ test.describe('Mobile Gestures', () => {
 
     await page.click('text=Players');
     await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Mobile Player');
-    await page.fill('input[name="handicap"]', '10');
-    await page.click('button:has-text("Add")');
+    await page.waitForSelector('h2:has-text("Add Player")');
+    await page.fill('input[type="text"]', 'Mobile Player');
+    await page.fill('input[type="number"]', '10');
+    await page.click('button[type="submit"]:has-text("Add Player")');
 
     await page.click('text=Rounds');
     await page.click('text=Create Round');
@@ -289,9 +290,10 @@ test.describe('Data Persistence', () => {
     // Add a player
     await page.click('text=Players');
     await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Test Player');
-    await page.fill('input[name="handicap"]', '12');
-    await page.click('button:has-text("Add")');
+    await page.waitForSelector('h2:has-text("Add Player")');
+    await page.fill('input[type="text"]', 'Test Player');
+    await page.fill('input[type="number"]', '12');
+    await page.click('button[type="submit"]:has-text("Add Player")');
 
     // Verify player was added
     await expect(page.locator('text=Test Player')).toBeVisible();
@@ -330,9 +332,10 @@ test.describe('Data Persistence', () => {
 
     await page.click('text=Players');
     await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Scorer');
-    await page.fill('input[name="handicap"]', '0');
-    await page.click('button:has-text("Add")');
+    await page.waitForSelector('h2:has-text("Add Player")');
+    await page.fill('input[type="text"]', 'Scorer');
+    await page.fill('input[type="number"]', '0');
+    await page.click('button[type="submit"]:has-text("Add Player")');
 
     await page.click('text=Rounds');
     await page.click('text=Create Round');

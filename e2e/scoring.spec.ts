@@ -26,14 +26,17 @@ test.describe('Scoring Workflow', () => {
     // Add players
     await page.click('text=Players');
     await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Player 1');
-    await page.fill('input[name="handicap"]', '10');
-    await page.click('button:has-text("Add")');
+    await page.waitForSelector('h2:has-text("Add Player")');
+    await page.fill('input[type="text"]', 'Player 1');
+    await page.fill('input[type="number"]', '10');
+    await page.click('button[type="submit"]:has-text("Add Player")');
 
-    await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Player 2');
-    await page.fill('input[name="handicap"]', '15');
-    await page.click('button:has-text("Add")');
+    await page.click('button:has-text("Add Player")');
+    await page.waitForSelector('h2:has-text("Add Player")');
+    await page.fill('input[type="text"]', 'Player 2');
+    await page.fill('input[type="number"]', '15');
+    await page.click('button[type="submit"]:has-text("Add Player")');
+
 
     // Create round
     await page.click('text=Rounds');
@@ -189,14 +192,16 @@ test.describe('Team Scoring', () => {
 
     await page.click('text=Players');
     await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Player A1');
-    await page.fill('input[name="handicap"]', '10');
-    await page.click('button:has-text("Add")');
+    await page.waitForSelector('h2:has-text("Add Player")');
+    await page.fill('input[type="text"]', 'Player A1');
+    await page.fill('input[type="number"]', '10');
+    await page.click('button[type="submit"]:has-text("Add Player")');
 
-    await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Player A2');
-    await page.fill('input[name="handicap"]', '15');
-    await page.click('button:has-text("Add")');
+    await page.click('button:has-text("Add Player")');
+    await page.waitForSelector('h2:has-text("Add Player")');
+    await page.fill('input[type="text"]', 'Player A2');
+    await page.fill('input[type="number"]', '15');
+    await page.click('button[type="submit"]:has-text("Add Player")');
 
     // Assign players to team
     await page.click('[aria-label="Assign Player A1 to team"]');

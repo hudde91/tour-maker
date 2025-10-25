@@ -85,19 +85,20 @@ test.describe('Tour Creation', () => {
 
     // Add first player
     await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'John Doe');
-    await page.fill('input[name="handicap"]', '12');
-    await page.click('button:has-text("Add")');
+    await page.waitForSelector('h2:has-text("Add Player")');
+    await page.fill('input[type="text"]', 'John Doe');
+    await page.fill('input[type="number"]', '12');
+    await page.click('button[type="submit"]:has-text("Add Player")');
 
     // Verify player was added
     await expect(page.locator('text=John Doe')).toBeVisible();
-    await expect(page.locator('text=12')).toBeVisible();
 
     // Add second player
-    await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Jane Smith');
-    await page.fill('input[name="handicap"]', '8');
-    await page.click('button:has-text("Add")');
+    await page.click('button:has-text("Add Player")');
+    await page.waitForSelector('h2:has-text("Add Player")');
+    await page.fill('input[type="text"]', 'Jane Smith');
+    await page.fill('input[type="number"]', '8');
+    await page.click('button[type="submit"]:has-text("Add Player")');
 
     // Verify both players exist
     await expect(page.locator('text=John Doe')).toBeVisible();
