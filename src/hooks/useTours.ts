@@ -62,3 +62,56 @@ export const useDeleteTour = () => {
     },
   });
 };
+
+export const useUpdateTourDetails = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: {
+      tourId: string;
+      name: string;
+      description?: string;
+    }) => {
+      const tour = storage.updateTourDetails(
+        data.tourId,
+        data.name,
+        data.description
+      );
+      return tour;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
+      queryClient.invalidateQueries({ queryKey: ["tour", variables.tourId] });
+    },
+  });
+};
+
+export const useToggleTourArchive = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (tourId: string) => {
+      const tour = storage.toggleTourArchive(tourId);
+      return tour;
+    },
+    onSuccess: (_, tourId) => {
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+    },
+  });
+};
+
+export const useUpdateTourFormat = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { tourId: string; format: TourFormat }) => {
+      const tour = storage.updateTourFormat(data.tourId, data.format);
+      return tour;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
+      queryClient.invalidateQueries({ queryKey: ["tour", variables.tourId] });
+    },
+  });
+};

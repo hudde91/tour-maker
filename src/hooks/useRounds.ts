@@ -104,3 +104,48 @@ export const useDeleteRound = (tourId: string) => {
     },
   });
 };
+
+export const useUpdateRoundCourseDetails = (tourId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: {
+      roundId: string;
+      updates: {
+        name?: string;
+        courseName?: string;
+        teeBoxes?: string;
+        slopeRating?: string;
+        totalYardage?: string;
+      };
+    }) => {
+      const round = storage.updateRoundCourseDetails(
+        tourId,
+        data.roundId,
+        data.updates
+      );
+      return round;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+    },
+  });
+};
+
+export const useUpdateRoundStartTime = (tourId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { roundId: string; startTime: string }) => {
+      const round = storage.updateRoundStartTime(
+        tourId,
+        data.roundId,
+        data.startTime
+      );
+      return round;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+    },
+  });
+};

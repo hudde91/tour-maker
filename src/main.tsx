@@ -5,6 +5,10 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
+import { initializeAppSettings } from "./lib/storage/settings";
+
+// Initialize app settings (theme, etc.) before rendering
+initializeAppSettings();
 
 const queryClient = new QueryClient({
   defaultOptions: {
