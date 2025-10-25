@@ -114,7 +114,7 @@ describe('Player Storage Operations', () => {
       const round = createMockRound({
         holes: 9,
         holeInfo: Array.from({ length: 9 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
@@ -143,7 +143,6 @@ describe('Player Storage Operations', () => {
         holes: 18,
         settings: {
           strokesGiven: true,
-          scoringType: 'stroke-play',
         },
       });
       const tour = createMockTour({
@@ -189,7 +188,7 @@ describe('Player Storage Operations', () => {
         holes: 9,
         format: 'stroke-play',
         holeInfo: Array.from({ length: 9 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
@@ -264,7 +263,7 @@ describe('Player Storage Operations', () => {
         format: 'team',
         players: [player1, player2],
         teams: [
-          { id: 'team1', name: 'Team 1', playerIds: [player1.id, player2.id] },
+          { id: 'team1', name: 'Team 1', captainId: 'captain1', color: '#3b82f6', playerIds: [player1.id, player2.id] },
         ],
       });
 

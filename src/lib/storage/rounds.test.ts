@@ -67,15 +67,15 @@ describe('Round Storage Operations', () => {
       const round = createMockRound({
         holes: 9,
         holeInfo: [
-          { hole: 1, par: 4, handicap: 1, yardage: 400 },
-          { hole: 2, par: 3, handicap: 2, yardage: 150 },
-          { hole: 3, par: 5, handicap: 3, yardage: 500 },
-          { hole: 4, par: 4, handicap: 4, yardage: 400 },
-          { hole: 5, par: 4, handicap: 5, yardage: 400 },
-          { hole: 6, par: 3, handicap: 6, yardage: 150 },
-          { hole: 7, par: 5, handicap: 7, yardage: 500 },
-          { hole: 8, par: 4, handicap: 8, yardage: 400 },
-          { hole: 9, par: 4, handicap: 9, yardage: 400 },
+          { number: 1, par: 4, handicap: 1, yardage: 400 },
+          { number: 2, par: 3, handicap: 2, yardage: 150 },
+          { number: 3, par: 5, handicap: 3, yardage: 500 },
+          { number: 4, par: 4, handicap: 4, yardage: 400 },
+          { number: 5, par: 4, handicap: 5, yardage: 400 },
+          { number: 6, par: 3, handicap: 6, yardage: 150 },
+          { number: 7, par: 5, handicap: 7, yardage: 500 },
+          { number: 8, par: 4, handicap: 8, yardage: 400 },
+          { number: 9, par: 4, handicap: 9, yardage: 400 },
         ],
       });
 

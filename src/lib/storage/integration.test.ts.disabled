@@ -10,7 +10,7 @@ import {
   saveRound,
   startRound,
   completeRound,
-  getTotalPar,
+  
 } from './rounds';
 import {
   addPlayerToTour,
@@ -47,7 +47,6 @@ describe('Integration Tests - Complete Workflows', () => {
         format: 'individual',
         players: [],
         rounds: [],
-        status: 'created',
       };
       saveTour(tour);
 
@@ -77,18 +76,16 @@ describe('Integration Tests - Complete Workflows', () => {
         format: 'stroke-play',
         holes: 18,
         holeInfo: Array.from({ length: 18 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: [3, 4, 4, 5, 4, 4, 3, 4, 5, 4, 3, 4, 5, 4, 4, 3, 4, 5][i] || 4,
           handicap: i + 1,
           yardage: 400,
         })),
         scores: {},
-        settings: {
-          useHandicaps: true,
+        settings: { strokesGiven: false,
           strokesGiven: true,
-          scoringType: 'stroke-play',
+          strokesGiven: true,
         },
-        status: 'created',
       };
 
       saveRound(tour.id, round);
@@ -136,7 +133,6 @@ describe('Integration Tests - Complete Workflows', () => {
         format: 'individual',
         players: [],
         rounds: [],
-        status: 'created',
       };
       saveTour(tour);
 
@@ -152,16 +148,14 @@ describe('Integration Tests - Complete Workflows', () => {
         format: 'stroke-play',
         holes: 9,
         holeInfo: Array.from({ length: 9 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
         })),
         scores: {},
-        settings: {
-          scoringType: 'stroke-play',
+        settings: { strokesGiven: false,
         },
-        status: 'created',
       };
 
       saveRound(tour.id, round);
@@ -190,7 +184,6 @@ describe('Integration Tests - Complete Workflows', () => {
         players: [],
         teams: [],
         rounds: [],
-        status: 'created',
       };
       saveTour(tour);
 
@@ -235,16 +228,14 @@ describe('Integration Tests - Complete Workflows', () => {
         format: 'best-ball',
         holes: 9,
         holeInfo: Array.from({ length: 9 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
         })),
         scores: {},
-        settings: {
-          scoringType: 'best-ball',
+        settings: { strokesGiven: false,
         },
-        status: 'created',
       };
 
       saveRound(tour.id, round);
@@ -284,14 +275,13 @@ describe('Integration Tests - Complete Workflows', () => {
         players: [],
         teams: [],
         rounds: [],
-        status: 'created',
       };
       saveTour(tour);
 
       // Add players and teams
       const player1: Player = { id: nanoid(), name: 'Player 1', handicap: 0 };
       const player2: Player = { id: nanoid(), name: 'Player 2', handicap: 0 };
-      const team1: Team = { id: nanoid(), name: 'Team 1', playerIds: [] };
+      const team1: Team = { id: nanoid(), name: 'Team 1', captainId: nanoid(), playerIds: [], color: '#3b82f6' };
 
       addPlayerToTour(tour.id, player1);
       addPlayerToTour(tour.id, player2);
@@ -305,16 +295,14 @@ describe('Integration Tests - Complete Workflows', () => {
         format: 'stroke-play',
         holes: 9,
         holeInfo: Array.from({ length: 9 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
         })),
         scores: {},
-        settings: {
-          scoringType: 'stroke-play',
+        settings: { strokesGiven: false,
         },
-        status: 'created',
       };
 
       saveRound(tour.id, round);
@@ -343,7 +331,6 @@ describe('Integration Tests - Complete Workflows', () => {
         format: 'individual',
         players: [],
         rounds: [],
-        status: 'created',
       };
       saveTour(tour);
 
@@ -359,17 +346,15 @@ describe('Integration Tests - Complete Workflows', () => {
         format: 'stroke-play',
         holes: 9,
         holeInfo: Array.from({ length: 9 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
         })),
         scores: {},
-        settings: {
-          scoringType: 'stableford',
+        settings: { strokesGiven: false,
           strokesGiven: true,
         },
-        status: 'created',
       };
 
       saveRound(tour.id, round);
@@ -398,7 +383,6 @@ describe('Integration Tests - Complete Workflows', () => {
         format: 'individual',
         players: [],
         rounds: [],
-        status: 'created',
       };
       saveTour(tour);
 
@@ -415,16 +399,14 @@ describe('Integration Tests - Complete Workflows', () => {
         format: 'stroke-play',
         holes: 9,
         holeInfo: Array.from({ length: 9 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
         })),
         scores: {},
-        settings: {
-          scoringType: 'stroke-play',
+        settings: { strokesGiven: false,
         },
-        status: 'created',
       };
 
       saveRound(tour.id, round1);
@@ -438,16 +420,14 @@ describe('Integration Tests - Complete Workflows', () => {
         format: 'stroke-play',
         holes: 9,
         holeInfo: Array.from({ length: 9 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
         })),
         scores: {},
-        settings: {
-          scoringType: 'stroke-play',
+        settings: { strokesGiven: false,
         },
-        status: 'created',
       };
 
       saveRound(tour.id, round2);
@@ -474,13 +454,12 @@ describe('Integration Tests - Complete Workflows', () => {
         players: [],
         teams: [],
         rounds: [],
-        status: 'created',
       };
       saveTour(tour);
 
       const player1: Player = { id: nanoid(), name: 'Player 1', handicap: 0 };
       const player2: Player = { id: nanoid(), name: 'Player 2', handicap: 0 };
-      const team1: Team = { id: nanoid(), name: 'Team 1', playerIds: [] };
+      const team1: Team = { id: nanoid(), name: 'Team 1', captainId: nanoid(), playerIds: [], color: '#3b82f6' };
 
       addPlayerToTour(tour.id, player1);
       addPlayerToTour(tour.id, player2);
@@ -507,7 +486,6 @@ describe('Integration Tests - Complete Workflows', () => {
         format: 'individual',
         players: [],
         rounds: [],
-        status: 'created',
       };
       saveTour(tour);
 

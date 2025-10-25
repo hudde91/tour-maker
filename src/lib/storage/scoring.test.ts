@@ -5,8 +5,6 @@ import {
   calculateIndividualRoundLeaderboard,
   allocateHandicapStrokesPerHole,
   calculateStablefordForPlayer,
-  calculateTournamentStableford,
-  calculateMatchesWon,
   sortAndPositionTeams,
 } from './scoring';
 import {
@@ -15,7 +13,6 @@ import {
   createMockPlayer,
   createMockTeam,
 } from '@/test/fixtures';
-import type { Round, Team } from '@/types/core';
 import type { TeamLeaderboardEntry } from '@/types/scoring';
 
 describe('Scoring Calculations', () => {
@@ -137,7 +134,7 @@ describe('Scoring Calculations', () => {
       const round = createMockRound({
         holes: 9,
         holeInfo: Array.from({ length: 9 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
@@ -163,7 +160,7 @@ describe('Scoring Calculations', () => {
       const round = createMockRound({
         holes: 9,
         holeInfo: Array.from({ length: 9 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
@@ -190,7 +187,7 @@ describe('Scoring Calculations', () => {
       const round = createMockRound({
         holes: 9,
         holeInfo: Array.from({ length: 9 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
@@ -216,7 +213,7 @@ describe('Scoring Calculations', () => {
     it('should cap points at 6 for exceptional scores', () => {
       const round = createMockRound({
         holes: 1,
-        holeInfo: [{ hole: 1, par: 5, handicap: 1, yardage: 500 }],
+        holeInfo: [{ number: 1, par: 5, handicap: 1, yardage: 500 }],
         scores: {
           player1: {
             playerId: 'player1',
@@ -239,7 +236,7 @@ describe('Scoring Calculations', () => {
       const round = createMockRound({
         holes: 3,
         holeInfo: Array.from({ length: 3 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
@@ -265,7 +262,7 @@ describe('Scoring Calculations', () => {
       const round = createMockRound({
         holes: 5,
         holeInfo: Array.from({ length: 5 }, (_, i) => ({
-          hole: i + 1,
+          number: i + 1,
           par: 4,
           handicap: i + 1,
           yardage: 400,
@@ -310,9 +307,9 @@ describe('Scoring Calculations', () => {
         format: 'best-ball',
         holes: 3,
         holeInfo: [
-          { hole: 1, par: 4, handicap: 1, yardage: 400 },
-          { hole: 2, par: 3, handicap: 2, yardage: 150 },
-          { hole: 3, par: 5, handicap: 3, yardage: 500 },
+          { number: 1, par: 4, handicap: 1, yardage: 400 },
+          { number: 2, par: 3, handicap: 2, yardage: 150 },
+          { number: 3, par: 5, handicap: 3, yardage: 500 },
         ],
         scores: {
           [player1.id]: {

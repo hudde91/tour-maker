@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
-import type { Tour, Round, Player, Team, HoleInfo, PlayerScore } from '@/types/core';
+import type { Tour, Round, Player, Team, HoleInfo } from '@/types/core';
+import type { PlayerScore } from '@/types/scoring';
 import type { PlayFormat } from '@/types/formats';
 
 /**
@@ -16,12 +17,14 @@ export const createMockPlayer = (overrides?: Partial<Player>): Player => ({
 export const createMockTeam = (overrides?: Partial<Team>): Team => ({
   id: nanoid(),
   name: 'Test Team',
+  captainId: nanoid(),
   playerIds: [],
+  color: '#3b82f6',
   ...overrides,
 });
 
 export const createMockHoleInfo = (holeNumber: number): HoleInfo => ({
-  hole: holeNumber,
+  number: holeNumber,
   par: 4,
   handicap: holeNumber,
   yardage: 400,
@@ -45,17 +48,17 @@ export const createMockRound = (overrides?: Partial<Round>): Round => {
 
   return {
     id: nanoid(),
+    name: 'Round 1',
+    courseName: 'Test Course',
     format: 'stroke-play' as PlayFormat,
     holes,
     holeInfo,
     scores: {},
     settings: {
-      useHandicaps: false,
-      matchPlayPoints: false,
-      skinsEnabled: false,
-      scoringType: 'stroke-play',
+      strokesGiven: false,
     },
     status: 'created',
+    createdAt: new Date().toISOString(),
     ...overrides,
   };
 };
@@ -66,7 +69,9 @@ export const createMockTour = (overrides?: Partial<Tour>): Tour => ({
   format: 'individual',
   players: [],
   rounds: [],
-  status: 'created',
+  isActive: true,
+  createdAt: new Date().toISOString(),
+  shareableUrl: `tour/${nanoid()}`,
   ...overrides,
 });
 
@@ -99,7 +104,7 @@ export const createCompleteTourSetup = (config?: {
     });
   });
 
-  const rounds = Array.from({ length: roundCount }, (_, i) =>
+  const rounds = Array.from({ length: roundCount }, () =>
     createMockRound({
       format: format === 'team' ? 'best-ball' : 'stroke-play',
     })
