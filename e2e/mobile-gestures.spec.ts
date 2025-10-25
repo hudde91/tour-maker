@@ -5,9 +5,10 @@ import { test, expect, devices } from '@playwright/test';
  * Tests touch interactions, swipe gestures, and mobile-specific UI
  */
 
-test.describe('Mobile Gestures', () => {
-  test.use({ ...devices['iPhone 12'] });
+// Configure mobile viewport for all tests in this file
+test.use({ ...devices['iPhone 12'] });
 
+test.describe('Mobile Gestures', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.evaluate(() => localStorage.clear());
