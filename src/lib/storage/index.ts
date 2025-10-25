@@ -28,6 +28,9 @@ export {
   getTour,
   saveTour,
   deleteTour,
+  updateTourDetails,
+  toggleTourArchive,
+  updateTourFormat,
 } from "./tours";
 
 // Rounds
@@ -41,6 +44,8 @@ export {
   getTeamScore,
   updateTeamScore,
   updateCompetitionWinner,
+  updateRoundCourseDetails,
+  updateRoundStartTime,
 } from "./rounds";
 
 // Players
@@ -113,6 +118,9 @@ export const storage = {
   getTour: tours.getTour,
   saveTour: tours.saveTour,
   deleteTour: tours.deleteTour,
+  updateTourDetails: tours.updateTourDetails,
+  toggleTourArchive: tours.toggleTourArchive,
+  updateTourFormat: tours.updateTourFormat,
 
   // Rounds
   saveRound: rounds.saveRound,
@@ -123,6 +131,8 @@ export const storage = {
   isTeamScoringFormat: rounds.isTeamScoringFormat,
   getTeamScore: rounds.getTeamScore,
   updateTeamScore: rounds.updateTeamScore,
+  updateRoundCourseDetails: rounds.updateRoundCourseDetails,
+  updateRoundStartTime: rounds.updateRoundStartTime,
 
   // Players
   calculateStrokesForHole: players.calculateStrokesForHole,

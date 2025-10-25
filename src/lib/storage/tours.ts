@@ -45,3 +45,54 @@ export const deleteTour = (id: string): void => {
   const tours = getTours().filter((tour) => tour.id !== id);
   localStorage.setItem(STORAGE_KEYS.TOURS, JSON.stringify(tours));
 };
+
+/**
+ * Update tour name and description
+ */
+export const updateTourDetails = (
+  id: string,
+  name: string,
+  description?: string
+): Tour => {
+  const tour = getTour(id);
+  if (!tour) {
+    throw new Error("Tour not found");
+  }
+
+  tour.name = name;
+  tour.description = description;
+  saveTour(tour);
+  return tour;
+};
+
+/**
+ * Archive or unarchive a tour
+ */
+export const toggleTourArchive = (id: string): Tour => {
+  const tour = getTour(id);
+  if (!tour) {
+    throw new Error("Tour not found");
+  }
+
+  tour.archived = !tour.archived;
+  saveTour(tour);
+  return tour;
+};
+
+/**
+ * Update tour format
+ * WARNING: Changing format may affect existing rounds and teams
+ */
+export const updateTourFormat = (
+  id: string,
+  format: Tour["format"]
+): Tour => {
+  const tour = getTour(id);
+  if (!tour) {
+    throw new Error("Tour not found");
+  }
+
+  tour.format = format;
+  saveTour(tour);
+  return tour;
+};

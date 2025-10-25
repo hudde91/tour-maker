@@ -91,4 +91,5 @@ export interface Tour {
   teams?: Team[];
   rounds: Round[];
   isActive: boolean;
+  archived?: boolean;
 }

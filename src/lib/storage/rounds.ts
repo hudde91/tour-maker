@@ -229,3 +229,60 @@ export const updateCompetitionWinner = (
 
   saveTour(tour);
 };
+
+/**
+ * Update round course details
+ */
+export const updateRoundCourseDetails = (
+  tourId: string,
+  roundId: string,
+  updates: {
+    name?: string;
+    courseName?: string;
+    teeBoxes?: string;
+    slopeRating?: string;
+    totalYardage?: string;
+  }
+): Round => {
+  const tour = getTour(tourId);
+  if (!tour) {
+    throw new Error("Tour not found");
+  }
+
+  const round = tour.rounds.find((r) => r.id === roundId);
+  if (!round) {
+    throw new Error("Round not found");
+  }
+
+  if (updates.name !== undefined) round.name = updates.name;
+  if (updates.courseName !== undefined) round.courseName = updates.courseName;
+  if (updates.teeBoxes !== undefined) round.teeBoxes = updates.teeBoxes;
+  if (updates.slopeRating !== undefined) round.slopeRating = updates.slopeRating;
+  if (updates.totalYardage !== undefined) round.totalYardage = updates.totalYardage;
+
+  saveTour(tour);
+  return round;
+};
+
+/**
+ * Update round start time
+ */
+export const updateRoundStartTime = (
+  tourId: string,
+  roundId: string,
+  startTime: string
+): Round => {
+  const tour = getTour(tourId);
+  if (!tour) {
+    throw new Error("Tour not found");
+  }
+
+  const round = tour.rounds.find((r) => r.id === roundId);
+  if (!round) {
+    throw new Error("Round not found");
+  }
+
+  round.startTime = startTime;
+  saveTour(tour);
+  return round;
+};
