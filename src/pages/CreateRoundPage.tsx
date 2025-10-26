@@ -155,10 +155,12 @@ export const CreateRoundPage = () => {
     }
 
     setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length - 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePrevious = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSubmit = async () => {
@@ -169,6 +171,7 @@ export const CreateRoundPage = () => {
     if (handicapErrors.length > 0) {
       setValidationErrors(handicapErrors);
       setCurrentStep(1); // Go back to course setup step
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
