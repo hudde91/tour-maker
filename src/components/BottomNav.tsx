@@ -15,6 +15,10 @@ interface BottomNavProps {
 export const BottomNav = ({ tabs }: BottomNavProps) => {
   const location = useLocation();
 
+  const handleTabClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 safe-area-bottom z-50 shadow-lg">
       <div
@@ -30,6 +34,7 @@ export const BottomNav = ({ tabs }: BottomNavProps) => {
             <Link
               key={tab.id}
               to={tab.path}
+              onClick={handleTabClick}
               data-testid={`tab-${tab.id}`}
               className={`flex flex-col items-center justify-center py-2 px-1 transition-all duration-200 relative ${
                 isActive
