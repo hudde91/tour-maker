@@ -58,38 +58,11 @@ export const RyderCupTournamentLeaderboard = ({
     );
   }
 
-  // Get all matches from all rounds
-  const allMatches = useMemo(() => {
-    const matches: Array<{
-      match: any;
-      roundName: string;
-      roundId: string;
-    }> = [];
-
-    tour.rounds.forEach((round) => {
-      if (round.ryderCup?.matches) {
-        round.ryderCup.matches.forEach((match) => {
-          matches.push({
-            match,
-            roundName: round.name,
-            roundId: round.id,
-          });
-        });
-      }
-    });
-
-    return matches;
-  }, [tour.rounds]);
-
-  // Get all matches for SessionSummaryView
-  const allRawMatches = useMemo(() => {
-    const matches: any[] = [];
-    tour.rounds.forEach((round) => {
-      if (round.ryderCup?.matches) {
-        matches.push(...round.ryderCup.matches);
-      }
-    });
-    return matches;
+  // Check if there are any matches
+  const hasMatches = useMemo(() => {
+    return tour.rounds.some(
+      (round) => round.ryderCup?.matches && round.ryderCup.matches.length > 0
+    );
   }, [tour.rounds]);
 
   const championDecided = teamAPoints >= target || teamBPoints >= target;
@@ -142,153 +115,21 @@ export const RyderCupTournamentLeaderboard = ({
         </div>
       )}
 
-      {/* Session Summary View */}
-      {allRawMatches.length > 0 && (
+      {/* Match Results Breakdown */}
+      {hasMatches && (
         <div className="card-spacing">
           <h4 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-            <span className="text-lg">📅</span>
-            Session Breakdown
+            <span className="text-lg">📋</span>
+            Match Results
           </h4>
           <SessionSummaryView
-            matches={allRawMatches}
+            rounds={tour.rounds}
+            players={tour.players}
             teamAName={teamA.name}
             teamBName={teamB.name}
             teamAColor={teamA.color}
             teamBColor={teamB.color}
           />
-        </div>
-      )}
-
-      {/* Match Results by Round */}
-      {allMatches.length > 0 && (
-        <div>
-          <h4 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-            <span className="text-lg">📋</span>
-            All Match Results
-          </h4>
-          <div className="space-y-4 max-h-96 overflow-y-auto">
-            {/* Group matches by round */}
-            {tour.rounds
-              .filter(
-                (r) => r.ryderCup?.matches && r.ryderCup.matches.length > 0
-              )
-              .map((round) => (
-                <div key={round.id}>
-                  <h5 className="text-sm font-semibold text-slate-700 mb-2 sticky top-0 bg-white py-1">
-                    {round.name}
-                  </h5>
-                  <div className="space-y-2">
-                    {round.ryderCup!.matches.map((match) => {
-                      const getPlayerNames = (playerIds: string[]) =>
-                        playerIds
-                          .map(
-                            (id) =>
-                              tour.players.find((p) => p.id === id)?.name ||
-                              "Unknown"
-                          )
-                          .join(" & ");
-
-                      const isComplete = match.status === "completed";
-                      const winner =
-                        match.result === "team-a"
-                          ? teamA.name
-                          : match.result === "team-b"
-                          ? teamB.name
-                          : null;
-
-                      // Calculate holes completed for in-progress matches
-                      const holesCompleted =
-                        !isComplete && match.holes
-                          ? match.holes.filter(
-                              (hole) =>
-                                hole.teamAScore > 0 || hole.teamBScore > 0
-                            ).length
-                          : 0;
-
-                      return (
-                        <div
-                          key={match.id}
-                          className="bg-slate-50 rounded-lg p-3 border border-slate-200"
-                        >
-                          <div className="flex justify-between items-start mb-2">
-                            <div className="flex-1">
-                              <div className="text-xs font-medium text-slate-600 mb-0.5">
-                                {match.format.charAt(0).toUpperCase() +
-                                  match.format.slice(1)}
-                              </div>
-                              <div className="text-sm text-slate-800">
-                                {getPlayerNames(match.teamA.playerIds)}
-                              </div>
-                              <div className="text-sm text-slate-800">
-                                {getPlayerNames(match.teamB.playerIds)}
-                              </div>
-                            </div>
-
-                            {isComplete ? (
-                              <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-semibold">
-                                Complete
-                              </span>
-                            ) : (
-                              <div className="flex flex-col items-end gap-1">
-                                <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1">
-                                  <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-                                  In Progress
-                                </span>
-                                {holesCompleted < 18 && (
-                                  <span className="text-xs text-slate-600 font-medium">
-                                    Thru {holesCompleted}
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Points Display */}
-                          <div className="flex justify-between items-center mt-2 pt-2 border-t border-slate-200">
-                            <div className="flex items-center gap-3">
-                              <div className="text-center">
-                                <div
-                                  className="text-base font-bold"
-                                  style={{ color: teamA.color }}
-                                >
-                                  {match.points.teamA}
-                                </div>
-                                <div className="text-xs text-slate-500">
-                                  pts
-                                </div>
-                              </div>
-                              <span className="text-slate-400 text-sm">vs</span>
-                              <div className="text-center">
-                                <div
-                                  className="text-base font-bold"
-                                  style={{ color: teamB.color }}
-                                >
-                                  {match.points.teamB}
-                                </div>
-                                <div className="text-xs text-slate-500">
-                                  pts
-                                </div>
-                              </div>
-                            </div>
-
-                            {winner && (
-                              <div className="text-xs font-semibold text-emerald-600">
-                                {winner} wins
-                              </div>
-                            )}
-                            {match.result === "tie" && (
-                              <div className="text-xs font-semibold text-slate-600">
-                                Halved
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-          </div>
         </div>
       )}
 
@@ -306,15 +147,13 @@ export const RyderCupTournamentLeaderboard = ({
         </div>
       )}
 
-      {/* Info Box */}
-      {!championDecided && (
-        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-900">
-            <span className="font-semibold">ℹ️ Scoring:</span> Win = 1 point,
-            Tie (Halved) = 0.5 points each, Loss = 0 points
-          </p>
-        </div>
-      )}
+      {/* Scoring Info Box */}
+      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <p className="text-sm text-blue-900">
+          <span className="font-semibold">ℹ️ Scoring:</span> Win = 1 point, Tie
+          (Halved) = 0.5 points each, Loss = 0 points
+        </p>
+      </div>
     </div>
   );
 };
