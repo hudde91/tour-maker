@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Tour, Round, HoleInfo } from "../../../types";
 import { HoleNavigation } from "../../scoring/HoleNavigation";
 import { MatchPlayLeaderboard } from "./MatchPlayLeaderboard";
@@ -29,15 +29,12 @@ export const SwipeableMatchPlayScoring = ({
   const [matchHoles, setMatchHoles] = useState<Record<string, number>>({});
   const [activeTab, setActiveTab] = useState<TabType>("score");
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const matches = round.ryderCup?.matches || [];
 
   // Scroll to top when navigating to a match or changing tabs
   useEffect(() => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [selectedMatchId, activeTab]);
 
   // Initialize match holes on mount
@@ -337,7 +334,7 @@ export const SwipeableMatchPlayScoring = ({
           </div>
         </div>
 
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto pb-4">
+        <div className="flex-1 overflow-y-auto pb-4">
           {activeTab === "score" && renderMatchSelection()}
           {activeTab === "leaderboard" && (
             <div className="p-4">
@@ -465,7 +462,7 @@ export const SwipeableMatchPlayScoring = ({
         </div>
       </div>
 
-      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto pb-4">
+      <div className="flex-1 overflow-y-auto pb-4">
         {activeTab === "score" && (
           <div className="p-4 space-y-4">
             <MatchScoringCard
