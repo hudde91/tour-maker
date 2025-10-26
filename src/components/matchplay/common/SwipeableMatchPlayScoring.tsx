@@ -109,6 +109,19 @@ export const SwipeableMatchPlayScoring = ({
       .filter(Boolean);
   };
 
+  // Get team info (name, color, players)
+  const getTeamInfo = (teamId: string, playerIds: string[]) => {
+    const team = tour.teams?.find((t) => t.id === teamId);
+    const players = playerIds
+      .map((id) => tour.players.find((p) => p.id === id)?.name)
+      .filter(Boolean);
+    return {
+      name: team?.name || `Team ${teamId}`,
+      color: team?.color || "#6b7280",
+      players,
+    };
+  };
+
   // Match Selection View
   const renderMatchSelection = () => {
     return (
