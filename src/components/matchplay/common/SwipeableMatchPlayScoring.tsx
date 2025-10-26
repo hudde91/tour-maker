@@ -28,6 +28,7 @@ export const SwipeableMatchPlayScoring = ({
   const updateCompetitionWinner = useUpdateCompetitionWinner(tourId!, round.id);
   const [matchHoles, setMatchHoles] = useState<Record<string, number>>({});
   const [activeTab, setActiveTab] = useState<TabType>("score");
+  const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
 
   const matches = round.ryderCup?.matches || [];
 
@@ -101,6 +102,145 @@ export const SwipeableMatchPlayScoring = ({
     return scores;
   };
 
+  // Get player names for a team
+  const getPlayerNames = (playerIds: string[]) => {
+    return playerIds
+      .map((id) => tour.players.find((p) => p.id === id)?.name)
+      .filter(Boolean);
+  };
+
+  // Match Selection View
+  const renderMatchSelection = () => {
+    return (
+      <div className="p-4 space-y-4">
+        <div className="mb-4">
+          <h2 className="text-xl font-bold text-slate-900">Select Your Match</h2>
+          <p className="text-sm text-slate-600 mt-1">
+            Click on your match to start scoring
+          </p>
+        </div>
+
+        {matches.map((match: any) => {
+          const teamAInfo = getTeamInfo(match.teamA.id, match.teamA.playerIds);
+          const teamBInfo = getTeamInfo(match.teamB.id, match.teamB.playerIds);
+          const isMatchComplete = match.status === "completed" || match.isComplete;
+
+          return (
+            <button
+              key={match.id}
+              onClick={() => setSelectedMatchId(match.id)}
+              className="w-full card hover:shadow-lg transition-all active:scale-[0.99] text-left"
+            >
+              {/* Match Format Badge */}
+              <div className="flex items-center justify-between mb-4">
+                <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full">
+                  {match.format.charAt(0).toUpperCase() + match.format.slice(1)} Match
+                </span>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                    isMatchComplete
+                      ? "bg-green-100 text-green-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
+                  {isMatchComplete ? "Completed" : "In Progress"}
+                </span>
+              </div>
+
+              {/* Team A */}
+              <div
+                className="p-4 rounded-lg mb-3"
+                style={{
+                  borderLeft: `4px solid ${teamAInfo.color}`,
+                  backgroundColor: teamAInfo.color + "08",
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center shadow-md flex-shrink-0"
+                    style={{ backgroundColor: teamAInfo.color }}
+                  >
+                    <span className="text-white font-bold">A</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-slate-900 text-lg">
+                      {teamAInfo.name}
+                    </h3>
+                    <p className="text-slate-700 font-medium">
+                      {teamAInfo.players.join(" & ")}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* VS Divider */}
+              <div className="flex items-center justify-center my-3">
+                <div className="px-4 py-1 bg-slate-100 rounded-full text-slate-600 font-bold text-sm">
+                  VS
+                </div>
+              </div>
+
+              {/* Team B */}
+              <div
+                className="p-4 rounded-lg"
+                style={{
+                  borderLeft: `4px solid ${teamBInfo.color}`,
+                  backgroundColor: teamBInfo.color + "08",
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center shadow-md flex-shrink-0"
+                    style={{ backgroundColor: teamBInfo.color }}
+                  >
+                    <span className="text-white font-bold">B</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-slate-900 text-lg">
+                      {teamBInfo.name}
+                    </h3>
+                    <p className="text-slate-700 font-medium">
+                      {teamBInfo.players.join(" & ")}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Match Status */}
+              {match.statusText && (
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="text-center">
+                    <span className="text-sm font-semibold text-blue-900">
+                      {match.statusText}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Click to Score Indicator */}
+              <div className="mt-4 flex items-center justify-center gap-2 text-emerald-600 font-semibold">
+                <span>Tap to score this match</span>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
+
   if (matches.length === 0) {
     return (
       <div className="card text-center py-12">
@@ -117,9 +257,139 @@ export const SwipeableMatchPlayScoring = ({
     );
   }
 
+  // If no match is selected, show match selection view
+  if (!selectedMatchId) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
+          <div className="flex">
+            <button
+              onClick={() => setActiveTab("score")}
+              className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
+                activeTab === "score"
+                  ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
+                </svg>
+                Matches
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab("leaderboard")}
+              className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
+                activeTab === "leaderboard"
+                  ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+                Leaderboard
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto pb-4">
+          {activeTab === "score" && renderMatchSelection()}
+          {activeTab === "leaderboard" && (
+            <div className="p-4">
+              <MatchPlayLeaderboard tour={tour} round={round} />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Selected match view - show scoring for single match
+  const selectedMatch = matches.find((m: any) => m.id === selectedMatchId);
+  if (!selectedMatch) {
+    setSelectedMatchId(null);
+    return null;
+  }
+
+  const currentHole = getCurrentHoleForMatch(selectedMatch.id);
+  const teamAInfo = getTeamInfo(selectedMatch.teamA.id, selectedMatch.teamA.playerIds);
+  const teamBInfo = getTeamInfo(selectedMatch.teamB.id, selectedMatch.teamB.playerIds);
+
   return (
     <div className="flex flex-col h-full">
+      {/* Back Button and Header */}
       <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <div className="flex items-center gap-3 p-4">
+          <button
+            onClick={() => setSelectedMatchId(null)}
+            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-semibold"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            All Matches
+          </button>
+        </div>
+
+        {/* Match Header - Players */}
+        <div className="px-4 pb-4">
+          <div className="bg-gradient-to-r from-blue-50 to-emerald-50 rounded-lg p-4 border border-blue-200">
+            <div className="text-center mb-3">
+              <span className="inline-block px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full">
+                {selectedMatch.format.charAt(0).toUpperCase() + selectedMatch.format.slice(1)} Match
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex-1 text-center">
+                <div className="font-bold text-slate-900 mb-1">{teamAInfo.name}</div>
+                <div className="text-sm text-slate-700">{teamAInfo.players.join(" & ")}</div>
+              </div>
+              <div className="px-3 py-1 bg-white rounded-full text-slate-600 font-bold text-sm shadow">
+                VS
+              </div>
+              <div className="flex-1 text-center">
+                <div className="font-bold text-slate-900 mb-1">{teamBInfo.name}</div>
+                <div className="text-sm text-slate-700">{teamBInfo.players.join(" & ")}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
         <div className="flex">
           <button
             onClick={() => setActiveTab("score")}
@@ -171,101 +441,61 @@ export const SwipeableMatchPlayScoring = ({
               Holes
             </div>
           </button>
-          <button
-            onClick={() => setActiveTab("leaderboard")}
-            className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
-              activeTab === "leaderboard"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-            }`}
-          >
-            <div className="flex items-center justify-center gap-2">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
-              </svg>
-              Leaderboard
-            </div>
-          </button>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto pb-4">
         {activeTab === "score" && (
           <div className="p-4 space-y-4">
-            {matches.map((match: any) => {
-              const currentHole = getCurrentHoleForMatch(match.id);
-              return (
-                <MatchScoringCard
-                  key={match.id}
-                  match={match}
-                  tour={tour}
-                  round={round}
-                  currentHole={currentHole}
-                  onHoleUpdate={(holeNumber, teamAScore, teamBScore) => {
-                    onMatchHoleUpdate(
-                      match.id,
-                      holeNumber,
-                      teamAScore,
-                      teamBScore
-                    );
-                  }}
-                  onHoleChange={(newHole) =>
-                    setCurrentHoleForMatch(match.id, newHole)
-                  }
-                  onCompetitionWinnerChange={(holeNumber, competitionType, winnerId, distance) => {
-                    updateCompetitionWinner.mutate({
-                      holeNumber,
-                      competitionType,
-                      winnerId,
-                      distance,
-                      matchId: match.id,
-                    });
-                  }}
-                />
-              );
-            })}
+            <MatchScoringCard
+              match={selectedMatch}
+              tour={tour}
+              round={round}
+              currentHole={currentHole}
+              onHoleUpdate={(holeNumber, teamAScore, teamBScore) => {
+                onMatchHoleUpdate(
+                  selectedMatch.id,
+                  holeNumber,
+                  teamAScore,
+                  teamBScore
+                );
+              }}
+              onHoleChange={(newHole) =>
+                setCurrentHoleForMatch(selectedMatch.id, newHole)
+              }
+              onCompetitionWinnerChange={(holeNumber, competitionType, winnerId, distance) => {
+                updateCompetitionWinner.mutate({
+                  holeNumber,
+                  competitionType,
+                  winnerId,
+                  distance,
+                  matchId: selectedMatch.id,
+                });
+              }}
+            />
           </div>
         )}
 
         {activeTab === "holes" && (
-          <div className="p-4 space-y-4">
-            {matches.map((match: any) => {
-              const currentHole = getCurrentHoleForMatch(match.id);
-              const teamAName = getTeamName(match.teamA.id);
-              const teamBName = getTeamName(match.teamB.id);
-
-              return (
-                <div key={match.id} className="card">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-4">
-                    {teamAName} vs {teamBName}
-                  </h3>
-                  <HoleNavigation
-                    holes={round.holeInfo}
-                    currentHole={currentHole}
-                    onHoleChange={(newHole) =>
-                      setCurrentHoleForMatch(match.id, newHole)
-                    }
-                    playerScores={getMatchPlayScores(match.id)}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {activeTab === "leaderboard" && (
           <div className="p-4">
-            <MatchPlayLeaderboard tour={tour} round={round} />
+            <div className="card">
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                  {teamAInfo.players.join(" & ")} vs {teamBInfo.players.join(" & ")}
+                </h3>
+                <div className="text-sm text-slate-600">
+                  {teamAInfo.name} vs {teamBInfo.name}
+                </div>
+              </div>
+              <HoleNavigation
+                holes={round.holeInfo}
+                currentHole={currentHole}
+                onHoleChange={(newHole) =>
+                  setCurrentHoleForMatch(selectedMatch.id, newHole)
+                }
+                playerScores={getMatchPlayScores(selectedMatch.id)}
+              />
+            </div>
           </div>
         )}
       </div>
