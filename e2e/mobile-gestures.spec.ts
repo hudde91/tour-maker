@@ -11,23 +11,30 @@ test.use({ ...devices['iPhone 12'] });
 test.describe('Mobile Gestures', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('hasSeenWelcome', 'true');
+    });
+    await page.reload();
 
     // Create a basic tour with a round
-    await page.click('text=Create Tour');
-    await page.fill('input[name="name"]', 'Mobile Test Tour');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.click('[data-testid="create-tournament-button"]');
+    await page.waitForURL('/create');
 
-    await page.click('text=Players');
-    await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Mobile Player');
-    await page.fill('input[name="handicap"]', '10');
-    await page.click('button:has-text("Add")');
+    await page.fill('[data-testid="tournament-name-input"]', 'Mobile Test Tour');
+    await page.click('[data-testid="submit-tournament-button"]');
 
-    await page.click('text=Rounds');
-    await page.click('text=Create Round');
-    await page.click('button:has-text("Create Round")');
+    await page.waitForURL(/\/tour\//);
+
+    await page.click('[data-testid="tab-players"]');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Mobile Player');
+    await page.fill('[data-testid="player-handicap-input"]', '10');
+    await page.click('[data-testid="submit-player-button"]');
+
+    await page.click('[data-testid="tab-rounds"]');
+    await page.click('[data-testid="create-round-button"]');
+    await page.click('[data-testid="submit-round-button"]');
     await page.click('button:has-text("Start Round")');
   });
 
@@ -264,20 +271,27 @@ test.describe('Mobile Gestures', () => {
 test.describe('Data Persistence', () => {
   test('should persist tour data across page refreshes', async ({ page }) => {
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('hasSeenWelcome', 'true');
+    });
+    await page.reload();
 
     // Create a tour
-    await page.click('text=Create Tour');
-    await page.fill('input[name="name"]', 'Persistence Test');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.click('[data-testid="create-tournament-button"]');
+    await page.waitForURL('/create');
+
+    await page.fill('[data-testid="tournament-name-input"]', 'Persistence Test');
+    await page.click('[data-testid="submit-tournament-button"]');
+
+    await page.waitForURL(/\/tour\//);
 
     // Add a player
-    await page.click('text=Players');
-    await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Test Player');
-    await page.fill('input[name="handicap"]', '12');
-    await page.click('button:has-text("Add")');
+    await page.click('[data-testid="tab-players"]');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Test Player');
+    await page.fill('[data-testid="player-handicap-input"]', '12');
+    await page.click('[data-testid="submit-player-button"]');
 
     // Verify player was added
     await expect(page.locator('text=Test Player')).toBeVisible();
@@ -290,7 +304,7 @@ test.describe('Data Persistence', () => {
 
     // Navigate back to players
     await page.click('text=Persistence Test');
-    await page.click('text=Players');
+    await page.click('[data-testid="tab-players"]');
 
     // Verify player still exists
     await expect(page.locator('text=Test Player')).toBeVisible();
@@ -299,23 +313,30 @@ test.describe('Data Persistence', () => {
 
   test('should persist scoring data during round', async ({ page }) => {
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('hasSeenWelcome', 'true');
+    });
+    await page.reload();
 
     // Set up tour and round
-    await page.click('text=Create Tour');
-    await page.fill('input[name="name"]', 'Score Persistence');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.click('[data-testid="create-tournament-button"]');
+    await page.waitForURL('/create');
 
-    await page.click('text=Players');
-    await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Scorer');
-    await page.fill('input[name="handicap"]', '0');
-    await page.click('button:has-text("Add")');
+    await page.fill('[data-testid="tournament-name-input"]', 'Score Persistence');
+    await page.click('[data-testid="submit-tournament-button"]');
 
-    await page.click('text=Rounds');
-    await page.click('text=Create Round');
-    await page.click('button:has-text("Create Round")');
+    await page.waitForURL(/\/tour\//);
+
+    await page.click('[data-testid="tab-players"]');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Scorer');
+    await page.fill('[data-testid="player-handicap-input"]', '0');
+    await page.click('[data-testid="submit-player-button"]');
+
+    await page.click('[data-testid="tab-rounds"]');
+    await page.click('[data-testid="create-round-button"]');
+    await page.click('[data-testid="submit-round-button"]');
     await page.click('button:has-text("Start Round")');
 
     // Enter some scores

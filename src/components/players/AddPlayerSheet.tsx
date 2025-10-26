@@ -98,6 +98,8 @@ export const AddPlayerSheet = ({
               <label className="form-label">Player Name *</label>
               <input
                 type="text"
+                name="playerName"
+                data-testid="player-name-input"
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
@@ -113,6 +115,8 @@ export const AddPlayerSheet = ({
               <label className="form-label">Golf Handicap</label>
               <input
                 type="number"
+                name="playerHandicap"
+                data-testid="player-handicap-input"
                 value={formData.handicap}
                 onChange={(e) =>
                   setFormData({ ...formData, handicap: e.target.value })
@@ -163,6 +167,7 @@ export const AddPlayerSheet = ({
                 type="submit"
                 disabled={addPlayer.isPending || !formData.name.trim()}
                 className="btn-primary w-full sm:flex-1 py-4 sm:py-3 text-lg sm:text-base disabled:opacity-50 sm:order-2"
+                data-testid="submit-player-button"
               >
                 {addPlayer.isPending ? "Adding Player..." : "Add Player"}
               </button>

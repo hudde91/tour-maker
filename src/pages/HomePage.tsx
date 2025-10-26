@@ -93,12 +93,14 @@ export const HomePage = () => {
               <Link
                 to="/create"
                 className="btn-primary text-lg py-4 px-8 shadow-lg w-full sm:w-auto"
+                data-testid="create-tournament-button"
               >
                 Create Tournament
               </Link>
               <button
                 onClick={() => setShowHowItWorks(true)}
                 className="btn-secondary text-lg py-4 px-8 w-full sm:w-auto"
+                data-testid="how-it-works-button"
               >
                 How It Works
               </button>

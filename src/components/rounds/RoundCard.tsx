@@ -90,6 +90,7 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
     <Link
       to={`/tour/${tour.id}/round/${round.id}`}
       className="block bg-white rounded-xl border-2 border-slate-200 hover:border-emerald-400 transition-all p-4 sm:p-5"
+      data-testid={`round-card-${round.id}`}
     >
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start gap-3 flex-1 min-w-0">

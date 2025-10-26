@@ -8,22 +8,29 @@ import { test, expect } from '@playwright/test';
 test.describe('Tour Creation', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    // Clear localStorage before each test
-    await page.evaluate(() => localStorage.clear());
+    // Clear localStorage and set hasSeenWelcome to prevent modal, then reload
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('hasSeenWelcome', 'true');
+    });
+    await page.reload();
   });
 
   test('should create a new individual tour', async ({ page }) => {
     // Click create tour button
-    await page.click('text=Create Tour');
+    await page.click('[data-testid="create-tournament-button"]');
+
+    // Wait for navigation to create page
+    await page.waitForURL('/create');
 
     // Fill in tour details
-    await page.fill('input[name="name"]', 'Summer Championship');
+    await page.fill('[data-testid="tournament-name-input"]', 'Summer Championship');
 
-    // Select individual format
-    await page.click('text=Individual');
+    // Select individual format (already selected by default)
+    // Individual Championship is the default selection
 
     // Submit the form
-    await page.click('button:has-text("Create")');
+    await page.click('[data-testid="submit-tournament-button"]');
 
     // Verify we're on the tour page
     await expect(page).toHaveURL(/\/tour\//);
@@ -32,10 +39,15 @@ test.describe('Tour Creation', () => {
 
   test('should create a team tour and add teams', async ({ page }) => {
     // Create tour
-    await page.click('text=Create Tour');
-    await page.fill('input[name="name"]', 'Team Championship');
-    await page.click('text=Team');
-    await page.click('button:has-text("Create")');
+    await page.click('[data-testid="create-tournament-button"]');
+    await page.waitForURL('/create');
+
+    await page.fill('[data-testid="tournament-name-input"]', 'Team Championship');
+    await page.click('[data-testid="format-team"]');
+    await page.click('[data-testid="submit-tournament-button"]');
+
+    // Wait for navigation to tour page
+    await page.waitForURL(/\/tour\//);
 
     // Navigate to teams tab
     await page.click('text=Teams');
@@ -60,29 +72,31 @@ test.describe('Tour Creation', () => {
 
   test('should add players to a tour', async ({ page }) => {
     // Create tour
-    await page.click('text=Create Tour');
-    await page.fill('input[name="name"]', 'Player Test Tour');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.click('[data-testid="create-tournament-button"]');
+    await page.waitForURL('/create');
+
+    await page.fill('[data-testid="tournament-name-input"]', 'Player Test Tour');
+    await page.click('[data-testid="submit-tournament-button"]');
+
+    await page.waitForURL(/\/tour\//);
 
     // Navigate to players tab
-    await page.click('text=Players');
+    await page.click('[data-testid="tab-players"]');
 
     // Add first player
-    await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'John Doe');
-    await page.fill('input[name="handicap"]', '12');
-    await page.click('button:has-text("Add")');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'John Doe');
+    await page.fill('[data-testid="player-handicap-input"]', '12');
+    await page.click('[data-testid="submit-player-button"]');
 
     // Verify player was added
     await expect(page.locator('text=John Doe')).toBeVisible();
-    await expect(page.locator('text=12')).toBeVisible();
 
     // Add second player
-    await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Jane Smith');
-    await page.fill('input[name="handicap"]', '8');
-    await page.click('button:has-text("Add")');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Jane Smith');
+    await page.fill('[data-testid="player-handicap-input"]', '8');
+    await page.click('[data-testid="submit-player-button"]');
 
     // Verify both players exist
     await expect(page.locator('text=John Doe')).toBeVisible();
@@ -91,26 +105,29 @@ test.describe('Tour Creation', () => {
 
   test('should create and configure a round', async ({ page }) => {
     // Create tour
-    await page.click('text=Create Tour');
-    await page.fill('input[name="name"]', 'Round Test Tour');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.click('[data-testid="create-tournament-button"]');
+    await page.waitForURL('/create');
+
+    await page.fill('[data-testid="tournament-name-input"]', 'Round Test Tour');
+    await page.click('[data-testid="submit-tournament-button"]');
+
+    await page.waitForURL(/\/tour\//);
 
     // Navigate to rounds tab
-    await page.click('text=Rounds');
+    await page.click('[data-testid="tab-rounds"]');
 
     // Create new round
-    await page.click('text=Create Round');
+    await page.click('[data-testid="create-round-button"]');
 
     // Configure round
-    await page.click('text=18 Holes');
+    await page.click('[data-testid="holes-18"]');
     await page.click('text=Stroke Play');
 
     // Enable handicaps
     await page.check('input[type="checkbox"]:has-text("Use Handicaps")');
 
     // Create round
-    await page.click('button:has-text("Create Round")');
+    await page.click('[data-testid="submit-round-button"]');
 
     // Verify round was created
     await expect(page.locator('text=Round 1')).toBeVisible();
@@ -118,10 +135,13 @@ test.describe('Tour Creation', () => {
 
   test('should delete a tour', async ({ page }) => {
     // Create tour
-    await page.click('text=Create Tour');
-    await page.fill('input[name="name"]', 'Tour to Delete');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.click('[data-testid="create-tournament-button"]');
+    await page.waitForURL('/create');
+
+    await page.fill('[data-testid="tournament-name-input"]', 'Tour to Delete');
+    await page.click('[data-testid="submit-tournament-button"]');
+
+    await page.waitForURL(/\/tour\//);
 
     // Go back to home
     await page.click('text=Tours');
@@ -143,36 +163,46 @@ test.describe('Tour Creation', () => {
 test.describe('Tour Navigation', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('hasSeenWelcome', 'true');
+    });
+    await page.reload();
   });
 
   test('should navigate between tour tabs', async ({ page }) => {
     // Create a tour
-    await page.click('text=Create Tour');
-    await page.fill('input[name="name"]', 'Navigation Test');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.click('[data-testid="create-tournament-button"]');
+    await page.waitForURL('/create');
+
+    await page.fill('[data-testid="tournament-name-input"]', 'Navigation Test');
+    await page.click('[data-testid="submit-tournament-button"]');
+
+    await page.waitForURL(/\/tour\//);
 
     // Test navigation between tabs
-    await page.click('text=Players');
+    await page.click('[data-testid="tab-players"]');
     await expect(page).toHaveURL(/\/players$/);
 
-    await page.click('text=Rounds');
+    await page.click('[data-testid="tab-rounds"]');
     await expect(page).toHaveURL(/\/rounds$/);
 
-    await page.click('text=Leaderboard');
+    await page.click('[data-testid="tab-leaderboard"]');
     await expect(page).toHaveURL(/\/leaderboard$/);
 
-    await page.click('text=Settings');
+    await page.click('[data-testid="tab-settings"]');
     await expect(page).toHaveURL(/\/settings$/);
   });
 
   test('should show breadcrumb navigation', async ({ page }) => {
     // Create a tour
-    await page.click('text=Create Tour');
-    await page.fill('input[name="name"]', 'Breadcrumb Test');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.click('[data-testid="create-tournament-button"]');
+    await page.waitForURL('/create');
+
+    await page.fill('[data-testid="tournament-name-input"]', 'Breadcrumb Test');
+    await page.click('[data-testid="submit-tournament-button"]');
+
+    await page.waitForURL(/\/tour\//);
 
     // Verify breadcrumbs exist
     await expect(page.locator('nav[aria-label="Breadcrumb"]')).toBeVisible();

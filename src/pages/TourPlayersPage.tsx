@@ -83,6 +83,7 @@ export const TourPlayersPage = () => {
           <button
             onClick={() => setShowAddPlayer(true)}
             className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm shadow-lg"
+            data-testid="add-player-button"
           >
             <span className="text-base">➕</span>
             <span>Add Player</span>

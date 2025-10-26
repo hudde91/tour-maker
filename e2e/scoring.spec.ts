@@ -8,31 +8,39 @@ import { test, expect } from '@playwright/test';
 test.describe('Scoring Workflow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('hasSeenWelcome', 'true');
+    });
+    await page.reload();
 
     // Set up a tour with players and a round
-    await page.click('text=Create Tour');
-    await page.fill('input[name="name"]', 'Scoring Test Tour');
-    await page.click('text=Individual');
-    await page.click('button:has-text("Create")');
+    await page.click('[data-testid="create-tournament-button"]');
+    await page.waitForURL('/create');
+
+    await page.fill('[data-testid="tournament-name-input"]', 'Scoring Test Tour');
+    await page.click('[data-testid="submit-tournament-button"]');
+
+    await page.waitForURL(/\/tour\//);
 
     // Add players
-    await page.click('text=Players');
-    await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Player 1');
-    await page.fill('input[name="handicap"]', '10');
-    await page.click('button:has-text("Add")');
+    await page.click('[data-testid="tab-players"]');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Player 1');
+    await page.fill('[data-testid="player-handicap-input"]', '10');
+    await page.click('[data-testid="submit-player-button"]');
 
-    await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Player 2');
-    await page.fill('input[name="handicap"]', '15');
-    await page.click('button:has-text("Add")');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Player 2');
+    await page.fill('[data-testid="player-handicap-input"]', '15');
+    await page.click('[data-testid="submit-player-button"]');
+
 
     // Create round
-    await page.click('text=Rounds');
-    await page.click('text=Create Round');
-    await page.click('text=9 Holes');
-    await page.click('button:has-text("Create Round")');
+    await page.click('[data-testid="tab-rounds"]');
+    await page.click('[data-testid="create-round-button"]');
+    await page.click('[data-testid="holes-9"]');
+    await page.click('[data-testid="submit-round-button"]');
   });
 
   test('should start a round and enter scores', async ({ page }) => {
@@ -102,7 +110,7 @@ test.describe('Scoring Workflow', () => {
     }
 
     // View leaderboard
-    await page.click('text=Leaderboard');
+    await page.click('[data-testid="tab-leaderboard"]');
 
     // Verify players are ranked correctly
     const leaderboardItems = page.locator('[data-testid="leaderboard-entry"]');
@@ -158,13 +166,21 @@ test.describe('Scoring Workflow', () => {
 test.describe('Team Scoring', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem('hasSeenWelcome', 'true');
+    });
+    await page.reload();
 
     // Set up a team tour
-    await page.click('text=Create Tour');
-    await page.fill('input[name="name"]', 'Team Scoring Tour');
-    await page.click('text=Team');
-    await page.click('button:has-text("Create")');
+    await page.click('[data-testid="create-tournament-button"]');
+    await page.waitForURL('/create');
+
+    await page.fill('[data-testid="tournament-name-input"]', 'Team Scoring Tour');
+    await page.click('[data-testid="format-team"]');
+    await page.click('[data-testid="submit-tournament-button"]');
+
+    await page.waitForURL(/\/tour\//);
 
     // Add teams and players
     await page.click('text=Teams');
@@ -172,16 +188,16 @@ test.describe('Team Scoring', () => {
     await page.fill('input[name="teamName"]', 'Team A');
     await page.click('button:has-text("Save")');
 
-    await page.click('text=Players');
-    await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Player A1');
-    await page.fill('input[name="handicap"]', '10');
-    await page.click('button:has-text("Add")');
+    await page.click('[data-testid="tab-players"]');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Player A1');
+    await page.fill('[data-testid="player-handicap-input"]', '10');
+    await page.click('[data-testid="submit-player-button"]');
 
-    await page.click('text=Add Player');
-    await page.fill('input[name="playerName"]', 'Player A2');
-    await page.fill('input[name="handicap"]', '15');
-    await page.click('button:has-text("Add")');
+    await page.click('[data-testid="add-player-button"]');
+    await page.fill('[data-testid="player-name-input"]', 'Player A2');
+    await page.fill('[data-testid="player-handicap-input"]', '15');
+    await page.click('[data-testid="submit-player-button"]');
 
     // Assign players to team
     await page.click('[aria-label="Assign Player A1 to team"]');
@@ -191,10 +207,10 @@ test.describe('Team Scoring', () => {
     await page.click('text=Team A');
 
     // Create best ball round
-    await page.click('text=Rounds');
-    await page.click('text=Create Round');
-    await page.click('text=Best Ball');
-    await page.click('button:has-text("Create Round")');
+    await page.click('[data-testid="tab-rounds"]');
+    await page.click('[data-testid="create-round-button"]');
+    await page.click('[data-testid="format-best-ball"]');
+    await page.click('[data-testid="submit-round-button"]');
   });
 
   test('should score best ball format correctly', async ({ page }) => {
