@@ -33,6 +33,38 @@ export const SessionSummaryView = ({
   teamAColor = "#1e40af",
   teamBColor = "#dc2626",
 }: SessionSummaryViewProps) => {
+  // Helper functions
+  const getFormatName = (format: string): string => {
+    switch (format) {
+      case "foursomes":
+        return "Foursomes";
+      case "four-ball":
+        return "Four-Ball";
+      case "singles":
+        return "Singles";
+      default:
+        return format.charAt(0).toUpperCase() + format.slice(1);
+    }
+  };
+
+  const getFormatIcon = (type: string) => {
+    switch (type) {
+      case "foursomes":
+        return "🔄";
+      case "four-ball":
+        return "⭐";
+      case "singles":
+        return "👤";
+      default:
+        return "🏌️";
+    }
+  };
+
+  const getPlayerNames = (playerIds: string[]) =>
+    playerIds
+      .map((id) => players.find((p) => p.id === id)?.name || "Unknown")
+      .join(" & ");
+
   // Group matches by round and format
   const roundGroups = useMemo(() => {
     const groups: RoundGroup[] = [];
@@ -89,37 +121,6 @@ export const SessionSummaryView = ({
 
     return groups;
   }, [rounds]);
-
-  const getFormatName = (format: string): string => {
-    switch (format) {
-      case "foursomes":
-        return "Foursomes";
-      case "four-ball":
-        return "Four-Ball";
-      case "singles":
-        return "Singles";
-      default:
-        return format.charAt(0).toUpperCase() + format.slice(1);
-    }
-  };
-
-  const getFormatIcon = (type: string) => {
-    switch (type) {
-      case "foursomes":
-        return "🔄";
-      case "four-ball":
-        return "⭐";
-      case "singles":
-        return "👤";
-      default:
-        return "🏌️";
-    }
-  };
-
-  const getPlayerNames = (playerIds: string[]) =>
-    playerIds
-      .map((id) => players.find((p) => p.id === id)?.name || "Unknown")
-      .join(" & ");
 
   return (
     <div className="space-y-6">
