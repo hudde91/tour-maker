@@ -17,6 +17,7 @@ import ErrorBoundary from "../components/common/ErrorBoundary";
 import { SwipeableIndividualScoring } from "../components/formats/individual/SwipeableIndividualScoring";
 import { SwipeableTeamScoring } from "../components/formats/SwipeableTeamScoring";
 import { SwipeableMatchPlayScoring } from "../components/matchplay/common/SwipeableMatchPlayScoring";
+import { BottomNav } from "../components/BottomNav";
 
 export const RoundPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
@@ -41,6 +42,36 @@ export const RoundPage = () => {
   const formatConfig = useMemo(() => {
     return round ? getFormatConfig(round) : null;
   }, [round]);
+
+  const tabs = useMemo(
+    () => [
+      {
+        id: "home",
+        label: "Home",
+        icon: "🏠",
+        path: "/",
+      },
+      {
+        id: "players",
+        label: "Players",
+        icon: "👥",
+        path: `/tour/${tourId}`,
+      },
+      {
+        id: "rounds",
+        label: "Rounds",
+        icon: "📋",
+        path: `/tour/${tourId}/rounds`,
+      },
+      {
+        id: "leaderboard",
+        label: "Leaderboard",
+        icon: "🏆",
+        path: `/tour/${tourId}/leaderboard`,
+      },
+    ],
+    [tourId]
+  );
 
   // Check if this is a Ryder Cup format
   const isRyderCupFormat =
@@ -313,6 +344,7 @@ export const RoundPage = () => {
           onCancel={cancelCompleteRound}
           isDestructive={false}
         />
+        <BottomNav tabs={tabs} />
       </div>
     </ErrorBoundary>
   );
