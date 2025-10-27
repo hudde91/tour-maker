@@ -11,6 +11,12 @@ export const TourLayout = () => {
 
   const tabs = [
     {
+      id: "home",
+      label: "Home",
+      icon: "🏠",
+      path: "/",
+    },
+    {
       id: "players",
       label: "Players",
       icon: "👥",

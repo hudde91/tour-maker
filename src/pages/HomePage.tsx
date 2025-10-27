@@ -2,10 +2,32 @@ import { Link } from "react-router-dom";
 import { useTours } from "../hooks/useTours";
 import { useState, useEffect } from "react";
 import { HowItWorksModal } from "@/components/ui/Howitworksmodal";
+import { BottomNav } from "../components/BottomNav";
 
 export const HomePage = () => {
   const { data: tours = [], isLoading } = useTours();
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+
+  const tabs = [
+    {
+      id: "home",
+      label: "Home",
+      icon: "🏠",
+      path: "/",
+    },
+    {
+      id: "create",
+      label: "Create",
+      icon: "➕",
+      path: "/create",
+    },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: "⚙️",
+      path: "/settings",
+    },
+  ];
 
   // Show "How It Works" for first-time users
   useEffect(() => {
@@ -256,6 +278,7 @@ export const HomePage = () => {
           )}
         </div>
       </div>
+      <BottomNav tabs={tabs} />
     </div>
   );
 };
