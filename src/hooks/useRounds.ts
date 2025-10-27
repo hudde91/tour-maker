@@ -45,6 +45,10 @@ export const useCreateRound = (tourId: string) => {
         settings: roundData.settings,
         createdAt: new Date().toISOString(),
         scores: {},
+        competitionWinners: {
+          closestToPin: {},
+          longestDrive: {},
+        },
         status: "created",
       };
       // Initialize Ryder Cup container when tour is in Ryder Cup mode
