@@ -104,7 +104,10 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
 
   const handleChangeCaptain = async (newCaptainId: string) => {
     try {
-      await setTeamCaptain.mutateAsync({ teamId: team.id, captainId: newCaptainId });
+      await setTeamCaptain.mutateAsync({
+        teamId: team.id,
+        captainId: newCaptainId,
+      });
       setShowCaptainSelect(false);
     } catch (error) {
       console.error("Failed to change captain:", error);
@@ -120,7 +123,10 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
         newPlayerIds[currentIndex - 1],
       ];
       try {
-        await reorderPlayers.mutateAsync({ teamId: team.id, playerIds: newPlayerIds });
+        await reorderPlayers.mutateAsync({
+          teamId: team.id,
+          playerIds: newPlayerIds,
+        });
       } catch (error) {
         console.error("Failed to reorder players:", error);
       }
@@ -136,7 +142,10 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
         newPlayerIds[currentIndex],
       ];
       try {
-        await reorderPlayers.mutateAsync({ teamId: team.id, playerIds: newPlayerIds });
+        await reorderPlayers.mutateAsync({
+          teamId: team.id,
+          playerIds: newPlayerIds,
+        });
       } catch (error) {
         console.error("Failed to reorder players:", error);
       }
@@ -145,7 +154,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
 
   return (
     <>
-      <div className="card-elevated">
+      <div className="card-elevated -mx-4">
         {/* Team Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 card-spacing">
           <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -240,7 +249,9 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                   {captain ? `Captain: ${captain.name}` : "Select Captain"}
                 </span>
               </div>
-              <span className="text-slate-400">{showCaptainSelect ? "▲" : "▼"}</span>
+              <span className="text-slate-400">
+                {showCaptainSelect ? "▲" : "▼"}
+              </span>
             </button>
 
             {showCaptainSelect && (

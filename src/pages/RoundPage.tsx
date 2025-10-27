@@ -253,7 +253,7 @@ export const RoundPage = () => {
           onCompleteRound={handleCompleteRound}
         />
 
-        <div className="px-4 mt-4 pb-24 w-full max-w-6xl mx-auto">
+        <div className="mt-4 pb-24 w-full max-w-6xl mx-auto">
           <div className="w-full max-w-5xl mx-auto">
             {(() => {
               switch (round.format) {

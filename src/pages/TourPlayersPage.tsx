@@ -91,7 +91,7 @@ export const TourPlayersPage = () => {
         }
       />
 
-      <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
+      <div className="-mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
         {isTeamFormat && (
           <div className="card card-spacing">
             <div className="flex justify-between items-center mb-4">

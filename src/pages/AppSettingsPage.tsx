@@ -1,9 +1,20 @@
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useToast } from "@/components/ui/Toast";
-import { useAppSettings, useUpdateAppSettings, useResetAppSettings } from "@/hooks/useAppSettings";
+import {
+  useAppSettings,
+  useUpdateAppSettings,
+  useResetAppSettings,
+} from "@/hooks/useAppSettings";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { AppSettings, ThemeMode, ScoringDisplay, MeasurementUnit, DateFormat, TimeFormat } from "@/types/settings";
+import {
+  AppSettings,
+  ThemeMode,
+  ScoringDisplay,
+  MeasurementUnit,
+  DateFormat,
+  TimeFormat,
+} from "@/types/settings";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 export const AppSettingsPage = () => {
@@ -91,7 +102,7 @@ export const AppSettingsPage = () => {
         backPath="/"
       />
 
-      <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
+      <div className="-mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
         {/* Theme Settings */}
         <div className="card-elevated">
           <h2 className="section-header mb-4">Appearance</h2>
@@ -200,35 +211,39 @@ export const AppSettingsPage = () => {
                 Preferred Scoring Display
               </label>
               <div className="space-y-2">
-                {(["gross", "net", "both"] as ScoringDisplay[]).map((display) => (
-                  <button
-                    key={display}
-                    onClick={() =>
-                      handleSettingChange("preferredScoringDisplay", display)
-                    }
-                    className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left ${
-                      localSettings.preferredScoringDisplay === display
-                        ? "bg-emerald-100 border-2 border-emerald-500"
-                        : "bg-slate-50 hover:bg-slate-100 border-2 border-transparent"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="font-semibold text-slate-900 capitalize">
-                        {display}
+                {(["gross", "net", "both"] as ScoringDisplay[]).map(
+                  (display) => (
+                    <button
+                      key={display}
+                      onClick={() =>
+                        handleSettingChange("preferredScoringDisplay", display)
+                      }
+                      className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left ${
+                        localSettings.preferredScoringDisplay === display
+                          ? "bg-emerald-100 border-2 border-emerald-500"
+                          : "bg-slate-50 hover:bg-slate-100 border-2 border-transparent"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="font-semibold text-slate-900 capitalize">
+                          {display}
+                        </div>
+                        <div className="text-sm text-slate-500">
+                          {display === "gross"
+                            ? "Show actual scores"
+                            : display === "net"
+                            ? "Show adjusted scores with handicap"
+                            : "Show both gross and net scores"}
+                        </div>
                       </div>
-                      <div className="text-sm text-slate-500">
-                        {display === "gross"
-                          ? "Show actual scores"
-                          : display === "net"
-                          ? "Show adjusted scores with handicap"
-                          : "Show both gross and net scores"}
-                      </div>
-                    </div>
-                    {localSettings.preferredScoringDisplay === display && (
-                      <span className="text-emerald-600 font-semibold">✓</span>
-                    )}
-                  </button>
-                ))}
+                      {localSettings.preferredScoringDisplay === display && (
+                        <span className="text-emerald-600 font-semibold">
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  )
+                )}
               </div>
             </div>
 
@@ -272,35 +287,35 @@ export const AppSettingsPage = () => {
                 Date Format
               </label>
               <div className="space-y-2">
-                {(["MM/DD/YYYY", "DD/MM/YYYY", "YYYY-MM-DD"] as DateFormat[]).map(
-                  (format) => (
-                    <button
-                      key={format}
-                      onClick={() => handleSettingChange("dateFormat", format)}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left ${
-                        localSettings.dateFormat === format
-                          ? "bg-emerald-100 border-2 border-emerald-500"
-                          : "bg-slate-50 hover:bg-slate-100 border-2 border-transparent"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="font-semibold text-slate-900">
-                          {format}
-                        </div>
-                        <div className="text-sm text-slate-500">
-                          {format === "MM/DD/YYYY"
-                            ? new Date().toLocaleDateString("en-US")
-                            : format === "DD/MM/YYYY"
-                            ? new Date().toLocaleDateString("en-GB")
-                            : new Date().toISOString().split("T")[0]}
-                        </div>
+                {(
+                  ["MM/DD/YYYY", "DD/MM/YYYY", "YYYY-MM-DD"] as DateFormat[]
+                ).map((format) => (
+                  <button
+                    key={format}
+                    onClick={() => handleSettingChange("dateFormat", format)}
+                    className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left ${
+                      localSettings.dateFormat === format
+                        ? "bg-emerald-100 border-2 border-emerald-500"
+                        : "bg-slate-50 hover:bg-slate-100 border-2 border-transparent"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="font-semibold text-slate-900">
+                        {format}
                       </div>
-                      {localSettings.dateFormat === format && (
-                        <span className="text-emerald-600 font-semibold">✓</span>
-                      )}
-                    </button>
-                  )
-                )}
+                      <div className="text-sm text-slate-500">
+                        {format === "MM/DD/YYYY"
+                          ? new Date().toLocaleDateString("en-US")
+                          : format === "DD/MM/YYYY"
+                          ? new Date().toLocaleDateString("en-GB")
+                          : new Date().toISOString().split("T")[0]}
+                      </div>
+                    </div>
+                    {localSettings.dateFormat === format && (
+                      <span className="text-emerald-600 font-semibold">✓</span>
+                    )}
+                  </button>
+                ))}
               </div>
             </div>
 

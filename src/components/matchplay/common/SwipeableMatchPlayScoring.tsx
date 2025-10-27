@@ -34,7 +34,7 @@ export const SwipeableMatchPlayScoring = ({
 
   // Scroll to top when navigating to a match or changing tabs
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [selectedMatchId, activeTab]);
 
   // Initialize match holes on mount
@@ -78,12 +78,6 @@ export const SwipeableMatchPlayScoring = ({
     setMatchHoles((prev) => ({ ...prev, [matchId]: hole }));
   };
 
-  // Get team names
-  const getTeamName = (teamId: string) => {
-    const team = tour.teams?.find((t) => t.id === teamId);
-    return team?.name || "Team";
-  };
-
   // Convert match play holes to playerScores format for HoleNavigation
   const getMatchPlayScores = (matchId: string) => {
     const scores: Record<string, number[]> = {};
@@ -107,13 +101,6 @@ export const SwipeableMatchPlayScoring = ({
     return scores;
   };
 
-  // Get player names for a team
-  const getPlayerNames = (playerIds: string[]) => {
-    return playerIds
-      .map((id) => tour.players.find((p) => p.id === id)?.name)
-      .filter(Boolean);
-  };
-
   // Get team info (name, color, players)
   const getTeamInfo = (teamId: string, playerIds: string[]) => {
     const team = tour.teams?.find((t) => t.id === teamId);
@@ -132,7 +119,9 @@ export const SwipeableMatchPlayScoring = ({
     return (
       <div className="p-4 space-y-4">
         <div className="mb-4">
-          <h2 className="text-xl font-bold text-slate-900">Select Your Match</h2>
+          <h2 className="text-xl font-bold text-slate-900">
+            Select Your Match
+          </h2>
           <p className="text-sm text-slate-600 mt-1">
             Click on your match to start scoring
           </p>
@@ -141,7 +130,8 @@ export const SwipeableMatchPlayScoring = ({
         {matches.map((match: any) => {
           const teamAInfo = getTeamInfo(match.teamA.id, match.teamA.playerIds);
           const teamBInfo = getTeamInfo(match.teamB.id, match.teamB.playerIds);
-          const isMatchComplete = match.status === "completed" || match.isComplete;
+          const isMatchComplete =
+            match.status === "completed" || match.isComplete;
 
           return (
             <button
@@ -152,7 +142,8 @@ export const SwipeableMatchPlayScoring = ({
               {/* Match Format Badge */}
               <div className="flex items-center justify-between mb-4">
                 <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full">
-                  {match.format.charAt(0).toUpperCase() + match.format.slice(1)} Match
+                  {match.format.charAt(0).toUpperCase() + match.format.slice(1)}{" "}
+                  Match
                 </span>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -354,8 +345,14 @@ export const SwipeableMatchPlayScoring = ({
   }
 
   const currentHole = getCurrentHoleForMatch(selectedMatch.id);
-  const teamAInfo = getTeamInfo(selectedMatch.teamA.id, selectedMatch.teamA.playerIds);
-  const teamBInfo = getTeamInfo(selectedMatch.teamB.id, selectedMatch.teamB.playerIds);
+  const teamAInfo = getTeamInfo(
+    selectedMatch.teamA.id,
+    selectedMatch.teamA.playerIds
+  );
+  const teamBInfo = getTeamInfo(
+    selectedMatch.teamB.id,
+    selectedMatch.teamB.playerIds
+  );
 
   return (
     <div className="flex flex-col h-full">
@@ -388,20 +385,30 @@ export const SwipeableMatchPlayScoring = ({
           <div className="bg-gradient-to-r from-blue-50 to-emerald-50 rounded-lg p-4 border border-blue-200">
             <div className="text-center mb-3">
               <span className="inline-block px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full">
-                {selectedMatch.format.charAt(0).toUpperCase() + selectedMatch.format.slice(1)} Match
+                {selectedMatch.format.charAt(0).toUpperCase() +
+                  selectedMatch.format.slice(1)}{" "}
+                Match
               </span>
             </div>
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1 text-center">
-                <div className="font-bold text-slate-900 mb-1">{teamAInfo.name}</div>
-                <div className="text-sm text-slate-700">{teamAInfo.players.join(" & ")}</div>
+                <div className="font-bold text-slate-900 mb-1">
+                  {teamAInfo.name}
+                </div>
+                <div className="text-sm text-slate-700">
+                  {teamAInfo.players.join(" & ")}
+                </div>
               </div>
               <div className="px-3 py-1 bg-white rounded-full text-slate-600 font-bold text-sm shadow">
                 VS
               </div>
               <div className="flex-1 text-center">
-                <div className="font-bold text-slate-900 mb-1">{teamBInfo.name}</div>
-                <div className="text-sm text-slate-700">{teamBInfo.players.join(" & ")}</div>
+                <div className="font-bold text-slate-900 mb-1">
+                  {teamBInfo.name}
+                </div>
+                <div className="text-sm text-slate-700">
+                  {teamBInfo.players.join(" & ")}
+                </div>
               </div>
             </div>
           </div>
@@ -481,7 +488,12 @@ export const SwipeableMatchPlayScoring = ({
               onHoleChange={(newHole) =>
                 setCurrentHoleForMatch(selectedMatch.id, newHole)
               }
-              onCompetitionWinnerChange={(holeNumber, competitionType, winnerId, distance) => {
+              onCompetitionWinnerChange={(
+                holeNumber,
+                competitionType,
+                winnerId,
+                distance
+              ) => {
                 updateCompetitionWinner.mutate({
                   holeNumber,
                   competitionType,
@@ -499,7 +511,8 @@ export const SwipeableMatchPlayScoring = ({
             <div className="card">
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                  {teamAInfo.players.join(" & ")} vs {teamBInfo.players.join(" & ")}
+                  {teamAInfo.players.join(" & ")} vs{" "}
+                  {teamBInfo.players.join(" & ")}
                 </h3>
                 <div className="text-sm text-slate-600">
                   {teamAInfo.name} vs {teamBInfo.name}
@@ -535,7 +548,7 @@ interface MatchScoringCardProps {
   onHoleChange: (newHole: number) => void;
   onCompetitionWinnerChange?: (
     holeNumber: number,
-    competitionType: 'closestToPin' | 'longestDrive',
+    competitionType: "closestToPin" | "longestDrive",
     winnerId: string | null,
     distance?: number
   ) => void;
@@ -559,8 +572,8 @@ const MatchScoringCard = ({
   const existingHole = match.holes?.[currentHole - 1];
   const [teamAScore, setTeamAScore] = useState(existingHole?.teamAScore || 0);
   const [teamBScore, setTeamBScore] = useState(existingHole?.teamBScore || 0);
-  const [closestToPinDistance, setClosestToPinDistance] = useState<string>('');
-  const [longestDriveDistance, setLongestDriveDistance] = useState<string>('');
+  const [closestToPinDistance, setClosestToPinDistance] = useState<string>("");
+  const [longestDriveDistance, setLongestDriveDistance] = useState<string>("");
 
   useEffect(() => {
     const hole = match.holes?.[currentHole - 1];
@@ -568,12 +581,14 @@ const MatchScoringCard = ({
     setTeamBScore(hole?.teamBScore || 0);
 
     // Load existing distances if they exist (find entry for this match)
-    const ctpWinners = round.competitionWinners?.closestToPin?.[currentHole] || [];
-    const ldWinners = round.competitionWinners?.longestDrive?.[currentHole] || [];
-    const ctpWinner = ctpWinners.find(w => w.matchId === match.id);
-    const ldWinner = ldWinners.find(w => w.matchId === match.id);
-    setClosestToPinDistance(ctpWinner?.distance?.toString() || '');
-    setLongestDriveDistance(ldWinner?.distance?.toString() || '');
+    const ctpWinners =
+      round.competitionWinners?.closestToPin?.[currentHole] || [];
+    const ldWinners =
+      round.competitionWinners?.longestDrive?.[currentHole] || [];
+    const ctpWinner = ctpWinners.find((w) => w.matchId === match.id);
+    const ldWinner = ldWinners.find((w) => w.matchId === match.id);
+    setClosestToPinDistance(ctpWinner?.distance?.toString() || "");
+    setLongestDriveDistance(ldWinner?.distance?.toString() || "");
   }, [currentHole, match.holes, match.id, round.competitionWinners]);
 
   // Auto-save and advance when both scores are entered
@@ -967,171 +982,260 @@ const MatchScoringCard = ({
       </div>
 
       {/* Competition Winner Selection */}
-      {(currentHoleInfo.closestToPin || currentHoleInfo.longestDrive) && onCompetitionWinnerChange && (() => {
-        // Get only players in this match
-        const matchPlayerIds = [...match.teamA.playerIds, ...match.teamB.playerIds];
-        const matchPlayers = tour.players.filter(p => matchPlayerIds.includes(p.id));
+      {(currentHoleInfo.closestToPin || currentHoleInfo.longestDrive) &&
+        onCompetitionWinnerChange &&
+        (() => {
+          // Get only players in this match
+          const matchPlayerIds = [
+            ...match.teamA.playerIds,
+            ...match.teamB.playerIds,
+          ];
+          const matchPlayers = tour.players.filter((p) =>
+            matchPlayerIds.includes(p.id)
+          );
 
-        return (
-          <div className="space-y-3">
-            {currentHoleInfo.closestToPin && (
-              <div className="card border-2 border-blue-200 bg-blue-50">
-                <div className="flex items-center gap-2 mb-3">
-                  <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
-                  </svg>
-                  <h5 className="text-sm font-semibold text-blue-900">Closest to Pin Winner</h5>
-                </div>
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  {matchPlayers.map((p) => {
-                    const winners = round.competitionWinners?.closestToPin?.[currentHole] || [];
-                    const isWinner = winners.some(w => w.matchId === match.id && w.playerId === p.id);
-                    return (
-                      <button
-                        key={p.id}
-                        type="button"
-                        onClick={() => {
-                          const distance = closestToPinDistance ? parseFloat(closestToPinDistance) : undefined;
-                          onCompetitionWinnerChange(currentHole, 'closestToPin', isWinner ? null : p.id, distance);
-                        }}
-                        disabled={round.status === "completed"}
-                        className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
-                          round.status === "completed"
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                        } ${
-                          isWinner
-                            ? "bg-blue-600 text-white border-blue-700 shadow-md"
-                            : "bg-white text-slate-700 border-slate-300 hover:border-blue-400"
-                        }`}
-                      >
-                        {p.name}
-                      </button>
-                    );
-                  })}
-                <button
-                  type="button"
-                  onClick={() => onCompetitionWinnerChange(currentHole, 'closestToPin', null)}
-                  disabled={round.status === "completed"}
-                  className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
-                    round.status === "completed"
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  } ${
-                    !(round.competitionWinners?.closestToPin?.[currentHole] || []).some(w => w.matchId === match.id)
-                      ? "bg-slate-100 text-slate-700 border-slate-400"
-                      : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
-                  }`}
-                >
-                  None
-                </button>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-blue-900 mb-1">
-                  Distance from Pin (feet/meters)
-                </label>
-                <input
-                  type="number"
-                  value={closestToPinDistance}
-                  onChange={(e) => setClosestToPinDistance(e.target.value)}
-                  onBlur={() => {
-                    const winners = round.competitionWinners?.closestToPin?.[currentHole] || [];
-                    const currentWinner = winners.find(w => w.matchId === match.id);
-                    if (currentWinner?.playerId) {
-                      const distance = closestToPinDistance ? parseFloat(closestToPinDistance) : undefined;
-                      onCompetitionWinnerChange(currentHole, 'closestToPin', currentWinner.playerId, distance);
-                    }
-                  }}
-                  disabled={round.status === "completed"}
-                  placeholder="Enter distance"
-                  className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                  step="0.1"
-                  min="0"
-                />
-              </div>
-            </div>
-          )}
-
-          {currentHoleInfo.longestDrive && (
-            <div className="card border-2 border-amber-200 bg-amber-50">
-              <div className="flex items-center gap-2 mb-3">
-                <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd"/>
-                </svg>
-                <h5 className="text-sm font-semibold text-amber-900">Longest Drive Winner</h5>
-              </div>
-              <div className="grid grid-cols-2 gap-2 mb-3">
-                {matchPlayers.map((p) => {
-                  const winners = round.competitionWinners?.longestDrive?.[currentHole] || [];
-                  const isWinner = winners.some(w => w.matchId === match.id && w.playerId === p.id);
-                  return (
+          return (
+            <div className="space-y-3">
+              {currentHoleInfo.closestToPin && (
+                <div className="card border-2 border-blue-200 bg-blue-50">
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg
+                      className="w-5 h-5 text-blue-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
+                    </svg>
+                    <h5 className="text-sm font-semibold text-blue-900">
+                      Closest to Pin Winner
+                    </h5>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {matchPlayers.map((p) => {
+                      const winners =
+                        round.competitionWinners?.closestToPin?.[currentHole] ||
+                        [];
+                      const isWinner = winners.some(
+                        (w) => w.matchId === match.id && w.playerId === p.id
+                      );
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => {
+                            const distance = closestToPinDistance
+                              ? parseFloat(closestToPinDistance)
+                              : undefined;
+                            onCompetitionWinnerChange(
+                              currentHole,
+                              "closestToPin",
+                              isWinner ? null : p.id,
+                              distance
+                            );
+                          }}
+                          disabled={round.status === "completed"}
+                          className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
+                            round.status === "completed"
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          } ${
+                            isWinner
+                              ? "bg-blue-600 text-white border-blue-700 shadow-md"
+                              : "bg-white text-slate-700 border-slate-300 hover:border-blue-400"
+                          }`}
+                        >
+                          {p.name}
+                        </button>
+                      );
+                    })}
                     <button
-                      key={p.id}
                       type="button"
-                      onClick={() => {
-                        const distance = longestDriveDistance ? parseFloat(longestDriveDistance) : undefined;
-                        onCompetitionWinnerChange(currentHole, 'longestDrive', isWinner ? null : p.id, distance);
-                      }}
+                      onClick={() =>
+                        onCompetitionWinnerChange(
+                          currentHole,
+                          "closestToPin",
+                          null
+                        )
+                      }
                       disabled={round.status === "completed"}
                       className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
                         round.status === "completed"
                           ? "opacity-50 cursor-not-allowed"
                           : ""
                       } ${
-                        isWinner
-                          ? "bg-amber-600 text-white border-amber-700 shadow-md"
-                          : "bg-white text-slate-700 border-slate-300 hover:border-amber-400"
+                        !(
+                          round.competitionWinners?.closestToPin?.[
+                            currentHole
+                          ] || []
+                        ).some((w) => w.matchId === match.id)
+                          ? "bg-slate-100 text-slate-700 border-slate-400"
+                          : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
                       }`}
                     >
-                      {p.name}
+                      None
                     </button>
-                  );
-                })}
-                <button
-                  type="button"
-                  onClick={() => onCompetitionWinnerChange(currentHole, 'longestDrive', null)}
-                  disabled={round.status === "completed"}
-                  className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
-                    round.status === "completed"
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  } ${
-                    !(round.competitionWinners?.longestDrive?.[currentHole] || []).some(w => w.matchId === match.id)
-                      ? "bg-slate-100 text-slate-700 border-slate-400"
-                      : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
-                  }`}
-                >
-                  None
-                </button>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-amber-900 mb-1">
-                  Drive Distance (yards/meters)
-                </label>
-                <input
-                  type="number"
-                  value={longestDriveDistance}
-                  onChange={(e) => setLongestDriveDistance(e.target.value)}
-                  onBlur={() => {
-                    const winners = round.competitionWinners?.longestDrive?.[currentHole] || [];
-                    const currentWinner = winners.find(w => w.matchId === match.id);
-                    if (currentWinner?.playerId) {
-                      const distance = longestDriveDistance ? parseFloat(longestDriveDistance) : undefined;
-                      onCompetitionWinnerChange(currentHole, 'longestDrive', currentWinner.playerId, distance);
-                    }
-                  }}
-                  disabled={round.status === "completed"}
-                  placeholder="Enter distance"
-                  className="w-full px-3 py-2 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
-                  step="0.1"
-                  min="0"
-                />
-              </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-blue-900 mb-1">
+                      Distance from Pin (feet/meters)
+                    </label>
+                    <input
+                      type="number"
+                      value={closestToPinDistance}
+                      onChange={(e) => setClosestToPinDistance(e.target.value)}
+                      onBlur={() => {
+                        const winners =
+                          round.competitionWinners?.closestToPin?.[
+                            currentHole
+                          ] || [];
+                        const currentWinner = winners.find(
+                          (w) => w.matchId === match.id
+                        );
+                        if (currentWinner?.playerId) {
+                          const distance = closestToPinDistance
+                            ? parseFloat(closestToPinDistance)
+                            : undefined;
+                          onCompetitionWinnerChange(
+                            currentHole,
+                            "closestToPin",
+                            currentWinner.playerId,
+                            distance
+                          );
+                        }
+                      }}
+                      disabled={round.status === "completed"}
+                      placeholder="Enter distance"
+                      className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      step="0.1"
+                      min="0"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {currentHoleInfo.longestDrive && (
+                <div className="card border-2 border-amber-200 bg-amber-50">
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg
+                      className="w-5 h-5 text-amber-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <h5 className="text-sm font-semibold text-amber-900">
+                      Longest Drive Winner
+                    </h5>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {matchPlayers.map((p) => {
+                      const winners =
+                        round.competitionWinners?.longestDrive?.[currentHole] ||
+                        [];
+                      const isWinner = winners.some(
+                        (w) => w.matchId === match.id && w.playerId === p.id
+                      );
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => {
+                            const distance = longestDriveDistance
+                              ? parseFloat(longestDriveDistance)
+                              : undefined;
+                            onCompetitionWinnerChange(
+                              currentHole,
+                              "longestDrive",
+                              isWinner ? null : p.id,
+                              distance
+                            );
+                          }}
+                          disabled={round.status === "completed"}
+                          className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
+                            round.status === "completed"
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          } ${
+                            isWinner
+                              ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                              : "bg-white text-slate-700 border-slate-300 hover:border-amber-400"
+                          }`}
+                        >
+                          {p.name}
+                        </button>
+                      );
+                    })}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onCompetitionWinnerChange(
+                          currentHole,
+                          "longestDrive",
+                          null
+                        )
+                      }
+                      disabled={round.status === "completed"}
+                      className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
+                        round.status === "completed"
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      } ${
+                        !(
+                          round.competitionWinners?.longestDrive?.[
+                            currentHole
+                          ] || []
+                        ).some((w) => w.matchId === match.id)
+                          ? "bg-slate-100 text-slate-700 border-slate-400"
+                          : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
+                      }`}
+                    >
+                      None
+                    </button>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-amber-900 mb-1">
+                      Drive Distance (yards/meters)
+                    </label>
+                    <input
+                      type="number"
+                      value={longestDriveDistance}
+                      onChange={(e) => setLongestDriveDistance(e.target.value)}
+                      onBlur={() => {
+                        const winners =
+                          round.competitionWinners?.longestDrive?.[
+                            currentHole
+                          ] || [];
+                        const currentWinner = winners.find(
+                          (w) => w.matchId === match.id
+                        );
+                        if (currentWinner?.playerId) {
+                          const distance = longestDriveDistance
+                            ? parseFloat(longestDriveDistance)
+                            : undefined;
+                          onCompetitionWinnerChange(
+                            currentHole,
+                            "longestDrive",
+                            currentWinner.playerId,
+                            distance
+                          );
+                        }
+                      }}
+                      disabled={round.status === "completed"}
+                      placeholder="Enter distance"
+                      className="w-full px-3 py-2 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                      step="0.1"
+                      min="0"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-          </div>
-        );
-      })()}
+          );
+        })()}
     </div>
   );
 };

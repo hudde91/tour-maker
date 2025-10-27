@@ -34,7 +34,7 @@ export const MatchPlayLeaderboard = ({
   const totalMatches = matches.length;
 
   return (
-    <div className="card-elevated">
+    <div className="card-elevated -mx-4">
       {/* Tournament Points Header */}
       <div className="text-center card-spacing">
         <h3 className="text-2xl font-bold text-slate-900 mb-2 flex items-center justify-center gap-3">

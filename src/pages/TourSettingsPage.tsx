@@ -180,7 +180,7 @@ export const TourSettingsPage = () => {
         backPath="/"
       />
 
-      <div className="px-4 -mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
+      <div className="-mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
         <div className="card-elevated">
           <div className="flex items-center justify-between mb-4">
             <h2 className="section-header">Tournament Information</h2>
@@ -330,9 +330,7 @@ export const TourSettingsPage = () => {
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      tour.format === format
-                        ? "bg-emerald-200"
-                        : "bg-slate-200"
+                      tour.format === format ? "bg-emerald-200" : "bg-slate-200"
                     }`}
                   >
                     <span className="text-xl">
@@ -407,9 +405,7 @@ export const TourSettingsPage = () => {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
-                  <span className="text-xl">
-                    {tour.archived ? "📂" : "📦"}
-                  </span>
+                  <span className="text-xl">{tour.archived ? "📂" : "📦"}</span>
                 </div>
                 <div>
                   <div className="font-semibold text-slate-900">

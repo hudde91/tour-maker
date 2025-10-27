@@ -76,7 +76,7 @@ export const HomePage = () => {
         </div>
       </div>
 
-      <div className="px-4 -mt-6 pb-8 w-full max-w-6xl mx-auto">
+      <div className="-mt-6 pb-8 w-full max-w-6xl mx-auto">
         <div className="card-elevated section-spacing w-full max-w-2xl mx-auto">
           <div className="text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto card-spacing shadow-xl">
@@ -116,7 +116,7 @@ export const HomePage = () => {
 
         {/* Tournaments Section */}
         <div className="section-spacing">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 section-spacing w-full max-w-5xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-4 section-spacing w-full max-w-5xl mx-auto">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
                 Your Tournaments
@@ -158,7 +158,7 @@ export const HomePage = () => {
                     key={tour.id}
                     className="bg-white rounded-xl shadow-lg border border-slate-200 p-4 md:p-6 hover:shadow-xl transition-all duration-200 group"
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex justify-between">
                       <Link to={`/tour/${tour.id}`} className="flex-1 min-w-0">
                         <div className="space-y-3">
                           <div className="flex flex-col md:flex-row md:items-center gap-4">

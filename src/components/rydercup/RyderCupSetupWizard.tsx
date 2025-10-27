@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCreateTour } from "../../hooks/useTours";
-import { useCreateTeam } from "../../hooks/useTeams";
-import { useCreateRound } from "../../hooks/useRounds";
 import { TourFormat } from "../../types";
 
 interface SessionTemplate {
@@ -153,8 +151,6 @@ const WIZARD_STEPS: WizardStep[] = [
 export const RyderCupSetupWizard = () => {
   const navigate = useNavigate();
   const createTour = useCreateTour();
-  const createTeam = useCreateTeam();
-  const createRound = useCreateRound();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [wizardData, setWizardData] = useState({
@@ -475,9 +471,7 @@ export const RyderCupSetupWizard = () => {
                 <h2 className="text-2xl font-bold text-slate-900 mb-2">
                   Team Setup
                 </h2>
-                <p className="text-slate-600">
-                  Name your two competing teams
-                </p>
+                <p className="text-slate-600">Name your two competing teams</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -534,6 +528,7 @@ export const RyderCupSetupWizard = () => {
                               : "border-slate-300 hover:border-slate-400"
                           }`}
                           style={{ backgroundColor: color }}
+                          aria-label={`Select color ${color} for Team A`}
                         />
                       ))}
                     </div>
@@ -593,6 +588,7 @@ export const RyderCupSetupWizard = () => {
                               : "border-slate-300 hover:border-slate-400"
                           }`}
                           style={{ backgroundColor: color }}
+                          aria-label={`Select color ${color} for Team B`}
                         />
                       ))}
                     </div>

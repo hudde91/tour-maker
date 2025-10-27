@@ -88,27 +88,35 @@ export const SessionSummaryView = ({
       });
 
       // Create format sections
-      const formatSections = Array.from(formatMap.entries()).map(([format, matches]) => {
-        const teamAPoints = matches.reduce(
-          (sum, m) => sum + (m.points?.teamA || 0),
-          0
-        );
-        const teamBPoints = matches.reduce(
-          (sum, m) => sum + (m.points?.teamB || 0),
-          0
-        );
+      const formatSections = Array.from(formatMap.entries()).map(
+        ([format, matches]) => {
+          const teamAPoints = matches.reduce(
+            (sum, m) => sum + (m.points?.teamA || 0),
+            0
+          );
+          const teamBPoints = matches.reduce(
+            (sum, m) => sum + (m.points?.teamB || 0),
+            0
+          );
 
-        return {
-          format,
-          formatName: getFormatName(format),
-          matches,
-          teamAPoints,
-          teamBPoints,
-        };
-      });
+          return {
+            format,
+            formatName: getFormatName(format),
+            matches,
+            teamAPoints,
+            teamBPoints,
+          };
+        }
+      );
 
-      const roundTotalA = formatSections.reduce((sum, s) => sum + s.teamAPoints, 0);
-      const roundTotalB = formatSections.reduce((sum, s) => sum + s.teamBPoints, 0);
+      const roundTotalA = formatSections.reduce(
+        (sum, s) => sum + s.teamAPoints,
+        0
+      );
+      const roundTotalB = formatSections.reduce(
+        (sum, s) => sum + s.teamBPoints,
+        0
+      );
 
       groups.push({
         roundId: round.id,
@@ -125,7 +133,7 @@ export const SessionSummaryView = ({
   return (
     <div className="space-y-6">
       {roundGroups.map((group) => (
-        <div key={group.roundId} className="card-elevated">
+        <div key={group.roundId} className="card-elevated -mx-4">
           {/* Round Header */}
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -133,8 +141,14 @@ export const SessionSummaryView = ({
                 {group.roundName}
               </h3>
               <p className="text-sm text-slate-600">
-                {group.formatSections.reduce((sum, s) => sum + s.matches.length, 0)}{" "}
-                {group.formatSections.reduce((sum, s) => sum + s.matches.length, 0) === 1
+                {group.formatSections.reduce(
+                  (sum, s) => sum + s.matches.length,
+                  0
+                )}{" "}
+                {group.formatSections.reduce(
+                  (sum, s) => sum + s.matches.length,
+                  0
+                ) === 1
                   ? "match"
                   : "matches"}
               </p>
@@ -143,14 +157,14 @@ export const SessionSummaryView = ({
               <div className="text-sm text-slate-600">Round Total</div>
               <div className="flex items-center gap-3 mt-1">
                 <div
-                  className="px-3 py-1 rounded-full font-semibold text-white"
+                  className="px-3 py-1 rounded-lg font-semibold text-white"
                   style={{ backgroundColor: teamAColor }}
                 >
                   {group.roundTotalA.toFixed(1)}
                 </div>
                 <span className="text-slate-400">-</span>
                 <div
-                  className="px-3 py-1 rounded-full font-semibold text-white"
+                  className="px-3 py-1 rounded-lg font-semibold text-white"
                   style={{ backgroundColor: teamBColor }}
                 >
                   {group.roundTotalB.toFixed(1)}
@@ -179,22 +193,6 @@ export const SessionSummaryView = ({
                         {section.matches.length}{" "}
                         {section.matches.length === 1 ? "match" : "matches"}
                       </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="px-3 py-1 rounded-lg font-semibold text-white text-sm"
-                      style={{ backgroundColor: teamAColor }}
-                    >
-                      {section.teamAPoints.toFixed(1)}
-                    </div>
-                    <span className="text-slate-400 text-sm">-</span>
-                    <div
-                      className="px-3 py-1 rounded-lg font-semibold text-white text-sm"
-                      style={{ backgroundColor: teamBColor }}
-                    >
-                      {section.teamBPoints.toFixed(1)}
                     </div>
                   </div>
                 </div>

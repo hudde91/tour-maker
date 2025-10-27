@@ -78,7 +78,7 @@ export const TourRoundsPage = () => {
         }
       />
 
-      <div className="px-4 pt-6 pb-8 w-full max-w-6xl mx-auto">
+      <div className="pt-6 pb-8 w-full max-w-6xl mx-auto">
         {tour.rounds.length === 0 ? (
           <EmptyState
             icon="🏌️"
@@ -96,7 +96,7 @@ export const TourRoundsPage = () => {
           <>
             {activeRounds.length > 0 && (
               <div className="mb-8">
-                <div className="mb-4 flex items-center gap-3">
+                <div className="mb-4 flex items-center gap-3 px-4">
                   <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                   <h2 className="text-xl font-bold text-slate-900">
                     Active Rounds
@@ -115,7 +115,7 @@ export const TourRoundsPage = () => {
 
             {upcomingRounds.length > 0 && (
               <div className="mb-8">
-                <div className="mb-4 flex items-center gap-3">
+                <div className="mb-4 flex items-center gap-3 px-4">
                   <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
                   <h2 className="text-xl font-bold text-slate-900">
                     Upcoming Rounds
@@ -134,7 +134,7 @@ export const TourRoundsPage = () => {
 
             {completedRounds.length > 0 && (
               <div className="mb-8">
-                <div className="mb-4 flex items-center gap-3">
+                <div className="mb-4 flex items-center gap-3 px-4">
                   <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
                   <h2 className="text-xl font-bold text-slate-900">
                     Completed Rounds
