@@ -316,35 +316,6 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
               </div>
 
               <div className="flex items-center gap-2">
-                {/* Reorder buttons */}
-                {teamPlayers.length > 1 && (
-                  <div className="flex flex-col gap-1">
-                    <button
-                      onClick={() => handleMovePlayerUp(player.id)}
-                      disabled={index === 0}
-                      className={`p-1 rounded transition-colors ${
-                        index === 0
-                          ? "text-slate-300 cursor-not-allowed"
-                          : "text-slate-500 hover:text-slate-700 hover:bg-slate-200"
-                      }`}
-                      title="Move up"
-                    >
-                      <span className="text-xs">▲</span>
-                    </button>
-                    <button
-                      onClick={() => handleMovePlayerDown(player.id)}
-                      disabled={index === teamPlayers.length - 1}
-                      className={`p-1 rounded transition-colors ${
-                        index === teamPlayers.length - 1
-                          ? "text-slate-300 cursor-not-allowed"
-                          : "text-slate-500 hover:text-slate-700 hover:bg-slate-200"
-                      }`}
-                      title="Move down"
-                    >
-                      <span className="text-xs">▼</span>
-                    </button>
-                  </div>
-                )}
                 <button
                   onClick={() =>
                     handleRemovePlayerClick(player.id, player.name)
