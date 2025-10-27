@@ -106,23 +106,3 @@ export const useSetTeamCaptain = (tourId: string) => {
     },
   });
 };
-
-export const useReorderTeamPlayers = (tourId: string) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      teamId,
-      playerIds,
-    }: {
-      teamId: string;
-      playerIds: string[];
-    }) => {
-      storage.reorderTeamPlayers(tourId, teamId, playerIds);
-      return { teamId, playerIds };
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-    },
-  });
-};

@@ -6,7 +6,6 @@ import {
   useDeleteTeam,
   useAssignPlayerToTeam,
   useSetTeamCaptain,
-  useReorderTeamPlayers,
 } from "../../hooks/useTeams";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 
@@ -20,7 +19,6 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
   const deleteTeam = useDeleteTeam(tour.id);
   const assignPlayer = useAssignPlayerToTeam(tour.id);
   const setTeamCaptain = useSetTeamCaptain(tour.id);
-  const reorderPlayers = useReorderTeamPlayers(tour.id);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(team.name);
@@ -111,44 +109,6 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
       setShowCaptainSelect(false);
     } catch (error) {
       console.error("Failed to change captain:", error);
-    }
-  };
-
-  const handleMovePlayerUp = async (playerId: string) => {
-    const currentIndex = team.playerIds.indexOf(playerId);
-    if (currentIndex > 0) {
-      const newPlayerIds = [...team.playerIds];
-      [newPlayerIds[currentIndex - 1], newPlayerIds[currentIndex]] = [
-        newPlayerIds[currentIndex],
-        newPlayerIds[currentIndex - 1],
-      ];
-      try {
-        await reorderPlayers.mutateAsync({
-          teamId: team.id,
-          playerIds: newPlayerIds,
-        });
-      } catch (error) {
-        console.error("Failed to reorder players:", error);
-      }
-    }
-  };
-
-  const handleMovePlayerDown = async (playerId: string) => {
-    const currentIndex = team.playerIds.indexOf(playerId);
-    if (currentIndex < team.playerIds.length - 1) {
-      const newPlayerIds = [...team.playerIds];
-      [newPlayerIds[currentIndex], newPlayerIds[currentIndex + 1]] = [
-        newPlayerIds[currentIndex + 1],
-        newPlayerIds[currentIndex],
-      ];
-      try {
-        await reorderPlayers.mutateAsync({
-          teamId: team.id,
-          playerIds: newPlayerIds,
-        });
-      } catch (error) {
-        console.error("Failed to reorder players:", error);
-      }
     }
   };
 
@@ -285,7 +245,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
         )}
 
         <div className="space-y-3">
-          {teamPlayers.map((player, index) => (
+          {teamPlayers.map((player) => (
             <div
               key={player.id}
               className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200"
