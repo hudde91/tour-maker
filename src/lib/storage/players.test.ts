@@ -160,57 +160,6 @@ describe('Player Storage Operations', () => {
       expect(round.scores[player.id].netScore).toBe(90 - 18); // 72
     });
 
-    it('should handle conceded holes in match play', () => {
-      const player = createMockPlayer();
-      const round = createMockRound({
-        holes: 9,
-        format: 'match-play',
-      });
-      const tour = createMockTour({
-        players: [player],
-        rounds: [round],
-      });
-
-      vi.mocked(getTour).mockReturnValue(tour);
-
-      // Mix of regular scores and conceded holes (null)
-      const scores = [4, 5, null, 4, null, 4, 5, 4, 3];
-
-      updatePlayerScore(tour.id, round.id, player.id, scores);
-
-      // Conceded holes count as 0 in match play
-      expect(round.scores[player.id].totalScore).toBe(29); // Sum of non-null scores
-    });
-
-    it('should handle conceded holes in stroke play', () => {
-      const player = createMockPlayer();
-      const round = createMockRound({
-        holes: 9,
-        format: 'stroke-play',
-        holeInfo: Array.from({ length: 9 }, (_, i) => ({
-          number: i + 1,
-          par: 4,
-          handicap: i + 1,
-          yardage: 400,
-        })),
-      });
-      const tour = createMockTour({
-        players: [player],
-        rounds: [round],
-      });
-
-      vi.mocked(getTour).mockReturnValue(tour);
-
-      // Mix of regular scores and conceded holes (null)
-      const scores = [4, 5, null, 4, null, 4, 5, 4, 3];
-
-      updatePlayerScore(tour.id, round.id, player.id, scores);
-
-      // Conceded holes count as 2x par in stroke play
-      // Scores: 4,5,8,4,8,4,5,4,3 = 45
-      expect(round.scores[player.id].totalScore).toBe(45);
-    });
-
     it('should do nothing if tour does not exist', () => {
       vi.mocked(getTour).mockReturnValue(null);
 

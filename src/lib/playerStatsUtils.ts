@@ -52,9 +52,9 @@ export const calculateDetailedPlayerStats = (
 
   // Process each hole
   scores.forEach((score, index) => {
-    // Skip conceded holes (null scores)
-    if (score === null || index >= holes.length) {
-      // Reset streak on conceded hole
+    // Skip holes without scores
+    if (!score || score === 0 || index >= holes.length) {
+      // Reset streak on skipped hole
       if (lastHoleRelation !== null) {
         currentStreakType = "none";
         currentStreakLength = 0;
@@ -211,7 +211,7 @@ export const calculateHoleWinners = (
 
     playersToConsider.forEach((playerId) => {
       const playerScore = round.scores[playerId] as PlayerScore;
-      if (playerScore && playerScore.scores && playerScore.scores[holeIndex] !== null) {
+      if (playerScore && playerScore.scores && playerScore.scores[holeIndex]) {
         const score = playerScore.scores[holeIndex] as number;
         holeScores.push({
           playerId,
@@ -322,21 +322,4 @@ export const formatStreak = (streak: {
   }[streak.type];
 
   return `${typeLabel} streak: ${streak.length} hole${streak.length > 1 ? "s" : ""}`;
-};
-
-/**
- * Format score with support for conceded holes
- */
-export const formatScoreWithConceded = (score: number | null): string => {
-  if (score === null) {
-    return "-"; // Conceded hole
-  }
-  return score.toString();
-};
-
-/**
- * Check if a score represents a conceded hole
- */
-export const isConcededHole = (score: number | null): boolean => {
-  return score === null;
 };

@@ -31,7 +31,7 @@ export default function PlayerScoreGrid9({
       idx.reduce(
         (a, i) => {
           const score = scores[i];
-          // Count numeric scores, skip null (conceded) and 0 (not played)
+          // Count numeric scores, skip 0 (not played)
           return typeof score === "number" && score > 0 ? a + score : a;
         },
         0
