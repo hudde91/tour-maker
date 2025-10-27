@@ -647,8 +647,8 @@ const PlayerScoreCard = ({
                           : ""
                       } ${
                         isWinner
-                          ? "bg-blue-600 text-white border-blue-700 shadow-md"
-                          : "bg-white text-slate-700 border-slate-300 hover:border-blue-400"
+                          ? "bg-blue-600 text-white border-blue-700 shadow-lg ring-4 ring-blue-300 scale-105 font-bold"
+                          : "bg-white text-slate-700 border-slate-300 hover:border-blue-400 hover:shadow-md"
                       }`}
                     >
                       {p.name}
@@ -726,8 +726,8 @@ const PlayerScoreCard = ({
                           : ""
                       } ${
                         isWinner
-                          ? "bg-amber-600 text-white border-amber-700 shadow-md"
-                          : "bg-white text-slate-700 border-slate-300 hover:border-amber-400"
+                          ? "bg-amber-600 text-white border-amber-700 shadow-lg ring-4 ring-amber-300 scale-105 font-bold"
+                          : "bg-white text-slate-700 border-slate-300 hover:border-amber-400 hover:shadow-md"
                       }`}
                     >
                       {p.name}
