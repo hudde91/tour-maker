@@ -4,7 +4,7 @@ import { getScoreInfo } from "@/lib/scoreUtils";
 import { storage } from "@/lib/storage";
 import { formatUtils } from "@/types/formats";
 import { Tour, Round, Player, HoleInfo, PlayerScore } from "@/types";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
 
@@ -44,6 +44,9 @@ export const SwipeableIndividualScoring = ({
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
+  // Track if we've already prompted to finish the round
+  const hasPromptedToFinish = useRef(false);
+
   // Check if all players have completed all holes
   const areAllScoresComplete = () => {
     return tour.players.every((player) => {
@@ -54,6 +57,16 @@ export const SwipeableIndividualScoring = ({
       return playerScore.scores.every((score) => score !== null && score > 0);
     });
   };
+
+  // Check if all scores are complete on every score update
+  useEffect(() => {
+    if (round.status === "in-progress" && !hasPromptedToFinish.current && onFinishRound) {
+      if (areAllScoresComplete()) {
+        hasPromptedToFinish.current = true;
+        onFinishRound();
+      }
+    }
+  }, [round.scores, round.status, onFinishRound]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -83,13 +96,7 @@ export const SwipeableIndividualScoring = ({
           setCurrentHole(currentHole + 1);
           setCurrentPlayerIndex(0);
         }
-        // If last player on last hole, check if all scores are complete
-        else if (currentHole === round.holes && onFinishRound) {
-          // Check if all scores are complete before prompting
-          if (areAllScoresComplete()) {
-            onFinishRound();
-          }
-        }
+        // On last player and last hole, do nothing (validation happens in useEffect)
         setIsTransitioning(false);
       }, 200);
     }
