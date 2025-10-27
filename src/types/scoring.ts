@@ -2,7 +2,7 @@ import { Player, Team } from "./core";
 
 export interface PlayerScore {
   playerId: string;
-  scores: (number | null)[]; // score per hole, null = conceded hole in match play
+  scores: (number | null)[]; // score per hole
   totalScore: number; // gross score
   totalToPar: number; // gross score to par
   handicapStrokes?: number; // handicap strokes applied

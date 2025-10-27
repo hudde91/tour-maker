@@ -14,7 +14,7 @@ interface SwipeableIndividualScoringProps {
   onPlayerScoreChange: (
     playerId: string,
     holeIndex: number,
-    score: number | null
+    score: number
   ) => void;
   onFinishRound?: () => void;
 }
@@ -398,7 +398,7 @@ interface PlayerScoreCardProps {
   holeInfo: HoleInfo;
   playerScore: PlayerScore;
   currentHole: number;
-  onScoreChange: (score: number | null) => void;
+  onScoreChange: (score: number) => void;
   strokesGiven: boolean;
   round: Round;
   tour: Tour;
@@ -417,7 +417,7 @@ const PlayerScoreCard = ({
   onCompetitionWinnerChange,
 }: PlayerScoreCardProps) => {
   const currentScore = playerScore?.scores[currentHole - 1];
-  const [localScore, setLocalScore] = useState<number | null>(currentScore ?? 0);
+  const [localScore, setLocalScore] = useState<number>(currentScore ?? 0);
   const [closestToPinDistance, setClosestToPinDistance] = useState<string>('');
   const [longestDriveDistance, setLongestDriveDistance] = useState<string>('');
   const par = holeInfo.par;
@@ -444,7 +444,7 @@ const PlayerScoreCard = ({
   const isMatchPlay = formatUtils.isMatchPlay(round.format);
   const scoreInfo = getScoreInfo(localScore, effectivePar, isMatchPlay);
 
-  const handleScoreSelect = (score: number | null) => {
+  const handleScoreSelect = (score: number) => {
     setLocalScore(score);
     onScoreChange(score);
   };
@@ -548,7 +548,7 @@ const PlayerScoreCard = ({
             <div
               className={`text-4xl font-bold px-5 py-3 rounded-xl border-2 shadow-md transition-all duration-200 ${scoreInfo.bg} ${scoreInfo.text}`}
             >
-              {localScore === null ? "-" : localScore || "–"}
+              {localScore || "–"}
             </div>
           </div>
         </div>
@@ -615,53 +615,6 @@ const PlayerScoreCard = ({
             </button>
           ))}
         </div>
-
-        {/* Concede Button */}
-        <button
-          type="button"
-          onClick={() => handleScoreSelect(null)}
-          disabled={round.status === "completed"}
-          className={`w-full p-3 rounded-xl border-2 font-semibold
-            flex items-center justify-center gap-2
-            transition-all duration-200 hover:scale-[1.02] active:scale-95
-            outline-none shadow-sm hover:shadow-md ${
-              round.status === "completed"
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            } ${
-            localScore === null
-              ? "bg-slate-100 text-slate-700 border-slate-400 ring-2 ring-slate-300"
-              : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
-          }`}
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-          <span>Concede Hole</span>
-          {localScore === null && (
-            <svg
-              className="w-5 h-5 text-emerald-600"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          )}
-        </button>
       </div>
 
       {/* Competition Winner Selection */}
