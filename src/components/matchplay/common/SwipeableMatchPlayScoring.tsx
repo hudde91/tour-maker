@@ -980,7 +980,7 @@ const MatchScoringCard = ({
           </div>
         )}
       </div>
-
+      {/* TODO: This should be a separate component and be shown when moving to next hole. The scoring should not be shown until after the user has selected a winner and a distance or none */}
       {/* Competition Winner Selection */}
       {(currentHoleInfo.closestToPin || currentHoleInfo.longestDrive) &&
         onCompetitionWinnerChange &&

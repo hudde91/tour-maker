@@ -37,8 +37,14 @@ export const VisualPairingBoard = ({
     return player?.handicap;
   };
 
-  const formatIcon = format === "singles" ? "👤" : format === "foursomes" ? "🔄" : "⭐";
-  const formatName = format === "singles" ? "Singles" : format === "foursomes" ? "Foursomes" : "Four-Ball";
+  const formatIcon =
+    format === "singles" ? "👤" : format === "foursomes" ? "🔄" : "⭐";
+  const formatName =
+    format === "singles"
+      ? "Singles"
+      : format === "foursomes"
+      ? "Foursomes"
+      : "Four-Ball";
 
   if (pairings.length === 0) {
     return (
@@ -85,6 +91,7 @@ export const VisualPairingBoard = ({
                 onClick={() => onRemovePairing(pairing.id)}
                 className="absolute top-2 right-2 bg-red-100 hover:bg-red-200 text-red-600 w-6 h-6 rounded-full flex items-center justify-center transition-colors"
                 title="Remove pairing"
+                style={{ minWidth: "2rem", minHeight: "2rem" }}
               >
                 <svg
                   className="w-4 h-4"
@@ -103,7 +110,9 @@ export const VisualPairingBoard = ({
             )}
 
             <div
-              className={`flex items-center justify-between ${compact ? "mt-6" : "mt-8"}`}
+              className={`flex items-center justify-between ${
+                compact ? "mt-6" : "mt-8"
+              }`}
             >
               {/* Team A Side */}
               <div className="flex-1">
