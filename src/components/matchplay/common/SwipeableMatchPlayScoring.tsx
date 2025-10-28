@@ -654,21 +654,6 @@ const MatchScoringCard = ({
   const handleScoreUpdate = () => {
     if (teamAScore > 0 && teamBScore > 0) {
       onHoleUpdate(currentHole, teamAScore, teamBScore);
-
-      // Check if there are competitions on this hole
-      const hasCompetitions = currentHoleInfo.closestToPin || currentHoleInfo.longestDrive;
-
-      // If there are competitions and we can show the selector, show it instead of advancing
-      if (hasCompetitions && onShowCompetitionSelector && currentHole < round.holes && !isMatchComplete) {
-        setTimeout(() => {
-          onShowCompetitionSelector();
-        }, 500); // Small delay for visual feedback
-      } else if (currentHole < round.holes && !isMatchComplete) {
-        // Auto-advance to next hole if no competitions, not on last hole and match not complete
-        setTimeout(() => {
-          onHoleChange(currentHole + 1);
-        }, 500); // Small delay for visual feedback
-      }
     }
   };
 
@@ -814,9 +799,21 @@ const MatchScoringCard = ({
           </div>
 
           <button
-            onClick={() =>
-              currentHole < round.holes && onHoleChange(currentHole + 1)
-            }
+            onClick={() => {
+              if (currentHole < round.holes) {
+                // Check if there are competitions on the current hole
+                const hasCompetitions = currentHoleInfo.closestToPin || currentHoleInfo.longestDrive;
+                // Check if both scores are entered for the current hole
+                const hole = match.holes?.[currentHole - 1];
+                const scoresEntered = hole?.teamAScore > 0 && hole?.teamBScore > 0;
+
+                if (hasCompetitions && scoresEntered && onShowCompetitionSelector) {
+                  onShowCompetitionSelector();
+                } else {
+                  onHoleChange(currentHole + 1);
+                }
+              }
+            }}
             disabled={currentHole === round.holes}
             className={`flex items-center gap-1 px-3 py-2 rounded-lg font-medium transition-all ${
               currentHole === round.holes
@@ -955,12 +952,7 @@ const MatchScoringCard = ({
           {Array.from({ length: 8 }, (_, i) => i + 1).map((score) => (
             <button
               key={score}
-              onClick={() => {
-                setTeamBScore(score);
-                if (teamAScore > 0) {
-                  setTimeout(() => handleScoreUpdate(), 100);
-                }
-              }}
+              onClick={() => setTeamBScore(score)}
               disabled={round.status === "completed" || isMatchComplete}
               className={getScoreButtonClass(score, teamBScore)}
             >
