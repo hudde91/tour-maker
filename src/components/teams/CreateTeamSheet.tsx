@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCreateTeam } from "../../hooks/useTeams";
 import { useKeyboardAwareScroll } from "../../hooks/useKeyboardAwareScroll";
 import { Tour } from "../../types";
@@ -35,6 +35,18 @@ export const CreateTeamSheet = ({
   });
 
   const formContainerRef = useKeyboardAwareScroll(isOpen);
+
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   // Get unassigned players and players not captains
   const availableCaptains = tour.players.filter((player) => {
@@ -77,7 +89,7 @@ export const CreateTeamSheet = ({
         onClick={onClose}
       />
 
-      <div className="relative w-full sm:w-96 sm:max-w-md bg-white rounded-t-2xl sm:rounded-xl shadow-2xl border-t sm:border border-slate-200 animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col">
+      <div className="relative w-full sm:w-96 sm:max-w-md bg-white rounded-t-2xl sm:rounded-xl shadow-2xl border-t sm:border border-slate-200 animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col overscroll-contain">
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-12 h-1.5 bg-slate-300 rounded-full"></div>
         </div>

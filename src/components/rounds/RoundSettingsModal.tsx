@@ -42,6 +42,18 @@ export const RoundSettingsModal = ({
     }
   }, [round]);
 
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleSave = async () => {
@@ -80,7 +92,7 @@ export const RoundSettingsModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto overscroll-contain pb-24 sm:pb-0">
         <div className="p-6 border-b border-slate-200">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-slate-900">Round Settings</h2>
