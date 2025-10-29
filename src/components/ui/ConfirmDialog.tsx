@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 interface ConfirmDialogProps {
   isOpen: boolean;
   title: string;
@@ -19,6 +21,18 @@ export const ConfirmDialog = ({
   onCancel,
   isDestructive = false,
 }: ConfirmDialogProps) => {
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (

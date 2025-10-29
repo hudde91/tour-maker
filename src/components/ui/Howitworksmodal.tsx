@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface HowItWorksModalProps {
   isOpen: boolean;
@@ -7,6 +7,18 @@ interface HowItWorksModalProps {
 
 export const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
   const [currentStep, setCurrentStep] = useState(0);
+
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   const steps = [
     {
@@ -95,7 +107,7 @@ export const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 safe-area-top safe-area-bottom">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto overscroll-contain pb-24 sm:pb-0">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 rounded-t-2xl">
           <div className="flex items-center justify-between">
