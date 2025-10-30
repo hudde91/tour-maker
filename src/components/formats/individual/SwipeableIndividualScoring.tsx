@@ -36,6 +36,7 @@ export const SwipeableIndividualScoring = ({
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("score");
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const currentPlayer = tour.players[currentPlayerIndex];
   const currentHoleInfo = round.holeInfo[currentHole - 1];
@@ -46,6 +47,13 @@ export const SwipeableIndividualScoring = ({
 
   // Track if we've already prompted to finish the round
   const hasPromptedToFinish = useRef(false);
+
+  // Scroll to top when tab changes
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [activeTab]);
 
   // Check if all players have completed all holes
   const areAllScoresComplete = () => {
@@ -120,13 +128,13 @@ export const SwipeableIndividualScoring = ({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
         <div className="flex">
           <button
             onClick={() => setActiveTab("score")}
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
               activeTab === "score"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
+                ? "text-emerald-600 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
             }`}
           >
@@ -151,7 +159,7 @@ export const SwipeableIndividualScoring = ({
             onClick={() => setActiveTab("holes")}
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
               activeTab === "holes"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
+                ? "text-emerald-600 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
             }`}
           >
@@ -176,7 +184,7 @@ export const SwipeableIndividualScoring = ({
             onClick={() => setActiveTab("leaderboard")}
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
               activeTab === "leaderboard"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
+                ? "text-emerald-600 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
             }`}
           >
@@ -200,7 +208,7 @@ export const SwipeableIndividualScoring = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-4">
+      <div ref={contentRef} className="flex-1 overflow-y-auto pb-4">
         {activeTab === "score" && (
           <div
             className="space-y-4 p-4"

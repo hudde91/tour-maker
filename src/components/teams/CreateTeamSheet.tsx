@@ -150,10 +150,10 @@ export const CreateTeamSheet = ({
                     onClick={() =>
                       setFormData({ ...formData, color: colorOption.color })
                     }
-                    className={`aspect-square rounded-xl border-3 transition-all shadow-sm hover:scale-105 ${
+                    className={`aspect-square rounded-xl border-3 transition-all hover:scale-105 ${
                       formData.color === colorOption.color
-                        ? "border-slate-900 ring-2 ring-slate-200 scale-110"
-                        : "border-slate-200 hover:border-slate-300"
+                        ? "border-slate-900 ring-4 ring-slate-300 scale-110 shadow-lg"
+                        : "border-slate-200 hover:border-slate-300 shadow-sm"
                     }`}
                     style={{ backgroundColor: colorOption.color }}
                     title={colorOption.name}
