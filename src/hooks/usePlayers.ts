@@ -21,6 +21,13 @@ export const useAddPlayer = (tourId: string) => {
       };
 
       storage.addPlayerToTour(tourId, player);
+
+      // If a team was selected, assign the player to the team
+      // This updates the team's playerIds array
+      if (playerData.teamId) {
+        storage.assignPlayerToTeam(tourId, player.id, playerData.teamId);
+      }
+
       return player;
     },
     onSuccess: () => {
