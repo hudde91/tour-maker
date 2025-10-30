@@ -2,7 +2,7 @@ import { getScoreInfo } from "@/lib/scoreUtils";
 import { storage } from "@/lib/storage";
 import { formatUtils } from "@/types/formats";
 import { Tour, Round, Team } from "@/types";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { HoleNavigation } from "../scoring/HoleNavigation";
 import { LiveLeaderboard } from "../scoring/LiveLeaderboard";
 interface SwipeableTeamScoringProps {
@@ -26,6 +26,7 @@ export const SwipeableTeamScoring = ({
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("score");
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const teams = tour.teams || [];
   const currentTeam = teams[currentTeamIndex];
@@ -33,6 +34,13 @@ export const SwipeableTeamScoring = ({
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
+
+  // Scroll to top when tab changes
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [activeTab]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -102,13 +110,13 @@ export const SwipeableTeamScoring = ({
   return (
     <div className="flex flex-col h-full">
       {/* Tab Navigation */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
         <div className="flex">
           <button
             onClick={() => setActiveTab("score")}
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
               activeTab === "score"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
+                ? "text-emerald-600 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
             }`}
           >
@@ -133,7 +141,7 @@ export const SwipeableTeamScoring = ({
             onClick={() => setActiveTab("holes")}
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
               activeTab === "holes"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
+                ? "text-emerald-600 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
             }`}
           >
@@ -158,7 +166,7 @@ export const SwipeableTeamScoring = ({
             onClick={() => setActiveTab("leaderboard")}
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
               activeTab === "leaderboard"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
+                ? "text-emerald-600 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
             }`}
           >
@@ -183,7 +191,7 @@ export const SwipeableTeamScoring = ({
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto pb-4">
+      <div ref={contentRef} className="flex-1 overflow-y-auto pb-4">
         {/* Score Tab */}
         {activeTab === "score" && (
           <div
