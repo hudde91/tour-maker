@@ -7,6 +7,7 @@ import { Tour, Round, Player, HoleInfo, PlayerScore } from "@/types";
 import { useState, useEffect, useRef } from "react";
 import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
+import { IndividualCompetitionWinnerSelector } from "./IndividualCompetitionWinnerSelector";
 
 interface SwipeableIndividualScoringProps {
   tour: Tour;
@@ -36,6 +37,7 @@ export const SwipeableIndividualScoring = ({
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("score");
+  const [showingCompetitionSelector, setShowingCompetitionSelector] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const currentPlayer = tour.players[currentPlayerIndex];
@@ -66,6 +68,17 @@ export const SwipeableIndividualScoring = ({
     });
   };
 
+  // Check if all players have scored the current hole
+  const haveAllPlayersScoredCurrentHole = () => {
+    return tour.players.every((player) => {
+      const playerScore = round.scores[player.id];
+      if (!playerScore) return false;
+
+      const score = playerScore.scores[currentHole - 1];
+      return score !== null && score > 0;
+    });
+  };
+
   // Check if all scores are complete on every score update
   useEffect(() => {
     if (round.status === "in-progress" && !hasPromptedToFinish.current && onFinishRound) {
@@ -75,6 +88,15 @@ export const SwipeableIndividualScoring = ({
       }
     }
   }, [round.scores, round.status, onFinishRound]);
+
+  // Check if we should show competition selector after all players score
+  useEffect(() => {
+    const hasCompetitions = currentHoleInfo.closestToPin || currentHoleInfo.longestDrive;
+    if (hasCompetitions && haveAllPlayersScoredCurrentHole() && !showingCompetitionSelector) {
+      // Show the competition selector
+      setShowingCompetitionSelector(true);
+    }
+  }, [round.scores, currentHole, showingCompetitionSelector, currentHoleInfo]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -103,6 +125,7 @@ export const SwipeableIndividualScoring = ({
         else if (currentHole < round.holes) {
           setCurrentHole(currentHole + 1);
           setCurrentPlayerIndex(0);
+          setShowingCompetitionSelector(false);
         }
         // On last player and last hole, do nothing (validation happens in useEffect)
         setIsTransitioning(false);
@@ -120,6 +143,7 @@ export const SwipeableIndividualScoring = ({
         else if (currentHole > 1) {
           setCurrentHole(currentHole - 1);
           setCurrentPlayerIndex(tour.players.length - 1);
+          setShowingCompetitionSelector(false);
         }
         setIsTransitioning(false);
       }, 200);
@@ -209,7 +233,7 @@ export const SwipeableIndividualScoring = ({
       </div>
 
       <div ref={contentRef} className="flex-1 overflow-y-auto pb-4">
-        {activeTab === "score" && (
+        {activeTab === "score" && !showingCompetitionSelector && (
           <div
             className="space-y-4 p-4"
             onTouchStart={onTouchStart}
@@ -328,16 +352,33 @@ export const SwipeableIndividualScoring = ({
               strokesGiven={round.settings.strokesGiven}
               round={round}
               tour={tour}
-              onCompetitionWinnerChange={isLastPlayer ? (holeNumber, competitionType, winnerId, distance) => {
-                updateCompetitionWinner.mutate({
-                  holeNumber,
-                  competitionType,
-                  winnerId,
-                  distance,
-                });
-              } : undefined}
             />
           </div>
+        )}
+
+        {activeTab === "score" && showingCompetitionSelector && (
+          <IndividualCompetitionWinnerSelector
+            tour={tour}
+            round={round}
+            currentHole={currentHole}
+            currentHoleInfo={currentHoleInfo}
+            onCompetitionWinnerChange={(holeNumber, competitionType, winnerId, distance) => {
+              updateCompetitionWinner.mutate({
+                holeNumber,
+                competitionType,
+                winnerId,
+                distance,
+              });
+            }}
+            onContinue={() => {
+              setShowingCompetitionSelector(false);
+              // Move to next hole if not the last hole
+              if (currentHole < round.holes) {
+                setCurrentHole(currentHole + 1);
+                setCurrentPlayerIndex(0);
+              }
+            }}
+          />
         )}
 
         {activeTab === "holes" && (
