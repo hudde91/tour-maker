@@ -13,6 +13,7 @@ interface IndividualCompetitionWinnerSelectorProps {
     distance?: number
   ) => void;
   onContinue: () => void;
+  autoAdvance?: boolean;
 }
 
 export const IndividualCompetitionWinnerSelector = ({
@@ -22,6 +23,7 @@ export const IndividualCompetitionWinnerSelector = ({
   currentHoleInfo,
   onCompetitionWinnerChange,
   onContinue,
+  autoAdvance = false,
 }: IndividualCompetitionWinnerSelectorProps) => {
   const [closestToPinDistance, setClosestToPinDistance] = useState<string>("");
   const [longestDriveDistance, setLongestDriveDistance] = useState<string>("");
@@ -278,7 +280,7 @@ export const IndividualCompetitionWinnerSelector = ({
         onClick={onContinue}
         className="w-full bg-emerald-600 text-white px-6 py-4 rounded-lg font-bold text-lg hover:bg-emerald-700 transition-all active:scale-95 shadow-lg"
       >
-        Continue to Next Hole
+        {autoAdvance ? 'Continue to Next Hole' : 'Done'}
       </button>
     </div>
   );
