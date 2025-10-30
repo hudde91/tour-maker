@@ -23,7 +23,7 @@ export interface AppSettings {
 }
 
 export const DEFAULT_APP_SETTINGS: AppSettings = {
-  theme: "auto",
+  theme: "light",
   defaultHandicap: 0,
   preferredScoringDisplay: "gross",
   measurementUnit: "yards",
