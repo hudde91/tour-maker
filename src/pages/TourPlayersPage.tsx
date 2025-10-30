@@ -3,7 +3,7 @@ import { PlayerScorecard } from "@/components/players/PlayerScorecard";
 import { CreateTeamSheet } from "@/components/teams/CreateTeamSheet";
 import { TeamCard } from "@/components/teams/TeamCard";
 import { useTour } from "@/hooks/useTours";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -14,6 +14,11 @@ export const TourPlayersPage = () => {
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [expandedPlayer, setExpandedPlayer] = useState<string | null>(null);
+
+  // Scroll to top when page loads to ensure PageHeader is visible
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handlePlayerToggle = (playerId: string) => {
     setExpandedPlayer(expandedPlayer === playerId ? null : playerId);
