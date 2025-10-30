@@ -5,6 +5,9 @@ import { Tour, Round, Team } from "@/types";
 import React, { useState, useEffect, useRef } from "react";
 import { HoleNavigation } from "../scoring/HoleNavigation";
 import { LiveLeaderboard } from "../scoring/LiveLeaderboard";
+import { IndividualCompetitionWinnerSelector } from "./individual/IndividualCompetitionWinnerSelector";
+import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
+import { useParams } from "react-router-dom";
 interface SwipeableTeamScoringProps {
   tour: Tour;
   round: Round;
@@ -20,12 +23,17 @@ export const SwipeableTeamScoring = ({
   formatName,
   onTeamScoreChange,
 }: SwipeableTeamScoringProps) => {
+  const { tourId } = useParams<{ tourId: string }>();
+  const updateCompetitionWinner = useUpdateCompetitionWinner(tourId!, round.id);
+
   const [currentHole, setCurrentHole] = useState(1);
   const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("score");
+  const [showingCompetitionSelector, setShowingCompetitionSelector] = useState(false);
+  const [autoTriggeredCompetitionSelector, setAutoTriggeredCompetitionSelector] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const teams = tour.teams || [];
@@ -41,6 +49,27 @@ export const SwipeableTeamScoring = ({
       contentRef.current.scrollTo({ top: 0, behavior: "auto" });
     }
   }, [activeTab]);
+
+  // Check if all teams have scored the current hole
+  const haveAllTeamsScoredCurrentHole = () => {
+    return teams.every((team) => {
+      const teamScore = storage.getTeamScore(tour.id, round.id, team.id);
+      if (!teamScore) return false;
+
+      const score = teamScore.scores[currentHole - 1];
+      return score !== null && score > 0;
+    });
+  };
+
+  // Check if we should show competition selector after all teams score
+  useEffect(() => {
+    const hasCompetitions = currentHoleInfo?.closestToPin || currentHoleInfo?.longestDrive;
+    if (hasCompetitions && haveAllTeamsScoredCurrentHole() && !showingCompetitionSelector) {
+      // Show the competition selector and mark as auto-triggered
+      setShowingCompetitionSelector(true);
+      setAutoTriggeredCompetitionSelector(true);
+    }
+  }, [round.teamScores, currentHole, showingCompetitionSelector, currentHoleInfo]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -69,6 +98,7 @@ export const SwipeableTeamScoring = ({
         else if (currentHole < round.holes) {
           setCurrentHole(currentHole + 1);
           setCurrentTeamIndex(0);
+          setShowingCompetitionSelector(false);
         }
         setIsTransitioning(false);
       }, 200);
@@ -85,6 +115,7 @@ export const SwipeableTeamScoring = ({
         else if (currentHole > 1) {
           setCurrentHole(currentHole - 1);
           setCurrentTeamIndex(teams.length - 1);
+          setShowingCompetitionSelector(false);
         }
         setIsTransitioning(false);
       }, 200);
@@ -193,7 +224,7 @@ export const SwipeableTeamScoring = ({
       {/* Tab Content */}
       <div ref={contentRef} className="flex-1 overflow-y-auto pb-4">
         {/* Score Tab */}
-        {activeTab === "score" && (
+        {activeTab === "score" && !showingCompetitionSelector && (
           <div
             className="space-y-4 p-4"
             onTouchStart={onTouchStart}
@@ -330,7 +361,98 @@ export const SwipeableTeamScoring = ({
                 }
               />
             )}
+
+            {/* Competition Winners Button - Show if hole has competitions */}
+            {(currentHoleInfo?.closestToPin || currentHoleInfo?.longestDrive) && (
+              <div className="card border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-amber-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h4 className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
+                      <span className="text-lg">🏅</span>
+                      Hole Competitions
+                    </h4>
+                    <div className="space-y-1 text-xs">
+                      {currentHoleInfo.closestToPin && (() => {
+                        const winners = round.competitionWinners?.closestToPin?.[currentHole] || [];
+                        const winner = winners[0];
+                        const winnerPlayer = winner ? tour.players.find(p => p.id === winner.playerId) : null;
+                        return (
+                          <div className="flex items-center gap-1 text-blue-800">
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
+                            </svg>
+                            <span className="font-semibold">Closest to Pin:</span>
+                            {winnerPlayer ? (
+                              <span>{winnerPlayer.name}{winner.distance ? ` - ${winner.distance} ft` : ''}</span>
+                            ) : (
+                              <span className="text-slate-500 italic">Not selected</span>
+                            )}
+                          </div>
+                        );
+                      })()}
+                      {currentHoleInfo.longestDrive && (() => {
+                        const winners = round.competitionWinners?.longestDrive?.[currentHole] || [];
+                        const winner = winners[0];
+                        const winnerPlayer = winner ? tour.players.find(p => p.id === winner.playerId) : null;
+                        return (
+                          <div className="flex items-center gap-1 text-amber-800">
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd"/>
+                            </svg>
+                            <span className="font-semibold">Longest Drive:</span>
+                            {winnerPlayer ? (
+                              <span>{winnerPlayer.name}{winner.distance ? ` - ${winner.distance} yds` : ''}</span>
+                            ) : (
+                              <span className="text-slate-500 italic">Not selected</span>
+                            )}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowingCompetitionSelector(true);
+                      setAutoTriggeredCompetitionSelector(false);
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition-all active:scale-95 shadow-md"
+                  >
+                    {((round.competitionWinners?.closestToPin?.[currentHole] || []).length > 0 ||
+                      (round.competitionWinners?.longestDrive?.[currentHole] || []).length > 0)
+                      ? 'Edit'
+                      : 'Select'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
+        )}
+
+        {/* Competition Winner Selector Modal */}
+        {activeTab === "score" && showingCompetitionSelector && (
+          <IndividualCompetitionWinnerSelector
+            tour={tour}
+            round={round}
+            currentHole={currentHole}
+            currentHoleInfo={currentHoleInfo}
+            autoAdvance={autoTriggeredCompetitionSelector}
+            onCompetitionWinnerChange={(holeNumber, competitionType, winnerId, distance) => {
+              updateCompetitionWinner.mutate({
+                holeNumber,
+                competitionType,
+                winnerId,
+                distance,
+              });
+            }}
+            onContinue={() => {
+              setShowingCompetitionSelector(false);
+              // Only advance to next hole if auto-triggered (after all teams scored)
+              if (autoTriggeredCompetitionSelector && currentHole < round.holes) {
+                setCurrentHole(currentHole + 1);
+                setCurrentTeamIndex(0);
+              }
+            }}
+          />
         )}
 
         {/* Holes Tab */}
