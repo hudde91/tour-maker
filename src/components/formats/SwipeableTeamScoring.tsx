@@ -5,6 +5,9 @@ import { Tour, Round, Team } from "@/types";
 import React, { useState, useEffect, useRef } from "react";
 import { HoleNavigation } from "../scoring/HoleNavigation";
 import { LiveLeaderboard } from "../scoring/LiveLeaderboard";
+import { IndividualCompetitionWinnerSelector } from "./individual/IndividualCompetitionWinnerSelector";
+import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
+import { useParams } from "react-router-dom";
 interface SwipeableTeamScoringProps {
   tour: Tour;
   round: Round;
@@ -20,12 +23,16 @@ export const SwipeableTeamScoring = ({
   formatName,
   onTeamScoreChange,
 }: SwipeableTeamScoringProps) => {
+  const { tourId } = useParams<{ tourId: string }>();
+  const updateCompetitionWinner = useUpdateCompetitionWinner(tourId!, round.id);
+
   const [currentHole, setCurrentHole] = useState(1);
   const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("score");
+  const [showingCompetitionSelector, setShowingCompetitionSelector] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const teams = tour.teams || [];
@@ -41,6 +48,26 @@ export const SwipeableTeamScoring = ({
       contentRef.current.scrollTo({ top: 0, behavior: "auto" });
     }
   }, [activeTab]);
+
+  // Check if all teams have scored the current hole
+  const haveAllTeamsScoredCurrentHole = () => {
+    return teams.every((team) => {
+      const teamScore = storage.getTeamScore(tour.id, round.id, team.id);
+      if (!teamScore) return false;
+
+      const score = teamScore.scores[currentHole - 1];
+      return score !== null && score > 0;
+    });
+  };
+
+  // Check if we should show competition selector after all teams score
+  useEffect(() => {
+    const hasCompetitions = currentHoleInfo?.closestToPin || currentHoleInfo?.longestDrive;
+    if (hasCompetitions && haveAllTeamsScoredCurrentHole() && !showingCompetitionSelector) {
+      // Show the competition selector
+      setShowingCompetitionSelector(true);
+    }
+  }, [round.teamScores, currentHole, showingCompetitionSelector, currentHoleInfo]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -69,6 +96,7 @@ export const SwipeableTeamScoring = ({
         else if (currentHole < round.holes) {
           setCurrentHole(currentHole + 1);
           setCurrentTeamIndex(0);
+          setShowingCompetitionSelector(false);
         }
         setIsTransitioning(false);
       }, 200);
@@ -85,6 +113,7 @@ export const SwipeableTeamScoring = ({
         else if (currentHole > 1) {
           setCurrentHole(currentHole - 1);
           setCurrentTeamIndex(teams.length - 1);
+          setShowingCompetitionSelector(false);
         }
         setIsTransitioning(false);
       }, 200);
@@ -193,7 +222,7 @@ export const SwipeableTeamScoring = ({
       {/* Tab Content */}
       <div ref={contentRef} className="flex-1 overflow-y-auto pb-4">
         {/* Score Tab */}
-        {activeTab === "score" && (
+        {activeTab === "score" && !showingCompetitionSelector && (
           <div
             className="space-y-4 p-4"
             onTouchStart={onTouchStart}
@@ -331,6 +360,32 @@ export const SwipeableTeamScoring = ({
               />
             )}
           </div>
+        )}
+
+        {/* Competition Winner Selector Modal */}
+        {activeTab === "score" && showingCompetitionSelector && (
+          <IndividualCompetitionWinnerSelector
+            tour={tour}
+            round={round}
+            currentHole={currentHole}
+            currentHoleInfo={currentHoleInfo}
+            onCompetitionWinnerChange={(holeNumber, competitionType, winnerId, distance) => {
+              updateCompetitionWinner.mutate({
+                holeNumber,
+                competitionType,
+                winnerId,
+                distance,
+              });
+            }}
+            onContinue={() => {
+              setShowingCompetitionSelector(false);
+              // Move to next hole if not the last hole
+              if (currentHole < round.holes) {
+                setCurrentHole(currentHole + 1);
+                setCurrentTeamIndex(0);
+              }
+            }}
+          />
         )}
 
         {/* Holes Tab */}
