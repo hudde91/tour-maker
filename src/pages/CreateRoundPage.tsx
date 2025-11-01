@@ -155,12 +155,12 @@ export const CreateRoundPage = () => {
     }
 
     setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length - 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handlePrevious = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSubmit = async () => {
@@ -171,7 +171,7 @@ export const CreateRoundPage = () => {
     if (handicapErrors.length > 0) {
       setValidationErrors(handicapErrors);
       setCurrentStep(1); // Go back to course setup step
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
@@ -229,17 +229,6 @@ export const CreateRoundPage = () => {
       </div>
     );
   }
-
-  const formatInfo = GOLF_FORMATS[formData.format];
-  const totalPar =
-    formData.useManualPar && formData.manualTotalPar
-      ? parseInt(formData.manualTotalPar) || 0
-      : formData.holeInfo.reduce((sum, hole) => sum + hole.par, 0);
-
-  const totalYardage = formData.holeInfo.reduce(
-    (sum, hole) => sum + (hole.yardage || 0),
-    0
-  );
 
   const renderStepContent = () => {
     const formatInfo = GOLF_FORMATS[formData.format];
@@ -355,7 +344,10 @@ export const CreateRoundPage = () => {
 
                   {/* Format Explainer */}
                   <div className="mt-4">
-                    <FormatExplainer format={formData.format} variant="inline" />
+                    <FormatExplainer
+                      format={formData.format}
+                      variant="inline"
+                    />
                   </div>
 
                   {/* Ryder Cup Formats - Only show for Ryder Cup tournaments */}
@@ -782,7 +774,9 @@ export const CreateRoundPage = () => {
             </div>
 
             <div className="card-elevated">
-              <h2 className="section-header card-spacing">Tournament Settings</h2>
+              <h2 className="section-header card-spacing">
+                Tournament Settings
+              </h2>
 
               <div className="space-y-6">
                 <div className="bg-blue-50 p-4 rounded-lg">
@@ -833,7 +827,9 @@ export const CreateRoundPage = () => {
         return (
           <div className="space-y-6">
             <div className="card-elevated">
-              <h2 className="section-header card-spacing">Review Round Details</h2>
+              <h2 className="section-header card-spacing">
+                Review Round Details
+              </h2>
 
               <div className="space-y-6">
                 {/* Basic Information */}
@@ -887,7 +883,9 @@ export const CreateRoundPage = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-600">Slope Rating:</span>
-                      <span className="font-medium">{formData.slopeRating}</span>
+                      <span className="font-medium">
+                        {formData.slopeRating}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -902,7 +900,9 @@ export const CreateRoundPage = () => {
                     <div className="bg-slate-50 rounded-lg p-4 space-y-2">
                       {formData.holeInfo.some((h) => h.closestToPin) && (
                         <div className="flex justify-between items-center">
-                          <span className="text-slate-600">Closest to Pin:</span>
+                          <span className="text-slate-600">
+                            Closest to Pin:
+                          </span>
                           <span className="font-medium">
                             Holes{" "}
                             {formData.holeInfo
@@ -937,7 +937,9 @@ export const CreateRoundPage = () => {
                     <div className="flex justify-between items-center">
                       <span className="text-slate-600">Handicap Strokes:</span>
                       <span className="font-medium">
-                        {formData.settings.strokesGiven ? "Enabled" : "Disabled"}
+                        {formData.settings.strokesGiven
+                          ? "Enabled"
+                          : "Disabled"}
                       </span>
                     </div>
                   </div>

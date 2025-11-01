@@ -30,7 +30,8 @@ export const SwipeableMatchPlayScoring = ({
   const [matchHoles, setMatchHoles] = useState<Record<string, number>>({});
   const [activeTab, setActiveTab] = useState<TabType>("score");
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
-  const [showingCompetitionSelector, setShowingCompetitionSelector] = useState(false);
+  const [showingCompetitionSelector, setShowingCompetitionSelector] =
+    useState(false);
 
   const matches = round.ryderCup?.matches || [];
 
@@ -361,7 +362,7 @@ export const SwipeableMatchPlayScoring = ({
   return (
     <div className="flex flex-col h-full">
       {/* Back Button and Header */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <div className="bg-white border-b border-slate-200 top-0">
         <div className="flex items-center gap-3 p-4">
           <button
             onClick={() => setSelectedMatchId(null)}
@@ -507,7 +508,9 @@ export const SwipeableMatchPlayScoring = ({
                   matchId: selectedMatch.id,
                 });
               }}
-              onShowCompetitionSelector={() => setShowingCompetitionSelector(true)}
+              onShowCompetitionSelector={() =>
+                setShowingCompetitionSelector(true)
+              }
             />
           </div>
         )}
@@ -518,11 +521,13 @@ export const SwipeableMatchPlayScoring = ({
             tour={tour}
             round={round}
             currentHole={currentHole}
-            currentHoleInfo={round.holeInfo[currentHole - 1] || {
-              number: currentHole,
-              par: 4,
-              yardage: 400,
-            }}
+            currentHoleInfo={
+              round.holeInfo[currentHole - 1] || {
+                number: currentHole,
+                par: 4,
+                yardage: 400,
+              }
+            }
             onCompetitionWinnerChange={(
               holeNumber,
               competitionType,
@@ -802,12 +807,18 @@ const MatchScoringCard = ({
             onClick={() => {
               if (currentHole < round.holes) {
                 // Check if there are competitions on the current hole
-                const hasCompetitions = currentHoleInfo.closestToPin || currentHoleInfo.longestDrive;
+                const hasCompetitions =
+                  currentHoleInfo.closestToPin || currentHoleInfo.longestDrive;
                 // Check if both scores are entered for the current hole
                 const hole = match.holes?.[currentHole - 1];
-                const scoresEntered = hole?.teamAScore > 0 && hole?.teamBScore > 0;
+                const scoresEntered =
+                  hole?.teamAScore > 0 && hole?.teamBScore > 0;
 
-                if (hasCompetitions && scoresEntered && onShowCompetitionSelector) {
+                if (
+                  hasCompetitions &&
+                  scoresEntered &&
+                  onShowCompetitionSelector
+                ) {
                   onShowCompetitionSelector();
                 } else {
                   onHoleChange(currentHole + 1);

@@ -45,9 +45,12 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     setSelectedRoundId(roundId);
   }, []);
 
-  const handleLeaderboardViewChange = useCallback((newView: "individual" | "team") => {
-    setLeaderboardView(newView);
-  }, []);
+  const handleLeaderboardViewChange = useCallback(
+    (newView: "individual" | "team") => {
+      setLeaderboardView(newView);
+    },
+    []
+  );
 
   // Memoize rounds to include based on view - prevents recalculation on every render
   const { roundsToInclude, previousRoundsToInclude } = useMemo(() => {
@@ -79,7 +82,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       const allCompleted = getCompletedRounds(tour.rounds);
       if (rounds.length > 0 && allCompleted.length > 0) {
         const currentRoundId = rounds[0].id;
-        previousRounds = allCompleted.filter(r => r.id !== currentRoundId);
+        previousRounds = allCompleted.filter((r) => r.id !== currentRoundId);
       }
     } else if (view === "by-round") {
       const selectedRound = tour.rounds.find((r) => r.id === selectedRoundId);
@@ -87,7 +90,9 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
         selectedRound && isRoundCompleted(selectedRound) ? [selectedRound] : [];
       // For position change in specific round, compare to all previous rounds
       if (selectedRound) {
-        const selectedRoundIndex = tour.rounds.findIndex(r => r.id === selectedRoundId);
+        const selectedRoundIndex = tour.rounds.findIndex(
+          (r) => r.id === selectedRoundId
+        );
         if (selectedRoundIndex > 0) {
           previousRounds = tour.rounds
             .slice(0, selectedRoundIndex)
@@ -100,207 +105,223 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   }, [view, selectedRoundId, tour.rounds]);
 
   // Memoize the expensive leaderboard calculation function
-  const calculateTournamentLeaderboard = useCallback((useRounds: Round[] = roundsToInclude): LeaderboardEntry[] => {
-    const entries: LeaderboardEntry[] = tour.players.map((player) => {
-      // Get all rounds this player has scores in (from filtered rounds)
-      const playerRounds = useRounds.filter((round) => {
-        // Check for traditional stroke play scores
-        if (round.scores[player.id] && round.scores[player.id].totalScore > 0) {
-          return true;
+  const calculateTournamentLeaderboard = useCallback(
+    (useRounds: Round[] = roundsToInclude): LeaderboardEntry[] => {
+      const entries: LeaderboardEntry[] = tour.players.map((player) => {
+        // Get all rounds this player has scores in (from filtered rounds)
+        const playerRounds = useRounds.filter((round) => {
+          // Check for traditional stroke play scores
+          if (
+            round.scores[player.id] &&
+            round.scores[player.id].totalScore > 0
+          ) {
+            return true;
+          }
+
+          // Check for Ryder Cup match play scores
+          if (round.isMatchPlay) {
+            return storage.hasRyderCupScores(round, player.id);
+          }
+
+          return false;
+        });
+
+        // Calculate total strokes across all rounds
+        const totalScore = playerRounds.reduce((sum, round) => {
+          // Get score from traditional stroke play
+          if (round.scores[player.id]) {
+            return sum + (round.scores[player.id]?.totalScore || 0);
+          }
+
+          // Get score from Ryder Cup match play
+          if (round.isMatchPlay) {
+            return sum + storage.getPlayerScoreFromRyderCup(round, player.id);
+          }
+
+          return sum;
+        }, 0);
+
+        // Calculate current round score (for "Overall" view with today's score)
+        let currentRoundScore: number | undefined;
+        let currentRoundToPar: number | undefined;
+        if (view === "overall" && roundsToInclude.length > 0) {
+          const latestRound = roundsToInclude[roundsToInclude.length - 1];
+          if (latestRound.scores[player.id]) {
+            currentRoundScore = latestRound.scores[player.id].totalScore;
+            const roundPar = storage.getTotalPar(latestRound);
+            currentRoundToPar = currentRoundScore - roundPar;
+          }
         }
 
-        // Check for Ryder Cup match play scores
-        if (round.isMatchPlay) {
-          return storage.hasRyderCupScores(round, player.id);
-        }
+        // Calculate total handicap strokes across all rounds
+        const totalHandicapStrokes = playerRounds.reduce((sum, round) => {
+          return sum + (round.scores[player.id]?.handicapStrokes || 0);
+        }, 0);
 
-        return false;
+        // Calculate net score if handicaps are applied
+        const netScore =
+          totalHandicapStrokes > 0
+            ? totalScore - totalHandicapStrokes
+            : undefined;
+
+        // Calculate total par across completed rounds
+        const totalPar = playerRounds.reduce((sum, round) => {
+          return sum + storage.getTotalPar(round);
+        }, 0);
+
+        const totalToPar = totalScore - totalPar;
+        const netToPar = netScore ? netScore - totalPar : undefined;
+
+        const team = tour.teams?.find((t) => t.id === player.teamId);
+        const isCaptain = team?.captainId === player.id;
+
+        return {
+          player,
+          totalScore,
+          netScore,
+          totalToPar,
+          netToPar,
+          handicapStrokes:
+            totalHandicapStrokes > 0 ? totalHandicapStrokes : undefined,
+          roundsPlayed: playerRounds.length,
+          position: 0,
+          team,
+          isCaptain,
+          currentRoundScore,
+          currentRoundToPar,
+        };
       });
 
-      // Calculate total strokes across all rounds
-      const totalScore = playerRounds.reduce((sum, round) => {
-        // Get score from traditional stroke play
-        if (round.scores[player.id]) {
-          return sum + (round.scores[player.id]?.totalScore || 0);
-        }
+      // Filter out players with no scores
+      const playersWithScores = entries.filter((entry) => entry.totalScore > 0);
 
-        // Get score from Ryder Cup match play
-        if (round.isMatchPlay) {
-          return sum + storage.getPlayerScoreFromRyderCup(round, player.id);
-        }
+      // ===== FORMAT-SPECIFIC SORTING =====
+      const completedRounds = getCompletedRounds(tour.rounds);
+      const isRyderCup = tour.format === "ryder-cup";
+      const hasSomeStableford = completedRounds.some(isStablefordScoring);
+      const isMatchPlay = completedRounds.some(isMatchPlayRound);
+      const hasHandicaps = completedRounds.some(hasHandicapsEnabled);
 
-        return sum;
-      }, 0);
-
-      // Calculate current round score (for "Overall" view with today's score)
-      let currentRoundScore: number | undefined;
-      let currentRoundToPar: number | undefined;
-      if (view === "overall" && roundsToInclude.length > 0) {
-        const latestRound = roundsToInclude[roundsToInclude.length - 1];
-        if (latestRound.scores[player.id]) {
-          currentRoundScore = latestRound.scores[player.id].totalScore;
-          const roundPar = storage.getTotalPar(latestRound);
-          currentRoundToPar = currentRoundScore - roundPar;
-        }
+      if (isRyderCup) {
+        // Ryder Cup: Individual leaderboard is less relevant
+        // Sort by total strokes as a fallback, but team view is primary
+        playersWithScores.sort((a, b) => {
+          return (a.totalScore || 0) - (b.totalScore || 0);
+        });
+      } else if (hasSomeStableford) {
+        // Stableford: Sort by HIGHEST Stableford points
+        playersWithScores.sort((a, b) => {
+          const aSf = storage.calculateTournamentStableford(tour, a.player.id);
+          const bSf = storage.calculateTournamentStableford(tour, b.player.id);
+          if (aSf !== bSf) return bSf - aSf; // Higher is better
+          return (a.totalScore || 0) - (b.totalScore || 0); // Lower strokes as tiebreaker
+        });
+      } else if (isMatchPlay) {
+        // Match Play: Sort by matches won
+        playersWithScores.sort((a, b) => {
+          const aMatchesWon = storage.calculateMatchesWon
+            ? storage.calculateMatchesWon(tour, a.player.id)
+            : 0;
+          const bMatchesWon = storage.calculateMatchesWon
+            ? storage.calculateMatchesWon(tour, b.player.id)
+            : 0;
+          if (aMatchesWon !== bMatchesWon) return bMatchesWon - aMatchesWon;
+          return (a.totalScore || 0) - (b.totalScore || 0);
+        });
+      } else {
+        // Stroke Play (default): Sort by LOWEST total strokes
+        // Use NET score if handicaps are applied, otherwise GROSS
+        playersWithScores.sort((a, b) => {
+          if (hasHandicaps) {
+            const aScore = a.netScore ?? a.totalScore;
+            const bScore = b.netScore ?? b.totalScore;
+            return aScore - bScore; // Lower is better
+          } else {
+            return (a.totalScore || 0) - (b.totalScore || 0); // Lower is better
+          }
+        });
       }
 
-      // Calculate total handicap strokes across all rounds
-      const totalHandicapStrokes = playerRounds.reduce((sum, round) => {
-        return sum + (round.scores[player.id]?.handicapStrokes || 0);
-      }, 0);
+      // Set positions (handle ties)
+      let currentPosition = 1;
+      playersWithScores.forEach((entry, index) => {
+        if (index > 0) {
+          const prev = playersWithScores[index - 1];
+          // Determine if there's a tie based on scoring method
+          let isTied = false;
 
-      // Calculate net score if handicaps are applied
-      const netScore =
-        totalHandicapStrokes > 0
-          ? totalScore - totalHandicapStrokes
-          : undefined;
+          if (hasSomeStableford) {
+            const prevSf = storage.calculateTournamentStableford(
+              tour,
+              prev.player.id
+            );
+            const currSf = storage.calculateTournamentStableford(
+              tour,
+              entry.player.id
+            );
+            isTied = prevSf === currSf;
+          } else if (hasHandicaps) {
+            isTied =
+              (prev.netScore ?? prev.totalScore) ===
+              (entry.netScore ?? entry.totalScore);
+          } else {
+            isTied = prev.totalScore === entry.totalScore;
+          }
 
-      // Calculate total par across completed rounds
-      const totalPar = playerRounds.reduce((sum, round) => {
-        return sum + storage.getTotalPar(round);
-      }, 0);
-
-      const totalToPar = totalScore - totalPar;
-      const netToPar = netScore ? netScore - totalPar : undefined;
-
-      const team = tour.teams?.find((t) => t.id === player.teamId);
-      const isCaptain = team?.captainId === player.id;
-
-      return {
-        player,
-        totalScore,
-        netScore,
-        totalToPar,
-        netToPar,
-        handicapStrokes:
-          totalHandicapStrokes > 0 ? totalHandicapStrokes : undefined,
-        roundsPlayed: playerRounds.length,
-        position: 0,
-        team,
-        isCaptain,
-        currentRoundScore,
-        currentRoundToPar,
-      };
-    });
-
-    // Filter out players with no scores
-    const playersWithScores = entries.filter((entry) => entry.totalScore > 0);
-
-    // ===== FORMAT-SPECIFIC SORTING =====
-    const completedRounds = getCompletedRounds(tour.rounds);
-    const isRyderCup = tour.format === "ryder-cup";
-    const hasSomeStableford = completedRounds.some(isStablefordScoring);
-    const isMatchPlay = completedRounds.some(isMatchPlayRound);
-    const hasHandicaps = completedRounds.some(hasHandicapsEnabled);
-
-    if (isRyderCup) {
-      // Ryder Cup: Individual leaderboard is less relevant
-      // Sort by total strokes as a fallback, but team view is primary
-      playersWithScores.sort((a, b) => {
-        return (a.totalScore || 0) - (b.totalScore || 0);
-      });
-    } else if (hasSomeStableford) {
-      // Stableford: Sort by HIGHEST Stableford points
-      playersWithScores.sort((a, b) => {
-        const aSf = storage.calculateTournamentStableford(tour, a.player.id);
-        const bSf = storage.calculateTournamentStableford(tour, b.player.id);
-        if (aSf !== bSf) return bSf - aSf; // Higher is better
-        return (a.totalScore || 0) - (b.totalScore || 0); // Lower strokes as tiebreaker
-      });
-    } else if (isMatchPlay) {
-      // Match Play: Sort by matches won
-      playersWithScores.sort((a, b) => {
-        const aMatchesWon = storage.calculateMatchesWon
-          ? storage.calculateMatchesWon(tour, a.player.id)
-          : 0;
-        const bMatchesWon = storage.calculateMatchesWon
-          ? storage.calculateMatchesWon(tour, b.player.id)
-          : 0;
-        if (aMatchesWon !== bMatchesWon) return bMatchesWon - aMatchesWon;
-        return (a.totalScore || 0) - (b.totalScore || 0);
-      });
-    } else {
-      // Stroke Play (default): Sort by LOWEST total strokes
-      // Use NET score if handicaps are applied, otherwise GROSS
-      playersWithScores.sort((a, b) => {
-        if (hasHandicaps) {
-          const aScore = a.netScore ?? a.totalScore;
-          const bScore = b.netScore ?? b.totalScore;
-          return aScore - bScore; // Lower is better
-        } else {
-          return (a.totalScore || 0) - (b.totalScore || 0); // Lower is better
+          if (!isTied) {
+            currentPosition = index + 1;
+          }
         }
+        entry.position = currentPosition;
       });
-    }
 
-    // Set positions (handle ties)
-    let currentPosition = 1;
-    playersWithScores.forEach((entry, index) => {
-      if (index > 0) {
-        const prev = playersWithScores[index - 1];
-        // Determine if there's a tie based on scoring method
-        let isTied = false;
+      // Calculate position changes if we have previous rounds to compare
+      if (previousRoundsToInclude.length > 0 && useRounds === roundsToInclude) {
+        const previousLeaderboard = calculateTournamentLeaderboard(
+          previousRoundsToInclude
+        );
+        const previousPositionMap = new Map(
+          previousLeaderboard.map((e) => [e.player.id, e.position])
+        );
 
-        if (hasSomeStableford) {
-          const prevSf = storage.calculateTournamentStableford(
-            tour,
-            prev.player.id
-          );
-          const currSf = storage.calculateTournamentStableford(
-            tour,
-            entry.player.id
-          );
-          isTied = prevSf === currSf;
-        } else if (hasHandicaps) {
-          isTied =
-            (prev.netScore ?? prev.totalScore) ===
-            (entry.netScore ?? entry.totalScore);
-        } else {
-          isTied = prev.totalScore === entry.totalScore;
-        }
-
-        if (!isTied) {
-          currentPosition = index + 1;
-        }
+        playersWithScores.forEach((entry) => {
+          const previousPosition = previousPositionMap.get(entry.player.id);
+          if (previousPosition !== undefined) {
+            // Positive = moved up (lower position number), Negative = moved down
+            entry.positionChange = previousPosition - entry.position;
+          }
+        });
       }
-      entry.position = currentPosition;
-    });
 
-    // Calculate position changes if we have previous rounds to compare
-    if (previousRoundsToInclude.length > 0 && useRounds === roundsToInclude) {
-      const previousLeaderboard = calculateTournamentLeaderboard(previousRoundsToInclude);
-      const previousPositionMap = new Map(
-        previousLeaderboard.map(e => [e.player.id, e.position])
-      );
+      // Apply custom sorting if different from default
+      if (sort === "score-desc") {
+        playersWithScores.reverse();
+      } else if (sort === "holes-desc" && isMatchPlay) {
+        // Sort by matches won in match play (using existing function)
+        playersWithScores.sort((a, b) => {
+          const aMatchesWon = storage.calculateMatchesWon
+            ? storage.calculateMatchesWon(tour, a.player.id)
+            : 0;
+          const bMatchesWon = storage.calculateMatchesWon
+            ? storage.calculateMatchesWon(tour, b.player.id)
+            : 0;
+          if (aMatchesWon !== bMatchesWon) return bMatchesWon - aMatchesWon;
+          return (a.totalScore || 0) - (b.totalScore || 0);
+        });
+      }
 
-      playersWithScores.forEach(entry => {
-        const previousPosition = previousPositionMap.get(entry.player.id);
-        if (previousPosition !== undefined) {
-          // Positive = moved up (lower position number), Negative = moved down
-          entry.positionChange = previousPosition - entry.position;
-        }
-      });
-    }
-
-    // Apply custom sorting if different from default
-    if (sort === "score-desc") {
-      playersWithScores.reverse();
-    } else if (sort === "holes-desc" && isMatchPlay) {
-      // Sort by matches won in match play (using existing function)
-      playersWithScores.sort((a, b) => {
-        const aMatchesWon = storage.calculateMatchesWon
-          ? storage.calculateMatchesWon(tour, a.player.id)
-          : 0;
-        const bMatchesWon = storage.calculateMatchesWon
-          ? storage.calculateMatchesWon(tour, b.player.id)
-          : 0;
-        if (aMatchesWon !== bMatchesWon) return bMatchesWon - aMatchesWon;
-        return (a.totalScore || 0) - (b.totalScore || 0);
-      });
-    }
-
-    return playersWithScores;
-  }, [tour.players, tour.rounds, tour.format, view, roundsToInclude, previousRoundsToInclude, sort]);
+      return playersWithScores;
+    },
+    [
+      tour.players,
+      tour.rounds,
+      tour.format,
+      view,
+      roundsToInclude,
+      previousRoundsToInclude,
+      sort,
+    ]
+  );
 
   // Memoize the individual leaderboard calculation - this is expensive!
   const individualLeaderboard = useMemo(() => {
@@ -321,24 +342,33 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   const completedRounds = getCompletedRounds(tour.rounds);
   const isRyderCup = tour.format === "ryder-cup";
   const hasSomeStableford = completedRounds.some(isStablefordScoring);
-  const isMatchPlay = completedRounds.some((r) => isMatchPlayRound(r) && !isRyderCup);
+  const isMatchPlay = completedRounds.some(
+    (r) => isMatchPlayRound(r) && !isRyderCup
+  );
   const hasHandicaps = completedRounds.some(hasHandicapsEnabled);
 
   // Pre-calculate stableford and matches won for all players to avoid repeated calls in render loop
   const playerStablefordPoints = useMemo(() => {
     if (!hasSomeStableford) return new Map<string, number>();
     const points = new Map<string, number>();
-    playersWithScores.forEach(entry => {
-      points.set(entry.player.id, storage.calculateTournamentStableford(tour, entry.player.id));
+    playersWithScores.forEach((entry) => {
+      points.set(
+        entry.player.id,
+        storage.calculateTournamentStableford(tour, entry.player.id)
+      );
     });
     return points;
   }, [hasSomeStableford, playersWithScores, tour]);
 
   const playerMatchesWon = useMemo(() => {
-    if (!isMatchPlay || !storage.calculateMatchesWon) return new Map<string, number>();
+    if (!isMatchPlay || !storage.calculateMatchesWon)
+      return new Map<string, number>();
     const matches = new Map<string, number>();
-    playersWithScores.forEach(entry => {
-      matches.set(entry.player.id, storage.calculateMatchesWon(tour, entry.player.id));
+    playersWithScores.forEach((entry) => {
+      matches.set(
+        entry.player.id,
+        storage.calculateMatchesWon(tour, entry.player.id)
+      );
     });
     return matches;
   }, [isMatchPlay, playersWithScores, tour]);
@@ -505,11 +535,22 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
         /* Virtualized Individual Tournament Leaderboard for large player counts */
         <div>
           <div className="mb-3 text-sm text-slate-600 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
-            <svg className="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <svg
+              className="w-5 h-5 text-blue-600 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
             </svg>
             <span>
-              Performance mode enabled for {playersWithScores.length} players - scroll to view all entries
+              Performance mode enabled for {playersWithScores.length} players -
+              scroll to view all entries
             </span>
           </div>
           <VirtualizedLeaderboard
@@ -529,7 +570,8 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
         <div className="space-y-3">
           {playersWithScores.slice(0, 10).map((entry, index) => {
             // Use pre-calculated values instead of calling expensive functions in the loop
-            const stablefordPoints = playerStablefordPoints.get(entry.player.id) || 0;
+            const stablefordPoints =
+              playerStablefordPoints.get(entry.player.id) || 0;
             const matchesWon = playerMatchesWon.get(entry.player.id) || 0;
 
             // Determine display score
@@ -573,20 +615,21 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                       )}
                     </div>
                     {/* Movement Arrow */}
-                    {entry.positionChange !== undefined && entry.positionChange !== 0 && (
-                      <div
-                        className={`text-xs font-bold mt-1 flex items-center gap-0.5 ${
-                          entry.positionChange > 0
-                            ? "text-emerald-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        <span className="text-base">
-                          {entry.positionChange > 0 ? "↑" : "↓"}
-                        </span>
-                        <span>{Math.abs(entry.positionChange)}</span>
-                      </div>
-                    )}
+                    {entry.positionChange !== undefined &&
+                      entry.positionChange !== 0 && (
+                        <div
+                          className={`text-xs font-bold mt-1 flex items-center gap-0.5 ${
+                            entry.positionChange > 0
+                              ? "text-emerald-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          <span className="text-base">
+                            {entry.positionChange > 0 ? "↑" : "↓"}
+                          </span>
+                          <span>{Math.abs(entry.positionChange)}</span>
+                        </div>
+                      )}
                     {entry.positionChange === 0 && (
                       <div className="text-xs font-medium mt-1 text-slate-400">
                         −
@@ -779,7 +822,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       {(() => {
         // Collect all competition winners from the rounds being displayed
         const competitionWinners: {
-          type: 'closestToPin' | 'longestDrive';
+          type: "closestToPin" | "longestDrive";
           holeNumber: number;
           playerId: string;
           roundName: string;
@@ -789,44 +832,48 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
         roundsToInclude.forEach((round) => {
           if (round.competitionWinners) {
             // For each hole, determine the overall winner from all match entries
-            Object.entries(round.competitionWinners.closestToPin).forEach(([holeNum, winners]) => {
-              if (winners && winners.length > 0) {
-                // Find the winner with the shortest distance (or first if no distances)
-                const overallWinner = winners.reduce((best, current) => {
-                  if (!best.distance && !current.distance) return best;
-                  if (!current.distance) return best;
-                  if (!best.distance) return current;
-                  return current.distance < best.distance ? current : best;
-                });
+            Object.entries(round.competitionWinners.closestToPin).forEach(
+              ([holeNum, winners]) => {
+                if (winners && winners.length > 0) {
+                  // Find the winner with the shortest distance (or first if no distances)
+                  const overallWinner = winners.reduce((best, current) => {
+                    if (!best.distance && !current.distance) return best;
+                    if (!current.distance) return best;
+                    if (!best.distance) return current;
+                    return current.distance < best.distance ? current : best;
+                  });
 
-                competitionWinners.push({
-                  type: 'closestToPin',
-                  holeNumber: parseInt(holeNum),
-                  playerId: overallWinner.playerId,
-                  roundName: round.name,
-                  distance: overallWinner.distance,
-                });
+                  competitionWinners.push({
+                    type: "closestToPin",
+                    holeNumber: parseInt(holeNum),
+                    playerId: overallWinner.playerId,
+                    roundName: round.name,
+                    distance: overallWinner.distance,
+                  });
+                }
               }
-            });
-            Object.entries(round.competitionWinners.longestDrive).forEach(([holeNum, winners]) => {
-              if (winners && winners.length > 0) {
-                // Find the winner with the longest distance (or first if no distances)
-                const overallWinner = winners.reduce((best, current) => {
-                  if (!best.distance && !current.distance) return best;
-                  if (!current.distance) return best;
-                  if (!best.distance) return current;
-                  return current.distance > best.distance ? current : best;
-                });
+            );
+            Object.entries(round.competitionWinners.longestDrive).forEach(
+              ([holeNum, winners]) => {
+                if (winners && winners.length > 0) {
+                  // Find the winner with the longest distance (or first if no distances)
+                  const overallWinner = winners.reduce((best, current) => {
+                    if (!best.distance && !current.distance) return best;
+                    if (!current.distance) return best;
+                    if (!best.distance) return current;
+                    return current.distance > best.distance ? current : best;
+                  });
 
-                competitionWinners.push({
-                  type: 'longestDrive',
-                  holeNumber: parseInt(holeNum),
-                  playerId: overallWinner.playerId,
-                  roundName: round.name,
-                  distance: overallWinner.distance,
-                });
+                  competitionWinners.push({
+                    type: "longestDrive",
+                    holeNumber: parseInt(holeNum),
+                    playerId: overallWinner.playerId,
+                    roundName: round.name,
+                    distance: overallWinner.distance,
+                  });
+                }
               }
-            });
+            );
           }
         });
 
@@ -835,8 +882,12 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
         }
 
         // Group by type
-        const closestToPinWinners = competitionWinners.filter(w => w.type === 'closestToPin');
-        const longestDriveWinners = competitionWinners.filter(w => w.type === 'longestDrive');
+        const closestToPinWinners = competitionWinners.filter(
+          (w) => w.type === "closestToPin"
+        );
+        const longestDriveWinners = competitionWinners.filter(
+          (w) => w.type === "longestDrive"
+        );
 
         return (
           <div className="border-t border-slate-200 pt-6 mt-6">
@@ -850,26 +901,48 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
               {closestToPinWinners.length > 0 && (
                 <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
+                    <svg
+                      className="w-5 h-5 text-blue-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
                     </svg>
-                    <h4 className="font-semibold text-blue-900">Closest to Pin</h4>
+                    <h4 className="font-semibold text-blue-900">
+                      Closest to Pin
+                    </h4>
                   </div>
                   <div className="space-y-2">
                     {closestToPinWinners.map((winner, idx) => {
-                      const player = tour.players.find(p => p.id === winner.playerId);
+                      const player = tour.players.find(
+                        (p) => p.id === winner.playerId
+                      );
                       return (
-                        <div key={idx} className="bg-white rounded-lg p-3 flex items-center justify-between">
+                        <div
+                          key={idx}
+                          className="bg-white rounded-lg p-3 flex items-center justify-between"
+                        >
                           <div className="flex-1">
-                            <div className="font-medium text-slate-900">{player?.name || 'Unknown'}</div>
+                            <div className="font-medium text-slate-900">
+                              {player?.name || "Unknown"}
+                            </div>
                             <div className="text-xs text-slate-600">
                               Hole {winner.holeNumber}
-                              {roundsToInclude.length > 1 && ` • ${winner.roundName}`}
+                              {roundsToInclude.length > 1 &&
+                                ` • ${winner.roundName}`}
                               {winner.distance && ` • ${winner.distance} ft`}
                             </div>
                           </div>
-                          <svg className="w-6 h-6 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                          <svg
+                            className="w-6 h-6 text-blue-600 flex-shrink-0"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                         </div>
                       );
@@ -882,26 +955,52 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
               {longestDriveWinners.length > 0 && (
                 <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd"/>
+                    <svg
+                      className="w-5 h-5 text-amber-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
+                        clipRule="evenodd"
+                      />
                     </svg>
-                    <h4 className="font-semibold text-amber-900">Longest Drive</h4>
+                    <h4 className="font-semibold text-amber-900">
+                      Longest Drive
+                    </h4>
                   </div>
                   <div className="space-y-2">
                     {longestDriveWinners.map((winner, idx) => {
-                      const player = tour.players.find(p => p.id === winner.playerId);
+                      const player = tour.players.find(
+                        (p) => p.id === winner.playerId
+                      );
                       return (
-                        <div key={idx} className="bg-white rounded-lg p-3 flex items-center justify-between">
+                        <div
+                          key={idx}
+                          className="bg-white rounded-lg p-3 flex items-center justify-between"
+                        >
                           <div className="flex-1">
-                            <div className="font-medium text-slate-900">{player?.name || 'Unknown'}</div>
+                            <div className="font-medium text-slate-900">
+                              {player?.name || "Unknown"}
+                            </div>
                             <div className="text-xs text-slate-600">
                               Hole {winner.holeNumber}
-                              {roundsToInclude.length > 1 && ` • ${winner.roundName}`}
+                              {roundsToInclude.length > 1 &&
+                                ` • ${winner.roundName}`}
                               {winner.distance && ` • ${winner.distance} yds`}
                             </div>
                           </div>
-                          <svg className="w-6 h-6 text-amber-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                          <svg
+                            className="w-6 h-6 text-amber-600 flex-shrink-0"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                         </div>
                       );
