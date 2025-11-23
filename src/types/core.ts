@@ -48,6 +48,10 @@ export interface Round {
   // Schedule
   startTime?: string;
 
+  // Players participating in this round (1-4 players max)
+  // If not specified, all tournament players can participate (for backward compatibility)
+  playerIds?: string[];
+
   settings: RoundSettings;
   createdAt: string;
   startedAt?: string;

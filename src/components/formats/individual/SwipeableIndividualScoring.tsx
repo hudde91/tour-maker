@@ -35,10 +35,18 @@ export const SwipeableIndividualScoring = ({
   // Filter players to only those that can be scored by current device
   const scoreablePlayers = useMemo(() => {
     const isTeamFormat = tour.format === 'team' || tour.format === 'ryder-cup';
-    return tour.players.filter((player) =>
+
+    // Filter by round participants (1-4 players max)
+    // If round.playerIds is not set, all tournament players can participate (backward compatibility)
+    const roundPlayers = round.playerIds
+      ? tour.players.filter((player) => round.playerIds!.includes(player.id))
+      : tour.players;
+
+    // Then filter by scoring permissions
+    return roundPlayers.filter((player) =>
       canScoreForPlayer(player, tour.players, isTeamFormat)
     );
-  }, [tour.players, tour.format]);
+  }, [tour.players, tour.format, round.playerIds]);
 
   const [currentHole, setCurrentHole] = useState(1);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);

@@ -38,18 +38,30 @@ export const SwipeableMatchPlayScoring = ({
   const scoreableMatches = useMemo(() => {
     const allMatches = round.ryderCup?.matches || [];
     const isTeamFormat = true; // Match play is always team format (ryder-cup)
+
+    // Filter by round participants (1-4 players max)
+    // If round.playerIds is not set, all tournament players can participate (backward compatibility)
+    const roundPlayerIds = round.playerIds ? new Set(round.playerIds) : null;
+
     return allMatches.filter((match: any) => {
       // Check if any player in either team is claimed by current device
       const teamAPlayerIds = match.teamA?.playerIds || [];
       const teamBPlayerIds = match.teamB?.playerIds || [];
       const allPlayerIds = [...teamAPlayerIds, ...teamBPlayerIds];
 
+      // Filter by players in this round
+      const playersInRound = roundPlayerIds
+        ? allPlayerIds.filter((id: string) => roundPlayerIds.has(id))
+        : allPlayerIds;
+
+      if (playersInRound.length === 0) return false;
+
       return allPlayerIds.some((playerId: string) => {
         const player = tour.players.find((p) => p.id === playerId);
         return player && canScoreForPlayer(player, tour.players, isTeamFormat);
       });
     });
-  }, [round.ryderCup?.matches, tour.players]);
+  }, [round.ryderCup?.matches, tour.players, round.playerIds]);
 
   const matches = scoreableMatches;
 

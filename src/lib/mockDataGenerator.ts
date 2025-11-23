@@ -255,6 +255,11 @@ export function generateMockTournament(options: MockTournamentOptions): Tour {
       roundFormat = 'stroke-play';
     }
 
+    // Select 1-4 random players for this round
+    const playersInRound = Math.min(Math.floor(Math.random() * 4) + 1, players.length);
+    const shuffled = [...players].sort(() => Math.random() - 0.5);
+    const selectedPlayers = shuffled.slice(0, playersInRound);
+
     const round: Round = {
       id: nanoid(),
       name: `Round ${i + 1}`,
@@ -263,14 +268,15 @@ export function generateMockTournament(options: MockTournamentOptions): Tour {
       holes: 18,
       holeInfo,
       totalPar: holeInfo.reduce((sum, h) => sum + h.par, 0),
+      playerIds: selectedPlayers.map(p => p.id), // Only 1-4 players per round
       settings: {
         strokesGiven: true,
         stablefordScoring: false,
       },
       createdAt: new Date(Date.now() - (roundCount - i) * 86400000).toISOString(),
       status: isComplete ? 'completed' : (i === completedRounds ? 'in-progress' : 'created'),
-      scores: generateRoundScores(players, holeInfo, isComplete),
-      competitionWinners: generateCompetitionWinners(players, holeInfo),
+      scores: generateRoundScores(selectedPlayers, holeInfo, isComplete), // Only selected players
+      competitionWinners: generateCompetitionWinners(selectedPlayers, holeInfo), // Only selected players
     };
 
     if (isComplete) {

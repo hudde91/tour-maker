@@ -23,8 +23,16 @@ export const useCreateRound = (tourId: string) => {
       // Schedule
       startTime?: string;
 
+      // Players in this round (1-4 max)
+      playerIds?: string[];
+
       settings: RoundSettings;
     }) => {
+      // Validate player count (1-4 players per round)
+      if (roundData.playerIds && (roundData.playerIds.length < 1 || roundData.playerIds.length > 4)) {
+        throw new Error('A round must have between 1 and 4 players');
+      }
+
       const round: Round = {
         id: nanoid(),
         name: roundData.name.trim(),
@@ -41,6 +49,9 @@ export const useCreateRound = (tourId: string) => {
 
         // Schedule
         startTime: roundData.startTime,
+
+        // Players in this round (1-4 max)
+        playerIds: roundData.playerIds,
 
         settings: roundData.settings,
         createdAt: new Date().toISOString(),

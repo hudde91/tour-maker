@@ -31,14 +31,26 @@ export const SwipeableTeamScoring = ({
   const scoreableTeams = useMemo(() => {
     const allTeams = tour.teams || [];
     const isTeamFormat = true; // Team scoring is always team format
+
+    // Filter by round participants (1-4 players max)
+    // If round.playerIds is not set, all tournament players can participate (backward compatibility)
+    const roundPlayerIds = round.playerIds ? new Set(round.playerIds) : null;
+
     return allTeams.filter((team) => {
+      // Check if any player on this team is in the round
+      const teamPlayersInRound = team.playerIds.filter((playerId) =>
+        !roundPlayerIds || roundPlayerIds.has(playerId)
+      );
+
+      if (teamPlayersInRound.length === 0) return false;
+
       // Check if any player on this team is claimed by current device
       return team.playerIds.some((playerId) => {
         const player = tour.players.find((p) => p.id === playerId);
         return player && canScoreForPlayer(player, tour.players, isTeamFormat);
       });
     });
-  }, [tour.teams, tour.players]);
+  }, [tour.teams, tour.players, round.playerIds]);
 
   const [currentHole, setCurrentHole] = useState(1);
   const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
