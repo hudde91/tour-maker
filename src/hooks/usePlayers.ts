@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { storage } from "../lib/storage";
 import { Player } from "../types";
 import { invalidateTourCache } from "../lib/cache";
+import { generatePlayerCode } from "../lib/deviceIdentity";
 
 export const useAddPlayer = (tourId: string) => {
   const queryClient = useQueryClient();
@@ -18,6 +19,7 @@ export const useAddPlayer = (tourId: string) => {
         name: playerData.name.trim(),
         handicap: playerData.handicap,
         teamId: playerData.teamId,
+        playerCode: generatePlayerCode(), // Generate unique 6-digit code
       };
 
       storage.addPlayerToTour(tourId, player);
@@ -63,6 +65,66 @@ export const useUpdatePlayer = (tourId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
       invalidateTourCache(tourId); // Invalidate calculation cache
+    },
+  });
+};
+
+export const useClaimPlayer = (tourId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      playerId,
+      deviceId,
+    }: {
+      playerId: string;
+      deviceId: string;
+    }) => {
+      storage.claimPlayer(tourId, playerId, deviceId);
+      return playerId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      invalidateTourCache(tourId);
+    },
+  });
+};
+
+export const useClaimPlayerByCode = (tourId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      playerCode,
+      deviceId,
+    }: {
+      playerCode: string;
+      deviceId: string;
+    }) => {
+      const player = storage.claimPlayerByCode(tourId, playerCode, deviceId);
+      if (!player) {
+        throw new Error("Invalid player code");
+      }
+      return player;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      invalidateTourCache(tourId);
+    },
+  });
+};
+
+export const useUnclaimPlayer = (tourId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (playerId: string) => {
+      storage.unclaimPlayer(tourId, playerId);
+      return playerId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      invalidateTourCache(tourId);
     },
   });
 };

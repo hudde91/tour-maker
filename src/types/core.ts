@@ -48,6 +48,10 @@ export interface Round {
   // Schedule
   startTime?: string;
 
+  // Players participating in this round (1-4 players max)
+  // If not specified, all tournament players can participate (for backward compatibility)
+  playerIds?: string[];
+
   settings: RoundSettings;
   createdAt: string;
   startedAt?: string;
@@ -70,6 +74,8 @@ export interface Player {
   name: string;
   handicap?: number;
   teamId?: string;
+  claimedBy?: string; // Device ID of the user who claimed this player
+  playerCode?: string; // 6-digit code for claiming on other devices
 }
 
 export interface Team {

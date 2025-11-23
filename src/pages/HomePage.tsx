@@ -3,10 +3,12 @@ import { useTours } from "../hooks/useTours";
 import { useState, useEffect } from "react";
 import { HowItWorksModal } from "@/components/ui/Howitworksmodal";
 import { BottomNav } from "../components/BottomNav";
+import { CreateMockDataDialog } from "@/components/mock/CreateMockDataDialog";
 
 export const HomePage = () => {
   const { data: tours = [], isLoading } = useTours();
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [showMockDataDialog, setShowMockDataDialog] = useState(false);
 
   const tabs = [
     {
@@ -120,6 +122,13 @@ export const HomePage = () => {
                 Create Tournament
               </Link>
               <button
+                onClick={() => setShowMockDataDialog(true)}
+                className="btn-secondary text-lg py-4 px-8 w-full sm:w-auto border-2 border-purple-300 text-purple-700 hover:bg-purple-50"
+                data-testid="mock-data-button"
+              >
+                🎲 Generate Mock Data
+              </button>
+              <button
                 onClick={() => setShowHowItWorks(true)}
                 className="btn-secondary text-lg py-4 px-8 w-full sm:w-auto"
                 data-testid="how-it-works-button"
@@ -134,6 +143,12 @@ export const HomePage = () => {
         <HowItWorksModal
           isOpen={showHowItWorks}
           onClose={() => setShowHowItWorks(false)}
+        />
+
+        {/* Mock Data Dialog */}
+        <CreateMockDataDialog
+          isOpen={showMockDataDialog}
+          onClose={() => setShowMockDataDialog(false)}
         />
 
         {/* Tournaments Section */}

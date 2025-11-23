@@ -6,6 +6,7 @@ import { calculateDetailedPlayerStats } from "../../lib/playerStatsUtils";
 import PlayerScorecardHeader from "./PlayerScorecardHeader";
 import PlayerScoreGrid9 from "./PlayerScoreGrid9";
 import { RoundStatistics } from "./RoundStatistics";
+import { PlayerClaimButton } from "./PlayerClaimButton";
 
 type Props = {
   tour: Tour;
@@ -89,6 +90,10 @@ export const PlayerScorecard = ({
           }
         />
       </button>
+
+      <div className="px-4 py-3 border-t border-slate-200">
+        <PlayerClaimButton tourId={tour.id} player={player} />
+      </div>
 
       {isExpanded && (
         <div className="space-y-4">

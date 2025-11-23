@@ -55,6 +55,9 @@ export {
   updatePlayerScore,
   removePlayerFromTour,
   updatePlayerInTour,
+  claimPlayer,
+  claimPlayerByCode,
+  unclaimPlayer,
 } from "./players";
 
 // Teams
@@ -140,6 +143,9 @@ export const storage = {
   updatePlayerScore: players.updatePlayerScore,
   removePlayerFromTour: players.removePlayerFromTour,
   updatePlayerInTour: players.updatePlayerInTour,
+  claimPlayer: players.claimPlayer,
+  claimPlayerByCode: players.claimPlayerByCode,
+  unclaimPlayer: players.unclaimPlayer,
 
   // Teams
   addTeamToTour: teams.addTeamToTour,
