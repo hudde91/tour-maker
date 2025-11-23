@@ -34,8 +34,11 @@ export const SwipeableIndividualScoring = ({
 
   // Filter players to only those that can be scored by current device
   const scoreablePlayers = useMemo(() => {
-    return tour.players.filter((player) => canScoreForPlayer(player));
-  }, [tour.players]);
+    const isTeamFormat = tour.format === 'team' || tour.format === 'ryder-cup';
+    return tour.players.filter((player) =>
+      canScoreForPlayer(player, tour.players, isTeamFormat)
+    );
+  }, [tour.players, tour.format]);
 
   const [currentHole, setCurrentHole] = useState(1);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);

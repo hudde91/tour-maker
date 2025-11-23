@@ -37,6 +37,7 @@ export const SwipeableMatchPlayScoring = ({
   // Filter matches to only those where current device has claimed at least one player
   const scoreableMatches = useMemo(() => {
     const allMatches = round.ryderCup?.matches || [];
+    const isTeamFormat = true; // Match play is always team format (ryder-cup)
     return allMatches.filter((match: any) => {
       // Check if any player in either team is claimed by current device
       const teamAPlayerIds = match.teamA?.playerIds || [];
@@ -45,7 +46,7 @@ export const SwipeableMatchPlayScoring = ({
 
       return allPlayerIds.some((playerId: string) => {
         const player = tour.players.find((p) => p.id === playerId);
-        return player && canScoreForPlayer(player);
+        return player && canScoreForPlayer(player, tour.players, isTeamFormat);
       });
     });
   }, [round.ryderCup?.matches, tour.players]);

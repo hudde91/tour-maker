@@ -30,11 +30,12 @@ export const SwipeableTeamScoring = ({
   // Filter teams to only those where the current device has claimed at least one player
   const scoreableTeams = useMemo(() => {
     const allTeams = tour.teams || [];
+    const isTeamFormat = true; // Team scoring is always team format
     return allTeams.filter((team) => {
       // Check if any player on this team is claimed by current device
       return team.playerIds.some((playerId) => {
         const player = tour.players.find((p) => p.id === playerId);
-        return player && canScoreForPlayer(player);
+        return player && canScoreForPlayer(player, tour.players, isTeamFormat);
       });
     });
   }, [tour.teams, tour.players]);

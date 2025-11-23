@@ -41,10 +41,35 @@ export function isPlayerUnclaimed(player: { claimedBy?: string }): boolean {
 
 /**
  * Checks if the current device can score for a player
- * (either unclaimed or claimed by this device)
+ * In individual format: only for claimed player or unclaimed players
+ * In team formats: for anyone on the same team as claimed player
  */
-export function canScoreForPlayer(player: { claimedBy?: string }): boolean {
-  return isPlayerUnclaimed(player) || isPlayerClaimedByCurrentDevice(player);
+export function canScoreForPlayer(
+  player: { claimedBy?: string; teamId?: string },
+  allPlayers?: Array<{ id: string; claimedBy?: string; teamId?: string }>,
+  isTeamFormat: boolean = false
+): boolean {
+  // If unclaimed, anyone can score (for backward compatibility with organizers)
+  if (isPlayerUnclaimed(player)) {
+    return true;
+  }
+
+  // If claimed by current device, can always score
+  if (isPlayerClaimedByCurrentDevice(player)) {
+    return true;
+  }
+
+  // In team formats, check if player is on same team as claimed player
+  if (isTeamFormat && allPlayers && player.teamId) {
+    const myClaimedPlayer = getClaimedPlayer(allPlayers);
+
+    // If I've claimed a player and this player is on my team, I can score for them
+    if (myClaimedPlayer && myClaimedPlayer.teamId === player.teamId) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 /**
