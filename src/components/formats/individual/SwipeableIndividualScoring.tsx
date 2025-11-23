@@ -4,10 +4,11 @@ import { getScoreInfo } from "@/lib/scoreUtils";
 import { storage } from "@/lib/storage";
 import { formatUtils } from "@/types/formats";
 import { Tour, Round, Player, HoleInfo, PlayerScore } from "@/types";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
 import { IndividualCompetitionWinnerSelector } from "./IndividualCompetitionWinnerSelector";
+import { canScoreForPlayer } from "@/lib/deviceIdentity";
 
 interface SwipeableIndividualScoringProps {
   tour: Tour;
@@ -31,6 +32,11 @@ export const SwipeableIndividualScoring = ({
   const { tourId } = useParams<{ tourId: string }>();
   const updateCompetitionWinner = useUpdateCompetitionWinner(tourId!, round.id);
 
+  // Filter players to only those that can be scored by current device
+  const scoreablePlayers = useMemo(() => {
+    return tour.players.filter((player) => canScoreForPlayer(player));
+  }, [tour.players]);
+
   const [currentHole, setCurrentHole] = useState(1);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -45,9 +51,9 @@ export const SwipeableIndividualScoring = ({
   ] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const currentPlayer = tour.players[currentPlayerIndex];
+  const currentPlayer = scoreablePlayers[currentPlayerIndex];
   const currentHoleInfo = round.holeInfo[currentHole - 1];
-  const isLastPlayer = currentPlayerIndex === tour.players.length - 1;
+  const isLastPlayer = currentPlayerIndex === scoreablePlayers.length - 1;
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
@@ -62,9 +68,9 @@ export const SwipeableIndividualScoring = ({
     }
   }, [activeTab]);
 
-  // Check if all players have completed all holes
+  // Check if all scoreable players have completed all holes
   const areAllScoresComplete = () => {
-    return tour.players.every((player) => {
+    return scoreablePlayers.every((player) => {
       const playerScore = round.scores[player.id];
       if (!playerScore) return false;
 
@@ -73,9 +79,9 @@ export const SwipeableIndividualScoring = ({
     });
   };
 
-  // Check if all players have scored the current hole
+  // Check if all scoreable players have scored the current hole
   const haveAllPlayersScoredCurrentHole = () => {
-    return tour.players.every((player) => {
+    return scoreablePlayers.every((player) => {
       const playerScore = round.scores[player.id];
       if (!playerScore) return false;
 
@@ -133,7 +139,7 @@ export const SwipeableIndividualScoring = ({
       setIsTransitioning(true);
       setTimeout(() => {
         // If not the last player, move to next player
-        if (currentPlayerIndex < tour.players.length - 1) {
+        if (currentPlayerIndex < scoreablePlayers.length - 1) {
           setCurrentPlayerIndex(currentPlayerIndex + 1);
         }
         // If last player and not last hole, move to next hole and reset to first player
@@ -157,13 +163,35 @@ export const SwipeableIndividualScoring = ({
         // If first player and not first hole, move to previous hole and go to last player
         else if (currentHole > 1) {
           setCurrentHole(currentHole - 1);
-          setCurrentPlayerIndex(tour.players.length - 1);
+          setCurrentPlayerIndex(scoreablePlayers.length - 1);
           setShowingCompetitionSelector(false);
         }
         setIsTransitioning(false);
       }, 200);
     }
   };
+
+  // Show message if no scoreable players
+  if (scoreablePlayers.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-8">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-4xl">🔒</span>
+          </div>
+          <h3 className="text-xl font-semibold text-slate-900 mb-2">
+            No Players Available to Score
+          </h3>
+          <p className="text-slate-600 mb-4">
+            You don't have any players claimed yet. Visit the Players page to claim a player before you can enter scores.
+          </p>
+          <p className="text-sm text-slate-500">
+            Each player must be claimed before they can score their own rounds. This ensures only the right person can enter scores for each player.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -281,7 +309,7 @@ export const SwipeableIndividualScoring = ({
               ) : null}
 
               {/* Swipe indicators - Right arrow */}
-              {currentPlayerIndex < tour.players.length - 1 ||
+              {currentPlayerIndex < scoreablePlayers.length - 1 ||
               currentHole < round.holes ? (
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
                   <svg
@@ -302,11 +330,11 @@ export const SwipeableIndividualScoring = ({
 
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-sm font-semibold text-slate-600">
-                  Player {currentPlayerIndex + 1} of {tour.players.length}
+                  Player {currentPlayerIndex + 1} of {scoreablePlayers.length}
                 </h3>
-                {currentPlayerIndex < tour.players.length - 1 ? (
+                {currentPlayerIndex < scoreablePlayers.length - 1 ? (
                   <div className="text-xs text-slate-500 flex items-center gap-1">
-                    Swipe to {tour.players[currentPlayerIndex + 1].name}
+                    Swipe to {scoreablePlayers[currentPlayerIndex + 1].name}
                     <svg
                       className="w-4 h-4"
                       fill="none"
@@ -341,7 +369,7 @@ export const SwipeableIndividualScoring = ({
                 ) : null}
               </div>
               <div className="flex gap-2">
-                {tour.players.map((_, index) => (
+                {scoreablePlayers.map((_, index) => (
                   <div
                     key={index}
                     className={`h-2 rounded-full flex-1 transition-all duration-300 ${
@@ -522,16 +550,16 @@ export const SwipeableIndividualScoring = ({
             <div className="card">
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-sm font-semibold text-slate-600">
-                  Player {currentPlayerIndex + 1} of {tour.players.length}
+                  Player {currentPlayerIndex + 1} of {scoreablePlayers.length}
                 </h3>
-                {currentPlayerIndex < tour.players.length - 1 && (
+                {currentPlayerIndex < scoreablePlayers.length - 1 && (
                   <div className="text-xs text-slate-500">
-                    Swipe to {tour.players[currentPlayerIndex + 1].name} →
+                    Swipe to {scoreablePlayers[currentPlayerIndex + 1].name} →
                   </div>
                 )}
               </div>
               <div className="flex gap-2">
-                {tour.players.map((_, index) => (
+                {scoreablePlayers.map((_, index) => (
                   <div
                     key={index}
                     className={`h-2 rounded-full flex-1 transition-all duration-300 ${

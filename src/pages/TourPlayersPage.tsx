@@ -2,6 +2,8 @@ import { AddPlayerSheet } from "@/components/players/AddPlayerSheet";
 import { PlayerScorecard } from "@/components/players/PlayerScorecard";
 import { CreateTeamSheet } from "@/components/teams/CreateTeamSheet";
 import { TeamCard } from "@/components/teams/TeamCard";
+import { PlayerClaimButton } from "@/components/players/PlayerClaimButton";
+import { ClaimPlayerCodeDialog } from "@/components/players/ClaimPlayerCodeDialog";
 import { useTour } from "@/hooks/useTours";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -13,6 +15,7 @@ export const TourPlayersPage = () => {
   const { data: tour, isLoading } = useTour(tourId!);
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [showCreateTeam, setShowCreateTeam] = useState(false);
+  const [showClaimCode, setShowClaimCode] = useState(false);
   const [expandedPlayer, setExpandedPlayer] = useState<string | null>(null);
 
   // Scroll to top when page loads to ensure PageHeader is visible
@@ -97,6 +100,26 @@ export const TourPlayersPage = () => {
       />
 
       <div className="-mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
+        {/* Claim Player Section */}
+        <div className="card card-spacing bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-1">
+                Claim Your Player
+              </h3>
+              <p className="text-sm text-slate-600">
+                Claim a player to score your own rounds. Once claimed, only you can enter scores for that player.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowClaimCode(true)}
+              className="btn-primary whitespace-nowrap"
+            >
+              Enter Player Code
+            </button>
+          </div>
+        </div>
+
         {isTeamFormat && (
           <div className="card card-spacing">
             <div className="flex justify-between items-center mb-4">
@@ -210,37 +233,44 @@ export const TourPlayersPage = () => {
                 return (
                   <div
                     key={player.id}
-                    className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:border-slate-300 transition-colors"
+                    className="p-3 bg-white border border-slate-200 rounded-lg hover:border-slate-300 transition-colors"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-semibold text-slate-700">
-                        {player.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-slate-900">
-                            {player.name}
-                          </span>
-                          {isCaptain && <span className="text-base">👑</span>}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-semibold text-slate-700">
+                          {player.name.charAt(0).toUpperCase()}
                         </div>
-                        {team && (
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <div
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: team.color }}
-                            />
-                            <span className="text-sm text-slate-600">
-                              {team.name}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-slate-900">
+                              {player.name}
                             </span>
+                            {isCaptain && <span className="text-base">👑</span>}
                           </div>
-                        )}
+                          {team && (
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <div
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: team.color }}
+                              />
+                              <span className="text-sm text-slate-600">
+                                {team.name}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
+                      {player.handicap !== undefined && (
+                        <div className="text-sm text-slate-600">
+                          HC {player.handicap}
+                        </div>
+                      )}
                     </div>
-                    {player.handicap !== undefined && (
-                      <div className="text-sm text-slate-600">
-                        HC {player.handicap}
-                      </div>
-                    )}
+                    <PlayerClaimButton
+                      tourId={tour.id}
+                      player={player}
+                      compact
+                    />
                   </div>
                 );
               })}
@@ -275,6 +305,12 @@ export const TourPlayersPage = () => {
           onClose={() => setShowCreateTeam(false)}
         />
       )}
+
+      <ClaimPlayerCodeDialog
+        tourId={tour.id}
+        isOpen={showClaimCode}
+        onClose={() => setShowClaimCode(false)}
+      />
     </div>
   );
 };

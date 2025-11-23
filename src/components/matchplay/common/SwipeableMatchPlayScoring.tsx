@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Tour, Round, HoleInfo } from "../../../types";
 import { HoleNavigation } from "../../scoring/HoleNavigation";
 import { MatchPlayLeaderboard } from "./MatchPlayLeaderboard";
 import { CompetitionWinnerSelector } from "./CompetitionWinnerSelector";
 import { useParams } from "react-router-dom";
 import { useUpdateCompetitionWinner } from "../../../hooks/useScoring";
+import { canScoreForPlayer } from "../../../lib/deviceIdentity";
 
 interface SwipeableMatchPlayScoringProps {
   tour: Tour;
@@ -33,7 +34,23 @@ export const SwipeableMatchPlayScoring = ({
   const [showingCompetitionSelector, setShowingCompetitionSelector] =
     useState(false);
 
-  const matches = round.ryderCup?.matches || [];
+  // Filter matches to only those where current device has claimed at least one player
+  const scoreableMatches = useMemo(() => {
+    const allMatches = round.ryderCup?.matches || [];
+    return allMatches.filter((match: any) => {
+      // Check if any player in either team is claimed by current device
+      const teamAPlayerIds = match.teamA?.playerIds || [];
+      const teamBPlayerIds = match.teamB?.playerIds || [];
+      const allPlayerIds = [...teamAPlayerIds, ...teamBPlayerIds];
+
+      return allPlayerIds.some((playerId: string) => {
+        const player = tour.players.find((p) => p.id === playerId);
+        return player && canScoreForPlayer(player);
+      });
+    });
+  }, [round.ryderCup?.matches, tour.players]);
+
+  const matches = scoreableMatches;
 
   // Scroll to top when navigating to a match or changing tabs
   useEffect(() => {
@@ -257,16 +274,21 @@ export const SwipeableMatchPlayScoring = ({
 
   if (matches.length === 0) {
     return (
-      <div className="card text-center py-12">
-        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto card-spacing">
-          <span className="text-4xl">⚔️</span>
+      <div className="flex flex-col items-center justify-center h-full p-8">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-4xl">🔒</span>
+          </div>
+          <h3 className="text-xl font-semibold text-slate-900 mb-2">
+            No Matches Available to Score
+          </h3>
+          <p className="text-slate-600 mb-4">
+            You don't have any players claimed in any match. Visit the Players page to claim a player before you can enter scores.
+          </p>
+          <p className="text-sm text-slate-500">
+            In match play, you can only score for matches where you have claimed at least one player.
+          </p>
         </div>
-        <h3 className="text-xl font-semibold text-slate-700 mb-3">
-          No Matches Created
-        </h3>
-        <p className="text-slate-500">
-          Match play rounds require matches to be set up between teams.
-        </p>
       </div>
     );
   }

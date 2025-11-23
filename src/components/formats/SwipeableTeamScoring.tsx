@@ -2,12 +2,13 @@ import { getScoreInfo } from "@/lib/scoreUtils";
 import { storage } from "@/lib/storage";
 import { formatUtils } from "@/types/formats";
 import { Tour, Round, Team } from "@/types";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { HoleNavigation } from "../scoring/HoleNavigation";
 import { LiveLeaderboard } from "../scoring/LiveLeaderboard";
 import { IndividualCompetitionWinnerSelector } from "./individual/IndividualCompetitionWinnerSelector";
 import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
+import { canScoreForPlayer } from "@/lib/deviceIdentity";
 interface SwipeableTeamScoringProps {
   tour: Tour;
   round: Round;
@@ -26,6 +27,18 @@ export const SwipeableTeamScoring = ({
   const { tourId } = useParams<{ tourId: string }>();
   const updateCompetitionWinner = useUpdateCompetitionWinner(tourId!, round.id);
 
+  // Filter teams to only those where the current device has claimed at least one player
+  const scoreableTeams = useMemo(() => {
+    const allTeams = tour.teams || [];
+    return allTeams.filter((team) => {
+      // Check if any player on this team is claimed by current device
+      return team.playerIds.some((playerId) => {
+        const player = tour.players.find((p) => p.id === playerId);
+        return player && canScoreForPlayer(player);
+      });
+    });
+  }, [tour.teams, tour.players]);
+
   const [currentHole, setCurrentHole] = useState(1);
   const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -40,7 +53,7 @@ export const SwipeableTeamScoring = ({
   ] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const teams = tour.teams || [];
+  const teams = scoreableTeams;
   const currentTeam = teams[currentTeamIndex];
   const currentHoleInfo = round.holeInfo[currentHole - 1];
 
@@ -139,16 +152,21 @@ export const SwipeableTeamScoring = ({
 
   if (teams.length === 0) {
     return (
-      <div className="card text-center py-12">
-        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto card-spacing">
-          <span className="text-4xl">👥</span>
+      <div className="flex flex-col items-center justify-center h-full p-8">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-4xl">🔒</span>
+          </div>
+          <h3 className="text-xl font-semibold text-slate-900 mb-2">
+            No Teams Available to Score
+          </h3>
+          <p className="text-slate-600 mb-4">
+            You don't have any players claimed on any team. Visit the Players page to claim a player on your team before you can enter scores.
+          </p>
+          <p className="text-sm text-slate-500">
+            In {formatName} format, you can only score for teams where you have claimed at least one player.
+          </p>
         </div>
-        <h3 className="text-xl font-semibold text-slate-700 mb-3">
-          No Teams Found
-        </h3>
-        <p className="text-slate-500">
-          {formatName} format requires teams to be created and players assigned.
-        </p>
       </div>
     );
   }
