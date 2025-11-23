@@ -243,11 +243,23 @@ export function generateMockTournament(options: MockTournamentOptions): Tour {
     const holeInfo = generateHoleInfo();
     const courseName = COURSE_NAMES[i % COURSE_NAMES.length];
 
+    // Determine format based on tournament type
+    let roundFormat: Round['format'];
+    if (format === 'team') {
+      roundFormat = 'best-ball';
+    } else if (format === 'ryder-cup') {
+      // Ryder Cup rounds will be match play, but for now use stroke-play
+      // TODO: Generate proper match play rounds for Ryder Cup
+      roundFormat = 'stroke-play';
+    } else {
+      roundFormat = 'stroke-play';
+    }
+
     const round: Round = {
       id: nanoid(),
       name: `Round ${i + 1}`,
       courseName,
-      format: format === 'team' ? 'best-ball' : 'individual',
+      format: roundFormat,
       holes: 18,
       holeInfo,
       totalPar: holeInfo.reduce((sum, h) => sum + h.par, 0),
