@@ -46,3 +46,12 @@ export function isPlayerUnclaimed(player: { claimedBy?: string }): boolean {
 export function canScoreForPlayer(player: { claimedBy?: string }): boolean {
   return isPlayerUnclaimed(player) || isPlayerClaimedByCurrentDevice(player);
 }
+
+/**
+ * Gets the player claimed by the current device from a list of players
+ * Returns null if no player is claimed
+ */
+export function getClaimedPlayer<T extends { claimedBy?: string }>(players: T[]): T | null {
+  const deviceId = getDeviceId();
+  return players.find((p) => p.claimedBy === deviceId) || null;
+}

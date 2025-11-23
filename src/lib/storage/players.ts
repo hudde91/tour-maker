@@ -144,6 +144,16 @@ export const claimPlayer = (
   const player = tour.players.find((p) => p.id === playerId);
   if (!player) return;
 
+  // Check if device has already claimed a different player
+  const alreadyClaimedPlayer = tour.players.find(
+    (p) => p.claimedBy === deviceId && p.id !== playerId
+  );
+  if (alreadyClaimedPlayer) {
+    throw new Error(
+      `You have already claimed ${alreadyClaimedPlayer.name}. Each user can only claim one player.`
+    );
+  }
+
   // Don't allow claiming if already claimed by another device
   if (player.claimedBy && player.claimedBy !== deviceId) {
     throw new Error("This player has already been claimed by another device");
@@ -166,6 +176,16 @@ export const claimPlayerByCode = (
 
   const player = tour.players.find((p) => p.playerCode === playerCode);
   if (!player) return null;
+
+  // Check if device has already claimed a different player
+  const alreadyClaimedPlayer = tour.players.find(
+    (p) => p.claimedBy === deviceId && p.id !== player.id
+  );
+  if (alreadyClaimedPlayer) {
+    throw new Error(
+      `You have already claimed ${alreadyClaimedPlayer.name}. Each user can only claim one player.`
+    );
+  }
 
   player.claimedBy = deviceId;
   saveTour(tour);

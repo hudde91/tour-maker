@@ -5,10 +5,11 @@ import { TeamCard } from "@/components/teams/TeamCard";
 import { PlayerClaimButton } from "@/components/players/PlayerClaimButton";
 import { ClaimPlayerCodeDialog } from "@/components/players/ClaimPlayerCodeDialog";
 import { useTour } from "@/hooks/useTours";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { getClaimedPlayer } from "@/lib/deviceIdentity";
 
 export const TourPlayersPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -26,6 +27,11 @@ export const TourPlayersPage = () => {
   const handlePlayerToggle = (playerId: string) => {
     setExpandedPlayer(expandedPlayer === playerId ? null : playerId);
   };
+
+  const myClaimedPlayer = useMemo(() => {
+    if (!tour) return null;
+    return getClaimedPlayer(tour.players);
+  }, [tour]);
 
   if (isLoading) {
     return (
@@ -103,20 +109,36 @@ export const TourPlayersPage = () => {
         {/* Claim Player Section */}
         <div className="card card-spacing bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
+            <div className="flex-1">
               <h3 className="text-lg font-semibold text-slate-900 mb-1">
-                Claim Your Player
+                {myClaimedPlayer ? "Your Claimed Player" : "Claim Your Player"}
               </h3>
-              <p className="text-sm text-slate-600">
-                Claim a player to score your own rounds. Once claimed, only you can enter scores for that player.
-              </p>
+              {myClaimedPlayer ? (
+                <div className="space-y-2">
+                  <p className="text-sm text-slate-600">
+                    You are playing as <span className="font-semibold text-slate-900">{myClaimedPlayer.name}</span>
+                  </p>
+                  {myClaimedPlayer.playerCode && (
+                    <div className="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-blue-200">
+                      <span className="text-xs text-slate-600">Your code:</span>
+                      <span className="font-mono font-bold text-blue-900">{myClaimedPlayer.playerCode}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-slate-600">
+                  Claim a player below to score your rounds, or enter your player code to claim on this device.
+                </p>
+              )}
             </div>
-            <button
-              onClick={() => setShowClaimCode(true)}
-              className="btn-primary whitespace-nowrap"
-            >
-              Enter Player Code
-            </button>
+            {!myClaimedPlayer && (
+              <button
+                onClick={() => setShowClaimCode(true)}
+                className="btn-primary whitespace-nowrap"
+              >
+                Enter Player Code
+              </button>
+            )}
           </div>
         </div>
 
