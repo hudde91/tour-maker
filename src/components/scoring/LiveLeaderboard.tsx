@@ -75,22 +75,6 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
                 <div className="truncate font-medium text-slate-900">
                   {player.name}
                 </div>
-                {/* Chevron indicator */}
-                <svg
-                  className={`w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-transform ${
-                    isExpanded ? "rotate-180" : ""
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
               </div>
 
               {/* Right: numbers */}
