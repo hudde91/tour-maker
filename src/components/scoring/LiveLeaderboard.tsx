@@ -65,7 +65,7 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
             {/* Clickable Player Row */}
             <button
               onClick={() => handlePlayerToggle(player.id)}
-              className="w-full flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 hover:bg-slate-50 hover:border-slate-300 transition-all cursor-pointer group"
+              className="w-full flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 hover:bg-slate-50 hover:border-slate-300 cursor-pointer group active:scale-100"
             >
               {/* Left: position + name */}
               <div className="flex items-center gap-3 min-w-0">
@@ -75,6 +75,22 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
                 <div className="truncate font-medium text-slate-900">
                   {player.name}
                 </div>
+                {/* Chevron indicator */}
+                <svg
+                  className={`w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-transform ${
+                    isExpanded ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
               </div>
 
               {/* Right: numbers */}
