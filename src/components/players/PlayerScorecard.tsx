@@ -80,7 +80,7 @@ export const PlayerScorecard = ({
       <button
         type="button"
         onClick={onToggle}
-        className="w-full text-left relative"
+        className="w-full text-left relative active:scale-100"
       >
         <PlayerScorecardHeader
           playerName={player.name}
