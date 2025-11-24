@@ -1,18 +1,20 @@
 import { useState, useEffect } from "react";
 import { Player } from "../../types";
-import { getDeviceId, isPlayerClaimedByCurrentDevice } from "../../lib/deviceIdentity";
+import { getDeviceId, isPlayerClaimedByCurrentDevice, getClaimedPlayer } from "../../lib/deviceIdentity";
 import { useClaimPlayer, useUnclaimPlayer } from "../../hooks/usePlayers";
 
 interface PlayerClaimButtonProps {
   tourId: string;
   player: Player;
   compact?: boolean;
+  allPlayers?: Player[];
 }
 
 export const PlayerClaimButton = ({
   tourId,
   player,
   compact = false,
+  allPlayers,
 }: PlayerClaimButtonProps) => {
   const claimPlayer = useClaimPlayer(tourId);
   const unclaimPlayer = useUnclaimPlayer(tourId);
@@ -21,6 +23,10 @@ export const PlayerClaimButton = ({
 
   const isClaimed = !!player.claimedBy;
   const isClaimedByMe = isPlayerClaimedByCurrentDevice(player);
+
+  // Check if user has claimed any player
+  const myClaimedPlayer = allPlayers ? getClaimedPlayer(allPlayers) : null;
+  const hasClaimedAnyPlayer = !!myClaimedPlayer;
 
   // Auto-show code when player is first claimed
   useEffect(() => {
@@ -105,6 +111,11 @@ export const PlayerClaimButton = ({
         Claimed by another user
       </div>
     );
+  }
+
+  // If user has already claimed a different player, don't show claim button
+  if (hasClaimedAnyPlayer) {
+    return null;
   }
 
   return (
