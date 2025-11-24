@@ -1,6 +1,7 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Tour, Round } from "../../types";
 import { storage } from "../../lib/storage";
+import { PlayerScorecard } from "../players/PlayerScorecard";
 
 interface LiveLeaderboardProps {
   tour: Tour;
@@ -13,6 +14,12 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
   round,
   isCollapsed = false,
 }) => {
+  const [expandedPlayerId, setExpandedPlayerId] = useState<string | null>(null);
+
+  const handlePlayerToggle = (playerId: string) => {
+    setExpandedPlayerId(expandedPlayerId === playerId ? null : playerId);
+  };
+
   const entries = useMemo(() => {
     return tour.players.map((player) => {
       const ps: any = (round as any).scores?.[player.id];
@@ -52,55 +59,88 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
     <div className={isCollapsed ? "space-y-2" : "space-y-3"}>
       {sorted.map((entry, idx) => {
         const { player, totalStrokes, points, stableford } = entry;
+        const isExpanded = expandedPlayerId === player.id;
         return (
-          <div
-            key={player.id}
-            className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2"
-          >
-            {/* Left: position + name */}
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-6 text-right text-sm font-semibold text-slate-600">
-                {idx + 1}
+          <div key={player.id} className="w-full">
+            {/* Clickable Player Row */}
+            <button
+              onClick={() => handlePlayerToggle(player.id)}
+              className="w-full flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 hover:bg-slate-50 hover:border-slate-300 cursor-pointer group active:scale-100"
+            >
+              {/* Left: position + name */}
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-6 text-right text-sm font-semibold text-slate-600">
+                  {idx + 1}
+                </div>
+                <div className="truncate font-medium text-slate-900">
+                  {player.name}
+                </div>
+                {/* Chevron indicator */}
+                <svg
+                  className={`w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-transform ${
+                    isExpanded ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
               </div>
-              <div className="truncate font-medium text-slate-900">
-                {player.name}
-              </div>
-            </div>
 
-            {/* Right: numbers */}
-            <div className="flex items-center gap-4 text-right">
-              {/* Points (if available) */}
-              {typeof points === "number" && (
+              {/* Right: numbers */}
+              <div className="flex items-center gap-4 text-right">
+                {/* Points (if available) */}
+                {typeof points === "number" && (
+                  <div className="min-w-[56px]">
+                    <div className="text-base font-semibold text-slate-900">
+                      {points}
+                    </div>
+                    <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                      Points
+                    </div>
+                  </div>
+                )}
+
+                {/* Stableford */}
                 <div className="min-w-[56px]">
                   <div className="text-base font-semibold text-slate-900">
-                    {points}
+                    {stableford}
                   </div>
                   <div className="text-[10px] uppercase tracking-wide text-slate-500">
-                    Points
+                    Stableford
                   </div>
                 </div>
-              )}
 
-              {/* Stableford */}
-              <div className="min-w-[56px]">
-                <div className="text-base font-semibold text-slate-900">
-                  {stableford}
-                </div>
-                <div className="text-[10px] uppercase tracking-wide text-slate-500">
-                  Stableford
+                {/* Total Strokes */}
+                <div className="min-w-[56px]">
+                  <div className="text-base font-semibold text-slate-900">
+                    {totalStrokes}
+                  </div>
+                  <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                    Total Strokes
+                  </div>
                 </div>
               </div>
+            </button>
 
-              {/* Total Strokes */}
-              <div className="min-w-[56px]">
-                <div className="text-base font-semibold text-slate-900">
-                  {totalStrokes}
-                </div>
-                <div className="text-[10px] uppercase tracking-wide text-slate-500">
-                  Total Strokes
-                </div>
+            {/* Expanded PlayerScorecard */}
+            {isExpanded && (
+              <div className="mt-2 rounded-xl border border-slate-200 bg-white p-4">
+                <PlayerScorecard
+                  tour={tour}
+                  player={player}
+                  isExpanded={true}
+                  onToggle={() => handlePlayerToggle(player.id)}
+                  hideClaimButton={true}
+                />
               </div>
-            </div>
+            )}
           </div>
         );
       })}

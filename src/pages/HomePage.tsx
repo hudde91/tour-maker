@@ -9,6 +9,14 @@ export const HomePage = () => {
   const { data: tours = [], isLoading } = useTours();
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [showMockDataDialog, setShowMockDataDialog] = useState(false);
+  const [showMockDataFeatures, setShowMockDataFeatures] = useState(() => {
+    return localStorage.getItem("showMockDataFeatures") === "true";
+  });
+
+  const handleToggleMockDataFeatures = (checked: boolean) => {
+    setShowMockDataFeatures(checked);
+    localStorage.setItem("showMockDataFeatures", checked.toString());
+  };
 
   const tabs = [
     {
@@ -87,6 +95,19 @@ export const HomePage = () => {
 
   return (
     <div className="min-h-screen golf-bg-pattern w-full">
+      {/* Dev Mode Toggle */}
+      <div className="fixed top-4 right-4 z-50 bg-white rounded-lg shadow-lg border border-slate-200 p-3">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={showMockDataFeatures}
+            onChange={(e) => handleToggleMockDataFeatures(e.target.checked)}
+            className="w-4 h-4 text-purple-600 border-slate-300 rounded focus:ring-purple-500"
+          />
+          <span className="text-sm font-medium text-slate-700">Dev Mode</span>
+        </label>
+      </div>
+
       <div className="golf-hero-bg safe-area-top w-full">
         <div className="p-6 pb-12 w-full max-w-6xl mx-auto">
           <div className="text-center">
@@ -121,13 +142,15 @@ export const HomePage = () => {
               >
                 Create Tournament
               </Link>
-              <button
-                onClick={() => setShowMockDataDialog(true)}
-                className="btn-secondary text-lg py-4 px-8 w-full sm:w-auto border-2 border-purple-300 text-purple-700 hover:bg-purple-50"
-                data-testid="mock-data-button"
-              >
-                🎲 Generate Mock Data
-              </button>
+              {showMockDataFeatures && (
+                <button
+                  onClick={() => setShowMockDataDialog(true)}
+                  className="btn-secondary text-lg py-4 px-8 w-full sm:w-auto border-2 border-purple-300 text-purple-700 hover:bg-purple-50"
+                  data-testid="mock-data-button"
+                >
+                  🎲 Generate Mock Data
+                </button>
+              )}
               <button
                 onClick={() => setShowHowItWorks(true)}
                 className="btn-secondary text-lg py-4 px-8 w-full sm:w-auto"

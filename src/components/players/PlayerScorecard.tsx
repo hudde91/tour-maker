@@ -14,6 +14,7 @@ type Props = {
   isExpanded?: boolean;
   onToggle?: () => void;
   className?: string;
+  hideClaimButton?: boolean;
 };
 
 export const PlayerScorecard = ({
@@ -22,6 +23,7 @@ export const PlayerScorecard = ({
   isExpanded = false,
   onToggle,
   className = "",
+  hideClaimButton = false,
 }: Props) => {
   const playerRounds = useMemo(() => {
     return (tour.rounds || []).filter((round) => {
@@ -78,7 +80,7 @@ export const PlayerScorecard = ({
       <button
         type="button"
         onClick={onToggle}
-        className="w-full text-left relative"
+        className="w-full text-left relative active:scale-100"
       >
         <PlayerScorecardHeader
           playerName={player.name}
@@ -91,9 +93,15 @@ export const PlayerScorecard = ({
         />
       </button>
 
-      <div className="px-4 py-3 border-t border-slate-200">
-        <PlayerClaimButton tourId={tour.id} player={player} />
-      </div>
+      {!hideClaimButton && (
+        <div className="px-4 py-3 border-t border-slate-200">
+          <PlayerClaimButton
+            tourId={tour.id}
+            player={player}
+            allPlayers={tour.players}
+          />
+        </div>
+      )}
 
       {isExpanded && (
         <div className="space-y-4">

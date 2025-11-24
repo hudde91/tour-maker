@@ -292,6 +292,7 @@ export const TourPlayersPage = () => {
                       tourId={tour.id}
                       player={player}
                       compact
+                      allPlayers={tour.players}
                     />
                   </div>
                 );
