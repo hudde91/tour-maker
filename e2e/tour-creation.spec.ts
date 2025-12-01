@@ -23,14 +23,15 @@ test.describe('Tour Creation', () => {
     // Wait for navigation to create page
     await page.waitForURL('/create');
 
-    // Fill in tour details
+    // Step 1: Select format (individual is default, so just proceed)
+    await page.click('button:has-text("Next Step")');
+
+    // Step 2: Fill in tournament name
     await page.fill('[data-testid="tournament-name-input"]', 'Summer Championship');
+    await page.click('button:has-text("Next Step")');
 
-    // Select individual format (already selected by default)
-    // Individual Championship is the default selection
-
-    // Submit the form
-    await page.click('[data-testid="submit-tournament-button"]');
+    // Step 3: Skip description
+    await page.click('button:has-text("Skip & Create")');
 
     // Verify we're on the tour page
     await expect(page).toHaveURL(/\/tour\//);
@@ -42,9 +43,16 @@ test.describe('Tour Creation', () => {
     await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
-    await page.fill('[data-testid="tournament-name-input"]', 'Team Championship');
+    // Step 1: Select team format
     await page.click('[data-testid="format-team"]');
-    await page.click('[data-testid="submit-tournament-button"]');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 2: Fill in tournament name
+    await page.fill('[data-testid="tournament-name-input"]', 'Team Championship');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 3: Skip description
+    await page.click('button:has-text("Skip & Create")');
 
     // Wait for navigation to tour page
     await page.waitForURL(/\/tour\//);
@@ -75,8 +83,15 @@ test.describe('Tour Creation', () => {
     await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
+    // Step 1: Select format (individual is default)
+    await page.click('button:has-text("Next Step")');
+
+    // Step 2: Fill in tournament name
     await page.fill('[data-testid="tournament-name-input"]', 'Player Test Tour');
-    await page.click('[data-testid="submit-tournament-button"]');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 3: Skip description
+    await page.click('button:has-text("Skip & Create")');
 
     await page.waitForURL(/\/tour\//);
 
@@ -108,8 +123,15 @@ test.describe('Tour Creation', () => {
     await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
+    // Step 1: Select format (individual is default)
+    await page.click('button:has-text("Next Step")');
+
+    // Step 2: Fill in tournament name
     await page.fill('[data-testid="tournament-name-input"]', 'Round Test Tour');
-    await page.click('[data-testid="submit-tournament-button"]');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 3: Skip description
+    await page.click('button:has-text("Skip & Create")');
 
     await page.waitForURL(/\/tour\//);
 
@@ -138,8 +160,15 @@ test.describe('Tour Creation', () => {
     await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
+    // Step 1: Select format (individual is default)
+    await page.click('button:has-text("Next Step")');
+
+    // Step 2: Fill in tournament name
     await page.fill('[data-testid="tournament-name-input"]', 'Tour to Delete');
-    await page.click('[data-testid="submit-tournament-button"]');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 3: Skip description
+    await page.click('button:has-text("Skip & Create")');
 
     await page.waitForURL(/\/tour\//);
 
@@ -175,8 +204,15 @@ test.describe('Tour Navigation', () => {
     await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
+    // Step 1: Select format (individual is default)
+    await page.click('button:has-text("Next Step")');
+
+    // Step 2: Fill in tournament name
     await page.fill('[data-testid="tournament-name-input"]', 'Navigation Test');
-    await page.click('[data-testid="submit-tournament-button"]');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 3: Skip description
+    await page.click('button:has-text("Skip & Create")');
 
     await page.waitForURL(/\/tour\//);
 
@@ -199,8 +235,15 @@ test.describe('Tour Navigation', () => {
     await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
+    // Step 1: Select format (individual is default)
+    await page.click('button:has-text("Next Step")');
+
+    // Step 2: Fill in tournament name
     await page.fill('[data-testid="tournament-name-input"]', 'Breadcrumb Test');
-    await page.click('[data-testid="submit-tournament-button"]');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 3: Skip description
+    await page.click('button:has-text("Skip & Create")');
 
     await page.waitForURL(/\/tour\//);
 
