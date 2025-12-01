@@ -139,7 +139,7 @@ export const CreateRoundPage = () => {
   const handleNext = () => {
     // Validate current step before proceeding
     if (currentStep === 0) {
-      if (!formData.name.trim() || !formData.courseName.trim() || formData.playerIds.length < 1) {
+      if (!formData.courseName.trim() || formData.playerIds.length < 1) {
         return;
       }
     }
@@ -164,7 +164,7 @@ export const CreateRoundPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.name.trim() || !formData.courseName.trim()) return;
+    if (!formData.courseName.trim()) return;
 
     // Validate player selection (1-4 players)
     if (formData.playerIds.length < 1 || formData.playerIds.length > 4) {
@@ -189,8 +189,12 @@ export const CreateRoundPage = () => {
           ? parseInt(formData.manualTotalPar)
           : undefined;
 
+      // Use default round name if not provided
+      const roundName = formData.name.trim() || `Round at ${formData.courseName}`;
+
       const newRound = await createRound.mutateAsync({
         ...formData,
+        name: roundName,
         totalPar,
       });
 
@@ -203,7 +207,7 @@ export const CreateRoundPage = () => {
   const isStepValid = () => {
     switch (currentStep) {
       case 0:
-        return formData.name.trim() !== "" && formData.courseName.trim() !== "" && formData.playerIds.length >= 1 && formData.playerIds.length <= 4;
+        return formData.courseName.trim() !== "" && formData.playerIds.length >= 1 && formData.playerIds.length <= 4;
       case 1:
         return validateHandicaps().length === 0;
       case 2:
@@ -383,20 +387,6 @@ export const CreateRoundPage = () => {
                 </div>
 
                 <div className="form-group md:col-span-2">
-                  <label className="form-label">Round Name *</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    className="input-field"
-                    placeholder="Saturday Championship Round"
-                    required
-                  />
-                </div>
-
-                <div className="form-group md:col-span-2">
                   <label className="form-label">Course Name *</label>
                   <input
                     type="text"
@@ -408,6 +398,22 @@ export const CreateRoundPage = () => {
                     placeholder="Pine Valley Golf Club"
                     required
                   />
+                </div>
+
+                <div className="form-group md:col-span-2">
+                  <label className="form-label">Round Name (Optional)</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    className="input-field"
+                    placeholder={formData.courseName ? `Round at ${formData.courseName}` : "Saturday Championship Round"}
+                  />
+                  <p className="form-help">
+                    Leave blank to use "Round at {formData.courseName || 'Course Name'}"
+                  </p>
                 </div>
 
                 <div className="form-group md:col-span-2">
@@ -898,7 +904,9 @@ export const CreateRoundPage = () => {
                   <div className="bg-slate-50 rounded-lg p-4 space-y-2">
                     <div className="flex justify-between">
                       <span className="text-slate-600">Round Name:</span>
-                      <span className="font-medium">{formData.name}</span>
+                      <span className="font-medium">
+                        {formData.name.trim() || `Round at ${formData.courseName}`}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-600">Course:</span>
