@@ -3,15 +3,61 @@ import { useNavigate } from "react-router-dom";
 import { useCreateTour } from "../hooks/useTours";
 import { TourFormat } from "../types";
 
+interface WizardStep {
+  id: number;
+  title: string;
+  description: string;
+}
+
+const WIZARD_STEPS: WizardStep[] = [
+  {
+    id: 1,
+    title: "Competition Format",
+    description: "Choose your tournament style",
+  },
+  {
+    id: 2,
+    title: "Tournament Name",
+    description: "Give your tournament a name",
+  },
+  {
+    id: 3,
+    title: "Description",
+    description: "Add details (optional)",
+  },
+];
+
 export const CreateTourPage = () => {
   const navigate = useNavigate();
   const createTour = useCreateTour();
 
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     format: "individual" as TourFormat,
   });
+
+  const handleNext = () => {
+    if (currentStep < WIZARD_STEPS.length) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleSkipDescription = async () => {
+    try {
+      const tour = await createTour.mutateAsync(formData);
+      navigate(`/tour/${tour.id}`);
+    } catch (error) {
+      console.error("Failed to create tournament:", error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,6 +67,19 @@ export const CreateTourPage = () => {
       navigate(`/tour/${tour.id}`);
     } catch (error) {
       console.error("Failed to create tournament:", error);
+    }
+  };
+
+  const isStepValid = () => {
+    switch (currentStep) {
+      case 1:
+        return true; // Format is always selected
+      case 2:
+        return formData.name.trim().length > 0;
+      case 3:
+        return true; // Description is optional
+      default:
+        return false;
     }
   };
 
@@ -94,6 +153,7 @@ export const CreateTourPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* Header */}
       <div className="golf-hero-bg safe-area-top">
         <div className="flex items-center p-6">
           <button onClick={() => navigate(-1)} className="nav-back mr-4">
@@ -114,65 +174,83 @@ export const CreateTourPage = () => {
           <div>
             <h1 className="text-2xl font-bold text-white">Create Tournament</h1>
             <p className="text-emerald-100 mt-1">
-              Set up your professional golf event
+              Step {currentStep} of {WIZARD_STEPS.length}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="px-4 -mt-4 pb-8">
-        <div className="card-elevated max-w-2xl mx-auto">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div>
-              <h2 className="section-header card-spacing">
-                Tournament Details
-              </h2>
-
-              <div className="space-y-6">
-                <div className="form-group">
-                  <label className="form-label">Tournament Name *</label>
-                  <input
-                    type="text"
-                    name="tournamentName"
-                    data-testid="tournament-name-input"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    className="input-field text-lg"
-                    placeholder="e.g., Weekend Masters Championship"
-                    required
-                  />
-                  <p className="form-help">
-                    Choose a memorable name for your tournament
-                  </p>
+      {/* Progress Bar */}
+      <div className="bg-white border-b border-slate-200">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            {WIZARD_STEPS.map((step, index) => (
+              <div key={step.id} className="flex items-center flex-1">
+                <div className="flex flex-col items-center flex-1">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
+                      currentStep > step.id
+                        ? "bg-emerald-500 text-white"
+                        : currentStep === step.id
+                        ? "bg-emerald-500 text-white ring-4 ring-emerald-100"
+                        : "bg-slate-200 text-slate-500"
+                    }`}
+                  >
+                    {currentStep > step.id ? (
+                      <svg
+                        className="w-5 h-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ) : (
+                      step.id
+                    )}
+                  </div>
+                  <div className="text-center mt-2 hidden sm:block">
+                    <div
+                      className={`text-sm font-semibold ${
+                        currentStep >= step.id
+                          ? "text-slate-900"
+                          : "text-slate-500"
+                      }`}
+                    >
+                      {step.title}
+                    </div>
+                  </div>
                 </div>
-
-                {/* Tournament Description */}
-                <div className="form-group">
-                  <label className="form-label">Description</label>
-                  <textarea
-                    name="tournamentDescription"
-                    data-testid="tournament-description-input"
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    className="input-field h-32 resize-none"
-                    placeholder="Describe your tournament, rules, prizes, or special notes..."
+                {index < WIZARD_STEPS.length - 1 && (
+                  <div
+                    className={`h-1 flex-1 mx-2 rounded transition-all ${
+                      currentStep > step.id ? "bg-emerald-500" : "bg-slate-200"
+                    }`}
                   />
-                  <p className="form-help">
-                    Help players understand what to expect from your tournament
-                  </p>
-                </div>
+                )}
               </div>
-            </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-            {/* Tournament Format Section */}
-            <div>
-              <h2 className="section-header card-spacing">
-                Competition Format
-              </h2>
+      {/* Content */}
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="card-elevated">
+          {/* Step 1: Competition Format */}
+          {currentStep === 1 && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                  Choose Competition Format
+                </h2>
+                <p className="text-slate-600">
+                  Select the tournament style that best fits your event
+                </p>
+              </div>
 
               <div className="space-y-4">
                 {tournamentFormats.map((format) => (
@@ -324,28 +402,143 @@ export const CreateTourPage = () => {
                 </div>
               )}
             </div>
+          )}
 
-            {/* Submit Button */}
-            <div className="flex gap-4 pt-6 border-t border-slate-200">
+          {/* Step 2: Tournament Name */}
+          {currentStep === 2 && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                  Tournament Name
+                </h2>
+                <p className="text-slate-600">
+                  Give your tournament a memorable name
+                </p>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Tournament Name *</label>
+                <input
+                  type="text"
+                  name="tournamentName"
+                  data-testid="tournament-name-input"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="input-field text-lg"
+                  placeholder="e.g., Weekend Masters Championship"
+                  autoFocus
+                />
+                <p className="form-help">
+                  This will be the main identifier for your tournament
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Description (Optional) */}
+          {currentStep === 3 && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                  Tournament Description
+                  <span className="text-base font-normal text-slate-500 ml-2">
+                    (Optional)
+                  </span>
+                </h2>
+                <p className="text-slate-600">
+                  Add details about your tournament, or skip this step
+                </p>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea
+                  name="tournamentDescription"
+                  data-testid="tournament-description-input"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  className="input-field h-40 resize-none"
+                  placeholder="Describe your tournament, rules, prizes, or special notes..."
+                  autoFocus
+                />
+                <p className="form-help">
+                  You can add or edit this description at any time from the
+                  tournament settings
+                </p>
+              </div>
+
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <svg
+                    className="w-5 h-5 text-blue-600 mt-0.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <div className="text-sm text-blue-800">
+                    <strong>Not sure what to write?</strong> You can skip this
+                    step and add a description later. It's completely optional
+                    and can be changed at any time.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Buttons */}
+          <div className="flex gap-4 pt-6 mt-6 border-t border-slate-200">
+            <button
+              type="button"
+              onClick={handleBack}
+              disabled={currentStep === 1}
+              className="btn-secondary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Back
+            </button>
+            {currentStep === 3 ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleSkipDescription}
+                  disabled={createTour.isPending}
+                  className="btn-secondary flex-1 disabled:opacity-50"
+                >
+                  Skip & Create
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={createTour.isPending}
+                  className="btn-primary flex-1 disabled:opacity-50"
+                  data-testid="submit-tournament-button"
+                >
+                  {createTour.isPending
+                    ? "Creating..."
+                    : "Create Tournament"}
+                </button>
+              </>
+            ) : (
               <button
                 type="button"
-                onClick={() => navigate(-1)}
-                className="btn-secondary flex-1"
+                onClick={handleNext}
+                disabled={!isStepValid()}
+                className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Cancel
+                Next Step
               </button>
-              <button
-                type="submit"
-                disabled={createTour.isPending || !formData.name.trim()}
-                className="btn-primary flex-1 disabled:opacity-50"
-                data-testid="submit-tournament-button"
-              >
-                {createTour.isPending
-                  ? "Creating Tournament..."
-                  : "Create Tournament"}
-              </button>
-            </div>
-          </form>
+            )}
+          </div>
         </div>
       </div>
     </div>
