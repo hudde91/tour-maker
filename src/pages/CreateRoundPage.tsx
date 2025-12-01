@@ -41,7 +41,6 @@ export const CreateRoundPage = () => {
       skinsValue: 1,
       teamScoring: "best-ball" as const,
     } as RoundSettings,
-    startTime: "",
   });
 
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -260,108 +259,6 @@ export const CreateRoundPage = () => {
               <h2 className="section-header card-spacing">Round Information</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="form-group">
-                  <label className="form-label">Round Name *</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    className="input-field"
-                    placeholder="Saturday Championship Round"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Start Time</label>
-                  <input
-                    type="datetime-local"
-                    value={formData.startTime}
-                    onChange={(e) =>
-                      setFormData({ ...formData, startTime: e.target.value })
-                    }
-                    className="input-field"
-                  />
-                </div>
-
-                <div className="form-group md:col-span-2">
-                  <label className="form-label">Course Name *</label>
-                  <input
-                    type="text"
-                    value={formData.courseName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, courseName: e.target.value })
-                    }
-                    className="input-field"
-                    placeholder="Pine Valley Golf Club"
-                    required
-                  />
-                </div>
-
-                <div className="form-group md:col-span-2">
-                  <label className="form-label">
-                    Select Players (1-4 players) *
-                  </label>
-                  <p className="text-sm text-slate-600 mb-3">
-                    Each round can have a maximum of 4 players
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {tour?.players.map((player) => {
-                      const isSelected = formData.playerIds.includes(player.id);
-                      const canSelect = formData.playerIds.length < 4 || isSelected;
-
-                      return (
-                        <button
-                          key={player.id}
-                          type="button"
-                          onClick={() => {
-                            if (isSelected) {
-                              setFormData({
-                                ...formData,
-                                playerIds: formData.playerIds.filter(id => id !== player.id)
-                              });
-                            } else if (canSelect) {
-                              setFormData({
-                                ...formData,
-                                playerIds: [...formData.playerIds, player.id]
-                              });
-                            }
-                          }}
-                          disabled={!canSelect}
-                          className={`p-3 border-2 rounded-lg text-left transition-all ${
-                            isSelected
-                              ? 'border-emerald-500 bg-emerald-50 text-emerald-900'
-                              : canSelect
-                              ? 'border-slate-300 hover:border-slate-400 bg-white'
-                              : 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="font-medium">{player.name}</div>
-                              {player.handicap !== undefined && (
-                                <div className="text-sm text-slate-600">
-                                  Handicap: {player.handicap}
-                                </div>
-                              )}
-                            </div>
-                            {isSelected && (
-                              <svg className="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                              </svg>
-                            )}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <div className="mt-2 text-sm text-slate-600">
-                    Selected: {formData.playerIds.length} / 4 players
-                  </div>
-                </div>
-
                 <div className="form-group md:col-span-2">
                   <label className="form-label">Game Format *</label>
 
@@ -483,6 +380,96 @@ export const CreateRoundPage = () => {
                       </div>
                     </div>
                   )}
+                </div>
+
+                <div className="form-group md:col-span-2">
+                  <label className="form-label">Round Name *</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    className="input-field"
+                    placeholder="Saturday Championship Round"
+                    required
+                  />
+                </div>
+
+                <div className="form-group md:col-span-2">
+                  <label className="form-label">Course Name *</label>
+                  <input
+                    type="text"
+                    value={formData.courseName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, courseName: e.target.value })
+                    }
+                    className="input-field"
+                    placeholder="Pine Valley Golf Club"
+                    required
+                  />
+                </div>
+
+                <div className="form-group md:col-span-2">
+                  <label className="form-label">
+                    Select Players (1-4 players) *
+                  </label>
+                  <p className="text-sm text-slate-600 mb-3">
+                    Each round can have a maximum of 4 players
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {tour?.players.map((player) => {
+                      const isSelected = formData.playerIds.includes(player.id);
+                      const canSelect = formData.playerIds.length < 4 || isSelected;
+
+                      return (
+                        <button
+                          key={player.id}
+                          type="button"
+                          onClick={() => {
+                            if (isSelected) {
+                              setFormData({
+                                ...formData,
+                                playerIds: formData.playerIds.filter(id => id !== player.id)
+                              });
+                            } else if (canSelect) {
+                              setFormData({
+                                ...formData,
+                                playerIds: [...formData.playerIds, player.id]
+                              });
+                            }
+                          }}
+                          disabled={!canSelect}
+                          className={`p-3 border-2 rounded-lg text-left transition-all ${
+                            isSelected
+                              ? 'border-emerald-500 bg-emerald-50 text-emerald-900'
+                              : canSelect
+                              ? 'border-slate-300 hover:border-slate-400 bg-white'
+                              : 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="font-medium">{player.name}</div>
+                              {player.handicap !== undefined && (
+                                <div className="text-sm text-slate-600">
+                                  Handicap: {player.handicap}
+                                </div>
+                              )}
+                            </div>
+                            {isSelected && (
+                              <svg className="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-2 text-sm text-slate-600">
+                    Selected: {formData.playerIds.length} / 4 players
+                  </div>
                 </div>
               </div>
             </div>
@@ -923,14 +910,6 @@ export const CreateRoundPage = () => {
                         {formatInfo.icon} {formatInfo.name}
                       </span>
                     </div>
-                    {formData.startTime && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-600">Start Time:</span>
-                        <span className="font-medium">
-                          {new Date(formData.startTime).toLocaleString()}
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
 
