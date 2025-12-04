@@ -662,14 +662,27 @@ button {
   @apply touch-manipulation;
 }
 
-/* Improve tap targets on mobile (minimum 44x44px) */
+/* Improve tap targets on mobile (minimum 48x48px for comfortable tapping) */
 @media (max-width: 639px) {
   button,
   a.btn-primary,
   a.btn-secondary,
   [role="button"] {
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 48px;
+  }
+
+  /* Ensure interactive elements have enough padding for easy tapping */
+  button:not(.btn-icon):not(.btn-icon-primary) {
+    padding-top: 0.875rem; /* 14px */
+    padding-bottom: 0.875rem; /* 14px */
+  }
+
+  /* Larger touch targets for icon buttons */
+  .btn-icon,
+  .btn-icon-primary {
+    min-width: 48px;
+    min-height: 48px;
+    padding: 0.75rem;
   }
 }
 

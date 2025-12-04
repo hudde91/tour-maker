@@ -14,7 +14,7 @@ interface BreadcrumbProps {
 export const Breadcrumb = ({ items, className = "" }: BreadcrumbProps) => {
   return (
     <nav
-      className={`flex flex-wrap items-center gap-2 text-sm ${className}`}
+      className={`hidden md:flex flex-wrap items-center gap-2 text-sm ${className}`}
       aria-label="Breadcrumb"
     >
       {items.map((item, index) => {
