@@ -1,4 +1,5 @@
 import { Outlet, useParams } from "react-router-dom";
+import { Home, Users, ClipboardList, Trophy, Settings } from "lucide-react";
 import { BottomNav } from "../BottomNav";
 import { useTour } from "../../hooks/useTours";
 
@@ -13,32 +14,32 @@ export const TourLayout = () => {
     {
       id: "home",
       label: "Home",
-      icon: "🏠",
+      icon: <Home size={22} strokeWidth={2} />,
       path: "/",
     },
     {
       id: "players",
       label: "Players",
-      icon: "👥",
+      icon: <Users size={22} strokeWidth={2} />,
       path: `/tour/${tourId}`,
     },
     {
       id: "rounds",
       label: "Rounds",
-      icon: "📋",
+      icon: <ClipboardList size={22} strokeWidth={2} />,
       path: `/tour/${tourId}/rounds`,
       badge: activeRoundsCount, // Show badge if there are active rounds
     },
     {
       id: "leaderboard",
       label: "Leaderboard",
-      icon: "🏆",
+      icon: <Trophy size={22} strokeWidth={2} />,
       path: `/tour/${tourId}/leaderboard`,
     },
     {
       id: "settings",
       label: "Settings",
-      icon: "⚙️",
+      icon: <Settings size={22} strokeWidth={2} />,
       path: `/tour/${tourId}/settings`,
     },
   ];

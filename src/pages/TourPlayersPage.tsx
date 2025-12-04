@@ -10,6 +10,7 @@ import { useParams, Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getClaimedPlayer } from "@/lib/deviceIdentity";
+import { Users, XCircle, Home, Flag, Plus, Building2, AlertTriangle, Crown } from "lucide-react";
 
 export const TourPlayersPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -38,7 +39,7 @@ export const TourPlayersPage = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <span className="text-3xl">👥</span>
+            <Users className="w-8 h-8 text-emerald-600" />
           </div>
           <div className="text-lg font-semibold text-slate-700">
             Loading players...
@@ -54,7 +55,7 @@ export const TourPlayersPage = () => {
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">❌</span>
+              <XCircle className="w-10 h-10 text-red-600" />
             </div>
             <h3 className="text-xl font-semibold text-slate-700 mb-3">
               Tournament Not Found
@@ -72,9 +73,9 @@ export const TourPlayersPage = () => {
   const isRyderCup = tour.format === "ryder-cup";
 
   const breadcrumbs = [
-    { label: "Home", path: "/", icon: "🏠" },
-    { label: tour.name, path: `/tour/${tourId}`, icon: "⛳" },
-    { label: isTeamFormat ? "Teams & Players" : "Players", icon: "👥" },
+    { label: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
+    { label: tour.name, path: `/tour/${tourId}`, icon: <Flag className="w-4 h-4" /> },
+    { label: isTeamFormat ? "Teams & Players" : "Players", icon: <Users className="w-4 h-4" /> },
   ];
 
   const playerCount = tour.players.length;
@@ -99,7 +100,7 @@ export const TourPlayersPage = () => {
             className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm shadow-lg"
             data-testid="add-player-button"
           >
-            <span className="text-base">➕</span>
+            <Plus className="w-4 h-4" />
             <span>Add Player</span>
           </button>
         }
@@ -156,14 +157,14 @@ export const TourPlayersPage = () => {
                 onClick={() => setShowCreateTeam(true)}
                 className="btn-secondary text-sm"
               >
-                <span className="text-base mr-2">🏗️</span>
+                <Building2 className="w-4 h-4 mr-2" />
                 Create Team
               </button>
             </div>
 
             {!tour.teams || tour.teams.length === 0 ? (
               <EmptyState
-                icon="🏗️"
+                icon={<Building2 className="w-8 h-8 text-slate-400" />}
                 title="No Teams Created"
                 description="Create teams to organize your tournament competition"
                 action={{
@@ -182,7 +183,7 @@ export const TourPlayersPage = () => {
                 {tour.players.filter((p) => !p.teamId).length > 0 && (
                   <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <span className="text-2xl">⚠️</span>
+                      <AlertTriangle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
                       <div>
                         <h4 className="font-semibold text-amber-900 mb-1">
                           {tour.players.filter((p) => !p.teamId).length}{" "}
@@ -235,7 +236,7 @@ export const TourPlayersPage = () => {
 
           {tour.players.length === 0 ? (
             <EmptyState
-              icon="👥"
+              icon={<Users className="w-8 h-8 text-slate-400" />}
               title="No Players Yet"
               description="Add players to get your tournament started"
               action={{
@@ -267,7 +268,7 @@ export const TourPlayersPage = () => {
                             <span className="font-semibold text-slate-900">
                               {player.name}
                             </span>
-                            {isCaptain && <span className="text-base">👑</span>}
+                            {isCaptain && <Crown className="w-4 h-4 text-amber-500" />}
                           </div>
                           {team && (
                             <div className="flex items-center gap-2 mt-0.5">

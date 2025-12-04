@@ -18,6 +18,7 @@ import { SwipeableIndividualScoring } from "../components/formats/individual/Swi
 import { SwipeableTeamScoring } from "../components/formats/SwipeableTeamScoring";
 import { SwipeableMatchPlayScoring } from "../components/matchplay/common/SwipeableMatchPlayScoring";
 import { BottomNav } from "../components/BottomNav";
+import { Home, Users, ClipboardList, Trophy } from "lucide-react";
 
 export const RoundPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
@@ -48,25 +49,25 @@ export const RoundPage = () => {
       {
         id: "home",
         label: "Home",
-        icon: "🏠",
+        icon: <Home className="w-5 h-5" />,
         path: "/",
       },
       {
         id: "players",
         label: "Players",
-        icon: "👥",
+        icon: <Users className="w-5 h-5" />,
         path: `/tour/${tourId}`,
       },
       {
         id: "rounds",
         label: "Rounds",
-        icon: "📋",
+        icon: <ClipboardList className="w-5 h-5" />,
         path: `/tour/${tourId}/rounds`,
       },
       {
         id: "leaderboard",
         label: "Leaderboard",
-        icon: "🏆",
+        icon: <Trophy className="w-5 h-5" />,
         path: `/tour/${tourId}/leaderboard`,
       },
     ],

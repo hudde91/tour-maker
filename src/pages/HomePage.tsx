@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
+import { Home, PlusCircle, Settings, User, Users, Trophy, Flag, ClipboardList, Tag, Calendar, Dice5 } from "lucide-react";
 import { useTours } from "../hooks/useTours";
 import { useState, useEffect } from "react";
 import { HowItWorksModal } from "@/components/ui/Howitworksmodal";
 import { BottomNav } from "../components/BottomNav";
 import { CreateMockDataDialog } from "@/components/mock/CreateMockDataDialog";
+import { Logo } from "@/components/ui/Logo";
 
 export const HomePage = () => {
   const { data: tours = [], isLoading } = useTours();
@@ -22,19 +24,19 @@ export const HomePage = () => {
     {
       id: "home",
       label: "Home",
-      icon: "🏠",
+      icon: <Home size={22} strokeWidth={2} />,
       path: "/",
     },
     {
       id: "create",
       label: "Create",
-      icon: "➕",
+      icon: <PlusCircle size={22} strokeWidth={2} />,
       path: "/create",
     },
     {
       id: "settings",
       label: "Settings",
-      icon: "⚙️",
+      icon: <Settings size={22} strokeWidth={2} />,
       path: "/settings",
     },
   ];
@@ -59,13 +61,13 @@ export const HomePage = () => {
   const getFormatIcon = (format: string) => {
     switch (format) {
       case "individual":
-        return "👤";
+        return <User size={20} strokeWidth={2.5} />;
       case "team":
-        return "👥";
+        return <Users size={20} strokeWidth={2.5} />;
       case "ryder-cup":
-        return "🏆";
+        return <Trophy size={20} strokeWidth={2.5} />;
       default:
-        return "⛳";
+        return <Flag size={20} strokeWidth={2.5} />;
     }
   };
 
@@ -110,10 +112,8 @@ export const HomePage = () => {
 
       <div className="golf-hero-bg safe-area-top w-full">
         <div className="p-6 pb-12 w-full max-w-6xl mx-auto">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 tracking-tight">
-              Tour Maker
-            </h1>
+          <div className="flex flex-col items-center text-center">
+            <Logo size="xl" variant="white" className="mb-4" />
             <p className="text-emerald-100 text-lg md:text-xl font-medium">
               Professional Golf Tournament Management
             </p>
@@ -125,7 +125,7 @@ export const HomePage = () => {
         <div className="card-elevated section-spacing w-full max-w-2xl mx-auto">
           <div className="text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto card-spacing shadow-xl">
-              <span className="text-3xl">⛳</span>
+              <Flag className="text-white" size={32} strokeWidth={2.5} />
             </div>
             <h2 className="text-2xl font-bold text-slate-800 mb-3">
               Create New Tournament
@@ -145,10 +145,11 @@ export const HomePage = () => {
               {showMockDataFeatures && (
                 <button
                   onClick={() => setShowMockDataDialog(true)}
-                  className="btn-secondary text-lg py-4 px-8 w-full sm:w-auto border-2 border-purple-300 text-purple-700 hover:bg-purple-50"
+                  className="btn-secondary text-lg py-4 px-8 w-full sm:w-auto border-2 border-purple-300 text-purple-700 hover:bg-purple-50 flex items-center justify-center gap-2"
                   data-testid="mock-data-button"
                 >
-                  🎲 Generate Mock Data
+                  <Dice5 size={20} />
+                  Generate Mock Data
                 </button>
               )}
               <button
@@ -194,7 +195,7 @@ export const HomePage = () => {
             <div className="card-elevated w-full max-w-2xl mx-auto">
               <div className="text-center py-16">
                 <div className="w-24 h-24 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto card-spacing">
-                  <span className="text-4xl">📋</span>
+                  <ClipboardList className="text-slate-400" size={48} strokeWidth={1.5} />
                 </div>
                 <h3 className="text-2xl font-bold text-slate-700 mb-4">
                   No Tournaments Yet
@@ -248,29 +249,29 @@ export const HomePage = () => {
 
                             {/* Tournament Stats */}
                             <div className="grid grid-cols-2 md:flex md:items-center gap-3 md:gap-6 text-xs md:text-sm text-slate-500">
-                              <div className="flex items-center gap-1">
-                                <span className="text-sm">👥</span>
+                              <div className="flex items-center gap-1.5">
+                                <Users size={16} strokeWidth={2} className="text-slate-400" />
                                 <span className="font-medium">
                                   {tour.players.length} Players
                                 </span>
                               </div>
 
-                              <div className="flex items-center gap-1">
-                                <span className="text-sm">📋</span>
+                              <div className="flex items-center gap-1.5">
+                                <ClipboardList size={16} strokeWidth={2} className="text-slate-400" />
                                 <span className="font-medium">
                                   {tour.rounds.length} Rounds
                                 </span>
                               </div>
 
-                              <div className="flex items-center gap-1">
-                                <span className="text-sm">🏷️</span>
+                              <div className="flex items-center gap-1.5">
+                                <Tag size={16} strokeWidth={2} className="text-slate-400" />
                                 <span className="font-medium capitalize">
                                   {tour.format.replace("-", " ")}
                                 </span>
                               </div>
 
-                              <div className="flex items-center gap-1">
-                                <span className="text-sm">📅</span>
+                              <div className="flex items-center gap-1.5">
+                                <Calendar size={16} strokeWidth={2} className="text-slate-400" />
                                 <span className="font-medium">
                                   {new Date(
                                     tour.createdAt

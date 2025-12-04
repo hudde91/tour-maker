@@ -9,6 +9,7 @@ import {
   getMomentumColorClass,
   PlayerStats,
 } from "../lib/teamStats";
+import { Users, XCircle, Home, Flag, Trophy, User, Crown, Flag as GolfFlag, Swords, BarChart, Star, Medal, ClipboardList, Target } from "lucide-react";
 
 export const TeamDashboard = () => {
   const { tourId, teamId } = useParams<{ tourId: string; teamId: string }>();
@@ -21,7 +22,7 @@ export const TeamDashboard = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <span className="text-3xl">👥</span>
+            <Users className="w-8 h-8 text-emerald-600" />
           </div>
           <div className="text-lg font-semibold text-slate-700">
             Loading team...
@@ -37,7 +38,7 @@ export const TeamDashboard = () => {
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">❌</span>
+              <XCircle className="w-10 h-10 text-red-600" />
             </div>
             <h3 className="text-xl font-semibold text-slate-700 mb-3">
               Team Not Found
@@ -45,7 +46,7 @@ export const TeamDashboard = () => {
             <p className="text-slate-500 mb-6">
               The team you're looking for doesn't exist or has been removed.
             </p>
-            <button onClick={() => navigate(-1)} className="btn-primary">
+            <button onClick(() => navigate(-1)} className="btn-primary">
               Go Back
             </button>
           </div>
@@ -62,7 +63,7 @@ export const TeamDashboard = () => {
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">❌</span>
+              <XCircle className="w-10 h-10 text-red-600" />
             </div>
             <h3 className="text-xl font-semibold text-slate-700 mb-3">
               Team Not Found
@@ -86,10 +87,10 @@ export const TeamDashboard = () => {
     : null;
 
   const breadcrumbs = [
-    { label: "Home", path: "/", icon: "🏠" },
-    { label: tour.name, path: `/tour/${tourId}`, icon: "⛳" },
-    { label: "Teams", path: `/tour/${tourId}/players`, icon: "👥" },
-    { label: team.name, icon: "🏆" },
+    { label: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
+    { label: tour.name, path: `/tour/${tourId}`, icon: <Flag className="w-4 h-4" /> },
+    { label: "Teams", path: `/tour/${tourId}/players`, icon: <Users className="w-4 h-4" /> },
+    { label: team.name, icon: <Trophy className="w-4 h-4" /> },
   ];
 
   return (
@@ -116,7 +117,7 @@ export const TeamDashboard = () => {
             }
             className="input-field w-full md:w-auto min-w-[250px]"
           >
-            <option value="team">📊 Team Overview</option>
+            <option value="team">Team Overview</option>
             <optgroup label="Team Members">
               {team.playerIds.map((playerId) => {
                 const player = tour.players.find((p) => p.id === playerId);
@@ -124,7 +125,7 @@ export const TeamDashboard = () => {
                 const isCaptain = team.captainId === playerId;
                 return (
                   <option key={playerId} value={playerId}>
-                    {isCaptain ? "👑 " : "👤 "}
+                    {isCaptain ? "⭐ " : ""}
                     {player.name}
                   </option>
                 );
