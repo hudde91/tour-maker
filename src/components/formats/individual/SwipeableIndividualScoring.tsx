@@ -54,6 +54,7 @@ export const SwipeableIndividualScoring = ({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("score");
   const [showingCompetitionSelector, setShowingCompetitionSelector] =
     useState(false);
@@ -150,6 +151,7 @@ export const SwipeableIndividualScoring = ({
     if (isLeftSwipe) {
       // Trigger haptic feedback for swipe
       hapticLight();
+      setSwipeDirection('left');
       setIsTransitioning(true);
       setTimeout(() => {
         // If not the last player, move to next player
@@ -166,12 +168,14 @@ export const SwipeableIndividualScoring = ({
         }
         // On last player and last hole, do nothing (validation happens in useEffect)
         setIsTransitioning(false);
+        setSwipeDirection(null);
       }, 250);
     }
 
     if (isRightSwipe) {
       // Trigger haptic feedback for swipe
       hapticLight();
+      setSwipeDirection('right');
       setIsTransitioning(true);
       setTimeout(() => {
         // If not the first player, move to previous player
@@ -187,6 +191,7 @@ export const SwipeableIndividualScoring = ({
           hapticSelection();
         }
         setIsTransitioning(false);
+        setSwipeDirection(null);
       }, 250);
     }
   };
@@ -409,18 +414,23 @@ export const SwipeableIndividualScoring = ({
               </div>
             </div>
 
-            <PlayerScoreCard
-              player={currentPlayer}
-              holeInfo={currentHoleInfo}
-              playerScore={round.scores[currentPlayer.id]}
-              currentHole={currentHole}
-              onScoreChange={(score) =>
-                onPlayerScoreChange(currentPlayer.id, currentHole - 1, score)
-              }
-              strokesGiven={round.settings.strokesGiven}
-              round={round}
-              tour={tour}
-            />
+            <div
+              key={`${currentPlayer.id}-${currentHole}`}
+              className={`animate-slide-in-${swipeDirection === 'left' ? 'left' : swipeDirection === 'right' ? 'right' : 'fade'}`}
+            >
+              <PlayerScoreCard
+                player={currentPlayer}
+                holeInfo={currentHoleInfo}
+                playerScore={round.scores[currentPlayer.id]}
+                currentHole={currentHole}
+                onScoreChange={(score) =>
+                  onPlayerScoreChange(currentPlayer.id, currentHole - 1, score)
+                }
+                strokesGiven={round.settings.strokesGiven}
+                round={round}
+                tour={tour}
+              />
+            </div>
 
             {/* Competition Winners Button - Show if hole has competitions */}
             {(currentHoleInfo.closestToPin || currentHoleInfo.longestDrive) && (
