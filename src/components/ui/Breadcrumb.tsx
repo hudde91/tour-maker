@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 interface BreadcrumbItem {
   label: string;
   path?: string;
-  icon?: string;
+  icon?: React.ReactNode;
 }
 
 interface BreadcrumbProps {
@@ -43,14 +43,14 @@ export const Breadcrumb = ({ items, className = "" }: BreadcrumbProps) => {
                 to={item.path}
                 className="flex items-center gap-1.5 text-slate-600 hover:text-emerald-700 transition-colors font-medium"
               >
-                {item.icon && <span className="text-base">{item.icon}</span>}
+                {item.icon && <span className="flex items-center">{item.icon}</span>}
                 <span className="truncate max-w-[120px] sm:max-w-[200px] md:max-w-none">
                   {item.label}
                 </span>
               </Link>
             ) : (
               <span className="flex items-center gap-1.5 text-slate-900 font-semibold">
-                {item.icon && <span className="text-base">{item.icon}</span>}
+                {item.icon && <span className="flex items-center">{item.icon}</span>}
                 <span className="truncate max-w-[120px] sm:max-w-[200px] md:max-w-none">
                   {item.label}
                 </span>
