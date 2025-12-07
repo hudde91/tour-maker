@@ -10,7 +10,16 @@ import { useParams, Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getClaimedPlayer } from "@/lib/deviceIdentity";
-import { Users, XCircle, Home, Flag, Plus, Building2, AlertTriangle, Crown } from "lucide-react";
+import {
+  Users,
+  XCircle,
+  Home,
+  Flag,
+  Plus,
+  Building2,
+  AlertTriangle,
+  Crown,
+} from "lucide-react";
 
 export const TourPlayersPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -74,8 +83,15 @@ export const TourPlayersPage = () => {
 
   const breadcrumbs = [
     { label: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
-    { label: tour.name, path: `/tour/${tourId}`, icon: <Flag className="w-4 h-4" /> },
-    { label: isTeamFormat ? "Teams & Players" : "Players", icon: <Users className="w-4 h-4" /> },
+    {
+      label: tour.name,
+      path: `/tour/${tourId}`,
+      icon: <Flag className="w-4 h-4" />,
+    },
+    {
+      label: isTeamFormat ? "Teams & Players" : "Players",
+      icon: <Users className="w-4 h-4" />,
+    },
   ];
 
   const playerCount = tour.players.length;
@@ -117,18 +133,24 @@ export const TourPlayersPage = () => {
               {myClaimedPlayer ? (
                 <div className="space-y-2">
                   <p className="text-sm text-slate-600">
-                    You are playing as <span className="font-semibold text-slate-900">{myClaimedPlayer.name}</span>
+                    You are playing as{" "}
+                    <span className="font-semibold text-slate-900">
+                      {myClaimedPlayer.name}
+                    </span>
                   </p>
                   {myClaimedPlayer.playerCode && (
                     <div className="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-blue-200">
                       <span className="text-xs text-slate-600">Your code:</span>
-                      <span className="font-mono font-bold text-blue-900">{myClaimedPlayer.playerCode}</span>
+                      <span className="font-mono font-bold text-blue-900">
+                        {myClaimedPlayer.playerCode}
+                      </span>
                     </div>
                   )}
                 </div>
               ) : (
                 <p className="text-sm text-slate-600">
-                  Claim a player below to score your rounds, or enter your player code to claim on this device.
+                  Claim a player below to score your rounds, or enter your
+                  player code to claim on this device.
                 </p>
               )}
             </div>
@@ -268,7 +290,9 @@ export const TourPlayersPage = () => {
                             <span className="font-semibold text-slate-900">
                               {player.name}
                             </span>
-                            {isCaptain && <Crown className="w-4 h-4 text-amber-500" />}
+                            {isCaptain && (
+                              <Crown className="w-4 h-4 text-amber-500" />
+                            )}
                           </div>
                           {team && (
                             <div className="flex items-center gap-2 mt-0.5">

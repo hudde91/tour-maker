@@ -3,7 +3,7 @@ import { TournamentLeaderboard } from "@/components/tournament/TournamentLeaderb
 import { useTour } from "@/hooks/useTours";
 import { useParams, Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { Trophy, XCircle, Home, Flag, Users, ClipboardList, User } from "lucide-react";
+import { Trophy, XCircle, Users, ClipboardList, User } from "lucide-react";
 
 export const TourLeaderboardPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -57,9 +57,9 @@ export const TourLeaderboardPage = () => {
   const isRyderCup = tour.format === "ryder-cup";
 
   const breadcrumbs = [
-    { label: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
-    { label: tour.name, path: `/tour/${tourId}`, icon: <Flag className="w-4 h-4" /> },
-    { label: "Leaderboard", icon: <Trophy className="w-4 h-4" /> },
+    { label: "Home", path: "/", icon: "home" },
+    { label: tour.name, path: `/tour/${tourId}`, icon: "flag" },
+    { label: "Leaderboard", icon: "trophy" },
   ];
 
   return (

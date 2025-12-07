@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { Breadcrumb } from "./Breadcrumb";
+import { ReactNode } from "react";
 
 interface BreadcrumbItem {
   label: string;
   path?: string;
-  icon?: string;
+  icon?: ReactNode;
 }
 
 interface PageHeaderProps {

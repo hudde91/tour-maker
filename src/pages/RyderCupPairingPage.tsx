@@ -2,7 +2,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
 import { CaptainPairingInterface } from "../components/matchplay/rydercup/CaptainPairingInterface";
 import { PageHeader } from "../components/ui/PageHeader";
-import { Settings, XCircle, Home, Flag, ClipboardList, Flag as GolfFlag, Swords } from "lucide-react";
+import {
+  Settings,
+  XCircle,
+  Home,
+  Flag,
+  ClipboardList,
+  Flag as GolfFlag,
+  Swords,
+} from "lucide-react";
 
 export const RyderCupPairingPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
@@ -78,9 +86,21 @@ export const RyderCupPairingPage = () => {
 
   const breadcrumbs = [
     { label: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
-    { label: tour.name, path: `/tour/${tourId}`, icon: <Flag className="w-4 h-4" /> },
-    { label: "Rounds", path: `/tour/${tourId}/rounds`, icon: <ClipboardList className="w-4 h-4" /> },
-    { label: round.name, path: `/tour/${tourId}/round/${roundId}`, icon: <GolfFlag className="w-4 h-4" /> },
+    {
+      label: tour.name,
+      path: `/tour/${tourId}`,
+      icon: <Flag className="w-4 h-4" />,
+    },
+    {
+      label: "Rounds",
+      path: `/tour/${tourId}/rounds`,
+      icon: <ClipboardList className="w-4 h-4" />,
+    },
+    {
+      label: round.name,
+      path: `/tour/${tourId}/round/${roundId}`,
+      icon: <GolfFlag className="w-4 h-4" />,
+    },
     { label: "Setup Pairings", icon: <Swords className="w-4 h-4" /> },
   ];
 

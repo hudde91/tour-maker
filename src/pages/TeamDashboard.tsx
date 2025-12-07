@@ -9,7 +9,7 @@ import {
   getMomentumColorClass,
   PlayerStats,
 } from "../lib/teamStats";
-import { Users, XCircle, Home, Flag, Trophy, User, Crown, Flag as GolfFlag, Swords, BarChart, Star, Medal, ClipboardList, Target } from "lucide-react";
+import { Users, XCircle, Home, Flag, Trophy } from "lucide-react";
 
 export const TeamDashboard = () => {
   const { tourId, teamId } = useParams<{ tourId: string; teamId: string }>();
@@ -46,7 +46,7 @@ export const TeamDashboard = () => {
             <p className="text-slate-500 mb-6">
               The team you're looking for doesn't exist or has been removed.
             </p>
-            <button onClick(() => navigate(-1)} className="btn-primary">
+            <button onClick={() => navigate(-1)} className="btn-primary">
               Go Back
             </button>
           </div>
@@ -88,8 +88,16 @@ export const TeamDashboard = () => {
 
   const breadcrumbs = [
     { label: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
-    { label: tour.name, path: `/tour/${tourId}`, icon: <Flag className="w-4 h-4" /> },
-    { label: "Teams", path: `/tour/${tourId}/players`, icon: <Users className="w-4 h-4" /> },
+    {
+      label: tour.name,
+      path: `/tour/${tourId}`,
+      icon: <Flag className="w-4 h-4" />,
+    },
+    {
+      label: "Teams",
+      path: `/tour/${tourId}/players`,
+      icon: <Users className="w-4 h-4" />,
+    },
     { label: team.name, icon: <Trophy className="w-4 h-4" /> },
   ];
 

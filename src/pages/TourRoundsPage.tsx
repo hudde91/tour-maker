@@ -3,7 +3,14 @@ import { useTour } from "@/hooks/useTours";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { ClipboardList, XCircle, Home, Flag, Plus, Flag as GolfFlag } from "lucide-react";
+import {
+  ClipboardList,
+  XCircle,
+  Home,
+  Flag,
+  Plus,
+  Flag as GolfFlag,
+} from "lucide-react";
 
 export const TourRoundsPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -53,7 +60,11 @@ export const TourRoundsPage = () => {
 
   const breadcrumbs = [
     { label: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
-    { label: tour.name, path: `/tour/${tourId}`, icon: <Flag className="w-4 h-4" /> },
+    {
+      label: tour.name,
+      path: `/tour/${tourId}`,
+      icon: <Flag className="w-4 h-4" />,
+    },
     { label: "Rounds", icon: <ClipboardList className="w-4 h-4" /> },
   ];
 
