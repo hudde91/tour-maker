@@ -619,16 +619,13 @@ button:active {
   0% {
     transform: translateX(30px) scale(0.96);
     opacity: 0;
-    filter: blur(4px);
   }
   60% {
     opacity: 0.8;
-    filter: blur(2px);
   }
   100% {
     transform: translateX(0) scale(1);
     opacity: 1;
-    filter: blur(0);
   }
 }
 
@@ -636,16 +633,13 @@ button:active {
   0% {
     transform: translateX(-30px) scale(0.96);
     opacity: 0;
-    filter: blur(4px);
   }
   60% {
     opacity: 0.8;
-    filter: blur(2px);
   }
   100% {
     transform: translateX(0) scale(1);
     opacity: 1;
-    filter: blur(0);
   }
 }
 
@@ -653,16 +647,13 @@ button:active {
   0% {
     transform: scale(0.94);
     opacity: 0;
-    filter: blur(3px);
   }
   60% {
     opacity: 0.7;
-    filter: blur(1px);
   }
   100% {
     transform: scale(1);
     opacity: 1;
-    filter: blur(0);
   }
 }
 
