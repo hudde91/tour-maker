@@ -9,6 +9,7 @@ import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
 import { IndividualCompetitionWinnerSelector } from "./IndividualCompetitionWinnerSelector";
 import { canScoreForPlayer } from "@/lib/deviceIdentity";
+import { hapticLight, hapticSelection } from "@/lib/haptics";
 
 interface SwipeableIndividualScoringProps {
   tour: Tour;
@@ -53,6 +54,7 @@ export const SwipeableIndividualScoring = ({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("score");
   const [showingCompetitionSelector, setShowingCompetitionSelector] =
     useState(false);
@@ -147,38 +149,50 @@ export const SwipeableIndividualScoring = ({
     const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe) {
+      // Trigger haptic feedback for swipe
+      hapticLight();
+      setSwipeDirection('left');
       setIsTransitioning(true);
       setTimeout(() => {
         // If not the last player, move to next player
         if (currentPlayerIndex < scoreablePlayers.length - 1) {
           setCurrentPlayerIndex(currentPlayerIndex + 1);
+          hapticSelection();
         }
         // If last player and not last hole, move to next hole and reset to first player
         else if (currentHole < round.holes) {
           setCurrentHole(currentHole + 1);
           setCurrentPlayerIndex(0);
           setShowingCompetitionSelector(false);
+          hapticSelection();
         }
         // On last player and last hole, do nothing (validation happens in useEffect)
         setIsTransitioning(false);
-      }, 200);
+        setSwipeDirection(null);
+      }, 250);
     }
 
     if (isRightSwipe) {
+      // Trigger haptic feedback for swipe
+      hapticLight();
+      setSwipeDirection('right');
       setIsTransitioning(true);
       setTimeout(() => {
         // If not the first player, move to previous player
         if (currentPlayerIndex > 0) {
           setCurrentPlayerIndex(currentPlayerIndex - 1);
+          hapticSelection();
         }
         // If first player and not first hole, move to previous hole and go to last player
         else if (currentHole > 1) {
           setCurrentHole(currentHole - 1);
           setCurrentPlayerIndex(scoreablePlayers.length - 1);
           setShowingCompetitionSelector(false);
+          hapticSelection();
         }
         setIsTransitioning(false);
-      }, 200);
+        setSwipeDirection(null);
+      }, 250);
     }
   };
 
@@ -296,9 +310,14 @@ export const SwipeableIndividualScoring = ({
             style={{ touchAction: "pan-y" }}
           >
             <div
-              className={`card relative transition-opacity duration-200 ${
-                isTransitioning ? "opacity-50" : "opacity-100"
+              className={`card relative transition-all duration-300 ease-out ${
+                isTransitioning ? "opacity-70 scale-95" : "opacity-100 scale-100"
               }`}
+              style={{
+                transform: isTransitioning
+                  ? 'translateX(0) scale(0.95)'
+                  : 'translateX(0) scale(1)',
+              }}
             >
               {/* Swipe indicators - Left arrow */}
               {currentPlayerIndex > 0 || currentHole > 1 ? (
@@ -395,18 +414,23 @@ export const SwipeableIndividualScoring = ({
               </div>
             </div>
 
-            <PlayerScoreCard
-              player={currentPlayer}
-              holeInfo={currentHoleInfo}
-              playerScore={round.scores[currentPlayer.id]}
-              currentHole={currentHole}
-              onScoreChange={(score) =>
-                onPlayerScoreChange(currentPlayer.id, currentHole - 1, score)
-              }
-              strokesGiven={round.settings.strokesGiven}
-              round={round}
-              tour={tour}
-            />
+            <div
+              key={`${currentPlayer.id}-${currentHole}`}
+              className={`animate-slide-in-${swipeDirection === 'left' ? 'left' : swipeDirection === 'right' ? 'right' : 'fade'}`}
+            >
+              <PlayerScoreCard
+                player={currentPlayer}
+                holeInfo={currentHoleInfo}
+                playerScore={round.scores[currentPlayer.id]}
+                currentHole={currentHole}
+                onScoreChange={(score) =>
+                  onPlayerScoreChange(currentPlayer.id, currentHole - 1, score)
+                }
+                strokesGiven={round.settings.strokesGiven}
+                round={round}
+                tour={tour}
+              />
+            </div>
 
             {/* Competition Winners Button - Show if hole has competitions */}
             {(currentHoleInfo.closestToPin || currentHoleInfo.longestDrive) && (
@@ -676,6 +700,7 @@ const PlayerScoreCard = ({
   const scoreInfo = getScoreInfo(localScore, effectivePar, isMatchPlay);
 
   const handleScoreSelect = (score: number) => {
+    hapticSelection();
     setLocalScore(score);
     onScoreChange(score);
   };

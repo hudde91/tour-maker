@@ -2,6 +2,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
 import { CaptainPairingInterface } from "../components/matchplay/rydercup/CaptainPairingInterface";
 import { PageHeader } from "../components/ui/PageHeader";
+import {
+  Settings,
+  XCircle,
+  Home,
+  Flag,
+  ClipboardList,
+  Flag as GolfFlag,
+  Swords,
+} from "lucide-react";
 
 export const RyderCupPairingPage = () => {
   const { tourId, roundId } = useParams<{ tourId: string; roundId: string }>();
@@ -13,7 +22,7 @@ export const RyderCupPairingPage = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <span className="text-3xl">⚙️</span>
+            <Settings className="w-8 h-8 text-emerald-600" />
           </div>
           <div className="text-lg font-semibold text-slate-700">
             Loading pairing interface...
@@ -29,7 +38,7 @@ export const RyderCupPairingPage = () => {
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">❌</span>
+              <XCircle className="w-10 h-10 text-red-600" />
             </div>
             <h3 className="text-xl font-semibold text-slate-700 mb-3">
               Tournament Not Found
@@ -55,7 +64,7 @@ export const RyderCupPairingPage = () => {
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">❌</span>
+              <XCircle className="w-10 h-10 text-red-600" />
             </div>
             <h3 className="text-xl font-semibold text-slate-700 mb-3">
               Round Not Found
@@ -76,11 +85,23 @@ export const RyderCupPairingPage = () => {
   }
 
   const breadcrumbs = [
-    { label: "Home", path: "/", icon: "🏠" },
-    { label: tour.name, path: `/tour/${tourId}`, icon: "⛳" },
-    { label: "Rounds", path: `/tour/${tourId}/rounds`, icon: "📋" },
-    { label: round.name, path: `/tour/${tourId}/round/${roundId}`, icon: "🏌️" },
-    { label: "Setup Pairings", icon: "⚔️" },
+    { label: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
+    {
+      label: tour.name,
+      path: `/tour/${tourId}`,
+      icon: <Flag className="w-4 h-4" />,
+    },
+    {
+      label: "Rounds",
+      path: `/tour/${tourId}/rounds`,
+      icon: <ClipboardList className="w-4 h-4" />,
+    },
+    {
+      label: round.name,
+      path: `/tour/${tourId}/round/${roundId}`,
+      icon: <GolfFlag className="w-4 h-4" />,
+    },
+    { label: "Setup Pairings", icon: <Swords className="w-4 h-4" /> },
   ];
 
   return (

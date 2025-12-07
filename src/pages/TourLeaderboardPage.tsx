@@ -3,6 +3,7 @@ import { TournamentLeaderboard } from "@/components/tournament/TournamentLeaderb
 import { useTour } from "@/hooks/useTours";
 import { useParams, Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { Trophy, XCircle, Users, ClipboardList, User } from "lucide-react";
 
 export const TourLeaderboardPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -13,7 +14,7 @@ export const TourLeaderboardPage = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <span className="text-3xl">🏆</span>
+            <Trophy className="w-8 h-8 text-emerald-600" />
           </div>
           <div className="text-lg font-semibold text-slate-700">
             Loading tournament...
@@ -29,7 +30,7 @@ export const TourLeaderboardPage = () => {
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">❌</span>
+              <XCircle className="w-10 h-10 text-red-600" />
             </div>
             <h3 className="text-xl font-semibold text-slate-700 mb-3">
               Tournament Not Found
@@ -56,9 +57,9 @@ export const TourLeaderboardPage = () => {
   const isRyderCup = tour.format === "ryder-cup";
 
   const breadcrumbs = [
-    { label: "Home", path: "/", icon: "🏠" },
-    { label: tour.name, path: `/tour/${tourId}`, icon: "⛳" },
-    { label: "Leaderboard", icon: "🏆" },
+    { label: "Home", path: "/", icon: "home" },
+    { label: tour.name, path: `/tour/${tourId}`, icon: "flag" },
+    { label: "Leaderboard", icon: "trophy" },
   ];
 
   return (
@@ -76,7 +77,7 @@ export const TourLeaderboardPage = () => {
         <div className="card-elevated card-spacing mt-1">
           <div className="grid grid-cols-3 gap-3 md:gap-4">
             <div className="bg-slate-50 rounded-lg p-3 md:p-4 text-center">
-              <div className="text-xl md:text-2xl mb-1">👥</div>
+              <Users className="w-6 h-6 mx-auto mb-1 text-slate-600" />
               <div className="text-xl md:text-2xl font-bold text-slate-900">
                 {tour.players.length}
               </div>
@@ -84,7 +85,7 @@ export const TourLeaderboardPage = () => {
             </div>
 
             <div className="bg-slate-50 rounded-lg p-3 md:p-4 text-center">
-              <div className="text-xl md:text-2xl mb-1">📋</div>
+              <ClipboardList className="w-6 h-6 mx-auto mb-1 text-slate-600" />
               <div className="text-xl md:text-2xl font-bold text-slate-900">
                 {tour.rounds.length}
               </div>
@@ -92,13 +93,13 @@ export const TourLeaderboardPage = () => {
             </div>
 
             <div className="bg-slate-50 rounded-lg p-3 md:p-4 text-center">
-              <div className="text-xl md:text-2xl mb-1">
-                {tour.format === "individual"
-                  ? "👤"
-                  : tour.format === "team"
-                  ? "👥"
-                  : "🏆"}
-              </div>
+              {tour.format === "individual" ? (
+                <User className="w-6 h-6 mx-auto mb-1 text-slate-600" />
+              ) : tour.format === "team" ? (
+                <Users className="w-6 h-6 mx-auto mb-1 text-slate-600" />
+              ) : (
+                <Trophy className="w-6 h-6 mx-auto mb-1 text-slate-600" />
+              )}
               <div className="text-base md:text-lg font-bold text-slate-900 capitalize">
                 {tour.format.replace("-", " ")}
               </div>
@@ -110,7 +111,7 @@ export const TourLeaderboardPage = () => {
         {!hasCompletedRounds ? (
           <div className="card text-center py-12">
             <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">🏆</span>
+              <Trophy className="w-10 h-10 text-slate-400" />
             </div>
             <h3 className="text-xl font-semibold text-slate-700 mb-3">
               No Scores Yet

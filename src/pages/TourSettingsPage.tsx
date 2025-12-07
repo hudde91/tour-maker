@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { TourFormat } from "@/types";
+import { Settings, XCircle, Home, Flag, Edit, Circle, Archive, FolderOpen, User, Users, Trophy, Check, Link as LinkIcon, BarChart, Trash2, RotateCw, AlertTriangle } from "lucide-react";
 
 export const TourSettingsPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -135,7 +136,7 @@ export const TourSettingsPage = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <span className="text-3xl">⚙️</span>
+            <Settings className="w-8 h-8 text-emerald-600" />
           </div>
           <div className="text-lg font-semibold text-slate-700">
             Loading settings...
@@ -151,7 +152,7 @@ export const TourSettingsPage = () => {
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">❌</span>
+              <XCircle className="w-10 h-10 text-red-600" />
             </div>
             <h3 className="text-xl font-semibold text-slate-700 mb-3">
               Tournament Not Found
@@ -166,9 +167,9 @@ export const TourSettingsPage = () => {
   }
 
   const breadcrumbs = [
-    { label: "Home", path: "/", icon: "🏠" },
-    { label: tour.name, path: `/tour/${tourId}`, icon: "⛳" },
-    { label: "Settings", icon: "⚙️" },
+    { label: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
+    { label: tour.name, path: `/tour/${tourId}`, icon: <Flag className="w-4 h-4" /> },
+    { label: "Settings", icon: <Settings className="w-4 h-4" /> },
   ];
 
   return (
@@ -189,7 +190,7 @@ export const TourSettingsPage = () => {
                 onClick={startEditingDetails}
                 className="text-emerald-600 hover:text-emerald-700 font-semibold text-sm flex items-center gap-1"
               >
-                <span>✏️</span>
+                <Edit className="w-4 h-4" />
                 Edit
               </button>
             )}
@@ -275,15 +276,17 @@ export const TourSettingsPage = () => {
                 </label>
                 <div className="flex items-center gap-2">
                   <span
-                    className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold ${
                       tour.isActive ? "status-active" : "status-completed"
                     }`}
                   >
-                    {tour.isActive ? "🟢 Active" : "🔵 Completed"}
+                    <Circle className={`w-3 h-3 fill-current ${tour.isActive ? "text-green-500" : "text-blue-500"}`} />
+                    {tour.isActive ? "Active" : "Completed"}
                   </span>
                   {tour.archived && (
-                    <span className="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-slate-200 text-slate-700">
-                      📦 Archived
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold bg-slate-200 text-slate-700">
+                      <Archive className="w-3 h-3" />
+                      Archived
                     </span>
                   )}
                 </div>
@@ -333,13 +336,13 @@ export const TourSettingsPage = () => {
                       tour.format === format ? "bg-emerald-200" : "bg-slate-200"
                     }`}
                   >
-                    <span className="text-xl">
-                      {format === "individual"
-                        ? "👤"
-                        : format === "team"
-                        ? "👥"
-                        : "🏆"}
-                    </span>
+                    {format === "individual" ? (
+                      <User className="w-5 h-5 text-slate-600" />
+                    ) : format === "team" ? (
+                      <Users className="w-5 h-5 text-slate-600" />
+                    ) : (
+                      <Trophy className="w-5 h-5 text-slate-600" />
+                    )}
                   </div>
                   <div>
                     <div className="font-semibold text-slate-900 capitalize">
@@ -355,7 +358,7 @@ export const TourSettingsPage = () => {
                   </div>
                 </div>
                 {tour.format === format && (
-                  <span className="text-emerald-600 font-semibold">✓</span>
+                  <Check className="w-5 h-5 text-emerald-600" strokeWidth={3} />
                 )}
               </button>
             ))}
@@ -372,7 +375,7 @@ export const TourSettingsPage = () => {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-                  <span className="text-xl">🔗</span>
+                  <LinkIcon className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div>
                   <div className="font-semibold text-slate-900">
@@ -405,7 +408,11 @@ export const TourSettingsPage = () => {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
-                  <span className="text-xl">{tour.archived ? "📂" : "📦"}</span>
+                  {tour.archived ? (
+                    <FolderOpen className="w-5 h-5 text-amber-600" />
+                  ) : (
+                    <Archive className="w-5 h-5 text-amber-600" />
+                  )}
                 </div>
                 <div>
                   <div className="font-semibold text-slate-900">
@@ -441,7 +448,7 @@ export const TourSettingsPage = () => {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-xl">📊</span>
+                  <BarChart className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
                   <div className="font-semibold text-slate-900">
@@ -473,7 +480,7 @@ export const TourSettingsPage = () => {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                  <span className="text-xl">⚙️</span>
+                  <Settings className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
                   <div className="font-semibold text-slate-900">
@@ -503,7 +510,7 @@ export const TourSettingsPage = () => {
 
         <div className="card border-red-200">
           <h2 className="section-header text-red-700 mb-4 flex items-center gap-2">
-            <span>⚠️</span>
+            <AlertTriangle className="w-5 h-5" />
             Danger Zone
           </h2>
 
@@ -515,7 +522,7 @@ export const TourSettingsPage = () => {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-red-200 rounded-full flex items-center justify-center">
-                  <span className="text-xl">🗑️</span>
+                  <Trash2 className="w-5 h-5 text-red-700" />
                 </div>
                 <div>
                   <div className="font-semibold text-red-900">

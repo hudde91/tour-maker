@@ -7,6 +7,7 @@ import {
 } from "@/hooks/useAppSettings";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Home, Settings, Sun, Moon, RotateCw, Undo2, Check } from "lucide-react";
 import {
   AppSettings,
   ThemeMode,
@@ -78,7 +79,7 @@ export const AppSettingsPage = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <span className="text-3xl">⚙️</span>
+            <Settings className="text-emerald-600" size={32} strokeWidth={2} />
           </div>
           <div className="text-lg font-semibold text-slate-700">
             Loading settings...
@@ -89,8 +90,8 @@ export const AppSettingsPage = () => {
   }
 
   const breadcrumbs = [
-    { label: "Home", path: "/", icon: "🏠" },
-    { label: "App Settings", icon: "⚙️" },
+    { label: "Home", path: "/", icon: <Home size={16} strokeWidth={2} /> },
+    { label: "App Settings", icon: <Settings size={16} strokeWidth={2} /> },
   ];
 
   return (
@@ -130,13 +131,13 @@ export const AppSettingsPage = () => {
                           : "bg-slate-200"
                       }`}
                     >
-                      <span className="text-xl">
-                        {theme === "light"
-                          ? "☀️"
-                          : theme === "dark"
-                          ? "🌙"
-                          : "🔄"}
-                      </span>
+                      {theme === "light" ? (
+                        <Sun size={20} strokeWidth={2} className={localSettings.theme === theme ? "text-emerald-700" : "text-slate-600"} />
+                      ) : theme === "dark" ? (
+                        <Moon size={20} strokeWidth={2} className={localSettings.theme === theme ? "text-emerald-700" : "text-slate-600"} />
+                      ) : (
+                        <RotateCw size={20} strokeWidth={2} className={localSettings.theme === theme ? "text-emerald-700" : "text-slate-600"} />
+                      )}
                     </div>
                     <div>
                       <div className="font-semibold text-slate-900 capitalize">
@@ -152,7 +153,7 @@ export const AppSettingsPage = () => {
                     </div>
                   </div>
                   {localSettings.theme === theme && (
-                    <span className="text-emerald-600 font-semibold">✓</span>
+                    <Check size={20} strokeWidth={3} className="text-emerald-600" />
                   )}
                 </button>
               ))}
@@ -237,9 +238,7 @@ export const AppSettingsPage = () => {
                         </div>
                       </div>
                       {localSettings.preferredScoringDisplay === display && (
-                        <span className="text-emerald-600 font-semibold">
-                          ✓
-                        </span>
+                        <Check size={20} strokeWidth={3} className="text-emerald-600" />
                       )}
                     </button>
                   )
@@ -268,7 +267,7 @@ export const AppSettingsPage = () => {
                       </div>
                     </div>
                     {localSettings.measurementUnit === unit && (
-                      <span className="text-emerald-600 font-semibold">✓</span>
+                      <Check size={20} strokeWidth={3} className="text-emerald-600" />
                     )}
                   </button>
                 ))}
@@ -312,7 +311,7 @@ export const AppSettingsPage = () => {
                       </div>
                     </div>
                     {localSettings.dateFormat === format && (
-                      <span className="text-emerald-600 font-semibold">✓</span>
+                      <Check size={20} strokeWidth={3} className="text-emerald-600" />
                     )}
                   </button>
                 ))}
@@ -343,7 +342,7 @@ export const AppSettingsPage = () => {
                       </div>
                     </div>
                     {localSettings.timeFormat === format && (
-                      <span className="text-emerald-600 font-semibold">✓</span>
+                      <Check size={20} strokeWidth={3} className="text-emerald-600" />
                     )}
                   </button>
                 ))}
@@ -379,7 +378,7 @@ export const AppSettingsPage = () => {
         {/* Reset Settings */}
         <div className="card border-amber-200">
           <h2 className="section-header text-amber-700 mb-4 flex items-center gap-2">
-            <span>🔄</span>
+            <RotateCw size={20} strokeWidth={2} />
             Reset Settings
           </h2>
 
@@ -390,7 +389,7 @@ export const AppSettingsPage = () => {
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-amber-200 rounded-full flex items-center justify-center">
-                <span className="text-xl">↩️</span>
+                <Undo2 size={20} strokeWidth={2} className="text-amber-700" />
               </div>
               <div>
                 <div className="font-semibold text-amber-900">
@@ -430,7 +429,7 @@ export const AppSettingsPage = () => {
             to="/"
             className="w-full flex items-center justify-center gap-2 p-3 text-slate-600 hover:text-slate-900 font-semibold transition-colors"
           >
-            <span>🏠</span>
+            <Home size={20} strokeWidth={2} />
             Back to Home
           </Link>
         </div>

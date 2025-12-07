@@ -3,6 +3,14 @@ import { useTour } from "@/hooks/useTours";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
+import {
+  ClipboardList,
+  XCircle,
+  Home,
+  Flag,
+  Plus,
+  Flag as GolfFlag,
+} from "lucide-react";
 
 export const TourRoundsPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -14,7 +22,7 @@ export const TourRoundsPage = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <span className="text-3xl">📋</span>
+            <ClipboardList className="w-8 h-8 text-emerald-600" />
           </div>
           <div className="text-lg font-semibold text-slate-700">
             Loading rounds...
@@ -30,7 +38,7 @@ export const TourRoundsPage = () => {
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">❌</span>
+              <XCircle className="w-10 h-10 text-red-600" />
             </div>
             <h3 className="text-xl font-semibold text-slate-700 mb-3">
               Tournament Not Found
@@ -51,9 +59,13 @@ export const TourRoundsPage = () => {
   const completedRounds = tour.rounds.filter((r) => r.status === "completed");
 
   const breadcrumbs = [
-    { label: "Home", path: "/", icon: "🏠" },
-    { label: tour.name, path: `/tour/${tourId}`, icon: "⛳" },
-    { label: "Rounds", icon: "📋" },
+    { label: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
+    {
+      label: tour.name,
+      path: `/tour/${tourId}`,
+      icon: <Flag className="w-4 h-4" />,
+    },
+    { label: "Rounds", icon: <ClipboardList className="w-4 h-4" /> },
   ];
 
   const roundCount = tour.rounds.length;
@@ -72,7 +84,7 @@ export const TourRoundsPage = () => {
             className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm shadow-lg"
             data-testid="create-round-button"
           >
-            <span className="text-base">➕</span>
+            <Plus className="w-4 h-4" />
             <span>Add Round</span>
           </Link>
         }
@@ -81,7 +93,7 @@ export const TourRoundsPage = () => {
       <div className="pt-6 pb-8 w-full max-w-6xl mx-auto">
         {tour.rounds.length === 0 ? (
           <EmptyState
-            icon="🏌️"
+            icon={<GolfFlag className="w-12 h-12 text-slate-400" />}
             title="No Rounds Yet"
             description="Create your first round to start playing golf in this tournament"
             action={{
