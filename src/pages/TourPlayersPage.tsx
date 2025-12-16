@@ -82,10 +82,10 @@ export const TourPlayersPage = () => {
   const isRyderCup = tour.format === "ryder-cup";
 
   const breadcrumbs = [
-    { label: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
+    { label: "Tours", path: "/", icon: <Home className="w-4 h-4" /> },
     {
       label: tour.name,
-      path: `/tour/${tourId}`,
+      path: `/tour/${tourId}/players`,
       icon: <Flag className="w-4 h-4" />,
     },
     {
@@ -106,7 +106,7 @@ export const TourPlayersPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 safe-area-top">
       <PageHeader
-        title={isTeamFormat ? "Teams & Players" : "Players"}
+        title={tour.name}
         subtitle={subtitle}
         breadcrumbs={breadcrumbs}
         backPath="/"
@@ -178,9 +178,10 @@ export const TourPlayersPage = () => {
               <button
                 onClick={() => setShowCreateTeam(true)}
                 className="btn-secondary text-sm"
+                data-testid="add-team-button"
               >
                 <Building2 className="w-4 h-4 mr-2" />
-                Create Team
+                Add Team
               </button>
             </div>
 
@@ -190,7 +191,7 @@ export const TourPlayersPage = () => {
                 title="No Teams Created"
                 description="Create teams to organize your tournament competition"
                 action={{
-                  label: "Create First Team",
+                  label: "Add First Team",
                   onClick: () => setShowCreateTeam(true),
                   variant: "primary",
                 }}

@@ -18,8 +18,15 @@ test.describe('Scoring Workflow', () => {
     await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
+    // Step 1: Select format (individual is default)
+    await page.click('button:has-text("Next Step")');
+
+    // Step 2: Fill in tournament name
     await page.fill('[data-testid="tournament-name-input"]', 'Scoring Test Tour');
-    await page.click('[data-testid="submit-tournament-button"]');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 3: Skip description
+    await page.click('button:has-text("Skip & Create")');
 
     await page.waitForURL(/\/tour\//);
 
@@ -176,19 +183,25 @@ test.describe('Team Scoring', () => {
     await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
-    await page.fill('[data-testid="tournament-name-input"]', 'Team Scoring Tour');
+    // Step 1: Select team format
     await page.click('[data-testid="format-team"]');
-    await page.click('[data-testid="submit-tournament-button"]');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 2: Fill in tournament name
+    await page.fill('[data-testid="tournament-name-input"]', 'Team Scoring Tour');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 3: Skip description
+    await page.click('button:has-text("Skip & Create")');
 
     await page.waitForURL(/\/tour\//);
 
-    // Add teams and players
-    await page.click('text=Teams');
+    // Add teams and players - teams section is already visible for team format
     await page.click('text=Add Team');
     await page.fill('input[name="teamName"]', 'Team A');
-    await page.click('button:has-text("Save")');
+    await page.click('button:has-text("Create Team")');
 
-    await page.click('[data-testid="tab-players"]');
+    // No need to navigate to players tab, just add players
     await page.click('[data-testid="add-player-button"]');
     await page.fill('[data-testid="player-name-input"]', 'Player A1');
     await page.fill('[data-testid="player-handicap-input"]', '10');

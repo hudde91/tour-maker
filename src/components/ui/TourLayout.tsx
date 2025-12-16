@@ -21,7 +21,7 @@ export const TourLayout = () => {
       id: "players",
       label: "Players",
       icon: <Users size={22} strokeWidth={2} />,
-      path: `/tour/${tourId}`,
+      path: `/tour/${tourId}/players`,
     },
     {
       id: "rounds",

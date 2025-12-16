@@ -519,6 +519,7 @@ export const TourSettingsPage = () => {
               onClick={handleDeleteTournament}
               disabled={deleteTour.isPending}
               className="w-full flex items-center justify-between p-4 bg-red-50 hover:bg-red-100 rounded-lg transition-colors text-left disabled:opacity-50"
+              data-testid="delete-tour-button"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-red-200 rounded-full flex items-center justify-center">

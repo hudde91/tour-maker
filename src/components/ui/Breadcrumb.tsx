@@ -24,7 +24,7 @@ export const Breadcrumb = ({ items, className = "" }: BreadcrumbProps) => {
           <div key={index} className="flex items-center gap-2">
             {index > 0 && (
               <svg
-                className="w-4 h-4 text-slate-400"
+                className="w-4 h-4 text-white/60"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -41,7 +41,7 @@ export const Breadcrumb = ({ items, className = "" }: BreadcrumbProps) => {
             {item.path && !isLast ? (
               <Link
                 to={item.path}
-                className="flex items-center gap-1.5 text-slate-600 hover:text-emerald-700 transition-colors font-medium"
+                className="flex items-center gap-1.5 text-white/90 hover:text-white transition-colors font-medium"
               >
                 {item.icon && <span className="flex items-center">{item.icon}</span>}
                 <span className="truncate max-w-[120px] sm:max-w-[200px] md:max-w-none">
@@ -49,7 +49,7 @@ export const Breadcrumb = ({ items, className = "" }: BreadcrumbProps) => {
                 </span>
               </Link>
             ) : (
-              <span className="flex items-center gap-1.5 text-slate-900 font-semibold">
+              <span className="flex items-center gap-1.5 text-white font-semibold">
                 {item.icon && <span className="flex items-center">{item.icon}</span>}
                 <span className="truncate max-w-[120px] sm:max-w-[200px] md:max-w-none">
                   {item.label}

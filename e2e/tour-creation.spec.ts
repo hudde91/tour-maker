@@ -57,13 +57,11 @@ test.describe('Tour Creation', () => {
     // Wait for navigation to tour page
     await page.waitForURL(/\/tour\//);
 
-    // Navigate to teams tab
-    await page.click('text=Teams');
-
+    // For team format, teams section is already visible on the players page
     // Add first team
     await page.click('text=Add Team');
     await page.fill('input[name="teamName"]', 'Team Alpha');
-    await page.click('button:has-text("Save")');
+    await page.click('button:has-text("Create Team")');
 
     // Verify team was created
     await expect(page.locator('text=Team Alpha')).toBeVisible();
@@ -71,7 +69,7 @@ test.describe('Tour Creation', () => {
     // Add second team
     await page.click('text=Add Team');
     await page.fill('input[name="teamName"]', 'Team Beta');
-    await page.click('button:has-text("Save")');
+    await page.click('button:has-text("Create Team")');
 
     // Verify both teams exist
     await expect(page.locator('text=Team Alpha')).toBeVisible();
@@ -141,6 +139,9 @@ test.describe('Tour Creation', () => {
     // Create new round
     await page.click('[data-testid="create-round-button"]');
 
+    // Wait for create round page to load
+    await page.waitForURL(/\/create-round/);
+
     // Configure round
     await page.click('[data-testid="holes-18"]');
     await page.click('text=Stroke Play');
@@ -172,19 +173,20 @@ test.describe('Tour Creation', () => {
 
     await page.waitForURL(/\/tour\//);
 
-    // Go back to home
-    await page.click('text=Tours');
-
-    // Verify tour exists
-    await expect(page.locator('text=Tour to Delete')).toBeVisible();
+    // Go to settings to delete the tour
+    await page.click('[data-testid="tab-settings"]');
+    await page.waitForURL(/\/settings$/);
 
     // Delete tour
-    await page.click('[aria-label="Delete tour"]');
+    await page.click('[data-testid="delete-tour-button"]');
 
     // Confirm deletion
     await page.click('button:has-text("Delete")');
 
-    // Verify tour was deleted
+    // Should redirect to home page after deletion
+    await page.waitForURL('/');
+
+    // Verify tour was deleted - it should not appear in the tour list
     await expect(page.locator('text=Tour to Delete')).not.toBeVisible();
   });
 });
