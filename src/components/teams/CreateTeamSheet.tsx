@@ -129,6 +129,7 @@ export const CreateTeamSheet = ({
               <label className="form-label">Team Name *</label>
               <input
                 type="text"
+                name="teamName"
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
@@ -137,6 +138,7 @@ export const CreateTeamSheet = ({
                 placeholder="e.g., The Eagles, Team Alpha"
                 autoFocus
                 required
+                data-testid="team-name-input"
               />
             </div>
 

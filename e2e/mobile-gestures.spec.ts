@@ -21,8 +21,15 @@ test.describe('Mobile Gestures', () => {
     await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
+    // Step 1: Select format (individual is default)
+    await page.click('button:has-text("Next Step")');
+
+    // Step 2: Fill in tournament name
     await page.fill('[data-testid="tournament-name-input"]', 'Mobile Test Tour');
-    await page.click('[data-testid="submit-tournament-button"]');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 3: Skip description
+    await page.click('button:has-text("Skip & Create")');
 
     await page.waitForURL(/\/tour\//);
 
@@ -281,8 +288,15 @@ test.describe('Data Persistence', () => {
     await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
+    // Step 1: Select format (individual is default)
+    await page.click('button:has-text("Next Step")');
+
+    // Step 2: Fill in tournament name
     await page.fill('[data-testid="tournament-name-input"]', 'Persistence Test');
-    await page.click('[data-testid="submit-tournament-button"]');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 3: Skip description
+    await page.click('button:has-text("Skip & Create")');
 
     await page.waitForURL(/\/tour\//);
 
@@ -323,8 +337,15 @@ test.describe('Data Persistence', () => {
     await page.click('[data-testid="create-tournament-button"]');
     await page.waitForURL('/create');
 
+    // Step 1: Select format (individual is default)
+    await page.click('button:has-text("Next Step")');
+
+    // Step 2: Fill in tournament name
     await page.fill('[data-testid="tournament-name-input"]', 'Score Persistence');
-    await page.click('[data-testid="submit-tournament-button"]');
+    await page.click('button:has-text("Next Step")');
+
+    // Step 3: Skip description
+    await page.click('button:has-text("Skip & Create")');
 
     await page.waitForURL(/\/tour\//);
 

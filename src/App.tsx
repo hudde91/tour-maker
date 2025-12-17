@@ -28,7 +28,8 @@ function App() {
           <Route path="/settings" element={<AppSettingsPage />} />
 
           <Route path="/tour/:tourId" element={<TourLayout />}>
-            <Route index element={<TourPlayersPage />} />
+            <Route index element={<Navigate to="players" replace />} />
+            <Route path="players" element={<TourPlayersPage />} />
             <Route path="rounds" element={<TourRoundsPage />} />
             <Route path="leaderboard" element={<TourLeaderboardPage />} />
             <Route path="settings" element={<TourSettingsPage />} />
