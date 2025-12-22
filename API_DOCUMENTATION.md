@@ -85,6 +85,7 @@ GET /tours
 ```
 
 **Query Parameters:**
+
 - `archived` (boolean, optional): Filter by archived status
 - `format` (string, optional): Filter by format (individual/team/ryder-cup)
 - `limit` (number, optional): Pagination limit
@@ -245,6 +246,7 @@ GET /tours/:tourId/players
 ```
 
 **Query Parameters:**
+
 - `teamId` (string, optional): Filter by team
 - `claimed` (boolean, optional): Filter by claimed status
 
@@ -294,6 +296,7 @@ POST /tours/:tourId/players/:playerId/claim
 ```
 
 **Headers:**
+
 - `X-Device-ID: <device-id>`
 
 **Response:** `200 OK`
@@ -323,6 +326,7 @@ POST /tours/:tourId/players/claim-by-code
 ```
 
 **Headers:**
+
 - `X-Device-ID: <device-id>`
 
 **Response:** `200 OK`
@@ -907,6 +911,7 @@ GET /tours/:tourId/leaderboard
 ```
 
 **Query Parameters:**
+
 - `type` (string): `individual` | `team` | `stableford`
 - `sortBy` (string): `gross` | `net` | `stableford`
 - `limit` (number, optional): Limit results
@@ -948,6 +953,7 @@ GET /tours/:tourId/rounds/:roundId/leaderboard
 ```
 
 **Query Parameters:**
+
 - `type` (string): `individual` | `team` | `matchplay` | `scramble`
 - `live` (boolean): Include in-progress scores
 
@@ -1063,6 +1069,7 @@ GET /tours/:tourId/stats
 ```
 
 **Query Parameters:**
+
 - `type` (string): `overview` | `player-rankings` | `team-rankings`
 
 **Response:** `200 OK`
@@ -1334,6 +1341,7 @@ wss://api.tourmaker.com/v1/ws
 ### Handicap System
 
 The system follows USGA handicap rules:
+
 - Handicaps range from -10 to 54
 - Strokes are allocated per hole based on hole handicap index
 - Net scores calculated: `Gross Score - Allocated Strokes`
@@ -1357,9 +1365,3 @@ The system follows USGA handicap rules:
 - Ryder Cup target: 14.5 points to win
 
 ---
-
-## Support
-
-For API support, contact: api-support@tourmaker.com
-
-For bug reports: https://github.com/tourmaker/api/issues

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCreateTour } from "../hooks/useTours";
-import { TourFormat } from "../types";
+import { TourFormat, Player } from "../types";
+import { getTours } from "../lib/storage/tours";
 
 interface WizardStep {
   id: number;
@@ -22,8 +23,31 @@ const WIZARD_STEPS: WizardStep[] = [
   },
   {
     id: 3,
-    title: "Description",
-    description: "Add details (optional)",
+    title: "Add players",
+    description: "Add players to your tournament",
+  },
+];
+
+const RYDER_CUP_ADVANCED_STEPS: WizardStep[] = [
+  {
+    id: 1,
+    title: "Competition Format",
+    description: "Choose your tournament style",
+  },
+  {
+    id: 2,
+    title: "Setup Type",
+    description: "Choose your setup preference",
+  },
+  {
+    id: 3,
+    title: "Tournament Name",
+    description: "Give your tournament a name",
+  },
+  {
+    id: 4,
+    title: "Add players",
+    description: "Add players to your tournament",
   },
 ];
 
@@ -37,9 +61,42 @@ export const CreateTourPage = () => {
     description: "",
     format: "individual" as TourFormat,
   });
+  const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([]);
+  const [previousPlayers, setPreviousPlayers] = useState<Player[]>([]);
+  const [newPlayerName, setNewPlayerName] = useState("");
+  const [isRyderCupAdvanced, setIsRyderCupAdvanced] = useState(false);
+
+  // Get wizard steps based on format
+  const wizardSteps =
+    formData.format === "ryder-cup" && isRyderCupAdvanced
+      ? RYDER_CUP_ADVANCED_STEPS
+      : formData.format === "ryder-cup"
+      ? RYDER_CUP_ADVANCED_STEPS.slice(0, 2) // Only show first 2 steps initially for Ryder Cup
+      : WIZARD_STEPS;
+
+  // Load previously played with players
+  useEffect(() => {
+    const tours = getTours();
+    const playerMap = new Map<string, Player>();
+
+    tours.forEach((tour) => {
+      tour.players.forEach((player) => {
+        // Use player name as key to avoid duplicates
+        if (!playerMap.has(player.name.toLowerCase())) {
+          playerMap.set(player.name.toLowerCase(), {
+            id: crypto.randomUUID(), // Generate new ID for new tournament
+            name: player.name,
+            handicap: player.handicap,
+          });
+        }
+      });
+    });
+
+    setPreviousPlayers(Array.from(playerMap.values()));
+  }, []);
 
   const handleNext = () => {
-    if (currentStep < WIZARD_STEPS.length) {
+    if (currentStep < wizardSteps.length) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -47,26 +104,42 @@ export const CreateTourPage = () => {
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+    } else {
+      navigate(-1);
     }
   };
 
-  const handleSkipDescription = async () => {
+  const handleSubmit = async () => {
     try {
-      const tour = await createTour.mutateAsync(formData);
+      const tourData = {
+        ...formData,
+        players: selectedPlayers,
+      };
+      const tour = await createTour.mutateAsync(tourData);
       navigate(`/tour/${tour.id}`);
     } catch (error) {
       console.error("Failed to create tournament:", error);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddPlayer = (player: Player) => {
+    if (!selectedPlayers.find((p) => p.id === player.id)) {
+      setSelectedPlayers([...selectedPlayers, player]);
+    }
+  };
 
-    try {
-      const tour = await createTour.mutateAsync(formData);
-      navigate(`/tour/${tour.id}`);
-    } catch (error) {
-      console.error("Failed to create tournament:", error);
+  const handleRemovePlayer = (playerId: string) => {
+    setSelectedPlayers(selectedPlayers.filter((p) => p.id !== playerId));
+  };
+
+  const handleAddNewPlayer = () => {
+    if (newPlayerName.trim()) {
+      const newPlayer: Player = {
+        id: crypto.randomUUID(),
+        name: newPlayerName.trim(),
+      };
+      setSelectedPlayers([...selectedPlayers, newPlayer]);
+      setNewPlayerName("");
     }
   };
 
@@ -75,9 +148,17 @@ export const CreateTourPage = () => {
       case 1:
         return true; // Format is always selected
       case 2:
-        return formData.name.trim().length > 0;
+        if (formData.format === "ryder-cup") {
+          return true; // Setup type selection is always valid
+        }
+        return formData.name.trim().length > 0; // Name required for other formats
       case 3:
-        return true; // Description is optional
+        if (formData.format === "ryder-cup" && isRyderCupAdvanced) {
+          return formData.name.trim().length > 0; // Name required for Ryder Cup advanced
+        }
+        return selectedPlayers.length > 0; // At least one player required for other formats
+      case 4:
+        return selectedPlayers.length > 0; // At least one player required for Ryder Cup advanced
       default:
         return false;
     }
@@ -104,7 +185,7 @@ export const CreateTourPage = () => {
           />
         </svg>
       ),
-      popular: true,
+      popular: false,
     },
     {
       value: "team",
@@ -156,7 +237,7 @@ export const CreateTourPage = () => {
       {/* Header */}
       <div className="golf-hero-bg safe-area-top">
         <div className="flex items-center p-6">
-          <button onClick={() => navigate(-1)} className="nav-back mr-4">
+          <button onClick={handleBack} className="nav-back mr-4">
             <svg
               className="w-5 h-5 text-slate-600"
               fill="none"
@@ -172,134 +253,40 @@ export const CreateTourPage = () => {
             </svg>
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-white">Create Tournament</h1>
+            <h1 className="text-2xl font-bold text-white">
+              {wizardSteps[currentStep - 1]?.title || "Create Tournament"}
+            </h1>
             <p className="text-emerald-100 mt-1">
-              Step {currentStep} of {WIZARD_STEPS.length}
+              Step {currentStep} of {wizardSteps.length}
             </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Progress Bar */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            {WIZARD_STEPS.map((step, index) => (
-              <div key={step.id} className="flex items-center flex-1">
-                <div className="flex flex-col items-center flex-1">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
-                      currentStep > step.id
-                        ? "bg-emerald-500 text-white"
-                        : currentStep === step.id
-                        ? "bg-emerald-500 text-white ring-4 ring-emerald-100"
-                        : "bg-slate-200 text-slate-500"
-                    }`}
-                  >
-                    {currentStep > step.id ? (
-                      <svg
-                        className="w-5 h-5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    ) : (
-                      step.id
-                    )}
-                  </div>
-                  <div className="text-center mt-2 hidden sm:block">
-                    <div
-                      className={`text-sm font-semibold ${
-                        currentStep >= step.id
-                          ? "text-slate-900"
-                          : "text-slate-500"
-                      }`}
-                    >
-                      {step.title}
-                    </div>
-                  </div>
-                </div>
-                {index < WIZARD_STEPS.length - 1 && (
-                  <div
-                    className={`h-1 flex-1 mx-2 rounded transition-all ${
-                      currentStep > step.id ? "bg-emerald-500" : "bg-slate-200"
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
           </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="card-elevated">
+        <div>
           {/* Step 1: Competition Format */}
           {currentStep === 1 && (
             <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                  Choose Competition Format
-                </h2>
-                <p className="text-slate-600">
-                  Select the tournament style that best fits your event
-                </p>
-              </div>
-
               <div className="space-y-4">
                 {tournamentFormats.map((format) => (
-                  <label
+                  <button
                     key={format.value}
-                    className={`relative flex items-start p-6 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md ${
-                      formData.format === format.value
-                        ? "border-emerald-500 bg-emerald-50 shadow-md"
-                        : "border-slate-200 bg-white hover:border-slate-300"
-                    }`}
+                    type="button"
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        format: format.value as TourFormat,
+                      });
+                      handleNext();
+                    }}
+                    className="relative flex items-start p-6 border-2 rounded-xl transition-all hover:shadow-md border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50 text-left w-full"
                     data-testid={`format-${format.value}`}
                   >
-                    <input
-                      type="radio"
-                      name="format"
-                      value={format.value}
-                      checked={formData.format === format.value}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          format: e.target.value as TourFormat,
-                        })
-                      }
-                      className="sr-only"
-                      data-testid={`format-${format.value}-radio`}
-                    />
-
-                    {/* Selection Indicator */}
-                    <div
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 mt-1 transition-all ${
-                        formData.format === format.value
-                          ? "border-emerald-500 bg-emerald-500"
-                          : "border-slate-300"
-                      }`}
-                    >
-                      {formData.format === format.value && (
-                        <div className="w-2 h-2 bg-white rounded-full" />
-                      )}
-                    </div>
-
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <div
-                          className={`p-2 rounded-lg ${
-                            formData.format === format.value
-                              ? "bg-emerald-100 text-emerald-600"
-                              : "bg-slate-100 text-slate-600"
-                          }`}
-                        >
+                        <div className="p-2 rounded-lg bg-slate-100 text-slate-600">
                           {format.icon}
                         </div>
 
@@ -326,18 +313,26 @@ export const CreateTourPage = () => {
                         {format.description}
                       </p>
                     </div>
-                  </label>
+                  </button>
                 ))}
               </div>
+            </div>
+          )}
 
-              {/* Format-specific Information */}
-              {formData.format === "ryder-cup" && (
-                <div className="mt-6 space-y-3">
-                  <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <div className="p-1 bg-emerald-100 rounded">
+          {/* Step 2: Ryder Cup Setup Type OR Tournament Name */}
+          {currentStep === 2 && formData.format === "ryder-cup" && (
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <button
+                  type="button"
+                  onClick={() => navigate("/create/ryder-cup-wizard")}
+                  className="relative flex items-start p-6 border-2 rounded-xl transition-all hover:shadow-md border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50 text-left w-full"
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600">
                         <svg
-                          className="w-4 h-4 text-emerald-600"
+                          className="w-6 h-6"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -350,31 +345,34 @@ export const CreateTourPage = () => {
                           />
                         </svg>
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-emerald-900 mb-1">
-                          First Time? Try the Setup Wizard!
-                        </h4>
-                        <p className="text-sm text-emerald-800 mb-3">
-                          Our guided wizard will walk you through creating your
-                          Ryder Cup tournament with pre-filled templates and
-                          helpful tips.
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => navigate("/create/ryder-cup-wizard")}
-                          className="btn-primary text-sm"
-                        >
-                          Use Setup Wizard
-                        </button>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-semibold text-slate-900">
+                          Setup Wizard
+                        </h3>
+                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-semibold border border-blue-200">
+                          Recommended
+                        </span>
                       </div>
                     </div>
+                    <p className="text-slate-600 leading-relaxed">
+                      Guided step-by-step wizard with pre-filled templates and helpful tips. Perfect for first-time Ryder Cup setup.
+                    </p>
                   </div>
+                </button>
 
-                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <div className="p-1 bg-amber-100 rounded">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRyderCupAdvanced(true);
+                    handleNext();
+                  }}
+                  className="relative flex items-start p-6 border-2 rounded-xl transition-all hover:shadow-md border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50 text-left w-full"
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 rounded-lg bg-slate-100 text-slate-600">
                         <svg
-                          className="w-4 h-4 text-amber-600"
+                          className="w-6 h-6"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -383,41 +381,83 @@ export const CreateTourPage = () => {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                           />
                         </svg>
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-amber-900 mb-1">
-                          Advanced Setup
-                        </h4>
-                        <p className="text-sm text-amber-800">
-                          Continue with manual setup if you prefer complete
-                          control. This format includes team captains, strategic
-                          player selection, and multiple competition formats.
-                        </p>
-                      </div>
+                      <h3 className="text-lg font-semibold text-slate-900">
+                        Advanced Setup
+                      </h3>
                     </div>
+                    <p className="text-slate-600 leading-relaxed">
+                      Manual setup with complete control over team captains, player selection, and competition formats. For experienced users.
+                    </p>
                   </div>
-                </div>
-              )}
+                </button>
+              </div>
             </div>
           )}
 
-          {/* Step 2: Tournament Name */}
-          {currentStep === 2 && (
+          {/* Step 3: Tournament Name (for Ryder Cup Advanced) */}
+          {currentStep === 3 && formData.format === "ryder-cup" && isRyderCupAdvanced && (
             <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                  Tournament Name
-                </h2>
-                <p className="text-slate-600">
-                  Give your tournament a memorable name
-                </p>
+              <div className="form-group">
+                <label className="form-label">Name *</label>
+                <input
+                  type="text"
+                  name="tournamentName"
+                  data-testid="tournament-name-input"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="input-field text-lg"
+                  placeholder="e.g., Weekend Ryder Cup"
+                  autoFocus
+                />
               </div>
 
               <div className="form-group">
-                <label className="form-label">Tournament Name *</label>
+                <label className="form-label">Description (Optional)</label>
+                <textarea
+                  name="tournamentDescription"
+                  data-testid="tournament-description-input"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      description: e.target.value,
+                    })
+                  }
+                  className="input-field h-32 resize-none"
+                  placeholder="Describe your tournament, rules, prizes, or special notes..."
+                />
+              </div>
+
+              <div className="flex gap-4 pt-6 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={!isStepValid()}
+                  className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next: Add players
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Tournament Name (for non-Ryder Cup formats) */}
+          {currentStep === 2 && formData.format !== "ryder-cup" && (
+            <div className="space-y-6">
+              <div className="form-group">
+                <label className="form-label">Name *</label>
                 <input
                   type="text"
                   name="tournamentName"
@@ -430,115 +470,281 @@ export const CreateTourPage = () => {
                   placeholder="e.g., Weekend Masters Championship"
                   autoFocus
                 />
-                <p className="form-help">
-                  This will be the main identifier for your tournament
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Description (Optional) */}
-          {currentStep === 3 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                  Tournament Description
-                  <span className="text-base font-normal text-slate-500 ml-2">
-                    (Optional)
-                  </span>
-                </h2>
-                <p className="text-slate-600">
-                  Add details about your tournament, or skip this step
-                </p>
               </div>
 
               <div className="form-group">
-                <label className="form-label">Description</label>
+                <label className="form-label">Description (Optional)</label>
                 <textarea
                   name="tournamentDescription"
                   data-testid="tournament-description-input"
                   value={formData.description}
                   onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
+                    setFormData({
+                      ...formData,
+                      description: e.target.value,
+                    })
                   }
-                  className="input-field h-40 resize-none"
+                  className="input-field h-32 resize-none"
                   placeholder="Describe your tournament, rules, prizes, or special notes..."
-                  autoFocus
                 />
-                <p className="form-help">
-                  You can add or edit this description at any time from the
-                  tournament settings
-                </p>
               </div>
 
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <svg
-                    className="w-5 h-5 text-blue-600 mt-0.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <div className="text-sm text-blue-800">
-                    <strong>Not sure what to write?</strong> You can skip this
-                    step and add a description later. It's completely optional
-                    and can be changed at any time.
-                  </div>
-                </div>
+              <div className="flex gap-4 pt-6 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={!isStepValid()}
+                  className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next: Add players
+                </button>
               </div>
             </div>
           )}
 
-          {/* Navigation Buttons */}
-          <div className="flex gap-4 pt-6 mt-6 border-t border-slate-200">
-            <button
-              type="button"
-              onClick={handleBack}
-              disabled={currentStep === 1}
-              className="btn-secondary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Back
-            </button>
-            {currentStep === 3 ? (
-              <>
-                <button
-                  type="button"
-                  onClick={handleSkipDescription}
-                  disabled={createTour.isPending}
-                  className="btn-secondary flex-1 disabled:opacity-50"
-                >
-                  Skip & Create
-                </button>
+          {/* Step 4: Add Players (for Ryder Cup Advanced) */}
+          {currentStep === 4 && formData.format === "ryder-cup" && isRyderCupAdvanced && (
+            <div className="space-y-6">
+              {/* Selected Players */}
+              {selectedPlayers.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-slate-700">
+                    Selected Players ({selectedPlayers.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {selectedPlayers.map((player) => (
+                      <div
+                        key={player.id}
+                        className="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-200 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center font-semibold">
+                            {player.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="font-medium text-slate-900">
+                            {player.name}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePlayer(player.id)}
+                          className="text-red-600 hover:text-red-800 p-1"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Add New Player */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-slate-700">
+                  Add New Player
+                </h3>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newPlayerName}
+                    onChange={(e) => setNewPlayerName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleAddNewPlayer();
+                      }
+                    }}
+                    className="input-field flex-1"
+                    placeholder="Enter player name"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddNewPlayer}
+                    disabled={!newPlayerName.trim()}
+                    className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
+              {/* Previously Played With */}
+              {previousPlayers.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-slate-700">
+                    Previously Played With
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {previousPlayers
+                      .filter(
+                        (p) => !selectedPlayers.find((sp) => sp.name === p.name)
+                      )
+                      .map((player) => (
+                        <button
+                          key={player.id}
+                          type="button"
+                          onClick={() => handleAddPlayer(player)}
+                          className="flex items-center gap-2 p-3 border-2 border-slate-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-semibold text-sm">
+                            {player.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="text-sm font-medium text-slate-900">
+                            {player.name}
+                          </span>
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <div className="flex gap-4 pt-6 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  disabled={createTour.isPending}
-                  className="btn-primary flex-1 disabled:opacity-50"
+                  disabled={!isStepValid() || createTour.isPending}
+                  className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   data-testid="submit-tournament-button"
                 >
-                  {createTour.isPending
-                    ? "Creating..."
-                    : "Create Tournament"}
+                  {createTour.isPending ? "Creating..." : "Create Tournament"}
                 </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                onClick={handleNext}
-                disabled={!isStepValid()}
-                className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next Step
-              </button>
-            )}
-          </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Add Players (for non-Ryder Cup formats) */}
+          {currentStep === 3 && (formData.format !== "ryder-cup" || !isRyderCupAdvanced) && (
+            <div className="space-y-6">
+              {/* Selected Players */}
+              {selectedPlayers.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-slate-700">
+                    Selected Players ({selectedPlayers.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {selectedPlayers.map((player) => (
+                      <div
+                        key={player.id}
+                        className="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-200 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center font-semibold">
+                            {player.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="font-medium text-slate-900">
+                            {player.name}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePlayer(player.id)}
+                          className="text-red-600 hover:text-red-800 p-1"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Add New Player */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-slate-700">
+                  Add New Player
+                </h3>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newPlayerName}
+                    onChange={(e) => setNewPlayerName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleAddNewPlayer();
+                      }
+                    }}
+                    className="input-field flex-1"
+                    placeholder="Enter player name"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddNewPlayer}
+                    disabled={!newPlayerName.trim()}
+                    className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
+              {/* Previously Played With */}
+              {previousPlayers.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-slate-700">
+                    Previously Played With
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {previousPlayers
+                      .filter(
+                        (p) => !selectedPlayers.find((sp) => sp.name === p.name)
+                      )
+                      .map((player) => (
+                        <button
+                          key={player.id}
+                          type="button"
+                          onClick={() => handleAddPlayer(player)}
+                          className="flex items-center gap-2 p-3 border-2 border-slate-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-semibold text-sm">
+                            {player.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="text-sm font-medium text-slate-900">
+                            {player.name}
+                          </span>
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <div className="flex gap-4 pt-6 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={!isStepValid() || createTour.isPending}
+                  className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  data-testid="submit-tournament-button"
+                >
+                  {createTour.isPending ? "Creating..." : "Create Tournament"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

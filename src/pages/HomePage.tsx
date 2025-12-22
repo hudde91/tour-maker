@@ -1,5 +1,17 @@
 import { Link } from "react-router-dom";
-import { Home, PlusCircle, Settings, User, Users, Trophy, Flag, ClipboardList, Tag, Calendar, Dice5 } from "lucide-react";
+import {
+  Home,
+  PlusCircle,
+  Settings,
+  User,
+  Users,
+  Trophy,
+  Flag,
+  ClipboardList,
+  Tag,
+  Calendar,
+  Dice5,
+} from "lucide-react";
 import { useTours } from "../hooks/useTours";
 import { useState, useEffect } from "react";
 import { HowItWorksModal } from "@/components/ui/Howitworksmodal";
@@ -115,7 +127,7 @@ export const HomePage = () => {
           <div className="flex flex-col items-center text-center">
             <Logo size="xl" variant="white" className="mb-4" />
             <p className="text-emerald-100 text-lg md:text-xl font-medium">
-              Professional Golf Tournament Management
+              Playing with drunk friends can actually be organized
             </p>
           </div>
         </div>
@@ -124,15 +136,9 @@ export const HomePage = () => {
       <div className="-mt-6 pb-8 w-full max-w-6xl mx-auto">
         <div className="card-elevated section-spacing w-full max-w-2xl mx-auto">
           <div className="text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto card-spacing shadow-xl">
-              <Flag className="text-white" size={32} strokeWidth={2.5} />
-            </div>
-            <h2 className="text-2xl font-bold text-slate-800 mb-3">
-              Create New Tournament
-            </h2>
             <p className="text-slate-600 text-lg section-spacing leading-relaxed">
-              Set up a professional golf tournament with players, teams, and
-              multiple rounds
+              Get started by simply creating a golf tournament and follow the
+              wizard
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center">
               <Link
@@ -195,7 +201,11 @@ export const HomePage = () => {
             <div className="card-elevated w-full max-w-2xl mx-auto">
               <div className="text-center py-16">
                 <div className="w-24 h-24 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto card-spacing">
-                  <ClipboardList className="text-slate-400" size={48} strokeWidth={1.5} />
+                  <ClipboardList
+                    className="text-slate-400"
+                    size={48}
+                    strokeWidth={1.5}
+                  />
                 </div>
                 <h3 className="text-2xl font-bold text-slate-700 mb-4">
                   No Tournaments Yet
@@ -250,28 +260,44 @@ export const HomePage = () => {
                             {/* Tournament Stats */}
                             <div className="grid grid-cols-2 md:flex md:items-center gap-3 md:gap-6 text-xs md:text-sm text-slate-500">
                               <div className="flex items-center gap-1.5">
-                                <Users size={16} strokeWidth={2} className="text-slate-400" />
+                                <Users
+                                  size={16}
+                                  strokeWidth={2}
+                                  className="text-slate-400"
+                                />
                                 <span className="font-medium">
                                   {tour.players.length} Players
                                 </span>
                               </div>
 
                               <div className="flex items-center gap-1.5">
-                                <ClipboardList size={16} strokeWidth={2} className="text-slate-400" />
+                                <ClipboardList
+                                  size={16}
+                                  strokeWidth={2}
+                                  className="text-slate-400"
+                                />
                                 <span className="font-medium">
                                   {tour.rounds.length} Rounds
                                 </span>
                               </div>
 
                               <div className="flex items-center gap-1.5">
-                                <Tag size={16} strokeWidth={2} className="text-slate-400" />
+                                <Tag
+                                  size={16}
+                                  strokeWidth={2}
+                                  className="text-slate-400"
+                                />
                                 <span className="font-medium capitalize">
                                   {tour.format.replace("-", " ")}
                                 </span>
                               </div>
 
                               <div className="flex items-center gap-1.5">
-                                <Calendar size={16} strokeWidth={2} className="text-slate-400" />
+                                <Calendar
+                                  size={16}
+                                  strokeWidth={2}
+                                  className="text-slate-400"
+                                />
                                 <span className="font-medium">
                                   {new Date(
                                     tour.createdAt

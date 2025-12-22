@@ -97,7 +97,10 @@ export const updatePlayerScore = (
 /**
  * Remove a player from a tour
  */
-export const removePlayerFromTour = (tourId: string, playerId: string): void => {
+export const removePlayerFromTour = (
+  tourId: string,
+  playerId: string
+): void => {
   const tour = getTour(tourId);
   if (!tour) return;
 
@@ -116,13 +119,14 @@ export const removePlayerFromTour = (tourId: string, playerId: string): void => 
 /**
  * Update player information in a tour
  */
-export const updatePlayerInTour = (tourId: string, updatedPlayer: Player): void => {
+export const updatePlayerInTour = (
+  tourId: string,
+  updatedPlayer: Player
+): void => {
   const tour = getTour(tourId);
   if (!tour) return;
 
-  const playerIndex = tour.players.findIndex(
-    (p) => p.id === updatedPlayer.id
-  );
+  const playerIndex = tour.players.findIndex((p) => p.id === updatedPlayer.id);
   if (playerIndex >= 0) {
     tour.players[playerIndex] = updatedPlayer;
   }

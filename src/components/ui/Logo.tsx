@@ -1,4 +1,4 @@
-import { Flag } from "lucide-react";
+import { Club, Flag } from "lucide-react";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -6,7 +6,11 @@ interface LogoProps {
   className?: string;
 }
 
-export const Logo = ({ size = "md", variant = "default", className = "" }: LogoProps) => {
+export const Logo = ({
+  size = "md",
+  variant = "default",
+  className = "",
+}: LogoProps) => {
   const sizes = {
     sm: {
       icon: 20,
@@ -32,13 +36,13 @@ export const Logo = ({ size = "md", variant = "default", className = "" }: LogoP
 
   const config = sizes[size];
 
-  const textColor = variant === "white"
-    ? "text-white"
-    : "text-slate-900 dark:text-white";
+  const textColor =
+    variant === "white" ? "text-white" : "text-slate-900 dark:text-white";
 
-  const iconColor = variant === "white"
-    ? "text-white"
-    : "text-emerald-600 dark:text-emerald-500";
+  const iconColor =
+    variant === "white"
+      ? "text-white"
+      : "text-emerald-600 dark:text-emerald-500";
 
   if (variant === "icon-only") {
     return (
@@ -57,13 +61,16 @@ export const Logo = ({ size = "md", variant = "default", className = "" }: LogoP
     <div className={`flex items-center gap-3 ${config.container} ${className}`}>
       <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl blur-sm opacity-50" />
-        <div className="relative bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl p-2 shadow-lg">
-          <Flag size={config.icon} strokeWidth={2.5} className="text-white" />
+        <div className="relative bg-gradient-to-br from-yellow-500 to-orange-700 rounded-xl p-2 shadow-lg">
+          <Club size={config.icon} strokeWidth={2.5} className="text-white" />
         </div>
       </div>
       <div className={`font-bold ${config.text} ${textColor} tracking-tight`}>
         <span className="font-['Poppins']">Tour</span>
         <span className={`${iconColor} font-['Poppins']`}> Maker</span>
+      </div>
+      <div className="relative bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl p-2 shadow-lg opacity-0">
+        <Flag size={config.icon} strokeWidth={2.5} className="text-white" />
       </div>
     </div>
   );

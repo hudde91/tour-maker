@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { nanoid } from "nanoid";
 import { storage } from "../lib/storage";
-import { Tour, TourFormat } from "../types";
+import { Tour, TourFormat, Player } from "../types";
 
 export const useTours = () => {
   return useQuery({
@@ -26,6 +26,7 @@ export const useCreateTour = () => {
       name: string;
       description?: string;
       format: TourFormat;
+      players?: Player[];
     }) => {
       const tour: Tour = {
         id: nanoid(),
@@ -34,7 +35,7 @@ export const useCreateTour = () => {
         format: data.format,
         createdAt: new Date().toISOString(),
         shareableUrl: `${window.location.origin}/tour/${nanoid()}`,
-        players: [],
+        players: data.players || [],
         rounds: [],
         isActive: true,
         ...(data.format !== "individual" && { teams: [] }),
