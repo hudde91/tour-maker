@@ -298,10 +298,10 @@ export const SwipeableMatchPlayScoring = ({
             No Matches Available to Score
           </h3>
           <p className="text-slate-600 mb-4">
-            You don't have any players claimed in any match. Visit the Players page to claim a player before you can enter scores.
+            Please sign in to access scoring functionality.
           </p>
           <p className="text-sm text-slate-500">
-            In match play, you can only score for matches where you have claimed at least one player.
+            In match play, authenticated users can score for all matches in the round.
           </p>
         </div>
       </div>

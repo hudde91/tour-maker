@@ -231,9 +231,7 @@ POST /tours/:tourId/players
   "id": "player_def456",
   "name": "John Doe",
   "handicap": 12.5,
-  "teamId": "team_xyz789",
-  "claimedBy": null,
-  "playerCode": "A1B2C3"
+  "teamId": "team_xyz789"
 }
 ```
 
@@ -248,7 +246,6 @@ GET /tours/:tourId/players
 **Query Parameters:**
 
 - `teamId` (string, optional): Filter by team
-- `claimed` (boolean, optional): Filter by claimed status
 
 **Response:** `200 OK`
 
@@ -259,9 +256,7 @@ GET /tours/:tourId/players
       "id": "player_def456",
       "name": "John Doe",
       "handicap": 12.5,
-      "teamId": "team_xyz789",
-      "claimedBy": "device_12345",
-      "playerCode": "A1B2C3"
+      "teamId": "team_xyz789"
     }
   ]
 }
@@ -286,68 +281,6 @@ PUT /tours/:tourId/players/:playerId
 ```
 
 **Response:** `200 OK`
-
----
-
-### Claim Player (by Device)
-
-```http
-POST /tours/:tourId/players/:playerId/claim
-```
-
-**Headers:**
-
-- `X-Device-ID: <device-id>`
-
-**Response:** `200 OK`
-
-```json
-{
-  "id": "player_def456",
-  "claimedBy": "device_12345",
-  "playerCode": "A1B2C3"
-}
-```
-
----
-
-### Claim Player (by Code)
-
-```http
-POST /tours/:tourId/players/claim-by-code
-```
-
-**Request Body:**
-
-```json
-{
-  "playerCode": "A1B2C3"
-}
-```
-
-**Headers:**
-
-- `X-Device-ID: <device-id>`
-
-**Response:** `200 OK`
-
-```json
-{
-  "id": "player_def456",
-  "name": "John Doe",
-  "claimedBy": "device_12345"
-}
-```
-
----
-
-### Unclaim Player
-
-```http
-DELETE /tours/:tourId/players/:playerId/claim
-```
-
-**Response:** `204 No Content`
 
 ---
 
@@ -1173,7 +1106,7 @@ All endpoints follow standard HTTP error codes:
 ```json
 {
   "error": "forbidden",
-  "message": "Player already claimed by another device"
+  "message": "User not authorized to perform this action"
 }
 ```
 

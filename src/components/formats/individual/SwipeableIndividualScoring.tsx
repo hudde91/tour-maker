@@ -213,10 +213,10 @@ export const SwipeableIndividualScoring = ({
             No Players Available to Score
           </h3>
           <p className="text-slate-600 mb-4">
-            You don't have any players claimed yet. Visit the Players page to claim a player before you can enter scores.
+            Please sign in to access scoring functionality.
           </p>
           <p className="text-sm text-slate-500">
-            Each player must be claimed before they can score their own rounds. This ensures only the right person can enter scores for each player.
+            Authenticated users can score for all players in the round. Your backend will control who can score for which players.
           </p>
         </div>
       </div>

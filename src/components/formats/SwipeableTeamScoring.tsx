@@ -175,10 +175,10 @@ export const SwipeableTeamScoring = ({
             No Teams Available to Score
           </h3>
           <p className="text-slate-600 mb-4">
-            You don't have any players claimed on any team. Visit the Players page to claim a player on your team before you can enter scores.
+            Please sign in to access scoring functionality.
           </p>
           <p className="text-sm text-slate-500">
-            In {formatName} format, you can only score for teams where you have claimed at least one player.
+            In {formatName} format, authenticated users can score for all teams in the round.
           </p>
         </div>
       </div>
