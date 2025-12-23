@@ -137,7 +137,6 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
                   player={player}
                   isExpanded={true}
                   onToggle={() => handlePlayerToggle(player.id)}
-                  hideClaimButton={true}
                 />
               </div>
             )}

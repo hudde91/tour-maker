@@ -8,7 +8,8 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
 import { IndividualCompetitionWinnerSelector } from "./IndividualCompetitionWinnerSelector";
-import { canScoreForPlayer } from "@/lib/deviceIdentity";
+import { useAuth } from "@/contexts/AuthContext";
+import { canUserScore } from "@/lib/auth/permissions";
 import { hapticLight, hapticSelection } from "@/lib/haptics";
 
 interface SwipeableIndividualScoringProps {
@@ -31,11 +32,16 @@ export const SwipeableIndividualScoring = ({
   onFinishRound,
 }: SwipeableIndividualScoringProps) => {
   const { tourId } = useParams<{ tourId: string }>();
+  const { user } = useAuth();
   const updateCompetitionWinner = useUpdateCompetitionWinner(tourId!, round.id);
 
-  // Filter players to only those that can be scored by current device
+  // Filter players to only those that can be scored by authenticated user
+  // TODO: Implement backend authorization to restrict which players a user can score for
   const scoreablePlayers = useMemo(() => {
-    const isTeamFormat = tour.format === 'team' || tour.format === 'ryder-cup';
+    // Only authenticated users can score
+    if (!canUserScore(user)) {
+      return [];
+    }
 
     // Filter by round participants (1-4 players max)
     // If round.playerIds is not set, all tournament players can participate (backward compatibility)
@@ -43,11 +49,10 @@ export const SwipeableIndividualScoring = ({
       ? tour.players.filter((player) => round.playerIds!.includes(player.id))
       : tour.players;
 
-    // Then filter by scoring permissions
-    return roundPlayers.filter((player) =>
-      canScoreForPlayer(player, tour.players, isTeamFormat)
-    );
-  }, [tour.players, tour.format, round.playerIds]);
+    // For now, authenticated users can score for all players in the round
+    // Backend will handle fine-grained authorization later
+    return roundPlayers;
+  }, [user, tour.players, round.playerIds]);
 
   const [currentHole, setCurrentHole] = useState(1);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
@@ -208,10 +213,10 @@ export const SwipeableIndividualScoring = ({
             No Players Available to Score
           </h3>
           <p className="text-slate-600 mb-4">
-            You don't have any players claimed yet. Visit the Players page to claim a player before you can enter scores.
+            Please sign in to access scoring functionality.
           </p>
           <p className="text-sm text-slate-500">
-            Each player must be claimed before they can score their own rounds. This ensures only the right person can enter scores for each player.
+            Authenticated users can score for all players in the round. Your backend will control who can score for which players.
           </p>
         </div>
       </div>

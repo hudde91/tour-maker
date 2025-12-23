@@ -8,7 +8,8 @@ import { LiveLeaderboard } from "../scoring/LiveLeaderboard";
 import { IndividualCompetitionWinnerSelector } from "./individual/IndividualCompetitionWinnerSelector";
 import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
-import { canScoreForPlayer } from "@/lib/deviceIdentity";
+import { useAuth } from "@/contexts/AuthContext";
+import { canUserScore } from "@/lib/auth/permissions";
 interface SwipeableTeamScoringProps {
   tour: Tour;
   round: Round;
@@ -25,12 +26,18 @@ export const SwipeableTeamScoring = ({
   onTeamScoreChange,
 }: SwipeableTeamScoringProps) => {
   const { tourId } = useParams<{ tourId: string }>();
+  const { user } = useAuth();
   const updateCompetitionWinner = useUpdateCompetitionWinner(tourId!, round.id);
 
-  // Filter teams to only those where the current device has claimed at least one player
+  // Filter teams to only those that authenticated user can score for
+  // TODO: Implement backend authorization to restrict which teams a user can score for
   const scoreableTeams = useMemo(() => {
+    // Only authenticated users can score
+    if (!canUserScore(user)) {
+      return [];
+    }
+
     const allTeams = tour.teams || [];
-    const isTeamFormat = true; // Team scoring is always team format
 
     // Filter by round participants (1-4 players max)
     // If round.playerIds is not set, all tournament players can participate (backward compatibility)
@@ -38,19 +45,13 @@ export const SwipeableTeamScoring = ({
 
     return allTeams.filter((team) => {
       // Check if any player on this team is in the round
-      const teamPlayersInRound = team.playerIds.filter((playerId) =>
-        !roundPlayerIds || roundPlayerIds.has(playerId)
+      const teamPlayersInRound = team.playerIds.filter(
+        (playerId) => !roundPlayerIds || roundPlayerIds.has(playerId)
       );
 
-      if (teamPlayersInRound.length === 0) return false;
-
-      // Check if any player on this team is claimed by current device
-      return team.playerIds.some((playerId) => {
-        const player = tour.players.find((p) => p.id === playerId);
-        return player && canScoreForPlayer(player, tour.players, isTeamFormat);
-      });
+      return teamPlayersInRound.length > 0;
     });
-  }, [tour.teams, tour.players, round.playerIds]);
+  }, [user, tour.teams, round.playerIds]);
 
   const [currentHole, setCurrentHole] = useState(1);
   const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
@@ -104,13 +105,7 @@ export const SwipeableTeamScoring = ({
       setShowingCompetitionSelector(true);
       setAutoTriggeredCompetitionSelector(true);
     }
-  }, [
-    // TODO use correct dependencies, round.teamScores does not exist
-    round.teamScores,
-    currentHole,
-    showingCompetitionSelector,
-    currentHoleInfo,
-  ]);
+  }, [currentHole, showingCompetitionSelector, currentHoleInfo]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -174,10 +169,11 @@ export const SwipeableTeamScoring = ({
             No Teams Available to Score
           </h3>
           <p className="text-slate-600 mb-4">
-            You don't have any players claimed on any team. Visit the Players page to claim a player on your team before you can enter scores.
+            Please sign in to access scoring functionality.
           </p>
           <p className="text-sm text-slate-500">
-            In {formatName} format, you can only score for teams where you have claimed at least one player.
+            In {formatName} format, authenticated users can score for all teams
+            in the round.
           </p>
         </div>
       </div>

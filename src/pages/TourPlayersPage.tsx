@@ -2,14 +2,11 @@ import { AddPlayerSheet } from "@/components/players/AddPlayerSheet";
 import { PlayerScorecard } from "@/components/players/PlayerScorecard";
 import { CreateTeamSheet } from "@/components/teams/CreateTeamSheet";
 import { TeamCard } from "@/components/teams/TeamCard";
-import { PlayerClaimButton } from "@/components/players/PlayerClaimButton";
-import { ClaimPlayerCodeDialog } from "@/components/players/ClaimPlayerCodeDialog";
 import { useTour } from "@/hooks/useTours";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { getClaimedPlayer } from "@/lib/deviceIdentity";
 import {
   Users,
   XCircle,
@@ -26,7 +23,6 @@ export const TourPlayersPage = () => {
   const { data: tour, isLoading } = useTour(tourId!);
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [showCreateTeam, setShowCreateTeam] = useState(false);
-  const [showClaimCode, setShowClaimCode] = useState(false);
   const [expandedPlayer, setExpandedPlayer] = useState<string | null>(null);
 
   // Scroll to top when page loads to ensure PageHeader is visible
@@ -37,11 +33,6 @@ export const TourPlayersPage = () => {
   const handlePlayerToggle = (playerId: string) => {
     setExpandedPlayer(expandedPlayer === playerId ? null : playerId);
   };
-
-  const myClaimedPlayer = useMemo(() => {
-    if (!tour) return null;
-    return getClaimedPlayer(tour.players);
-  }, [tour]);
 
   if (isLoading) {
     return (
@@ -123,48 +114,6 @@ export const TourPlayersPage = () => {
       />
 
       <div className="-mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
-        {/* Claim Player Section */}
-        <div className="card card-spacing bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-slate-900 mb-1">
-                {myClaimedPlayer ? "Your Claimed Player" : "Claim Your Player"}
-              </h3>
-              {myClaimedPlayer ? (
-                <div className="space-y-2">
-                  <p className="text-sm text-slate-600">
-                    You are playing as{" "}
-                    <span className="font-semibold text-slate-900">
-                      {myClaimedPlayer.name}
-                    </span>
-                  </p>
-                  {myClaimedPlayer.playerCode && (
-                    <div className="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-blue-200">
-                      <span className="text-xs text-slate-600">Your code:</span>
-                      <span className="font-mono font-bold text-blue-900">
-                        {myClaimedPlayer.playerCode}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p className="text-sm text-slate-600">
-                  Claim a player below to score your rounds, or enter your
-                  player code to claim on this device.
-                </p>
-              )}
-            </div>
-            {!myClaimedPlayer && (
-              <button
-                onClick={() => setShowClaimCode(true)}
-                className="btn-primary whitespace-nowrap"
-              >
-                Enter Player Code
-              </button>
-            )}
-          </div>
-        </div>
-
         {isTeamFormat && (
           <div className="card card-spacing">
             <div className="flex justify-between items-center mb-4">
@@ -314,12 +263,6 @@ export const TourPlayersPage = () => {
                         </div>
                       )}
                     </div>
-                    <PlayerClaimButton
-                      tourId={tour.id}
-                      player={player}
-                      compact
-                      allPlayers={tour.players}
-                    />
                   </div>
                 );
               })}
@@ -354,12 +297,6 @@ export const TourPlayersPage = () => {
           onClose={() => setShowCreateTeam(false)}
         />
       )}
-
-      <ClaimPlayerCodeDialog
-        tourId={tour.id}
-        isOpen={showClaimCode}
-        onClose={() => setShowClaimCode(false)}
-      />
     </div>
   );
 };
