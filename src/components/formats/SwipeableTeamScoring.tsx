@@ -45,8 +45,8 @@ export const SwipeableTeamScoring = ({
 
     return allTeams.filter((team) => {
       // Check if any player on this team is in the round
-      const teamPlayersInRound = team.playerIds.filter((playerId) =>
-        !roundPlayerIds || roundPlayerIds.has(playerId)
+      const teamPlayersInRound = team.playerIds.filter(
+        (playerId) => !roundPlayerIds || roundPlayerIds.has(playerId)
       );
 
       return teamPlayersInRound.length > 0;
@@ -105,13 +105,7 @@ export const SwipeableTeamScoring = ({
       setShowingCompetitionSelector(true);
       setAutoTriggeredCompetitionSelector(true);
     }
-  }, [
-    // TODO use correct dependencies, round.teamScores does not exist
-    round.teamScores,
-    currentHole,
-    showingCompetitionSelector,
-    currentHoleInfo,
-  ]);
+  }, [currentHole, showingCompetitionSelector, currentHoleInfo]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -178,7 +172,8 @@ export const SwipeableTeamScoring = ({
             Please sign in to access scoring functionality.
           </p>
           <p className="text-sm text-slate-500">
-            In {formatName} format, authenticated users can score for all teams in the round.
+            In {formatName} format, authenticated users can score for all teams
+            in the round.
           </p>
         </div>
       </div>
