@@ -6,7 +6,6 @@ import { calculateDetailedPlayerStats } from "../../lib/playerStatsUtils";
 import PlayerScorecardHeader from "./PlayerScorecardHeader";
 import PlayerScoreGrid9 from "./PlayerScoreGrid9";
 import { RoundStatistics } from "./RoundStatistics";
-import { PlayerClaimButton } from "./PlayerClaimButton";
 
 type Props = {
   tour: Tour;
@@ -14,7 +13,6 @@ type Props = {
   isExpanded?: boolean;
   onToggle?: () => void;
   className?: string;
-  hideClaimButton?: boolean;
 };
 
 export const PlayerScorecard = ({
@@ -23,7 +21,6 @@ export const PlayerScorecard = ({
   isExpanded = false,
   onToggle,
   className = "",
-  hideClaimButton = false,
 }: Props) => {
   const playerRounds = useMemo(() => {
     return (tour.rounds || []).filter((round) => {
@@ -92,16 +89,6 @@ export const PlayerScorecard = ({
           }
         />
       </button>
-
-      {!hideClaimButton && (
-        <div className="px-4 py-3 border-t border-slate-200">
-          <PlayerClaimButton
-            tourId={tour.id}
-            player={player}
-            allPlayers={tour.players}
-          />
-        </div>
-      )}
 
       {isExpanded && (
         <div className="space-y-4">

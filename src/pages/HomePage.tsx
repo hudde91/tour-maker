@@ -18,6 +18,7 @@ import { HowItWorksModal } from "@/components/ui/Howitworksmodal";
 import { BottomNav } from "../components/BottomNav";
 import { CreateMockDataDialog } from "@/components/mock/CreateMockDataDialog";
 import { Logo } from "@/components/ui/Logo";
+import { AuthButton } from "@/components/auth/AuthButton";
 
 export const HomePage = () => {
   const { data: tours = [], isLoading } = useTours();
@@ -109,17 +110,22 @@ export const HomePage = () => {
 
   return (
     <div className="min-h-screen golf-bg-pattern w-full">
-      {/* Dev Mode Toggle */}
-      <div className="fixed top-4 right-4 z-50 bg-white rounded-lg shadow-lg border border-slate-200 p-3">
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showMockDataFeatures}
-            onChange={(e) => handleToggleMockDataFeatures(e.target.checked)}
-            className="w-4 h-4 text-purple-600 border-slate-300 rounded focus:ring-purple-500"
-          />
-          <span className="text-sm font-medium text-slate-700">Dev Mode</span>
-        </label>
+      {/* Auth & Dev Mode */}
+      <div className="fixed top-4 right-4 z-50 flex flex-col gap-3 items-end">
+        <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-3">
+          <AuthButton />
+        </div>
+        <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-3">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showMockDataFeatures}
+              onChange={(e) => handleToggleMockDataFeatures(e.target.checked)}
+              className="w-4 h-4 text-purple-600 border-slate-300 rounded focus:ring-purple-500"
+            />
+            <span className="text-sm font-medium text-slate-700">Dev Mode</span>
+          </label>
+        </div>
       </div>
 
       <div className="golf-hero-bg safe-area-top w-full">

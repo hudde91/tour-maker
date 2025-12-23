@@ -8,7 +8,8 @@ import { LiveLeaderboard } from "../scoring/LiveLeaderboard";
 import { IndividualCompetitionWinnerSelector } from "./individual/IndividualCompetitionWinnerSelector";
 import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
-import { canScoreForPlayer } from "@/lib/deviceIdentity";
+import { useAuth } from "@/contexts/AuthContext";
+import { canUserScore } from "@/lib/auth/permissions";
 interface SwipeableTeamScoringProps {
   tour: Tour;
   round: Round;
@@ -25,12 +26,18 @@ export const SwipeableTeamScoring = ({
   onTeamScoreChange,
 }: SwipeableTeamScoringProps) => {
   const { tourId } = useParams<{ tourId: string }>();
+  const { user } = useAuth();
   const updateCompetitionWinner = useUpdateCompetitionWinner(tourId!, round.id);
 
-  // Filter teams to only those where the current device has claimed at least one player
+  // Filter teams to only those that authenticated user can score for
+  // TODO: Implement backend authorization to restrict which teams a user can score for
   const scoreableTeams = useMemo(() => {
+    // Only authenticated users can score
+    if (!canUserScore(user)) {
+      return [];
+    }
+
     const allTeams = tour.teams || [];
-    const isTeamFormat = true; // Team scoring is always team format
 
     // Filter by round participants (1-4 players max)
     // If round.playerIds is not set, all tournament players can participate (backward compatibility)
@@ -42,15 +49,9 @@ export const SwipeableTeamScoring = ({
         !roundPlayerIds || roundPlayerIds.has(playerId)
       );
 
-      if (teamPlayersInRound.length === 0) return false;
-
-      // Check if any player on this team is claimed by current device
-      return team.playerIds.some((playerId) => {
-        const player = tour.players.find((p) => p.id === playerId);
-        return player && canScoreForPlayer(player, tour.players, isTeamFormat);
-      });
+      return teamPlayersInRound.length > 0;
     });
-  }, [tour.teams, tour.players, round.playerIds]);
+  }, [user, tour.teams, round.playerIds]);
 
   const [currentHole, setCurrentHole] = useState(1);
   const [currentTeamIndex, setCurrentTeamIndex] = useState(0);

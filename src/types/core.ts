@@ -74,8 +74,6 @@ export interface Player {
   name: string;
   handicap?: number;
   teamId?: string;
-  claimedBy?: string; // Device ID of the user who claimed this player
-  playerCode?: string; // 6-digit code for claiming on other devices
 }
 
 export interface Team {

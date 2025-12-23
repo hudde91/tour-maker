@@ -5,7 +5,8 @@ import { MatchPlayLeaderboard } from "./MatchPlayLeaderboard";
 import { CompetitionWinnerSelector } from "./CompetitionWinnerSelector";
 import { useParams } from "react-router-dom";
 import { useUpdateCompetitionWinner } from "../../../hooks/useScoring";
-import { canScoreForPlayer } from "../../../lib/deviceIdentity";
+import { useAuth } from "../../../contexts/AuthContext";
+import { canUserScore } from "../../../lib/auth/permissions";
 
 interface SwipeableMatchPlayScoringProps {
   tour: Tour;
@@ -27,6 +28,7 @@ export const SwipeableMatchPlayScoring = ({
   onMatchHoleUpdate,
 }: SwipeableMatchPlayScoringProps) => {
   const { tourId } = useParams<{ tourId: string }>();
+  const { user } = useAuth();
   const updateCompetitionWinner = useUpdateCompetitionWinner(tourId!, round.id);
   const [matchHoles, setMatchHoles] = useState<Record<string, number>>({});
   const [activeTab, setActiveTab] = useState<TabType>("score");
@@ -34,17 +36,22 @@ export const SwipeableMatchPlayScoring = ({
   const [showingCompetitionSelector, setShowingCompetitionSelector] =
     useState(false);
 
-  // Filter matches to only those where current device has claimed at least one player
+  // Filter matches to only those that authenticated user can score for
+  // TODO: Implement backend authorization to restrict which matches a user can score for
   const scoreableMatches = useMemo(() => {
+    // Only authenticated users can score
+    if (!canUserScore(user)) {
+      return [];
+    }
+
     const allMatches = round.ryderCup?.matches || [];
-    const isTeamFormat = true; // Match play is always team format (ryder-cup)
 
     // Filter by round participants (1-4 players max)
     // If round.playerIds is not set, all tournament players can participate (backward compatibility)
     const roundPlayerIds = round.playerIds ? new Set(round.playerIds) : null;
 
     return allMatches.filter((match: any) => {
-      // Check if any player in either team is claimed by current device
+      // Check if match has players in the round
       const teamAPlayerIds = match.teamA?.playerIds || [];
       const teamBPlayerIds = match.teamB?.playerIds || [];
       const allPlayerIds = [...teamAPlayerIds, ...teamBPlayerIds];
@@ -54,14 +61,9 @@ export const SwipeableMatchPlayScoring = ({
         ? allPlayerIds.filter((id: string) => roundPlayerIds.has(id))
         : allPlayerIds;
 
-      if (playersInRound.length === 0) return false;
-
-      return allPlayerIds.some((playerId: string) => {
-        const player = tour.players.find((p) => p.id === playerId);
-        return player && canScoreForPlayer(player, tour.players, isTeamFormat);
-      });
+      return playersInRound.length > 0;
     });
-  }, [round.ryderCup?.matches, tour.players, round.playerIds]);
+  }, [user, round.ryderCup?.matches, round.playerIds]);
 
   const matches = scoreableMatches;
 

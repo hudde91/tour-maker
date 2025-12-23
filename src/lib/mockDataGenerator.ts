@@ -1,6 +1,5 @@
 import { nanoid } from 'nanoid';
 import { Tour, Player, Round, Team, TourFormat } from '../types';
-import { generatePlayerCode } from './deviceIdentity';
 import { storage } from './storage';
 
 const FIRST_NAMES = [
@@ -113,7 +112,6 @@ function generatePlayers(count: number): Player[] {
       id: nanoid(),
       name,
       handicap: generateHandicap(),
-      playerCode: generatePlayerCode(),
     });
   }
 
