@@ -100,7 +100,6 @@ export const TourPlayersPage = () => {
         title={tour.name}
         subtitle={subtitle}
         breadcrumbs={breadcrumbs}
-        backPath="/"
         actions={
           <button
             onClick={() => setShowAddPlayer(true)}

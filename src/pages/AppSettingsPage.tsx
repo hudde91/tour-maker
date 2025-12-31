@@ -100,7 +100,6 @@ export const AppSettingsPage = () => {
         title="App Settings"
         subtitle="Customize your preferences"
         breadcrumbs={breadcrumbs}
-        backPath="/"
       />
 
       <div className="-mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
