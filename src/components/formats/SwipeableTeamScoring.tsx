@@ -280,45 +280,6 @@ export const SwipeableTeamScoring = ({
                 isTransitioning ? "opacity-50" : "opacity-100"
               }`}
             >
-              {/* Swipe indicators - Left arrow */}
-              {currentTeamIndex > 0 || currentHole > 1 ? (
-                <div className="absolute left-2 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
-                  <svg
-                    className="w-6 h-6 text-slate-400 animate-pulse"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                </div>
-              ) : null}
-
-              {/* Swipe indicators - Right arrow */}
-              {currentTeamIndex < teams.length - 1 ||
-              currentHole < round.holes ? (
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
-                  <svg
-                    className="w-6 h-6 text-slate-400 animate-pulse"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              ) : null}
-
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-sm font-semibold text-slate-600">
                   Team {currentTeamIndex + 1} of {teams.length}

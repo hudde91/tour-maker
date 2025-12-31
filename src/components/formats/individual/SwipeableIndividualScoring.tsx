@@ -59,7 +59,9 @@ export const SwipeableIndividualScoring = ({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(
+    null
+  );
   const [activeTab, setActiveTab] = useState<TabType>("score");
   const [showingCompetitionSelector, setShowingCompetitionSelector] =
     useState(false);
@@ -156,7 +158,7 @@ export const SwipeableIndividualScoring = ({
     if (isLeftSwipe) {
       // Trigger haptic feedback for swipe
       hapticLight();
-      setSwipeDirection('left');
+      setSwipeDirection("left");
       setIsTransitioning(true);
       setTimeout(() => {
         // If not the last player, move to next player
@@ -180,7 +182,7 @@ export const SwipeableIndividualScoring = ({
     if (isRightSwipe) {
       // Trigger haptic feedback for swipe
       hapticLight();
-      setSwipeDirection('right');
+      setSwipeDirection("right");
       setIsTransitioning(true);
       setTimeout(() => {
         // If not the first player, move to previous player
@@ -216,7 +218,8 @@ export const SwipeableIndividualScoring = ({
             Please sign in to access scoring functionality.
           </p>
           <p className="text-sm text-slate-500">
-            Authenticated users can score for all players in the round. Your backend will control who can score for which players.
+            Authenticated users can score for all players in the round. Your
+            backend will control who can score for which players.
           </p>
         </div>
       </div>
@@ -316,53 +319,16 @@ export const SwipeableIndividualScoring = ({
           >
             <div
               className={`card relative transition-all duration-300 ease-out ${
-                isTransitioning ? "opacity-70 scale-95" : "opacity-100 scale-100"
+                isTransitioning
+                  ? "opacity-70 scale-95"
+                  : "opacity-100 scale-100"
               }`}
               style={{
                 transform: isTransitioning
-                  ? 'translateX(0) scale(0.95)'
-                  : 'translateX(0) scale(1)',
+                  ? "translateX(0) scale(0.95)"
+                  : "translateX(0) scale(1)",
               }}
             >
-              {/* Swipe indicators - Left arrow */}
-              {currentPlayerIndex > 0 || currentHole > 1 ? (
-                <div className="absolute left-2 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
-                  <svg
-                    className="w-6 h-6 text-slate-400 animate-pulse"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                </div>
-              ) : null}
-
-              {/* Swipe indicators - Right arrow */}
-              {currentPlayerIndex < scoreablePlayers.length - 1 ||
-              currentHole < round.holes ? (
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-30 pointer-events-none">
-                  <svg
-                    className="w-6 h-6 text-slate-400 animate-pulse"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              ) : null}
-
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-sm font-semibold text-slate-600">
                   Player {currentPlayerIndex + 1} of {scoreablePlayers.length}
@@ -421,7 +387,13 @@ export const SwipeableIndividualScoring = ({
 
             <div
               key={`${currentPlayer.id}-${currentHole}`}
-              className={`animate-slide-in-${swipeDirection === 'left' ? 'left' : swipeDirection === 'right' ? 'right' : 'fade'}`}
+              className={`animate-slide-in-${
+                swipeDirection === "left"
+                  ? "left"
+                  : swipeDirection === "right"
+                  ? "right"
+                  : "fade"
+              }`}
             >
               <PlayerScoreCard
                 player={currentPlayer}
