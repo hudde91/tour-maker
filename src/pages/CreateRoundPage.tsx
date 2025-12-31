@@ -4,10 +4,8 @@ import { useTour } from "../hooks/useTours";
 import { useCreateRound } from "../hooks/useRounds";
 import { PlayFormat, RoundSettings, GOLF_FORMATS } from "../types";
 import { storage } from "../lib/storage";
-import { PageHeader } from "../components/ui/PageHeader";
 import { GolfTermTooltip } from "../components/ui/Tooltip";
 import { FormatExplainer } from "../components/ui/FormatExplainer";
-import { StepWizard } from "../components/ui/StepWizard";
 
 const WIZARD_STEPS = [
   { id: "basic", title: "Basic Details", description: "Round & format" },
@@ -22,7 +20,7 @@ export const CreateRoundPage = () => {
   const { data: tour, isLoading } = useTour(tourId!);
   const createRound = useCreateRound(tourId!);
 
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
     courseName: "",
@@ -138,13 +136,13 @@ export const CreateRoundPage = () => {
 
   const handleNext = () => {
     // Validate current step before proceeding
-    if (currentStep === 0) {
+    if (currentStep === 1) {
       if (!formData.courseName.trim() || formData.playerIds.length < 1) {
         return;
       }
     }
 
-    if (currentStep === 1) {
+    if (currentStep === 2) {
       // Validate handicaps before moving to next step
       const handicapErrors = validateHandicaps();
       if (handicapErrors.length > 0) {
@@ -154,12 +152,12 @@ export const CreateRoundPage = () => {
       setValidationErrors([]);
     }
 
-    setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length - 1));
+    setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handlePrevious = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -169,7 +167,7 @@ export const CreateRoundPage = () => {
     // Validate player selection (1-4 players)
     if (formData.playerIds.length < 1 || formData.playerIds.length > 4) {
       setValidationErrors(['Please select between 1 and 4 players for this round']);
-      setCurrentStep(0); // Go back to basic details step
+      setCurrentStep(1); // Go back to basic details step
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
@@ -178,7 +176,7 @@ export const CreateRoundPage = () => {
     const handicapErrors = validateHandicaps();
     if (handicapErrors.length > 0) {
       setValidationErrors(handicapErrors);
-      setCurrentStep(1); // Go back to course setup step
+      setCurrentStep(2); // Go back to course setup step
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
@@ -206,13 +204,13 @@ export const CreateRoundPage = () => {
 
   const isStepValid = () => {
     switch (currentStep) {
-      case 0:
-        return formData.courseName.trim() !== "" && formData.playerIds.length >= 1 && formData.playerIds.length <= 4;
       case 1:
-        return validateHandicaps().length === 0;
+        return formData.courseName.trim() !== "" && formData.playerIds.length >= 1 && formData.playerIds.length <= 4;
       case 2:
-        return true; // Competitions are optional
+        return validateHandicaps().length === 0;
       case 3:
+        return true; // Competitions are optional
+      case 4:
         return true; // Review step
       default:
         return false;
@@ -255,7 +253,7 @@ export const CreateRoundPage = () => {
     );
 
     switch (currentStep) {
-      case 0:
+      case 1:
         // Step 1: Basic Details
         return (
           <div className="space-y-6">
@@ -479,10 +477,22 @@ export const CreateRoundPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Navigation */}
+            <div className="flex gap-4 pt-6 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={!isStepValid()}
+                className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next: Course Setup
+              </button>
+            </div>
           </div>
         );
 
-      case 1:
+      case 2:
         // Step 2: Course Setup
         return (
           <div className="space-y-6">
@@ -735,10 +745,22 @@ export const CreateRoundPage = () => {
                 )}
               </div>
             </div>
+
+            {/* Navigation */}
+            <div className="flex gap-4 pt-6 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={!isStepValid()}
+                className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next: Competitions
+              </button>
+            </div>
           </div>
         );
 
-      case 2:
+      case 3:
         // Step 3: Competitions
         return (
           <div className="space-y-6">
@@ -883,10 +905,22 @@ export const CreateRoundPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Navigation */}
+            <div className="flex gap-4 pt-6 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={!isStepValid()}
+                className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next: Review
+              </button>
+            </div>
           </div>
         );
 
-      case 3:
+      case 4:
         // Step 4: Review & Create
         return (
           <div className="space-y-6">
@@ -1004,6 +1038,18 @@ export const CreateRoundPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Navigation */}
+            <div className="flex gap-4 pt-6 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!isStepValid() || createRound.isPending}
+                className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {createRound.isPending ? "Creating..." : "Create Round"}
+              </button>
+            </div>
           </div>
         );
 
@@ -1012,39 +1058,44 @@ export const CreateRoundPage = () => {
     }
   };
 
-  const breadcrumbs = tour
-    ? [
-        { label: "Home", path: "/", icon: "🏠" },
-        { label: tour.name, path: `/tour/${tourId}`, icon: "⛳" },
-        { label: "Rounds", path: `/tour/${tourId}/rounds`, icon: "📋" },
-        { label: "Create Round", icon: "➕" },
-      ]
-    : [];
+  const handleBack = () => {
+    navigate(`/tour/${tourId}/rounds`);
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 safe-area-top">
-      <PageHeader
-        title="Create New Round"
-        subtitle={tour?.name}
-        breadcrumbs={breadcrumbs}
-        backPath={`/tour/${tourId}/rounds`}
-      />
-
-      <div className="px-4 -mt-4 pb-8">
-        <div className="max-w-4xl mx-auto">
-          <StepWizard
-            steps={WIZARD_STEPS}
-            currentStep={currentStep}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-            onSubmit={handleSubmit}
-            isNextDisabled={!isStepValid()}
-            isSubmitDisabled={!isStepValid()}
-            isSubmitting={createRound.isPending}
-          >
-            {renderStepContent()}
-          </StepWizard>
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <div className="golf-hero-bg safe-area-top">
+        <div className="flex items-center p-6">
+          <button onClick={handleBack} className="nav-back mr-4">
+            <svg
+              className="w-5 h-5 text-slate-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-white">
+              {WIZARD_STEPS[currentStep - 1]?.title || "Create Round"}
+            </h1>
+            <p className="text-emerald-100 mt-1">
+              Step {currentStep} of {WIZARD_STEPS.length}
+            </p>
+          </div>
         </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div>{renderStepContent()}</div>
       </div>
     </div>
   );
