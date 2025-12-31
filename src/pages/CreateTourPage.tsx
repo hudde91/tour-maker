@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useCreateTour } from "../hooks/useTours";
 import { TourFormat, Player } from "../types";
 import { getTours } from "../lib/storage/tours";
+import { useAuth } from "../contexts/AuthContext";
+import { useUserProfile } from "../hooks/useUserProfile";
+import { PlayerProfileSetup } from "../components/profile/PlayerProfileSetup";
 
 interface WizardStep {
   id: number;
@@ -54,6 +57,8 @@ const RYDER_CUP_ADVANCED_STEPS: WizardStep[] = [
 export const CreateTourPage = () => {
   const navigate = useNavigate();
   const createTour = useCreateTour();
+  const { user } = useAuth();
+  const { data: userProfile, refetch: refetchProfile } = useUserProfile(user?.uid || null);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -65,6 +70,7 @@ export const CreateTourPage = () => {
   const [previousPlayers, setPreviousPlayers] = useState<Player[]>([]);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [isRyderCupAdvanced, setIsRyderCupAdvanced] = useState(false);
+  const [showProfileSetup, setShowProfileSetup] = useState(false);
 
   // Get wizard steps based on format
   const wizardSteps =
@@ -95,6 +101,17 @@ export const CreateTourPage = () => {
     setPreviousPlayers(Array.from(playerMap.values()));
   }, []);
 
+  // Check if user needs to set up profile when reaching player selection step
+  useEffect(() => {
+    const isPlayerStep =
+      (currentStep === 3 && (formData.format !== "ryder-cup" || !isRyderCupAdvanced)) ||
+      (currentStep === 4 && formData.format === "ryder-cup" && isRyderCupAdvanced);
+
+    if (isPlayerStep && user && !userProfile) {
+      setShowProfileSetup(true);
+    }
+  }, [currentStep, user, userProfile, formData.format, isRyderCupAdvanced]);
+
   const handleNext = () => {
     if (currentStep < wizardSteps.length) {
       setCurrentStep(currentStep + 1);
@@ -111,9 +128,29 @@ export const CreateTourPage = () => {
 
   const handleSubmit = async () => {
     try {
+      // Prepare the player list
+      let players = [...selectedPlayers];
+
+      // If user is logged in and has a profile, add them as a player automatically
+      if (user && userProfile) {
+        const userAlreadyAdded = players.some(
+          (p) => p.userId === user.uid || p.name.toLowerCase() === userProfile.playerName.toLowerCase()
+        );
+
+        if (!userAlreadyAdded) {
+          const currentUserPlayer: Player = {
+            id: userProfile.playerId,
+            name: userProfile.playerName,
+            handicap: userProfile.handicap,
+            userId: user.uid,
+          };
+          players = [currentUserPlayer, ...players]; // Add current user at the beginning
+        }
+      }
+
       const tourData = {
         ...formData,
-        players: selectedPlayers,
+        players,
       };
       const tour = await createTour.mutateAsync(tourData);
       navigate(`/tour/${tour.id}`);
@@ -747,6 +784,20 @@ export const CreateTourPage = () => {
           )}
         </div>
       </div>
+
+      {/* Player Profile Setup Modal */}
+      {user && showProfileSetup && (
+        <PlayerProfileSetup
+          userId={user.uid}
+          userName={user.displayName || ""}
+          isOpen={showProfileSetup}
+          onClose={() => setShowProfileSetup(false)}
+          onComplete={async () => {
+            await refetchProfile();
+            setShowProfileSetup(false);
+          }}
+        />
+      )}
     </div>
   );
 };
