@@ -77,7 +77,6 @@ export const TourRoundsPage = () => {
         title="Rounds"
         subtitle={subtitle}
         breadcrumbs={breadcrumbs}
-        backPath="/"
         actions={
           <Link
             to={`/tour/${tourId}/create-round`}

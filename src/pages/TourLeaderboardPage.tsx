@@ -68,7 +68,6 @@ export const TourLeaderboardPage = () => {
         title={tour.name}
         subtitle={tour.description}
         breadcrumbs={breadcrumbs}
-        backPath="/"
         showShare={true}
         shareUrl={`${window.location.origin}/tour/${tourId}`}
       />

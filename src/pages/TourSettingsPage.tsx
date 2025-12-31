@@ -178,7 +178,6 @@ export const TourSettingsPage = () => {
         title="Settings"
         subtitle={`Manage ${tour.name}`}
         breadcrumbs={breadcrumbs}
-        backPath="/"
       />
 
       <div className="-mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
