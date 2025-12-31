@@ -74,6 +74,16 @@ export interface Player {
   name: string;
   handicap?: number;
   teamId?: string;
+  userId?: string; // Firebase user ID for account-linked players
+}
+
+export interface UserProfile {
+  userId: string; // Firebase user ID
+  playerId: string; // Reference to the player ID
+  playerName: string;
+  handicap?: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Team {

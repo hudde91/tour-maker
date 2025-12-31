@@ -96,6 +96,15 @@ export {
   generateDefaultHoles,
 } from "./utils";
 
+// User Profiles
+export {
+  getUserProfiles,
+  getUserProfile,
+  saveUserProfile,
+  deleteUserProfile,
+  hasUserProfile,
+} from "./userProfiles";
+
 // Constants
 export { STORAGE_KEYS } from "./constants";
 
@@ -111,6 +120,7 @@ import * as teams from "./teams";
 import * as scoring from "./scoring";
 import * as matchplay from "./matchplay";
 import * as utils from "./utils";
+import * as userProfiles from "./userProfiles";
 
 export const storage = {
   // Tours
@@ -171,4 +181,11 @@ export const storage = {
 
   // Utils
   generateDefaultHoles: utils.generateDefaultHoles,
+
+  // User Profiles
+  getUserProfiles: userProfiles.getUserProfiles,
+  getUserProfile: userProfiles.getUserProfile,
+  saveUserProfile: userProfiles.saveUserProfile,
+  deleteUserProfile: userProfiles.deleteUserProfile,
+  hasUserProfile: userProfiles.hasUserProfile,
 };
