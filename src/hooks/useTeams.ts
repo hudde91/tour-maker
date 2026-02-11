@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { nanoid } from "nanoid";
-import { storage } from "../lib/storage";
+import { api } from "../lib/api";
 import { Team } from "../types";
 
 export const useCreateTeam = (tourId: string) => {
@@ -12,22 +11,7 @@ export const useCreateTeam = (tourId: string) => {
       color: string;
       captainId?: string;
     }) => {
-      const team: Team = {
-        id: nanoid(),
-        name: teamData.name.trim(),
-        captainId: teamData.captainId || "",
-        playerIds: teamData.captainId ? [teamData.captainId] : [],
-        color: teamData.color,
-      };
-
-      storage.addTeamToTour(tourId, team);
-
-      // If captain is selected, assign them to the team
-      if (teamData.captainId) {
-        storage.assignPlayerToTeam(tourId, teamData.captainId, team.id);
-      }
-
-      return team;
+      return api.post<Team>(`/tours/${tourId}/teams`, teamData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
@@ -40,8 +24,10 @@ export const useUpdateTeam = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (team: Team) => {
-      storage.updateTeamInTour(tourId, team);
-      return team;
+      return api.put<Team>(`/tours/${tourId}/teams/${team.id}`, {
+        name: team.name,
+        color: team.color,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
@@ -54,7 +40,7 @@ export const useDeleteTeam = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (teamId: string) => {
-      storage.removeTeamFromTour(tourId, teamId);
+      await api.delete(`/tours/${tourId}/teams/${teamId}`);
       return teamId;
     },
     onSuccess: () => {
@@ -75,9 +61,9 @@ export const useAssignPlayerToTeam = (tourId: string) => {
       teamId: string | null;
     }) => {
       if (teamId) {
-        storage.assignPlayerToTeam(tourId, playerId, teamId);
+        await api.post(`/tours/${tourId}/teams/${teamId}/players/${playerId}`);
       } else {
-        storage.removePlayerFromTeam(tourId, playerId);
+        await api.put(`/tours/${tourId}/players/${playerId}`, { teamId: null });
       }
       return { playerId, teamId };
     },
@@ -98,7 +84,7 @@ export const useSetTeamCaptain = (tourId: string) => {
       teamId: string;
       captainId: string;
     }) => {
-      storage.setTeamCaptain(tourId, teamId, captainId);
+      await api.patch(`/tours/${tourId}/teams/${teamId}/captain`, { captainId });
       return { teamId, captainId };
     },
     onSuccess: () => {

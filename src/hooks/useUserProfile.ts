@@ -1,39 +1,52 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { nanoid } from "nanoid";
-import { storage } from "../lib/storage";
+import { api } from "../lib/api";
 import { UserProfile } from "../types/core";
 
-/**
- * Hook to get the user's profile
- */
 export const useUserProfile = (userId: string | null) => {
   return useQuery({
     queryKey: ["userProfile", userId],
-    queryFn: () => {
+    queryFn: async (): Promise<UserProfile | null> => {
       if (!userId) return null;
-      return storage.getUserProfile(userId);
+      try {
+        const user = await api.get<{
+          userId: string;
+          playerName: string;
+          handicap?: number;
+          createdAt: string;
+          updatedAt: string;
+        }>("/users/me");
+        return {
+          userId: user.userId,
+          playerId: user.userId,
+          playerName: user.playerName,
+          handicap: user.handicap,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        };
+      } catch {
+        return null;
+      }
     },
     enabled: !!userId,
   });
 };
 
-/**
- * Hook to check if user has a profile
- */
 export const useHasUserProfile = (userId: string | null) => {
   return useQuery({
     queryKey: ["hasUserProfile", userId],
-    queryFn: () => {
+    queryFn: async () => {
       if (!userId) return false;
-      return storage.hasUserProfile(userId);
+      try {
+        await api.get("/users/me");
+        return true;
+      } catch {
+        return false;
+      }
     },
     enabled: !!userId,
   });
 };
 
-/**
- * Hook to create or update user profile
- */
 export const useSaveUserProfile = () => {
   const queryClient = useQueryClient();
 
@@ -43,25 +56,25 @@ export const useSaveUserProfile = () => {
       playerName: string;
       handicap?: number;
     }) => {
-      const existingProfile = storage.getUserProfile(data.userId);
+      const result = await api.put<{
+        userId: string;
+        playerName: string;
+        handicap?: number;
+        createdAt: string;
+        updatedAt: string;
+      }>("/users/me", {
+        playerName: data.playerName,
+        handicap: data.handicap,
+      });
 
-      const profile: UserProfile = existingProfile
-        ? {
-            ...existingProfile,
-            playerName: data.playerName.trim(),
-            handicap: data.handicap,
-            updatedAt: new Date().toISOString(),
-          }
-        : {
-            userId: data.userId,
-            playerId: nanoid(),
-            playerName: data.playerName.trim(),
-            handicap: data.handicap,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
-
-      storage.saveUserProfile(profile);
+      const profile: UserProfile = {
+        userId: result.userId,
+        playerId: result.userId,
+        playerName: result.playerName,
+        handicap: result.handicap,
+        createdAt: result.createdAt,
+        updatedAt: result.updatedAt,
+      };
       return profile;
     },
     onSuccess: (profile) => {
@@ -71,15 +84,12 @@ export const useSaveUserProfile = () => {
   });
 };
 
-/**
- * Hook to delete user profile
- */
 export const useDeleteUserProfile = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (userId: string) => {
-      storage.deleteUserProfile(userId);
+      // Note: delete user endpoint can be added later if needed
       return userId;
     },
     onSuccess: (userId) => {

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { storage } from "../lib/storage";
+import { api } from "../lib/api";
 import { invalidateTourCache } from "../lib/cache";
 
 export const useUpdateScore = (tourId: string, roundId: string) => {
@@ -13,12 +13,12 @@ export const useUpdateScore = (tourId: string, roundId: string) => {
       playerId: string;
       scores: (number | null)[];
     }) => {
-      storage.updatePlayerScore(tourId, roundId, playerId, scores);
+      await api.post(`/tours/${tourId}/rounds/${roundId}/scores/${playerId}`, { scores });
       return { playerId, scores };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-      invalidateTourCache(tourId); // Invalidate calculation cache
+      invalidateTourCache(tourId);
     },
   });
 };
@@ -34,12 +34,12 @@ export const useUpdateTeamScore = (tourId: string, roundId: string) => {
       teamId: string;
       scores: number[];
     }) => {
-      storage.updateTeamScore(tourId, roundId, teamId, scores);
+      await api.post(`/tours/${tourId}/rounds/${roundId}/team-scores/${teamId}`, { scores });
       return { teamId, scores };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-      invalidateTourCache(tourId); // Invalidate calculation cache
+      invalidateTourCache(tourId);
     },
   });
 };
@@ -49,12 +49,12 @@ export const useStartRound = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (roundId: string) => {
-      storage.startRound(tourId, roundId);
+      await api.post(`/tours/${tourId}/rounds/${roundId}/start`);
       return roundId;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-      invalidateTourCache(tourId); // Invalidate calculation cache
+      invalidateTourCache(tourId);
     },
   });
 };
@@ -64,12 +64,12 @@ export const useCompleteRound = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (roundId: string) => {
-      storage.completeRound(tourId, roundId);
+      await api.post(`/tours/${tourId}/rounds/${roundId}/complete`);
       return roundId;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-      invalidateTourCache(tourId); // Invalidate calculation cache
+      invalidateTourCache(tourId);
     },
   });
 };
@@ -91,12 +91,18 @@ export const useUpdateCompetitionWinner = (tourId: string, roundId: string) => {
       distance?: number;
       matchId?: string;
     }) => {
-      storage.updateCompetitionWinner(tourId, roundId, holeNumber, competitionType, winnerId, distance, matchId);
+      await api.post(`/tours/${tourId}/rounds/${roundId}/competition-winners`, {
+        holeNumber,
+        type: competitionType,
+        winnerId,
+        distance,
+        matchId,
+      });
       return { holeNumber, competitionType, winnerId, distance, matchId };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-      invalidateTourCache(tourId); // Invalidate calculation cache
+      invalidateTourCache(tourId);
     },
   });
 };

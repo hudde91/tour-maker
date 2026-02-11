@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { nanoid } from "nanoid";
-import { storage } from "../lib/storage";
+import { api } from "../lib/api";
 import { Player } from "../types";
 import { invalidateTourCache } from "../lib/cache";
 
@@ -13,26 +12,11 @@ export const useAddPlayer = (tourId: string) => {
       handicap?: number;
       teamId?: string;
     }) => {
-      const player: Player = {
-        id: nanoid(),
-        name: playerData.name.trim(),
-        handicap: playerData.handicap,
-        teamId: playerData.teamId,
-      };
-
-      storage.addPlayerToTour(tourId, player);
-
-      // If a team was selected, assign the player to the team
-      // This updates the team's playerIds array
-      if (playerData.teamId) {
-        storage.assignPlayerToTeam(tourId, player.id, playerData.teamId);
-      }
-
-      return player;
+      return api.post<Player>(`/tours/${tourId}/players`, playerData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-      invalidateTourCache(tourId); // Invalidate calculation cache
+      invalidateTourCache(tourId);
     },
   });
 };
@@ -42,12 +26,12 @@ export const useRemovePlayer = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (playerId: string) => {
-      storage.removePlayerFromTour(tourId, playerId);
+      await api.delete(`/tours/${tourId}/players/${playerId}`);
       return playerId;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-      invalidateTourCache(tourId); // Invalidate calculation cache
+      invalidateTourCache(tourId);
     },
   });
 };
@@ -57,12 +41,15 @@ export const useUpdatePlayer = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (player: Player) => {
-      storage.updatePlayerInTour(tourId, player);
-      return player;
+      return api.put<Player>(`/tours/${tourId}/players/${player.id}`, {
+        name: player.name,
+        handicap: player.handicap,
+        teamId: player.teamId,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-      invalidateTourCache(tourId); // Invalidate calculation cache
+      invalidateTourCache(tourId);
     },
   });
 };

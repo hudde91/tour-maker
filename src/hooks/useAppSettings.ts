@@ -1,18 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  getAppSettings,
-  saveAppSettings,
-  updateAppSetting,
-  resetAppSettings,
-  applyTheme,
-} from "../lib/storage/settings";
+import { api } from "../lib/api";
+import { applyTheme } from "../lib/storage/settings";
 import { AppSettings } from "../types/settings";
+import { DEFAULT_APP_SETTINGS } from "@tour-maker/shared";
 
 export const useAppSettings = () => {
   return useQuery({
     queryKey: ["app-settings"],
-    queryFn: getAppSettings,
-    staleTime: Infinity, // Settings don't change unless we mutate them
+    queryFn: async () => {
+      try {
+        return await api.get<AppSettings>("/settings");
+      } catch {
+        // Fallback to defaults if not logged in or server unavailable
+        return DEFAULT_APP_SETTINGS;
+      }
+    },
+    staleTime: Infinity,
   });
 };
 
@@ -21,9 +24,9 @@ export const useUpdateAppSettings = () => {
 
   return useMutation({
     mutationFn: async (settings: AppSettings) => {
-      saveAppSettings(settings);
+      const result = await api.put<AppSettings>("/settings", settings);
       applyTheme(settings.theme);
-      return settings;
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["app-settings"] });
@@ -35,15 +38,15 @@ export const useUpdateAppSetting = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async <K extends keyof AppSettings>(data: {
-      key: K;
-      value: AppSettings[K];
+    mutationFn: async (data: {
+      key: keyof AppSettings;
+      value: AppSettings[keyof AppSettings];
     }) => {
-      const settings = updateAppSetting(data.key, data.value);
+      const result = await api.put<AppSettings>("/settings", { [data.key]: data.value });
       if (data.key === "theme") {
-        applyTheme(settings.theme);
+        applyTheme(result.theme);
       }
-      return settings;
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["app-settings"] });
@@ -56,9 +59,9 @@ export const useResetAppSettings = () => {
 
   return useMutation({
     mutationFn: async () => {
-      const settings = resetAppSettings();
-      applyTheme(settings.theme);
-      return settings;
+      const result = await api.put<AppSettings>("/settings", DEFAULT_APP_SETTINGS);
+      applyTheme(result.theme);
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["app-settings"] });
