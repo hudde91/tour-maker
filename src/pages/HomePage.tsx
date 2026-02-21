@@ -161,9 +161,11 @@ export const HomePage = () => {
 
       {/* Auth & Dev Mode */}
       <div className="fixed top-4 right-4 z-50 flex flex-col gap-3 items-end">
-        <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-3">
-          <AuthButton />
-        </div>
+        {user && (
+          <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-3">
+            <AuthButton />
+          </div>
+        )}
         {import.meta.env.DEV && (
           <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-3">
             <label className="flex items-center gap-2 cursor-pointer">
