@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Breadcrumb } from "./Breadcrumb";
 import { ReactNode } from "react";
+import { useToastContext } from "../../contexts/ToastContext";
 
 interface BreadcrumbItem {
   label: string;
@@ -32,6 +33,7 @@ export const PageHeader = ({
   className = "",
 }: PageHeaderProps) => {
   const navigate = useNavigate();
+  const { showToast } = useToastContext();
 
   const handleBack = () => {
     if (onBack) {
@@ -47,10 +49,9 @@ export const PageHeader = ({
     const url = shareUrl || window.location.href;
     try {
       await navigator.clipboard.writeText(url);
-      // TODO: Show toast notification
-      console.log("Link copied to clipboard!");
-    } catch (error) {
-      console.error("Failed to copy link:", error);
+      showToast("Link copied to clipboard!", "success");
+    } catch {
+      showToast("Failed to copy link", "error");
     }
   };
 
