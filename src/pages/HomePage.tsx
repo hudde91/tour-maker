@@ -12,6 +12,7 @@ import {
   Calendar,
   Dice5,
   RefreshCw,
+  LogIn,
 } from "lucide-react";
 import { useTours } from "../hooks/useTours";
 import { useState, useEffect, useCallback } from "react";
@@ -21,13 +22,27 @@ import { BottomNav } from "../components/BottomNav";
 import { CreateMockDataDialog } from "@/components/mock/CreateMockDataDialog";
 import { Logo } from "@/components/ui/Logo";
 import { AuthButton } from "@/components/auth/AuthButton";
+import { useAuth } from "../contexts/AuthContext";
 import { usePullToRefresh } from "../hooks/usePullToRefresh";
 
 export const HomePage = () => {
   const { data: tours = [], isLoading } = useTours();
+  const { user, loading: authLoading, signInWithGoogle } = useAuth();
   const queryClient = useQueryClient();
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [showMockDataDialog, setShowMockDataDialog] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+
+  const handleSignIn = async () => {
+    setIsSigningIn(true);
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error("Sign in failed:", error);
+    } finally {
+      setIsSigningIn(false);
+    }
+  };
   const [showMockDataFeatures, setShowMockDataFeatures] = useState(() => {
     if (!import.meta.env.DEV) return false;
     return localStorage.getItem("showMockDataFeatures") === "true";
@@ -176,6 +191,30 @@ export const HomePage = () => {
       </div>
 
       <div className="-mt-6 pb-8 w-full max-w-6xl mx-auto">
+        {/* Sign-in banner for unauthenticated users */}
+        {!authLoading && !user && (
+          <div className="w-full max-w-2xl mx-auto mb-4 px-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex-1 text-center sm:text-left">
+                <h3 className="text-lg font-semibold text-slate-900 mb-1">
+                  Sign in to get started
+                </h3>
+                <p className="text-sm text-slate-600">
+                  Create and manage your golf tournaments by signing in with Google.
+                </p>
+              </div>
+              <button
+                onClick={handleSignIn}
+                disabled={isSigningIn}
+                className="flex items-center gap-2 rounded-xl bg-blue-500 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-blue-600 disabled:opacity-50 whitespace-nowrap"
+              >
+                <LogIn size={18} />
+                {isSigningIn ? "Signing in..." : "Sign in with Google"}
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="card-elevated section-spacing w-full max-w-2xl mx-auto">
           <div className="text-center">
             <p className="text-slate-600 text-lg section-spacing leading-relaxed">
