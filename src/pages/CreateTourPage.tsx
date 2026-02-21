@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { LogIn } from "lucide-react";
 import { useCreateTour } from "../hooks/useTours";
 import { TourFormat, Player } from "../types";
 import { getTours } from "../lib/storage/tours";
@@ -57,7 +58,7 @@ const RYDER_CUP_ADVANCED_STEPS: WizardStep[] = [
 export const CreateTourPage = () => {
   const navigate = useNavigate();
   const createTour = useCreateTour();
-  const { user } = useAuth();
+  const { user, loading: authLoading, signInWithGoogle } = useAuth();
   const { data: userProfile, refetch: refetchProfile } = useUserProfile(user?.uid || null);
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -71,6 +72,18 @@ export const CreateTourPage = () => {
   const [newPlayerName, setNewPlayerName] = useState("");
   const [isRyderCupAdvanced, setIsRyderCupAdvanced] = useState(false);
   const [showProfileSetup, setShowProfileSetup] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+
+  const handleSignIn = async () => {
+    setIsSigningIn(true);
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error("Sign in failed:", error);
+    } finally {
+      setIsSigningIn(false);
+    }
+  };
 
   // Get wizard steps based on format
   const wizardSteps =
@@ -268,6 +281,61 @@ export const CreateTourPage = () => {
       premium: true,
     },
   ];
+
+  // Auth gate: show sign-in prompt when not logged in
+  if (!authLoading && !user) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <div className="golf-hero-bg safe-area-top">
+          <div className="flex items-center p-6">
+            <button onClick={() => navigate(-1)} className="nav-back mr-4">
+              <svg
+                className="w-5 h-5 text-slate-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-white">
+                Create Tournament
+              </h1>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-lg mx-auto px-4 py-16">
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8 text-center">
+            <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <LogIn className="text-emerald-600" size={32} />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-3">
+              Sign in to create a tournament
+            </h2>
+            <p className="text-slate-600 mb-8 leading-relaxed">
+              You need to be signed in to create and manage tournaments.
+              Sign in with your Google account to get started.
+            </p>
+            <button
+              onClick={handleSignIn}
+              disabled={isSigningIn}
+              className="flex items-center justify-center gap-3 w-full rounded-xl bg-blue-500 px-6 py-4 text-lg font-semibold text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+            >
+              <LogIn size={20} />
+              {isSigningIn ? "Signing in..." : "Sign in with Google"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
