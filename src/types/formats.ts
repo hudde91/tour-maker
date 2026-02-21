@@ -1,15 +1,6 @@
-import { RyderCupSession } from "./matchplay";
-
-export type PlayFormat =
-  | "stroke-play"
-  | "match-play"
-  | "scramble"
-  | "best-ball"
-  | "alternate-shot"
-  | "skins"
-  | "foursomes-match-play"
-  | "four-ball-match-play"
-  | "singles-match-play";
+export type { PlayFormat } from "@tour-maker/shared";
+import type { PlayFormat } from "@tour-maker/shared";
+import type { RyderCupSession } from "@tour-maker/shared";
 
 export const GOLF_FORMATS: Record<
   PlayFormat,
@@ -112,9 +103,9 @@ export const formatUtils = {
   getSessionFromFormat: (format: PlayFormat): RyderCupSession | null => {
     switch (format) {
       case "foursomes-match-play":
-        return "day1-foursomes"; // default, can be overridden
+        return "day1-foursomes";
       case "four-ball-match-play":
-        return "day1-four-ball"; // default, can be overridden
+        return "day1-four-ball";
       case "singles-match-play":
         return "day3-singles";
       default:

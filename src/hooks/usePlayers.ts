@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { nanoid } from "nanoid";
-import { storage } from "../lib/storage";
 import { Player } from "../types";
+import { addPlayer, updatePlayer, removePlayer } from "../lib/firestore";
 import { invalidateTourCache } from "../lib/cache";
+import { nanoid } from "nanoid";
 
 export const useAddPlayer = (tourId: string) => {
   const queryClient = useQueryClient();
@@ -15,24 +15,16 @@ export const useAddPlayer = (tourId: string) => {
     }) => {
       const player: Player = {
         id: nanoid(),
-        name: playerData.name.trim(),
+        name: playerData.name,
         handicap: playerData.handicap,
         teamId: playerData.teamId,
       };
-
-      storage.addPlayerToTour(tourId, player);
-
-      // If a team was selected, assign the player to the team
-      // This updates the team's playerIds array
-      if (playerData.teamId) {
-        storage.assignPlayerToTeam(tourId, player.id, playerData.teamId);
-      }
-
+      await addPlayer(tourId, player);
       return player;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-      invalidateTourCache(tourId); // Invalidate calculation cache
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
+      invalidateTourCache(tourId);
     },
   });
 };
@@ -42,12 +34,12 @@ export const useRemovePlayer = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (playerId: string) => {
-      storage.removePlayerFromTour(tourId, playerId);
+      await removePlayer(tourId, playerId);
       return playerId;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-      invalidateTourCache(tourId); // Invalidate calculation cache
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
+      invalidateTourCache(tourId);
     },
   });
 };
@@ -57,12 +49,12 @@ export const useUpdatePlayer = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (player: Player) => {
-      storage.updatePlayerInTour(tourId, player);
+      await updatePlayer(tourId, player);
       return player;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
-      invalidateTourCache(tourId); // Invalidate calculation cache
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
+      invalidateTourCache(tourId);
     },
   });
 };

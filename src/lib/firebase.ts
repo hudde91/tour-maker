@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getFirestore, enableIndexedDbPersistence } from "firebase/firestore";
 
 // Firebase configuration
 // TODO: Replace these with your actual Firebase project credentials
@@ -18,6 +19,14 @@ export const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication
 export const auth = getAuth(app);
+
+// Initialize Firestore
+export const db = getFirestore(app);
+
+// Enable offline persistence (data available when offline)
+enableIndexedDbPersistence(db).catch(() => {
+  // Persistence fails if multiple tabs are open — safe to ignore
+});
 
 // Google Auth Provider
 export const googleProvider = new GoogleAuthProvider();

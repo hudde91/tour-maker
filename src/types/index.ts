@@ -10,5 +10,8 @@ export * from "./matchplay";
 // Format definitions and utilities
 export * from "./formats";
 
+// Settings types
+export * from "./settings";
+
 // UI component types
 export * from "./ui";

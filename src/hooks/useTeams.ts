@@ -1,7 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { nanoid } from "nanoid";
-import { storage } from "../lib/storage";
 import { Team } from "../types";
+import {
+  addTeam,
+  updateTeam,
+  removeTeam,
+  assignPlayerToTeam,
+  setTeamCaptain,
+} from "../lib/firestore";
+import { nanoid } from "nanoid";
 
 export const useCreateTeam = (tourId: string) => {
   const queryClient = useQueryClient();
@@ -14,23 +20,16 @@ export const useCreateTeam = (tourId: string) => {
     }) => {
       const team: Team = {
         id: nanoid(),
-        name: teamData.name.trim(),
-        captainId: teamData.captainId || "",
-        playerIds: teamData.captainId ? [teamData.captainId] : [],
+        name: teamData.name,
         color: teamData.color,
+        playerIds: [],
+        captainId: teamData.captainId || "",
       };
-
-      storage.addTeamToTour(tourId, team);
-
-      // If captain is selected, assign them to the team
-      if (teamData.captainId) {
-        storage.assignPlayerToTeam(tourId, teamData.captainId, team.id);
-      }
-
+      await addTeam(tourId, team);
       return team;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };
@@ -40,11 +39,11 @@ export const useUpdateTeam = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (team: Team) => {
-      storage.updateTeamInTour(tourId, team);
+      await updateTeam(tourId, team);
       return team;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };
@@ -54,11 +53,11 @@ export const useDeleteTeam = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (teamId: string) => {
-      storage.removeTeamFromTour(tourId, teamId);
+      await removeTeam(tourId, teamId);
       return teamId;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };
@@ -74,15 +73,11 @@ export const useAssignPlayerToTeam = (tourId: string) => {
       playerId: string;
       teamId: string | null;
     }) => {
-      if (teamId) {
-        storage.assignPlayerToTeam(tourId, playerId, teamId);
-      } else {
-        storage.removePlayerFromTeam(tourId, playerId);
-      }
+      await assignPlayerToTeam(tourId, playerId, teamId);
       return { playerId, teamId };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };
@@ -98,11 +93,11 @@ export const useSetTeamCaptain = (tourId: string) => {
       teamId: string;
       captainId: string;
     }) => {
-      storage.setTeamCaptain(tourId, teamId, captainId);
+      await setTeamCaptain(tourId, teamId, captainId);
       return { teamId, captainId };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };

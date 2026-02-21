@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { storage } from "../lib/storage";
+import { addRyderCupSession, updateMatchHole, getTour } from "../lib/firestore";
+import { nanoid } from "nanoid";
 
 export const useCreateRyderCupSession = (tourId: string, roundId: string) => {
   const queryClient = useQueryClient();
@@ -17,41 +18,32 @@ export const useCreateRyderCupSession = (tourId: string, roundId: string) => {
         | "singles";
       pairings: { teamAPlayerIds: string[]; teamBPlayerIds: string[] }[];
     }) => {
-      const createdMatches = storage.addRyderCupSession(
-        tourId,
-        roundId,
-        sessionData as any
-      );
-      return createdMatches;
+      const tour = await getTour(tourId);
+      if (!tour) throw new Error("Tour not found");
+
+      const matchIds = sessionData.pairings.map(() => nanoid());
+      await addRyderCupSession(tourId, roundId, sessionData, tour.teams || [], matchIds);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };
 
-/**
- * Uppdatera ett hål i en match-play match (Ryder Cup).
- */
 export const useUpdateMatchHole = (tourId: string, roundId: string) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (data: {
       matchId: string;
-      holeNumber: number; // 1-based
+      holeNumber: number;
       teamAScore: number;
       teamBScore: number;
     }) => {
-      if (!storage.updateMatchHole) {
-        throw new Error(
-          "storage.updateMatchHole saknas. Lägg in storage-patchen."
-        );
-      }
-      storage.updateMatchHole(tourId, roundId, data);
-      return true;
+      await updateMatchHole(tourId, roundId, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };
