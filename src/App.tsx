@@ -15,12 +15,14 @@ import { RyderCupPairingPage } from "./pages/RyderCupPairingPage";
 import { TeamDashboard } from "./pages/TeamDashboard";
 import { RyderCupSetupWizard } from "./components/rydercup/RyderCupSetupWizard";
 import { ReloadPrompt } from "./components/pwa/ReloadPrompt";
+import { OfflineIndicator } from "./components/pwa/OfflineIndicator";
 
 function App() {
   const location = useLocation();
 
   return (
     <Layout>
+      <OfflineIndicator />
       <ReloadPrompt />
       <ErrorBoundary resetKey={location.pathname}>
         <Routes>

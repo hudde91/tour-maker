@@ -11,20 +11,25 @@ import {
   Tag,
   Calendar,
   Dice5,
+  RefreshCw,
 } from "lucide-react";
 import { useTours } from "../hooks/useTours";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { HowItWorksModal } from "@/components/ui/Howitworksmodal";
 import { BottomNav } from "../components/BottomNav";
 import { CreateMockDataDialog } from "@/components/mock/CreateMockDataDialog";
 import { Logo } from "@/components/ui/Logo";
 import { AuthButton } from "@/components/auth/AuthButton";
+import { usePullToRefresh } from "../hooks/usePullToRefresh";
 
 export const HomePage = () => {
   const { data: tours = [], isLoading } = useTours();
+  const queryClient = useQueryClient();
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [showMockDataDialog, setShowMockDataDialog] = useState(false);
   const [showMockDataFeatures, setShowMockDataFeatures] = useState(() => {
+    if (!import.meta.env.DEV) return false;
     return localStorage.getItem("showMockDataFeatures") === "true";
   });
 
@@ -32,6 +37,14 @@ export const HomePage = () => {
     setShowMockDataFeatures(checked);
     localStorage.setItem("showMockDataFeatures", checked.toString());
   };
+
+  const handleRefresh = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: ["tours"] });
+  }, [queryClient]);
+
+  const { pullDistance, isRefreshing } = usePullToRefresh({
+    onRefresh: handleRefresh,
+  });
 
   const tabs = [
     {
@@ -110,22 +123,45 @@ export const HomePage = () => {
 
   return (
     <div className="min-h-screen golf-bg-pattern w-full">
+      {/* Pull-to-refresh indicator */}
+      {(pullDistance > 0 || isRefreshing) && (
+        <div
+          className="fixed top-0 left-0 right-0 z-[55] flex items-center justify-center pointer-events-none"
+          style={{ height: `${Math.max(pullDistance, isRefreshing ? 48 : 0)}px` }}
+        >
+          <RefreshCw
+            size={24}
+            className={`text-emerald-600 transition-transform ${
+              isRefreshing ? "animate-spin" : ""
+            }`}
+            style={{
+              transform: isRefreshing
+                ? undefined
+                : `rotate(${Math.min(pullDistance * 3, 360)}deg)`,
+              opacity: Math.min(pullDistance / 40, 1),
+            }}
+          />
+        </div>
+      )}
+
       {/* Auth & Dev Mode */}
       <div className="fixed top-4 right-4 z-50 flex flex-col gap-3 items-end">
         <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-3">
           <AuthButton />
         </div>
-        <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-3">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showMockDataFeatures}
-              onChange={(e) => handleToggleMockDataFeatures(e.target.checked)}
-              className="w-4 h-4 text-purple-600 border-slate-300 rounded focus:ring-purple-500"
-            />
-            <span className="text-sm font-medium text-slate-700">Dev Mode</span>
-          </label>
-        </div>
+        {import.meta.env.DEV && (
+          <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-3">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showMockDataFeatures}
+                onChange={(e) => handleToggleMockDataFeatures(e.target.checked)}
+                className="w-4 h-4 text-purple-600 border-slate-300 rounded focus:ring-purple-500"
+              />
+              <span className="text-sm font-medium text-slate-700">Dev Mode</span>
+            </label>
+          </div>
+        )}
       </div>
 
       <div className="golf-hero-bg safe-area-top w-full">
