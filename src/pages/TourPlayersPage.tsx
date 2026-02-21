@@ -3,6 +3,7 @@ import { PlayerScorecard } from "@/components/players/PlayerScorecard";
 import { CreateTeamSheet } from "@/components/teams/CreateTeamSheet";
 import { TeamCard } from "@/components/teams/TeamCard";
 import { useTour } from "@/hooks/useTours";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -21,6 +22,7 @@ import {
 export const TourPlayersPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
   const { data: tour, isLoading } = useTour(tourId!);
+  useDocumentTitle(tour ? `${tour.name} - Players` : "Players");
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [expandedPlayer, setExpandedPlayer] = useState<string | null>(null);

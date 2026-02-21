@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogIn } from "lucide-react";
 import { useCreateTour } from "../hooks/useTours";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { TourFormat, Player } from "../types";
 import { getTours } from "../lib/storage/tours";
 import { useAuth } from "../contexts/AuthContext";
@@ -56,6 +57,7 @@ const RYDER_CUP_ADVANCED_STEPS: WizardStep[] = [
 ];
 
 export const CreateTourPage = () => {
+  useDocumentTitle("Create Tournament");
   const navigate = useNavigate();
   const createTour = useCreateTour();
   const { user, loading: authLoading, signInWithGoogle } = useAuth();

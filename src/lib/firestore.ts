@@ -10,6 +10,7 @@ import {
   where,
   orderBy,
   onSnapshot,
+  runTransaction,
   type Unsubscribe,
   type DocumentData,
 } from "firebase/firestore";
@@ -144,51 +145,57 @@ export async function deleteTour(tourId: string): Promise<void> {
 // ============================================================
 
 export async function addPlayer(tourId: string, player: Player): Promise<void> {
-  const snap = await getDoc(tourDoc(tourId));
-  if (!snap.exists()) return;
-  const players: Player[] = snap.data().players || [];
-  players.push(player);
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(tourDoc(tourId));
+    if (!snap.exists()) return;
+    const players: Player[] = snap.data().players || [];
+    players.push(player);
 
-  // If the player has a teamId, also update that team's playerIds
-  if (player.teamId) {
-    const teams: Team[] = snap.data().teams || [];
-    const teamIdx = teams.findIndex((t) => t.id === player.teamId);
-    if (teamIdx >= 0 && !teams[teamIdx].playerIds.includes(player.id)) {
-      teams[teamIdx].playerIds.push(player.id);
-      await updateDoc(tourDoc(tourId), { players, teams });
-      return;
+    // If the player has a teamId, also update that team's playerIds
+    if (player.teamId) {
+      const teams: Team[] = snap.data().teams || [];
+      const teamIdx = teams.findIndex((t) => t.id === player.teamId);
+      if (teamIdx >= 0 && !teams[teamIdx].playerIds.includes(player.id)) {
+        teams[teamIdx].playerIds.push(player.id);
+        transaction.update(tourDoc(tourId), { players, teams });
+        return;
+      }
     }
-  }
 
-  await updateDoc(tourDoc(tourId), { players });
+    transaction.update(tourDoc(tourId), { players });
+  });
 }
 
 export async function updatePlayer(tourId: string, player: Player): Promise<void> {
-  const snap = await getDoc(tourDoc(tourId));
-  if (!snap.exists()) return;
-  const players: Player[] = snap.data().players || [];
-  const idx = players.findIndex((p) => p.id === player.id);
-  if (idx >= 0) {
-    players[idx] = player;
-    await updateDoc(tourDoc(tourId), { players });
-  }
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(tourDoc(tourId));
+    if (!snap.exists()) return;
+    const players: Player[] = snap.data().players || [];
+    const idx = players.findIndex((p) => p.id === player.id);
+    if (idx >= 0) {
+      players[idx] = player;
+      transaction.update(tourDoc(tourId), { players });
+    }
+  });
 }
 
 export async function removePlayer(tourId: string, playerId: string): Promise<void> {
-  const snap = await getDoc(tourDoc(tourId));
-  if (!snap.exists()) return;
-  const players: Player[] = snap.data().players || [];
-  const teams: Team[] = snap.data().teams || [];
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(tourDoc(tourId));
+    if (!snap.exists()) return;
+    const players: Player[] = snap.data().players || [];
+    const teams: Team[] = snap.data().teams || [];
 
-  // Remove player from teams
-  for (const team of teams) {
-    team.playerIds = team.playerIds.filter((id) => id !== playerId);
-    if (team.captainId === playerId) team.captainId = "";
-  }
+    // Remove player from teams
+    for (const team of teams) {
+      team.playerIds = team.playerIds.filter((id) => id !== playerId);
+      if (team.captainId === playerId) team.captainId = "";
+    }
 
-  await updateDoc(tourDoc(tourId), {
-    players: players.filter((p) => p.id !== playerId),
-    teams,
+    transaction.update(tourDoc(tourId), {
+      players: players.filter((p) => p.id !== playerId),
+      teams,
+    });
   });
 }
 
@@ -197,50 +204,56 @@ export async function removePlayer(tourId: string, playerId: string): Promise<vo
 // ============================================================
 
 export async function addTeam(tourId: string, team: Team): Promise<void> {
-  const snap = await getDoc(tourDoc(tourId));
-  if (!snap.exists()) return;
-  const teams: Team[] = snap.data().teams || [];
-  teams.push(team);
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(tourDoc(tourId));
+    if (!snap.exists()) return;
+    const teams: Team[] = snap.data().teams || [];
+    teams.push(team);
 
-  // If captain specified, update player's teamId
-  if (team.captainId) {
-    const players: Player[] = snap.data().players || [];
-    const pIdx = players.findIndex((p) => p.id === team.captainId);
-    if (pIdx >= 0) {
-      players[pIdx].teamId = team.id;
-      await updateDoc(tourDoc(tourId), { teams, players });
-      return;
+    // If captain specified, update player's teamId
+    if (team.captainId) {
+      const players: Player[] = snap.data().players || [];
+      const pIdx = players.findIndex((p) => p.id === team.captainId);
+      if (pIdx >= 0) {
+        players[pIdx].teamId = team.id;
+        transaction.update(tourDoc(tourId), { teams, players });
+        return;
+      }
     }
-  }
 
-  await updateDoc(tourDoc(tourId), { teams });
+    transaction.update(tourDoc(tourId), { teams });
+  });
 }
 
 export async function updateTeam(tourId: string, team: Team): Promise<void> {
-  const snap = await getDoc(tourDoc(tourId));
-  if (!snap.exists()) return;
-  const teams: Team[] = snap.data().teams || [];
-  const idx = teams.findIndex((t) => t.id === team.id);
-  if (idx >= 0) {
-    teams[idx] = team;
-    await updateDoc(tourDoc(tourId), { teams });
-  }
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(tourDoc(tourId));
+    if (!snap.exists()) return;
+    const teams: Team[] = snap.data().teams || [];
+    const idx = teams.findIndex((t) => t.id === team.id);
+    if (idx >= 0) {
+      teams[idx] = team;
+      transaction.update(tourDoc(tourId), { teams });
+    }
+  });
 }
 
 export async function removeTeam(tourId: string, teamId: string): Promise<void> {
-  const snap = await getDoc(tourDoc(tourId));
-  if (!snap.exists()) return;
-  const teams: Team[] = snap.data().teams || [];
-  const players: Player[] = snap.data().players || [];
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(tourDoc(tourId));
+    if (!snap.exists()) return;
+    const teams: Team[] = snap.data().teams || [];
+    const players: Player[] = snap.data().players || [];
 
-  // Unassign players from this team
-  for (const p of players) {
-    if (p.teamId === teamId) p.teamId = undefined;
-  }
+    // Unassign players from this team
+    for (const p of players) {
+      if (p.teamId === teamId) p.teamId = undefined;
+    }
 
-  await updateDoc(tourDoc(tourId), {
-    teams: teams.filter((t) => t.id !== teamId),
-    players,
+    transaction.update(tourDoc(tourId), {
+      teams: teams.filter((t) => t.id !== teamId),
+      players,
+    });
   });
 }
 
@@ -249,33 +262,35 @@ export async function assignPlayerToTeam(
   playerId: string,
   teamId: string | null
 ): Promise<void> {
-  const snap = await getDoc(tourDoc(tourId));
-  if (!snap.exists()) return;
-  const players: Player[] = snap.data().players || [];
-  const teams: Team[] = snap.data().teams || [];
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(tourDoc(tourId));
+    if (!snap.exists()) return;
+    const players: Player[] = snap.data().players || [];
+    const teams: Team[] = snap.data().teams || [];
 
-  const pIdx = players.findIndex((p) => p.id === playerId);
-  if (pIdx < 0) return;
+    const pIdx = players.findIndex((p) => p.id === playerId);
+    if (pIdx < 0) return;
 
-  // Remove from old team
-  const oldTeamId = players[pIdx].teamId;
-  if (oldTeamId) {
-    const oldTeam = teams.find((t) => t.id === oldTeamId);
-    if (oldTeam) {
-      oldTeam.playerIds = oldTeam.playerIds.filter((id) => id !== playerId);
+    // Remove from old team
+    const oldTeamId = players[pIdx].teamId;
+    if (oldTeamId) {
+      const oldTeam = teams.find((t) => t.id === oldTeamId);
+      if (oldTeam) {
+        oldTeam.playerIds = oldTeam.playerIds.filter((id) => id !== playerId);
+      }
     }
-  }
 
-  // Assign to new team
-  players[pIdx].teamId = teamId || undefined;
-  if (teamId) {
-    const newTeam = teams.find((t) => t.id === teamId);
-    if (newTeam && !newTeam.playerIds.includes(playerId)) {
-      newTeam.playerIds.push(playerId);
+    // Assign to new team
+    players[pIdx].teamId = teamId || undefined;
+    if (teamId) {
+      const newTeam = teams.find((t) => t.id === teamId);
+      if (newTeam && !newTeam.playerIds.includes(playerId)) {
+        newTeam.playerIds.push(playerId);
+      }
     }
-  }
 
-  await updateDoc(tourDoc(tourId), { players, teams });
+    transaction.update(tourDoc(tourId), { players, teams });
+  });
 }
 
 export async function setTeamCaptain(
@@ -283,14 +298,16 @@ export async function setTeamCaptain(
   teamId: string,
   captainId: string
 ): Promise<void> {
-  const snap = await getDoc(tourDoc(tourId));
-  if (!snap.exists()) return;
-  const teams: Team[] = snap.data().teams || [];
-  const idx = teams.findIndex((t) => t.id === teamId);
-  if (idx >= 0) {
-    teams[idx].captainId = captainId;
-    await updateDoc(tourDoc(tourId), { teams });
-  }
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(tourDoc(tourId));
+    if (!snap.exists()) return;
+    const teams: Team[] = snap.data().teams || [];
+    const idx = teams.findIndex((t) => t.id === teamId);
+    if (idx >= 0) {
+      teams[idx].captainId = captainId;
+      transaction.update(tourDoc(tourId), { teams });
+    }
+  });
 }
 
 // ============================================================
@@ -395,34 +412,36 @@ export async function updatePlayerScore(
   playerId: string,
   scores: (number | null)[]
 ): Promise<void> {
-  const snap = await getDoc(roundDoc(tourId, roundId));
-  if (!snap.exists()) return;
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(roundDoc(tourId, roundId));
+    if (!snap.exists()) return;
 
-  const roundData = snap.data();
-  const holeInfo: HoleInfo[] = roundData.holeInfo || [];
-  const allScores: Record<string, PlayerScore> = roundData.scores || {};
+    const roundData = snap.data();
+    const holeInfo: HoleInfo[] = roundData.holeInfo || [];
+    const allScores: Record<string, PlayerScore> = roundData.scores || {};
 
-  // Calculate totals
-  const playedPars = scores.reduce((sum: number, s, i) => {
-    if (s !== null && holeInfo[i]) return sum + (holeInfo[i].par || 0);
-    return sum;
-  }, 0);
-  const totalScore = scores.filter((s): s is number => s !== null).reduce((a, b) => a + b, 0);
-  const totalToPar = totalScore - playedPars;
+    // Calculate totals
+    const playedPars = scores.reduce((sum: number, s, i) => {
+      if (s !== null && holeInfo[i]) return sum + (holeInfo[i].par || 0);
+      return sum;
+    }, 0);
+    const totalScore = scores.filter((s): s is number => s !== null).reduce((a, b) => a + b, 0);
+    const totalToPar = totalScore - playedPars;
 
-  allScores[playerId] = {
-    playerId,
-    scores,
-    totalScore,
-    totalToPar,
-    ...( allScores[playerId]?.handicapStrokes !== undefined && {
-      handicapStrokes: allScores[playerId].handicapStrokes,
-      netScore: totalScore - (allScores[playerId].handicapStrokes || 0),
-      netToPar: totalToPar - (allScores[playerId].handicapStrokes || 0),
-    }),
-  };
+    allScores[playerId] = {
+      playerId,
+      scores,
+      totalScore,
+      totalToPar,
+      ...( allScores[playerId]?.handicapStrokes !== undefined && {
+        handicapStrokes: allScores[playerId].handicapStrokes,
+        netScore: totalScore - (allScores[playerId].handicapStrokes || 0),
+        netToPar: totalToPar - (allScores[playerId].handicapStrokes || 0),
+      }),
+    };
 
-  await updateDoc(roundDoc(tourId, roundId), { scores: allScores });
+    transaction.update(roundDoc(tourId, roundId), { scores: allScores });
+  });
 }
 
 export async function updateTeamScore(
@@ -431,31 +450,33 @@ export async function updateTeamScore(
   teamId: string,
   scores: number[]
 ): Promise<void> {
-  const snap = await getDoc(roundDoc(tourId, roundId));
-  if (!snap.exists()) return;
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(roundDoc(tourId, roundId));
+    if (!snap.exists()) return;
 
-  const roundData = snap.data();
-  const holeInfo: HoleInfo[] = roundData.holeInfo || [];
-  const allScores: Record<string, PlayerScore> = roundData.scores || {};
+    const roundData = snap.data();
+    const holeInfo: HoleInfo[] = roundData.holeInfo || [];
+    const allScores: Record<string, PlayerScore> = roundData.scores || {};
 
-  const playedPars = scores.reduce((sum: number, s, i) => {
-    if (s !== null && holeInfo[i]) return sum + (holeInfo[i].par || 0);
-    return sum;
-  }, 0);
-  const totalScore = scores.reduce((a, b) => a + b, 0);
-  const totalToPar = totalScore - playedPars;
+    const playedPars = scores.reduce((sum: number, s, i) => {
+      if (s !== null && holeInfo[i]) return sum + (holeInfo[i].par || 0);
+      return sum;
+    }, 0);
+    const totalScore = scores.reduce((a, b) => a + b, 0);
+    const totalToPar = totalScore - playedPars;
 
-  const syntheticId = `${teamId}_score`;
-  allScores[syntheticId] = {
-    playerId: syntheticId,
-    scores,
-    totalScore,
-    totalToPar,
-    isTeamScore: true,
-    teamId,
-  };
+    const syntheticId = `${teamId}_score`;
+    allScores[syntheticId] = {
+      playerId: syntheticId,
+      scores,
+      totalScore,
+      totalToPar,
+      isTeamScore: true,
+      teamId,
+    };
 
-  await updateDoc(roundDoc(tourId, roundId), { scores: allScores });
+    transaction.update(roundDoc(tourId, roundId), { scores: allScores });
+  });
 }
 
 export async function updateCompetitionWinner(
@@ -467,43 +488,45 @@ export async function updateCompetitionWinner(
   distance?: number,
   matchId?: string
 ): Promise<void> {
-  const snap = await getDoc(roundDoc(tourId, roundId));
-  if (!snap.exists()) return;
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(roundDoc(tourId, roundId));
+    if (!snap.exists()) return;
 
-  const roundData = snap.data();
-  const winners = roundData.competitionWinners || { closestToPin: {}, longestDrive: {} };
-  const typeWinners = winners[competitionType] || {};
-  const holeKey = String(holeNumber);
+    const roundData = snap.data();
+    const winners = roundData.competitionWinners || { closestToPin: {}, longestDrive: {} };
+    const typeWinners = winners[competitionType] || {};
+    const holeKey = String(holeNumber);
 
-  if (winnerId === null) {
-    if (matchId) {
-      typeWinners[holeKey] = (typeWinners[holeKey] || []).filter(
-        (w: { matchId?: string }) => w.matchId !== matchId
-      );
+    if (winnerId === null) {
+      if (matchId) {
+        typeWinners[holeKey] = (typeWinners[holeKey] || []).filter(
+          (w: { matchId?: string }) => w.matchId !== matchId
+        );
+      } else {
+        typeWinners[holeKey] = (typeWinners[holeKey] || []).filter(
+          (w: { matchId?: string }) => w.matchId
+        );
+      }
     } else {
-      typeWinners[holeKey] = (typeWinners[holeKey] || []).filter(
-        (w: { matchId?: string }) => w.matchId
-      );
+      const entry = {
+        playerId: winnerId,
+        ...(distance !== undefined && { distance }),
+        ...(matchId && { matchId }),
+      };
+      if (!typeWinners[holeKey]) {
+        typeWinners[holeKey] = [entry];
+      } else {
+        const filtered = typeWinners[holeKey].filter((w: { matchId?: string }) =>
+          matchId ? w.matchId !== matchId : w.matchId
+        );
+        filtered.push(entry);
+        typeWinners[holeKey] = filtered;
+      }
     }
-  } else {
-    const entry = {
-      playerId: winnerId,
-      ...(distance !== undefined && { distance }),
-      ...(matchId && { matchId }),
-    };
-    if (!typeWinners[holeKey]) {
-      typeWinners[holeKey] = [entry];
-    } else {
-      const filtered = typeWinners[holeKey].filter((w: { matchId?: string }) =>
-        matchId ? w.matchId !== matchId : w.matchId
-      );
-      filtered.push(entry);
-      typeWinners[holeKey] = filtered;
-    }
-  }
 
-  winners[competitionType] = typeWinners;
-  await updateDoc(roundDoc(tourId, roundId), { competitionWinners: winners });
+    winners[competitionType] = typeWinners;
+    transaction.update(roundDoc(tourId, roundId), { competitionWinners: winners });
+  });
 }
 
 // ============================================================
@@ -520,55 +543,57 @@ export async function addRyderCupSession(
   teams: Team[],
   matchIds: string[]
 ): Promise<void> {
-  const snap = await getDoc(roundDoc(tourId, roundId));
-  if (!snap.exists()) return;
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(roundDoc(tourId, roundId));
+    if (!snap.exists()) return;
 
-  const roundData = snap.data();
-  const ryderCup: RyderCupTournament = roundData.ryderCup || {
-    teamAPoints: 0,
-    teamBPoints: 0,
-    targetPoints: 14.5,
-    matches: [],
-    sessions: { day1Foursomes: [], day1FourBall: [], day2Foursomes: [], day2FourBall: [], day3Singles: [] },
-  };
-
-  const teamA = teams[0];
-  const teamB = teams[1];
-  const st = sessionData.sessionType;
-
-  let matchFormat: "singles" | "foursomes" | "four-ball";
-  let sessionKey: keyof typeof ryderCup.sessions;
-
-  if (st.includes("singles")) {
-    matchFormat = "singles";
-    sessionKey = "day3Singles";
-  } else if (st.includes("foursomes") || st === "foursomes") {
-    matchFormat = "foursomes";
-    sessionKey = st.includes("day2") ? "day2Foursomes" : "day1Foursomes";
-  } else {
-    matchFormat = "four-ball";
-    sessionKey = st.includes("day2") ? "day2FourBall" : "day1FourBall";
-  }
-
-  for (let i = 0; i < sessionData.pairings.length; i++) {
-    const pairing = sessionData.pairings[i];
-    const matchId = matchIds[i];
-    const match = {
-      id: matchId,
-      roundId,
-      format: matchFormat,
-      teamA: { id: teamA?.id || "", playerIds: pairing.teamAPlayerIds },
-      teamB: { id: teamB?.id || "", playerIds: pairing.teamBPlayerIds },
-      holes: [],
-      status: "in-progress" as const,
-      result: "ongoing" as const,
-      points: { teamA: 0, teamB: 0 },
+    const roundData = snap.data();
+    const ryderCup: RyderCupTournament = roundData.ryderCup || {
+      teamAPoints: 0,
+      teamBPoints: 0,
+      targetPoints: 14.5,
+      matches: [],
+      sessions: { day1Foursomes: [], day1FourBall: [], day2Foursomes: [], day2FourBall: [], day3Singles: [] },
     };
-    ryderCup.matches.push(match);
-    ryderCup.sessions[sessionKey].push(matchId);
-  }
 
-  await updateDoc(roundDoc(tourId, roundId), { ryderCup });
+    const teamA = teams[0];
+    const teamB = teams[1];
+    const st = sessionData.sessionType;
+
+    let matchFormat: "singles" | "foursomes" | "four-ball";
+    let sessionKey: keyof typeof ryderCup.sessions;
+
+    if (st.includes("singles")) {
+      matchFormat = "singles";
+      sessionKey = "day3Singles";
+    } else if (st.includes("foursomes") || st === "foursomes") {
+      matchFormat = "foursomes";
+      sessionKey = st.includes("day2") ? "day2Foursomes" : "day1Foursomes";
+    } else {
+      matchFormat = "four-ball";
+      sessionKey = st.includes("day2") ? "day2FourBall" : "day1FourBall";
+    }
+
+    for (let i = 0; i < sessionData.pairings.length; i++) {
+      const pairing = sessionData.pairings[i];
+      const matchId = matchIds[i];
+      const match = {
+        id: matchId,
+        roundId,
+        format: matchFormat,
+        teamA: { id: teamA?.id || "", playerIds: pairing.teamAPlayerIds },
+        teamB: { id: teamB?.id || "", playerIds: pairing.teamBPlayerIds },
+        holes: [],
+        status: "in-progress" as const,
+        result: "ongoing" as const,
+        points: { teamA: 0, teamB: 0 },
+      };
+      ryderCup.matches.push(match);
+      ryderCup.sessions[sessionKey].push(matchId);
+    }
+
+    transaction.update(roundDoc(tourId, roundId), { ryderCup });
+  });
 }
 
 export async function updateMatchHole(
@@ -576,49 +601,51 @@ export async function updateMatchHole(
   roundId: string,
   data: { matchId: string; holeNumber: number; teamAScore: number; teamBScore: number }
 ): Promise<void> {
-  const snap = await getDoc(roundDoc(tourId, roundId));
-  if (!snap.exists()) return;
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(roundDoc(tourId, roundId));
+    if (!snap.exists()) return;
 
-  const roundData = snap.data();
-  const ryderCup: RyderCupTournament = roundData.ryderCup;
-  if (!ryderCup) return;
+    const roundData = snap.data();
+    const ryderCup: RyderCupTournament = roundData.ryderCup;
+    if (!ryderCup) return;
 
-  const matchIdx = ryderCup.matches.findIndex((m) => m.id === data.matchId);
-  if (matchIdx === -1) return;
+    const matchIdx = ryderCup.matches.findIndex((m) => m.id === data.matchId);
+    if (matchIdx === -1) return;
 
-  const match = ryderCup.matches[matchIdx];
-  const result = data.teamAScore < data.teamBScore ? "team-a" : data.teamBScore < data.teamAScore ? "team-b" : "tie";
-  const hole = { holeNumber: data.holeNumber, teamAScore: data.teamAScore, teamBScore: data.teamBScore, result: result as "team-a" | "team-b" | "tie" };
+    const match = ryderCup.matches[matchIdx];
+    const result = data.teamAScore < data.teamBScore ? "team-a" : data.teamBScore < data.teamAScore ? "team-b" : "tie";
+    const hole = { holeNumber: data.holeNumber, teamAScore: data.teamAScore, teamBScore: data.teamBScore, result: result as "team-a" | "team-b" | "tie" };
 
-  const holeIdx = match.holes.findIndex((h) => h.holeNumber === data.holeNumber);
-  if (holeIdx >= 0) match.holes[holeIdx] = hole;
-  else {
-    match.holes.push(hole);
-    match.holes.sort((a, b) => a.holeNumber - b.holeNumber);
-  }
+    const holeIdx = match.holes.findIndex((h) => h.holeNumber === data.holeNumber);
+    if (holeIdx >= 0) match.holes[holeIdx] = hole;
+    else {
+      match.holes.push(hole);
+      match.holes.sort((a, b) => a.holeNumber - b.holeNumber);
+    }
 
-  // Calculate standing
-  let teamAUp = 0;
-  for (const h of match.holes) {
-    if (h.result === "team-a") teamAUp++;
-    else if (h.result === "team-b") teamAUp--;
-  }
-  const totalHoles = roundData.holes || 18;
-  const holesRemaining = totalHoles - match.holes.length;
+    // Calculate standing
+    let teamAUp = 0;
+    for (const h of match.holes) {
+      if (h.result === "team-a") teamAUp++;
+      else if (h.result === "team-b") teamAUp--;
+    }
+    const totalHoles = roundData.holes || 18;
+    const holesRemaining = totalHoles - match.holes.length;
 
-  if (Math.abs(teamAUp) > holesRemaining || holesRemaining === 0) {
-    match.status = "completed";
-    match.completedAt = new Date().toISOString();
-    if (teamAUp > 0) { match.result = "team-a"; match.points = { teamA: 1, teamB: 0 }; }
-    else if (teamAUp < 0) { match.result = "team-b"; match.points = { teamA: 0, teamB: 1 }; }
-    else { match.result = "tie"; match.points = { teamA: 0.5, teamB: 0.5 }; }
-  }
+    if (Math.abs(teamAUp) > holesRemaining || holesRemaining === 0) {
+      match.status = "completed";
+      match.completedAt = new Date().toISOString();
+      if (teamAUp > 0) { match.result = "team-a"; match.points = { teamA: 1, teamB: 0 }; }
+      else if (teamAUp < 0) { match.result = "team-b"; match.points = { teamA: 0, teamB: 1 }; }
+      else { match.result = "tie"; match.points = { teamA: 0.5, teamB: 0.5 }; }
+    }
 
-  ryderCup.teamAPoints = ryderCup.matches.reduce((s, m) => s + m.points.teamA, 0);
-  ryderCup.teamBPoints = ryderCup.matches.reduce((s, m) => s + m.points.teamB, 0);
-  ryderCup.matches[matchIdx] = match;
+    ryderCup.teamAPoints = ryderCup.matches.reduce((s, m) => s + m.points.teamA, 0);
+    ryderCup.teamBPoints = ryderCup.matches.reduce((s, m) => s + m.points.teamB, 0);
+    ryderCup.matches[matchIdx] = match;
 
-  await updateDoc(roundDoc(tourId, roundId), { ryderCup });
+    transaction.update(roundDoc(tourId, roundId), { ryderCup });
+  });
 }
 
 // ============================================================
@@ -648,22 +675,24 @@ export async function saveUserProfile(
   userId: string,
   data: { playerName: string; handicap?: number }
 ): Promise<void> {
-  const snap = await getDoc(userDoc(userId));
-  if (snap.exists()) {
-    await updateDoc(userDoc(userId), {
-      playerName: data.playerName,
-      handicap: data.handicap ?? null,
-      updatedAt: new Date().toISOString(),
-    });
-  } else {
-    await setDoc(userDoc(userId), {
-      playerName: data.playerName,
-      handicap: data.handicap ?? null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      settings: DEFAULT_APP_SETTINGS,
-    });
-  }
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(userDoc(userId));
+    if (snap.exists()) {
+      transaction.update(userDoc(userId), {
+        playerName: data.playerName,
+        handicap: data.handicap ?? null,
+        updatedAt: new Date().toISOString(),
+      });
+    } else {
+      transaction.set(userDoc(userId), {
+        playerName: data.playerName,
+        handicap: data.handicap ?? null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        settings: DEFAULT_APP_SETTINGS,
+      });
+    }
+  });
 }
 
 export async function getAppSettingsFromFirestore(userId: string): Promise<AppSettings> {

@@ -15,6 +15,7 @@ import {
   LogIn,
 } from "lucide-react";
 import { useTours } from "../hooks/useTours";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useState, useEffect, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { HowItWorksModal } from "@/components/ui/Howitworksmodal";
@@ -26,6 +27,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { usePullToRefresh } from "../hooks/usePullToRefresh";
 
 export const HomePage = () => {
+  useDocumentTitle("My Tournaments");
   const { data: tours = [], isLoading } = useTours();
   const { user, loading: authLoading, signInWithGoogle } = useAuth();
   const queryClient = useQueryClient();

@@ -5,6 +5,7 @@ import {
   useUpdateAppSettings,
   useResetAppSettings,
 } from "@/hooks/useAppSettings";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Home, Settings, Sun, Moon, RotateCw, Undo2, Check } from "lucide-react";
@@ -19,6 +20,7 @@ import {
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 export const AppSettingsPage = () => {
+  useDocumentTitle("Settings");
   const { data: appSettings, isLoading } = useAppSettings();
   const updateSettings = useUpdateAppSettings();
   const resetSettings = useResetAppSettings();
