@@ -14,11 +14,14 @@ import { AppSettingsPage } from "./pages/AppSettingsPage";
 import { RyderCupPairingPage } from "./pages/RyderCupPairingPage";
 import { TeamDashboard } from "./pages/TeamDashboard";
 import { RyderCupSetupWizard } from "./components/rydercup/RyderCupSetupWizard";
+import { ReloadPrompt } from "./components/pwa/ReloadPrompt";
+
 function App() {
   const location = useLocation();
 
   return (
     <Layout>
+      <ReloadPrompt />
       <ErrorBoundary resetKey={location.pathname}>
         <Routes>
           <Route path="/" element={<HomePage />} />
