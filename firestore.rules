@@ -1,0 +1,35 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users collection: only the owner can read/write their own profile
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Tours collection
+    match /tours/{tourId} {
+      // Anyone authenticated can read a tour (needed for shared/spectator URLs)
+      allow read: if request.auth != null;
+
+      // Only the owner can create, update, or delete a tour
+      allow create: if request.auth != null
+                    && request.resource.data.ownerId == request.auth.uid;
+      allow update: if request.auth != null
+                    && resource.data.ownerId == request.auth.uid;
+      allow delete: if request.auth != null
+                    && resource.data.ownerId == request.auth.uid;
+
+      // Rounds subcollection
+      match /rounds/{roundId} {
+        // Anyone authenticated can read rounds (for shared scoring view)
+        allow read: if request.auth != null;
+
+        // Only the tour owner can manage rounds
+        allow create, update, delete: if request.auth != null
+                                      && get(/databases/$(database)/documents/tours/$(tourId)).data.ownerId == request.auth.uid;
+      }
+    }
+  }
+}

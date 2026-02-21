@@ -4,14 +4,11 @@
   "version": "0.1.0",
   "type": "module",
   "workspaces": [
-    "shared",
-    "server"
+    "shared"
   ],
   "scripts": {
     "dev": "vite",
-    "dev:server": "npm run dev --workspace=server",
     "build": "vite build",
-    "build:server": "npm run build --workspace=server",
     "preview": "vite preview --strictPort",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",

@@ -1,6 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "../lib/api";
 import { Round, HoleInfo, PlayFormat, RoundSettings } from "../types";
+import {
+  createRound,
+  updateRound,
+  deleteRound,
+  updateRoundCourseDetails,
+  updateRoundStartTime,
+} from "../lib/firestore";
+import { nanoid } from "nanoid";
 
 export const useCreateRound = (tourId: string) => {
   const queryClient = useQueryClient();
@@ -24,10 +31,30 @@ export const useCreateRound = (tourId: string) => {
         throw new Error("A round must have between 1 and 4 players");
       }
 
-      return api.post<Round>(`/tours/${tourId}/rounds`, roundData);
+      const round: Round = {
+        id: nanoid(),
+        name: roundData.name,
+        courseName: roundData.courseName,
+        format: roundData.format,
+        holes: roundData.holes,
+        holeInfo: roundData.holeInfo,
+        totalPar: roundData.totalPar,
+        teeBoxes: roundData.teeBoxes,
+        slopeRating: roundData.slopeRating,
+        totalYardage: roundData.totalYardage,
+        startTime: roundData.startTime,
+        playerIds: roundData.playerIds,
+        settings: roundData.settings,
+        createdAt: new Date().toISOString(),
+        scores: {},
+        status: "created",
+      };
+
+      await createRound(tourId, round);
+      return round;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };
@@ -37,10 +64,11 @@ export const useUpdateRound = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (round: Round) => {
-      return api.put<Round>(`/tours/${tourId}/rounds/${round.id}`, round);
+      await updateRound(tourId, round);
+      return round;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };
@@ -50,11 +78,11 @@ export const useDeleteRound = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (roundId: string) => {
-      await api.delete(`/tours/${tourId}/rounds/${roundId}`);
+      await deleteRound(tourId, roundId);
       return roundId;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };
@@ -73,13 +101,10 @@ export const useUpdateRoundCourseDetails = (tourId: string) => {
         totalYardage?: string;
       };
     }) => {
-      return api.patch<Round>(
-        `/tours/${tourId}/rounds/${data.roundId}/course`,
-        data.updates
-      );
+      await updateRoundCourseDetails(tourId, data.roundId, data.updates);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };
@@ -89,13 +114,10 @@ export const useUpdateRoundStartTime = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (data: { roundId: string; startTime: string }) => {
-      return api.patch<Round>(
-        `/tours/${tourId}/rounds/${data.roundId}/start-time`,
-        { startTime: data.startTime }
-      );
+      await updateRoundStartTime(tourId, data.roundId, data.startTime);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };

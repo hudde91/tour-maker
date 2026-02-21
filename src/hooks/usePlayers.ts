@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "../lib/api";
 import { Player } from "../types";
+import { addPlayer, updatePlayer, removePlayer } from "../lib/firestore";
 import { invalidateTourCache } from "../lib/cache";
+import { nanoid } from "nanoid";
 
 export const useAddPlayer = (tourId: string) => {
   const queryClient = useQueryClient();
@@ -12,10 +13,17 @@ export const useAddPlayer = (tourId: string) => {
       handicap?: number;
       teamId?: string;
     }) => {
-      return api.post<Player>(`/tours/${tourId}/players`, playerData);
+      const player: Player = {
+        id: nanoid(),
+        name: playerData.name,
+        handicap: playerData.handicap,
+        teamId: playerData.teamId,
+      };
+      await addPlayer(tourId, player);
+      return player;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
       invalidateTourCache(tourId);
     },
   });
@@ -26,11 +34,11 @@ export const useRemovePlayer = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (playerId: string) => {
-      await api.delete(`/tours/${tourId}/players/${playerId}`);
+      await removePlayer(tourId, playerId);
       return playerId;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
       invalidateTourCache(tourId);
     },
   });
@@ -41,14 +49,11 @@ export const useUpdatePlayer = (tourId: string) => {
 
   return useMutation({
     mutationFn: async (player: Player) => {
-      return api.put<Player>(`/tours/${tourId}/players/${player.id}`, {
-        name: player.name,
-        handicap: player.handicap,
-        teamId: player.teamId,
-      });
+      await updatePlayer(tourId, player);
+      return player;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
       invalidateTourCache(tourId);
     },
   });

@@ -16,10 +16,6 @@ test-results
 
 # Environment files
 .env
-server/.env
-
-# Drizzle
-server/drizzle
 
 # Editor directories and files
 .vscode/*

@@ -1,27 +1,56 @@
+import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "../lib/api";
+import { useAuth } from "../contexts/AuthContext";
 import { Tour, TourFormat, Player } from "../types";
+import {
+  getTours,
+  getTour,
+  createTour,
+  updateTourDetails,
+  updateTourFormat,
+  toggleTourArchive,
+  deleteTour,
+  addPlayer,
+  subscribeTour,
+} from "../lib/firestore";
+import { nanoid } from "nanoid";
 
 export const useTours = () => {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: ["tours"],
-    queryFn: async () => {
-      const data = await api.get<{ tours: Tour[] }>("/tours");
-      return data.tours;
+    queryKey: ["tours", user?.uid],
+    queryFn: async (): Promise<Tour[]> => {
+      if (!user) return [];
+      return getTours(user.uid);
     },
+    enabled: !!user,
   });
 };
 
 export const useTour = (id: string) => {
+  const queryClient = useQueryClient();
+
+  // Set up real-time listener that pushes updates into React Query cache
+  useEffect(() => {
+    if (!id) return;
+    const unsubscribe = subscribeTour(id, (tour) => {
+      queryClient.setQueryData(["tour", id], tour);
+    });
+    return unsubscribe;
+  }, [id, queryClient]);
+
   return useQuery({
     queryKey: ["tour", id],
-    queryFn: () => api.get<Tour>(`/tours/${id}`),
+    queryFn: () => getTour(id),
     enabled: !!id,
+    staleTime: Infinity, // Real-time listener handles updates
   });
 };
 
 export const useCreateTour = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (data: {
@@ -30,24 +59,24 @@ export const useCreateTour = () => {
       format: TourFormat;
       players?: Player[];
     }) => {
-      const tour = await api.post<Tour>("/tours", {
-        name: data.name,
-        description: data.description,
-        format: data.format,
-      });
+      if (!user) throw new Error("Must be logged in");
+      const id = nanoid();
+      await createTour(
+        user.uid,
+        { name: data.name, description: data.description, format: data.format },
+        id
+      );
 
       // Add players if provided
       if (data.players?.length) {
         for (const player of data.players) {
-          await api.post(`/tours/${tour.id}/players`, {
-            name: player.name,
-            handicap: player.handicap,
-          });
+          await addPlayer(id, player);
         }
       }
 
-      // Refetch the full tour to get the assembled shape
-      return api.get<Tour>(`/tours/${tour.id}`);
+      const tour = await getTour(id);
+      if (!tour) throw new Error("Failed to create tour");
+      return tour;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tours"] });
@@ -60,7 +89,7 @@ export const useDeleteTour = () => {
 
   return useMutation({
     mutationFn: async (tourId: string) => {
-      await api.delete(`/tours/${tourId}`);
+      await deleteTour(tourId);
       return tourId;
     },
     onSuccess: () => {
@@ -78,14 +107,13 @@ export const useUpdateTourDetails = () => {
       name: string;
       description?: string;
     }) => {
-      return api.put<Tour>(`/tours/${data.tourId}`, {
+      await updateTourDetails(data.tourId, {
         name: data.name,
         description: data.description,
       });
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tours"] });
-      queryClient.invalidateQueries({ queryKey: ["tour", variables.tourId] });
     },
   });
 };
@@ -95,15 +123,12 @@ export const useToggleTourArchive = () => {
 
   return useMutation({
     mutationFn: async (tourId: string) => {
-      // Fetch current state to toggle
-      const tour = await api.get<Tour>(`/tours/${tourId}`);
-      return api.patch<Tour>(`/tours/${tourId}/archive`, {
-        archived: !tour.archived,
-      });
+      const tour = await getTour(tourId);
+      if (!tour) throw new Error("Tour not found");
+      await toggleTourArchive(tourId, !tour.archived);
     },
-    onSuccess: (_, tourId) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tours"] });
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
     },
   });
 };
@@ -113,13 +138,10 @@ export const useUpdateTourFormat = () => {
 
   return useMutation({
     mutationFn: async (data: { tourId: string; format: TourFormat }) => {
-      return api.patch<Tour>(`/tours/${data.tourId}/format`, {
-        format: data.format,
-      });
+      await updateTourFormat(data.tourId, data.format);
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tours"] });
-      queryClient.invalidateQueries({ queryKey: ["tour", variables.tourId] });
     },
   });
 };

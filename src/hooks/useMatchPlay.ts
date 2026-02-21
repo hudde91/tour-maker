@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "../lib/api";
+import { addRyderCupSession, updateMatchHole, getTour } from "../lib/firestore";
+import { nanoid } from "nanoid";
 
 export const useCreateRyderCupSession = (tourId: string, roundId: string) => {
   const queryClient = useQueryClient();
@@ -17,19 +18,21 @@ export const useCreateRyderCupSession = (tourId: string, roundId: string) => {
         | "singles";
       pairings: { teamAPlayerIds: string[]; teamBPlayerIds: string[] }[];
     }) => {
-      return api.post(
-        `/tours/${tourId}/rounds/${roundId}/ryder-cup-sessions`,
-        sessionData
-      );
+      const tour = await getTour(tourId);
+      if (!tour) throw new Error("Tour not found");
+
+      const matchIds = sessionData.pairings.map(() => nanoid());
+      await addRyderCupSession(tourId, roundId, sessionData, tour.teams || [], matchIds);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };
 
 export const useUpdateMatchHole = (tourId: string, roundId: string) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (data: {
       matchId: string;
@@ -37,16 +40,10 @@ export const useUpdateMatchHole = (tourId: string, roundId: string) => {
       teamAScore: number;
       teamBScore: number;
     }) => {
-      return api.put(
-        `/tours/${tourId}/rounds/${roundId}/matches/${data.matchId}/holes/${data.holeNumber}`,
-        {
-          teamAScore: data.teamAScore,
-          teamBScore: data.teamBScore,
-        }
-      );
+      await updateMatchHole(tourId, roundId, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
     },
   });
 };

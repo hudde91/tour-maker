@@ -1,19 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "../lib/api";
+import { useAuth } from "../contexts/AuthContext";
 import { applyTheme } from "../lib/storage/settings";
+import { getAppSettingsFromFirestore, saveAppSettingsToFirestore } from "../lib/firestore";
 import { AppSettings } from "../types/settings";
 import { DEFAULT_APP_SETTINGS } from "@tour-maker/shared";
 
 export const useAppSettings = () => {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: ["app-settings"],
+    queryKey: ["app-settings", user?.uid],
     queryFn: async () => {
-      try {
-        return await api.get<AppSettings>("/settings");
-      } catch {
-        // Fallback to defaults if not logged in or server unavailable
-        return DEFAULT_APP_SETTINGS;
-      }
+      if (!user) return DEFAULT_APP_SETTINGS;
+      return getAppSettingsFromFirestore(user.uid);
     },
     staleTime: Infinity,
   });
@@ -21,11 +20,13 @@ export const useAppSettings = () => {
 
 export const useUpdateAppSettings = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (settings: AppSettings) => {
-      const result = await api.put<AppSettings>("/settings", settings);
-      applyTheme(settings.theme);
+      if (!user) throw new Error("Must be logged in");
+      const result = await saveAppSettingsToFirestore(user.uid, settings);
+      applyTheme(result.theme);
       return result;
     },
     onSuccess: () => {
@@ -36,13 +37,15 @@ export const useUpdateAppSettings = () => {
 
 export const useUpdateAppSetting = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (data: {
       key: keyof AppSettings;
       value: AppSettings[keyof AppSettings];
     }) => {
-      const result = await api.put<AppSettings>("/settings", { [data.key]: data.value });
+      if (!user) throw new Error("Must be logged in");
+      const result = await saveAppSettingsToFirestore(user.uid, { [data.key]: data.value });
       if (data.key === "theme") {
         applyTheme(result.theme);
       }
@@ -56,10 +59,12 @@ export const useUpdateAppSetting = () => {
 
 export const useResetAppSettings = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async () => {
-      const result = await api.put<AppSettings>("/settings", DEFAULT_APP_SETTINGS);
+      if (!user) throw new Error("Must be logged in");
+      const result = await saveAppSettingsToFirestore(user.uid, DEFAULT_APP_SETTINGS);
       applyTheme(result.theme);
       return result;
     },

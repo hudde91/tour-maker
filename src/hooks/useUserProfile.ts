@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "../lib/api";
+import { getUserProfile, saveUserProfile } from "../lib/firestore";
 import { UserProfile } from "../types/core";
 
 export const useUserProfile = (userId: string | null) => {
@@ -7,25 +7,16 @@ export const useUserProfile = (userId: string | null) => {
     queryKey: ["userProfile", userId],
     queryFn: async (): Promise<UserProfile | null> => {
       if (!userId) return null;
-      try {
-        const user = await api.get<{
-          userId: string;
-          playerName: string;
-          handicap?: number;
-          createdAt: string;
-          updatedAt: string;
-        }>("/users/me");
-        return {
-          userId: user.userId,
-          playerId: user.userId,
-          playerName: user.playerName,
-          handicap: user.handicap,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-        };
-      } catch {
-        return null;
-      }
+      const profile = await getUserProfile(userId);
+      if (!profile) return null;
+      return {
+        userId: profile.userId as string,
+        playerId: profile.userId as string,
+        playerName: profile.playerName as string,
+        handicap: profile.handicap as number | undefined,
+        createdAt: profile.createdAt as string,
+        updatedAt: profile.updatedAt as string,
+      };
     },
     enabled: !!userId,
   });
@@ -36,12 +27,8 @@ export const useHasUserProfile = (userId: string | null) => {
     queryKey: ["hasUserProfile", userId],
     queryFn: async () => {
       if (!userId) return false;
-      try {
-        await api.get("/users/me");
-        return true;
-      } catch {
-        return false;
-      }
+      const profile = await getUserProfile(userId);
+      return !!profile;
     },
     enabled: !!userId,
   });
@@ -56,30 +43,15 @@ export const useSaveUserProfile = () => {
       playerName: string;
       handicap?: number;
     }) => {
-      const result = await api.put<{
-        userId: string;
-        playerName: string;
-        handicap?: number;
-        createdAt: string;
-        updatedAt: string;
-      }>("/users/me", {
+      await saveUserProfile(data.userId, {
         playerName: data.playerName,
         handicap: data.handicap,
       });
-
-      const profile: UserProfile = {
-        userId: result.userId,
-        playerId: result.userId,
-        playerName: result.playerName,
-        handicap: result.handicap,
-        createdAt: result.createdAt,
-        updatedAt: result.updatedAt,
-      };
-      return profile;
+      return data;
     },
-    onSuccess: (profile) => {
-      queryClient.invalidateQueries({ queryKey: ["userProfile", profile.userId] });
-      queryClient.invalidateQueries({ queryKey: ["hasUserProfile", profile.userId] });
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["userProfile", data.userId] });
+      queryClient.invalidateQueries({ queryKey: ["hasUserProfile", data.userId] });
     },
   });
 };
