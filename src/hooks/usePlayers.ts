@@ -12,12 +12,14 @@ export const useAddPlayer = (tourId: string) => {
       name: string;
       handicap?: number;
       teamId?: string;
+      userId?: string;
     }) => {
       const player: Player = {
         id: nanoid(),
         name: playerData.name,
         handicap: playerData.handicap,
         teamId: playerData.teamId,
+        userId: playerData.userId,
       };
       await addPlayer(tourId, player);
       return player;

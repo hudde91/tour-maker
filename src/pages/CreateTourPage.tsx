@@ -4,10 +4,10 @@ import { LogIn } from "lucide-react";
 import { useCreateTour } from "../hooks/useTours";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { TourFormat, Player } from "../types";
-import { getTours } from "../lib/storage/tours";
 import { useAuth } from "../contexts/AuthContext";
 import { useUserProfile } from "../hooks/useUserProfile";
 import { PlayerProfileSetup } from "../components/profile/PlayerProfileSetup";
+import { PlayerSelectionStep } from "../components/players/PlayerSelectionStep";
 
 interface WizardStep {
   id: number;
@@ -70,8 +70,6 @@ export const CreateTourPage = () => {
     format: "individual" as TourFormat,
   });
   const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([]);
-  const [previousPlayers, setPreviousPlayers] = useState<Player[]>([]);
-  const [newPlayerName, setNewPlayerName] = useState("");
   const [isRyderCupAdvanced, setIsRyderCupAdvanced] = useState(false);
   const [showProfileSetup, setShowProfileSetup] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
@@ -94,27 +92,6 @@ export const CreateTourPage = () => {
       : formData.format === "ryder-cup"
       ? RYDER_CUP_ADVANCED_STEPS.slice(0, 2) // Only show first 2 steps initially for Ryder Cup
       : WIZARD_STEPS;
-
-  // Load previously played with players
-  useEffect(() => {
-    const tours = getTours();
-    const playerMap = new Map<string, Player>();
-
-    tours.forEach((tour) => {
-      tour.players.forEach((player) => {
-        // Use player name as key to avoid duplicates
-        if (!playerMap.has(player.name.toLowerCase())) {
-          playerMap.set(player.name.toLowerCase(), {
-            id: crypto.randomUUID(), // Generate new ID for new tournament
-            name: player.name,
-            handicap: player.handicap,
-          });
-        }
-      });
-    });
-
-    setPreviousPlayers(Array.from(playerMap.values()));
-  }, []);
 
   // Check if user needs to set up profile when reaching player selection step
   useEffect(() => {
@@ -182,17 +159,6 @@ export const CreateTourPage = () => {
 
   const handleRemovePlayer = (playerId: string) => {
     setSelectedPlayers(selectedPlayers.filter((p) => p.id !== playerId));
-  };
-
-  const handleAddNewPlayer = () => {
-    if (newPlayerName.trim()) {
-      const newPlayer: Player = {
-        id: crypto.randomUUID(),
-        name: newPlayerName.trim(),
-      };
-      setSelectedPlayers([...selectedPlayers, newPlayer]);
-      setNewPlayerName("");
-    }
   };
 
   const isStepValid = () => {
@@ -611,246 +577,28 @@ export const CreateTourPage = () => {
 
           {/* Step 4: Add Players (for Ryder Cup Advanced) */}
           {currentStep === 4 && formData.format === "ryder-cup" && isRyderCupAdvanced && (
-            <div className="space-y-6">
-              {/* Selected Players */}
-              {selectedPlayers.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-slate-700">
-                    Selected Players ({selectedPlayers.length})
-                  </h3>
-                  <div className="space-y-2">
-                    {selectedPlayers.map((player) => (
-                      <div
-                        key={player.id}
-                        className="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-200 rounded-lg"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center font-semibold">
-                            {player.name.charAt(0).toUpperCase()}
-                          </div>
-                          <span className="font-medium text-slate-900">
-                            {player.name}
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => handleRemovePlayer(player.id)}
-                          className="text-red-600 hover:text-red-800 p-1"
-                        >
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Add New Player */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-slate-700">
-                  Add New Player
-                </h3>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newPlayerName}
-                    onChange={(e) => setNewPlayerName(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleAddNewPlayer();
-                      }
-                    }}
-                    className="input-field flex-1"
-                    placeholder="Enter player name"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddNewPlayer}
-                    disabled={!newPlayerName.trim()}
-                    className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
-
-              {/* Previously Played With */}
-              {previousPlayers.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-slate-700">
-                    Previously Played With
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {previousPlayers
-                      .filter(
-                        (p) => !selectedPlayers.find((sp) => sp.name === p.name)
-                      )
-                      .map((player) => (
-                        <button
-                          key={player.id}
-                          type="button"
-                          onClick={() => handleAddPlayer(player)}
-                          className="flex items-center gap-2 p-3 border-2 border-slate-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left"
-                        >
-                          <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-semibold text-sm">
-                            {player.name.charAt(0).toUpperCase()}
-                          </div>
-                          <span className="text-sm font-medium text-slate-900">
-                            {player.name}
-                          </span>
-                        </button>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Submit Button */}
-              <div className="flex gap-4 pt-6 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={!isStepValid() || createTour.isPending}
-                  className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                  data-testid="submit-tournament-button"
-                >
-                  {createTour.isPending ? "Creating..." : "Create Tournament"}
-                </button>
-              </div>
-            </div>
+            <PlayerSelectionStep
+              selectedPlayers={selectedPlayers}
+              onAddPlayer={handleAddPlayer}
+              onRemovePlayer={handleRemovePlayer}
+              onSubmit={handleSubmit}
+              submitLabel="Create Tournament"
+              isSubmitting={createTour.isPending}
+              isValid={isStepValid()}
+            />
           )}
 
           {/* Step 3: Add Players (for non-Ryder Cup formats) */}
           {currentStep === 3 && (formData.format !== "ryder-cup" || !isRyderCupAdvanced) && (
-            <div className="space-y-6">
-              {/* Selected Players */}
-              {selectedPlayers.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-slate-700">
-                    Selected Players ({selectedPlayers.length})
-                  </h3>
-                  <div className="space-y-2">
-                    {selectedPlayers.map((player) => (
-                      <div
-                        key={player.id}
-                        className="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-200 rounded-lg"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center font-semibold">
-                            {player.name.charAt(0).toUpperCase()}
-                          </div>
-                          <span className="font-medium text-slate-900">
-                            {player.name}
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => handleRemovePlayer(player.id)}
-                          className="text-red-600 hover:text-red-800 p-1"
-                        >
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Add New Player */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-slate-700">
-                  Add New Player
-                </h3>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newPlayerName}
-                    onChange={(e) => setNewPlayerName(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleAddNewPlayer();
-                      }
-                    }}
-                    className="input-field flex-1"
-                    placeholder="Enter player name"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddNewPlayer}
-                    disabled={!newPlayerName.trim()}
-                    className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
-
-              {/* Previously Played With */}
-              {previousPlayers.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-slate-700">
-                    Previously Played With
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {previousPlayers
-                      .filter(
-                        (p) => !selectedPlayers.find((sp) => sp.name === p.name)
-                      )
-                      .map((player) => (
-                        <button
-                          key={player.id}
-                          type="button"
-                          onClick={() => handleAddPlayer(player)}
-                          className="flex items-center gap-2 p-3 border-2 border-slate-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left"
-                        >
-                          <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-semibold text-sm">
-                            {player.name.charAt(0).toUpperCase()}
-                          </div>
-                          <span className="text-sm font-medium text-slate-900">
-                            {player.name}
-                          </span>
-                        </button>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Submit Button */}
-              <div className="flex gap-4 pt-6 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={!isStepValid() || createTour.isPending}
-                  className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                  data-testid="submit-tournament-button"
-                >
-                  {createTour.isPending ? "Creating..." : "Create Tournament"}
-                </button>
-              </div>
-            </div>
+            <PlayerSelectionStep
+              selectedPlayers={selectedPlayers}
+              onAddPlayer={handleAddPlayer}
+              onRemovePlayer={handleRemovePlayer}
+              onSubmit={handleSubmit}
+              submitLabel="Create Tournament"
+              isSubmitting={createTour.isPending}
+              isValid={isStepValid()}
+            />
           )}
         </div>
       </div>

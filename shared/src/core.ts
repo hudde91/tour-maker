@@ -79,6 +79,13 @@ export interface UserProfile {
   updatedAt: string;
 }
 
+export interface Friend {
+  userId: string;
+  playerName: string;
+  handicap?: number;
+  addedAt: string;
+}
+
 export interface Team {
   id: string;
   name: string;
