@@ -42,8 +42,8 @@ const userDoc = (userId: string) => doc(db, "users", userId);
 // TOURS
 // ============================================================
 
-export async function getTours(ownerId: string): Promise<Tour[]> {
-  const q = query(toursCol(), where("ownerId", "==", ownerId));
+export async function getTours(userId: string): Promise<Tour[]> {
+  const q = query(toursCol(), where("participantIds", "array-contains", userId));
   const snap = await getDocs(q);
   const tours: Tour[] = [];
   for (const d of snap.docs) {
@@ -117,6 +117,7 @@ export async function createTour(
     createdAt: new Date().toISOString(),
     players: [],
     teams: [],
+    participantIds: [ownerId],
   });
 }
 
@@ -151,21 +152,32 @@ export async function addPlayer(tourId: string, player: Player): Promise<void> {
   await runTransaction(db, async (transaction) => {
     const snap = await transaction.get(tourDoc(tourId));
     if (!snap.exists()) return;
-    const players: Player[] = snap.data().players || [];
+    const data = snap.data();
+    const players: Player[] = data.players || [];
     players.push(player);
+
+    const updates: Record<string, unknown> = { players };
 
     // If the player has a teamId, also update that team's playerIds
     if (player.teamId) {
-      const teams: Team[] = snap.data().teams || [];
+      const teams: Team[] = data.teams || [];
       const teamIdx = teams.findIndex((t) => t.id === player.teamId);
       if (teamIdx >= 0 && !teams[teamIdx].playerIds.includes(player.id)) {
         teams[teamIdx].playerIds.push(player.id);
-        transaction.update(tourDoc(tourId), { players, teams });
-        return;
+        updates.teams = teams;
       }
     }
 
-    transaction.update(tourDoc(tourId), { players });
+    // If player has a userId, add to participantIds for query-ability
+    if (player.userId) {
+      const participantIds: string[] = data.participantIds || [];
+      if (!participantIds.includes(player.userId)) {
+        participantIds.push(player.userId);
+        updates.participantIds = participantIds;
+      }
+    }
+
+    transaction.update(tourDoc(tourId), updates);
   });
 }
 
@@ -186,8 +198,12 @@ export async function removePlayer(tourId: string, playerId: string): Promise<vo
   await runTransaction(db, async (transaction) => {
     const snap = await transaction.get(tourDoc(tourId));
     if (!snap.exists()) return;
-    const players: Player[] = snap.data().players || [];
-    const teams: Team[] = snap.data().teams || [];
+    const data = snap.data();
+    const players: Player[] = data.players || [];
+    const teams: Team[] = data.teams || [];
+
+    // Find the player being removed (to check for userId)
+    const removedPlayer = players.find((p) => p.id === playerId);
 
     // Remove player from teams
     for (const team of teams) {
@@ -195,10 +211,24 @@ export async function removePlayer(tourId: string, playerId: string): Promise<vo
       if (team.captainId === playerId) team.captainId = "";
     }
 
-    transaction.update(tourDoc(tourId), {
+    const updates: Record<string, unknown> = {
       players: players.filter((p) => p.id !== playerId),
       teams,
-    });
+    };
+
+    // If removed player had a userId, remove from participantIds
+    // (but keep if they're the owner)
+    if (removedPlayer?.userId) {
+      const participantIds: string[] = data.participantIds || [];
+      const ownerId: string = data.ownerId;
+      if (removedPlayer.userId !== ownerId) {
+        updates.participantIds = participantIds.filter(
+          (id) => id !== removedPlayer.userId
+        );
+      }
+    }
+
+    transaction.update(tourDoc(tourId), updates);
   });
 }
 
