@@ -28,7 +28,7 @@ import { usePullToRefresh } from "../hooks/usePullToRefresh";
 
 export const HomePage = () => {
   useDocumentTitle("My Tournaments");
-  const { data: tours = [], isLoading } = useTours();
+  const { data: tours = [], isLoading, error } = useTours();
   const { user, loading: authLoading, signInWithGoogle } = useAuth();
   const queryClient = useQueryClient();
   const [showHowItWorks, setShowHowItWorks] = useState(false);
@@ -97,6 +97,23 @@ export const HomePage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-slate-500 font-medium">Loading tournaments...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center px-4">
+          <p className="text-red-600 font-medium mb-2">Failed to load tournaments</p>
+          <p className="text-slate-500 text-sm mb-4">{(error as Error).message}</p>
+          <button
+            onClick={() => queryClient.invalidateQueries({ queryKey: ["tours"] })}
+            className="btn-primary"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }

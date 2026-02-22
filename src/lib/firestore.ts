@@ -8,7 +8,6 @@ import {
   deleteDoc,
   query,
   where,
-  orderBy,
   onSnapshot,
   runTransaction,
   limit as firestoreLimit,
@@ -44,12 +43,14 @@ const userDoc = (userId: string) => doc(db, "users", userId);
 // ============================================================
 
 export async function getTours(ownerId: string): Promise<Tour[]> {
-  const q = query(toursCol(), where("ownerId", "==", ownerId), orderBy("createdAt", "desc"));
+  const q = query(toursCol(), where("ownerId", "==", ownerId));
   const snap = await getDocs(q);
   const tours: Tour[] = [];
   for (const d of snap.docs) {
     tours.push(await assembleTour(d.id, d.data()));
   }
+  // Sort client-side to avoid requiring a composite Firestore index
+  tours.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   return tours;
 }
 
