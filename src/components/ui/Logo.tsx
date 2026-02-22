@@ -37,12 +37,12 @@ export const Logo = ({
   const config = sizes[size];
 
   const textColor =
-    variant === "white" ? "text-white" : "text-slate-900 dark:text-white";
+    variant === "white" ? "text-white" : "text-white dark:text-white";
 
   const iconColor =
     variant === "white"
       ? "text-white"
-      : "text-emerald-600 dark:text-emerald-500";
+      : "text-emerald-400 dark:text-emerald-500";
 
   if (variant === "icon-only") {
     return (

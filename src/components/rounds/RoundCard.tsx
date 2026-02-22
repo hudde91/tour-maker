@@ -50,17 +50,17 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
       case "completed":
         return {
           text: "Completed",
-          badge: "bg-emerald-100 text-emerald-700",
+          badge: "bg-emerald-500/15 text-emerald-400",
         };
       case "in-progress":
         return {
           text: "Live",
-          badge: "bg-red-100 text-red-700",
+          badge: "bg-red-500/15 text-red-700",
         };
       default:
         return {
           text: "Ready to start",
-          badge: "bg-slate-100 text-slate-600",
+          badge: "bg-white/5 text-white/50",
         };
     }
   };
@@ -89,7 +89,7 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
   return (
     <Link
       to={`/tour/${tour.id}/round/${round.id}`}
-      className="block bg-white rounded-xl border-2 border-slate-200 hover:border-emerald-400 transition-all p-4 sm:p-5"
+      className="block bg-white/5 rounded-xl border-2 border-white/10 hover:border-emerald-400 transition-all p-4 sm:p-5"
       data-testid={`round-card-${round.id}`}
     >
       <div className="flex items-start justify-between mb-4">
@@ -99,10 +99,10 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-lg sm:text-xl text-slate-900 mb-1 truncate">
+            <h3 className="font-bold text-lg sm:text-xl text-white mb-1 truncate">
               {round.name}
             </h3>
-            <p className="text-sm text-slate-600 mb-2">{round.courseName}</p>
+            <p className="text-sm text-white/50 mb-2">{round.courseName}</p>
             <span
               className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.badge}`}
             >
@@ -117,7 +117,7 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
         <div className="flex items-center gap-2">
           <button
             onClick={handleSettings}
-            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors flex-shrink-0"
+            className="p-2 text-white/30 hover:text-emerald-400 hover:bg-emerald-50 rounded-lg transition-colors flex-shrink-0"
             title="Round settings"
           >
             <svg
@@ -144,7 +144,7 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
           <button
             onClick={handleDelete}
             disabled={deleteRound.isPending}
-            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 flex-shrink-0"
+            className="p-2 text-white/30 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 flex-shrink-0"
             title="Delete round"
           >
             <svg
@@ -165,45 +165,45 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
       </div>
 
       <div className="mb-4">
-        <span className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-medium">
+        <span className="inline-flex items-center gap-2 bg-white/5 text-white/70 px-3 py-1.5 rounded-lg text-sm font-medium">
           <span>{getFormatIcon(round.format)}</span>
           {formatInfo.name}
           {round.settings.strokesGiven && (
             <>
               <span className="text-slate-300">•</span>
-              <span className="text-emerald-700">⛳ Handicap Applied</span>
+              <span className="text-emerald-400">⛳ Handicap Applied</span>
             </>
           )}
         </span>
       </div>
 
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-slate-50 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-slate-900">{round.holes}</div>
-          <div className="text-xs text-slate-500 mt-1 uppercase tracking-wide">
+        <div className="rounded-lg p-3 text-center">
+          <div className="text-2xl font-bold text-white">{round.holes}</div>
+          <div className="text-xs text-white/40 mt-1 uppercase tracking-wide">
             Holes
           </div>
         </div>
 
-        <div className="bg-slate-50 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-slate-900">{totalPar}</div>
-          <div className="text-xs text-slate-500 mt-1 uppercase tracking-wide">
+        <div className="rounded-lg p-3 text-center">
+          <div className="text-2xl font-bold text-white">{totalPar}</div>
+          <div className="text-xs text-white/40 mt-1 uppercase tracking-wide">
             Par
           </div>
         </div>
 
-        <div className="bg-slate-50 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-slate-900">
+        <div className="rounded-lg p-3 text-center">
+          <div className="text-2xl font-bold text-white">
             {playersWithScores}
           </div>
-          <div className="text-xs text-slate-500 mt-1 uppercase tracking-wide">
+          <div className="text-xs text-white/40 mt-1 uppercase tracking-wide">
             Playing
           </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-slate-200">
-        <div className="text-sm text-slate-500">
+      <div className="flex items-center justify-between pt-4 border-t border-white/10">
+        <div className="text-sm text-white/40">
           {round.status === "completed" && round.completedAt
             ? `Completed ${new Date(round.completedAt).toLocaleDateString()}`
             : round.status === "in-progress" && round.startedAt
@@ -211,7 +211,7 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
             : `Created ${new Date(round.createdAt).toLocaleDateString()}`}
         </div>
 
-        <div className="flex items-center gap-2 text-emerald-600 font-medium text-sm">
+        <div className="flex items-center gap-2 text-emerald-400 font-medium text-sm">
           {round.status === "created"
             ? "Start Round"
             : round.status === "in-progress"

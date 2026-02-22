@@ -80,10 +80,10 @@ export const AppSettingsPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <Settings className="text-emerald-600" size={32} strokeWidth={2} />
+          <div className="w-16 h-16 bg-emerald-500/15 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <Settings className="text-emerald-400" size={32} strokeWidth={2} />
           </div>
-          <div className="text-lg font-semibold text-slate-700">
+          <div className="text-lg font-semibold text-white/70">
             Loading settings...
           </div>
         </div>
@@ -97,7 +97,7 @@ export const AppSettingsPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 safe-area-top">
+    <div className="min-h-screen safe-area-top">
       <PageHeader
         title="App Settings"
         subtitle="Customize your preferences"
@@ -110,7 +110,7 @@ export const AppSettingsPage = () => {
           <h2 className="section-header mb-4">Appearance</h2>
 
           <div>
-            <label className="text-sm font-semibold text-slate-600 block mb-3">
+            <label className="text-sm font-semibold text-white/50 block mb-3">
               Theme
             </label>
             <div className="space-y-2">
@@ -120,31 +120,31 @@ export const AppSettingsPage = () => {
                   onClick={() => handleSettingChange("theme", theme)}
                   className={`w-full flex items-center justify-between p-4 rounded-lg transition-colors text-left ${
                     localSettings.theme === theme
-                      ? "bg-emerald-100 border-2 border-emerald-500"
-                      : "bg-slate-50 hover:bg-slate-100 border-2 border-transparent"
+                      ? "bg-emerald-500/15 border-2 border-emerald-500/40"
+                      : "bg-white/5 hover:bg-white/8 border-2 border-transparent"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         localSettings.theme === theme
-                          ? "bg-emerald-200"
-                          : "bg-slate-200"
+                          ? "bg-emerald-500/25"
+                          : "bg-white/10"
                       }`}
                     >
                       {theme === "light" ? (
-                        <Sun size={20} strokeWidth={2} className={localSettings.theme === theme ? "text-emerald-700" : "text-slate-600"} />
+                        <Sun size={20} strokeWidth={2} className={localSettings.theme === theme ? "text-emerald-400" : "text-white/50"} />
                       ) : theme === "dark" ? (
-                        <Moon size={20} strokeWidth={2} className={localSettings.theme === theme ? "text-emerald-700" : "text-slate-600"} />
+                        <Moon size={20} strokeWidth={2} className={localSettings.theme === theme ? "text-emerald-400" : "text-white/50"} />
                       ) : (
-                        <RotateCw size={20} strokeWidth={2} className={localSettings.theme === theme ? "text-emerald-700" : "text-slate-600"} />
+                        <RotateCw size={20} strokeWidth={2} className={localSettings.theme === theme ? "text-emerald-400" : "text-white/50"} />
                       )}
                     </div>
                     <div>
-                      <div className="font-semibold text-slate-900 capitalize">
+                      <div className="font-semibold text-white capitalize">
                         {theme}
                       </div>
-                      <div className="text-sm text-slate-500">
+                      <div className="text-sm text-white/40">
                         {theme === "light"
                           ? "Always use light mode"
                           : theme === "dark"
@@ -154,7 +154,7 @@ export const AppSettingsPage = () => {
                     </div>
                   </div>
                   {localSettings.theme === theme && (
-                    <Check size={20} strokeWidth={3} className="text-emerald-600" />
+                    <Check size={20} strokeWidth={3} className="text-emerald-400" />
                   )}
                 </button>
               ))}
@@ -169,11 +169,11 @@ export const AppSettingsPage = () => {
                 onChange={(e) =>
                   handleSettingChange("compactMode", e.target.checked)
                 }
-                className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                className="w-5 h-5 rounded border-white/15 text-emerald-400 focus:ring-emerald-500"
               />
               <div>
-                <div className="font-semibold text-slate-900">Compact Mode</div>
-                <div className="text-sm text-slate-500">
+                <div className="font-semibold text-white">Compact Mode</div>
+                <div className="text-sm text-white/40">
                   Reduce spacing for denser layouts
                 </div>
               </div>
@@ -187,7 +187,7 @@ export const AppSettingsPage = () => {
 
           <div className="space-y-6">
             <div>
-              <label className="text-sm font-semibold text-slate-600 block mb-2">
+              <label className="text-sm font-semibold text-white/50 block mb-2">
                 Default Handicap
               </label>
               <input
@@ -201,15 +201,15 @@ export const AppSettingsPage = () => {
                     parseInt(e.target.value) || 0
                   )
                 }
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="input-field"
               />
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-white/40 mt-1">
                 Default handicap for new players (0-54)
               </p>
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-slate-600 block mb-3">
+              <label className="text-sm font-semibold text-white/50 block mb-3">
                 Preferred Scoring Display
               </label>
               <div className="space-y-2">
@@ -222,15 +222,15 @@ export const AppSettingsPage = () => {
                       }
                       className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left ${
                         localSettings.preferredScoringDisplay === display
-                          ? "bg-emerald-100 border-2 border-emerald-500"
-                          : "bg-slate-50 hover:bg-slate-100 border-2 border-transparent"
+                          ? "bg-emerald-500/15 border-2 border-emerald-500/40"
+                          : "bg-white/5 hover:bg-white/8 border-2 border-transparent"
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="font-semibold text-slate-900 capitalize">
+                        <div className="font-semibold text-white capitalize">
                           {display}
                         </div>
-                        <div className="text-sm text-slate-500">
+                        <div className="text-sm text-white/40">
                           {display === "gross"
                             ? "Show actual scores"
                             : display === "net"
@@ -239,7 +239,7 @@ export const AppSettingsPage = () => {
                         </div>
                       </div>
                       {localSettings.preferredScoringDisplay === display && (
-                        <Check size={20} strokeWidth={3} className="text-emerald-600" />
+                        <Check size={20} strokeWidth={3} className="text-emerald-400" />
                       )}
                     </button>
                   )
@@ -248,7 +248,7 @@ export const AppSettingsPage = () => {
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-slate-600 block mb-3">
+              <label className="text-sm font-semibold text-white/50 block mb-3">
                 Measurement Unit
               </label>
               <div className="space-y-2">
@@ -258,17 +258,17 @@ export const AppSettingsPage = () => {
                     onClick={() => handleSettingChange("measurementUnit", unit)}
                     className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left ${
                       localSettings.measurementUnit === unit
-                        ? "bg-emerald-100 border-2 border-emerald-500"
-                        : "bg-slate-50 hover:bg-slate-100 border-2 border-transparent"
+                        ? "bg-emerald-500/15 border-2 border-emerald-500/40"
+                        : "bg-white/5 hover:bg-white/8 border-2 border-transparent"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="font-semibold text-slate-900 capitalize">
+                      <div className="font-semibold text-white capitalize">
                         {unit}
                       </div>
                     </div>
                     {localSettings.measurementUnit === unit && (
-                      <Check size={20} strokeWidth={3} className="text-emerald-600" />
+                      <Check size={20} strokeWidth={3} className="text-emerald-400" />
                     )}
                   </button>
                 ))}
@@ -283,7 +283,7 @@ export const AppSettingsPage = () => {
 
           <div className="space-y-6">
             <div>
-              <label className="text-sm font-semibold text-slate-600 block mb-3">
+              <label className="text-sm font-semibold text-white/50 block mb-3">
                 Date Format
               </label>
               <div className="space-y-2">
@@ -295,15 +295,15 @@ export const AppSettingsPage = () => {
                     onClick={() => handleSettingChange("dateFormat", format)}
                     className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left ${
                       localSettings.dateFormat === format
-                        ? "bg-emerald-100 border-2 border-emerald-500"
-                        : "bg-slate-50 hover:bg-slate-100 border-2 border-transparent"
+                        ? "bg-emerald-500/15 border-2 border-emerald-500/40"
+                        : "bg-white/5 hover:bg-white/8 border-2 border-transparent"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="font-semibold text-slate-900">
+                      <div className="font-semibold text-white">
                         {format}
                       </div>
-                      <div className="text-sm text-slate-500">
+                      <div className="text-sm text-white/40">
                         {format === "MM/DD/YYYY"
                           ? new Date().toLocaleDateString("en-US")
                           : format === "DD/MM/YYYY"
@@ -312,7 +312,7 @@ export const AppSettingsPage = () => {
                       </div>
                     </div>
                     {localSettings.dateFormat === format && (
-                      <Check size={20} strokeWidth={3} className="text-emerald-600" />
+                      <Check size={20} strokeWidth={3} className="text-emerald-400" />
                     )}
                   </button>
                 ))}
@@ -320,7 +320,7 @@ export const AppSettingsPage = () => {
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-slate-600 block mb-3">
+              <label className="text-sm font-semibold text-white/50 block mb-3">
                 Time Format
               </label>
               <div className="space-y-2">
@@ -330,20 +330,20 @@ export const AppSettingsPage = () => {
                     onClick={() => handleSettingChange("timeFormat", format)}
                     className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left ${
                       localSettings.timeFormat === format
-                        ? "bg-emerald-100 border-2 border-emerald-500"
-                        : "bg-slate-50 hover:bg-slate-100 border-2 border-transparent"
+                        ? "bg-emerald-500/15 border-2 border-emerald-500/40"
+                        : "bg-white/5 hover:bg-white/8 border-2 border-transparent"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="font-semibold text-slate-900">
+                      <div className="font-semibold text-white">
                         {format === "12h" ? "12-hour" : "24-hour"}
                       </div>
-                      <div className="text-sm text-slate-500">
+                      <div className="text-sm text-white/40">
                         {format === "12h" ? "3:30 PM" : "15:30"}
                       </div>
                     </div>
                     {localSettings.timeFormat === format && (
-                      <Check size={20} strokeWidth={3} className="text-emerald-600" />
+                      <Check size={20} strokeWidth={3} className="text-emerald-400" />
                     )}
                   </button>
                 ))}
@@ -364,11 +364,11 @@ export const AppSettingsPage = () => {
                 onChange={(e) =>
                   handleSettingChange("showTips", e.target.checked)
                 }
-                className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                className="w-5 h-5 rounded border-white/15 text-emerald-400 focus:ring-emerald-500"
               />
               <div>
-                <div className="font-semibold text-slate-900">Show Tips</div>
-                <div className="text-sm text-slate-500">
+                <div className="font-semibold text-white">Show Tips</div>
+                <div className="text-sm text-white/40">
                   Display helpful tips throughout the app
                 </div>
               </div>
@@ -377,8 +377,8 @@ export const AppSettingsPage = () => {
         </div>
 
         {/* Reset Settings */}
-        <div className="card border-amber-200">
-          <h2 className="section-header text-amber-700 mb-4 flex items-center gap-2">
+        <div className="card border-amber-500/30">
+          <h2 className="section-header text-amber-400/60 mb-4 flex items-center gap-2">
             <RotateCw size={20} strokeWidth={2} />
             Reset Settings
           </h2>
@@ -386,23 +386,23 @@ export const AppSettingsPage = () => {
           <button
             onClick={handleResetSettings}
             disabled={resetSettings.isPending}
-            className="w-full flex items-center justify-between p-4 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors text-left disabled:opacity-50"
+            className="w-full flex items-center justify-between p-4 bg-amber-500/10 hover:bg-amber-500/15 rounded-lg transition-colors text-left disabled:opacity-50"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-amber-200 rounded-full flex items-center justify-center">
-                <Undo2 size={20} strokeWidth={2} className="text-amber-700" />
+              <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center">
+                <Undo2 size={20} strokeWidth={2} className="text-amber-400/60" />
               </div>
               <div>
-                <div className="font-semibold text-amber-900">
+                <div className="font-semibold text-amber-300">
                   Reset to Defaults
                 </div>
-                <div className="text-sm text-amber-700">
+                <div className="text-sm text-amber-400/60">
                   Restore all settings to their default values
                 </div>
               </div>
             </div>
             <svg
-              className="w-5 h-5 text-amber-400"
+              className="w-5 h-5 text-amber-400/60"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -416,8 +416,8 @@ export const AppSettingsPage = () => {
             </svg>
           </button>
 
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
+          <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+            <p className="text-sm text-blue-300">
               <strong>Note:</strong> This will reset all app settings to their
               default values. Your tournaments and data will not be affected.
             </p>
@@ -425,10 +425,10 @@ export const AppSettingsPage = () => {
         </div>
 
         {/* Back to Home */}
-        <div className="card bg-slate-50">
+        <div className="card">
           <Link
             to="/"
-            className="w-full flex items-center justify-center gap-2 p-3 text-slate-600 hover:text-slate-900 font-semibold transition-colors"
+            className="w-full flex items-center justify-center gap-2 p-3 text-white/50 hover:text-white font-semibold transition-colors"
           >
             <Home size={20} strokeWidth={2} />
             Back to Home

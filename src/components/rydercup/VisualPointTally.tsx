@@ -47,14 +47,14 @@ export const VisualPointTally = ({
             </span>
           </div>
           <div>
-            <div className="font-semibold text-slate-900">{teamAName}</div>
-            <div className="text-sm text-slate-500">
+            <div className="font-semibold text-white">{teamAName}</div>
+            <div className="text-sm text-white/40">
               {teamAPoints.toFixed(1)} points
             </div>
           </div>
           {hasTeamAWon && (
             <div className="ml-2">
-              <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full font-semibold">
+              <span className="bg-emerald-500/15 text-emerald-300 text-xs px-2 py-1 rounded-full font-semibold">
                 WINNER
               </span>
             </div>
@@ -64,14 +64,14 @@ export const VisualPointTally = ({
         <div className="flex items-center gap-3">
           {hasTeamBWon && (
             <div className="mr-2">
-              <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full font-semibold">
+              <span className="bg-emerald-500/15 text-emerald-300 text-xs px-2 py-1 rounded-full font-semibold">
                 WINNER
               </span>
             </div>
           )}
           <div className="text-right">
-            <div className="font-semibold text-slate-900">{teamBName}</div>
-            <div className="text-sm text-slate-500">
+            <div className="font-semibold text-white">{teamBName}</div>
+            <div className="text-sm text-white/40">
               {teamBPoints.toFixed(1)} points
             </div>
           </div>
@@ -88,7 +88,7 @@ export const VisualPointTally = ({
 
       {/* Visual Bar */}
       <div className="space-y-2">
-        <div className="relative h-12 bg-slate-100 rounded-lg overflow-hidden">
+        <div className="relative h-12 bg-white/5 rounded-lg overflow-hidden">
           {/* Team A Bar */}
           <div
             className="absolute left-0 top-0 h-full transition-all duration-500 ease-out"
@@ -135,13 +135,13 @@ export const VisualPointTally = ({
         {/* Status Message */}
         <div className="text-center text-sm">
           {hasTeamAWon || hasTeamBWon ? (
-            <span className="font-semibold text-emerald-600">
+            <span className="font-semibold text-emerald-400">
               {hasTeamAWon ? teamAName : teamBName} wins the tournament!
             </span>
           ) : isTied ? (
-            <span className="text-slate-600">All square</span>
+            <span className="text-white/50">All square</span>
           ) : (
-            <span className="text-slate-600">
+            <span className="text-white/50">
               {isTeamALeading ? teamAName : teamBName} leads by{" "}
               {Math.abs(teamAPoints - teamBPoints).toFixed(1)}{" "}
               {Math.abs(teamAPoints - teamBPoints) === 1 ? "point" : "points"}
@@ -152,17 +152,17 @@ export const VisualPointTally = ({
 
       {/* Points to Win */}
       {!hasTeamAWon && !hasTeamBWon && (
-        <div className="flex justify-between text-sm text-slate-600">
+        <div className="flex justify-between text-sm text-white/50">
           <div>
             Needs{" "}
-            <span className="font-semibold text-slate-900">
+            <span className="font-semibold text-white">
               {(targetPoints - teamAPoints).toFixed(1)}
             </span>{" "}
             to win
           </div>
           <div className="text-right">
             Needs{" "}
-            <span className="font-semibold text-slate-900">
+            <span className="font-semibold text-white">
               {(targetPoints - teamBPoints).toFixed(1)}
             </span>{" "}
             to win

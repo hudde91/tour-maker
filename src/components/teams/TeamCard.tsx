@@ -145,10 +145,10 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                 />
               ) : (
                 <>
-                  <h3 className="text-xl md:text-2xl font-bold text-slate-900 truncate mb-1">
+                  <h3 className="text-xl md:text-2xl font-bold text-white truncate mb-1">
                     {team.name}
                   </h3>
-                  <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm text-slate-600">
+                  <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm text-white/50">
                     <div className="flex items-center gap-1">
                       <span className="text-base">👥</span>
                       <span className="font-medium">
@@ -181,14 +181,14 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
             </Link>
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+              className="p-2 text-white/30 hover:text-white/50 hover:bg-white/10 rounded-lg transition-colors"
               title="Edit team"
             >
               <span className="text-base">✏️</span>
             </button>
             <button
               onClick={handleDeleteTeam}
-              className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              className="p-2 text-red-400 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors"
               title="Delete team"
             >
               <span className="text-base">🗑️</span>
@@ -198,24 +198,24 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
 
         {/* Captain Management Section */}
         {teamPlayers.length > 0 && (
-          <div className="card-spacing border-t border-slate-200">
+          <div className="card-spacing border-t border-white/10">
             <button
               onClick={() => setShowCaptainSelect(!showCaptainSelect)}
               className="w-full flex items-center justify-between p-3 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-200"
             >
               <div className="flex items-center gap-2">
                 <span className="text-base">👑</span>
-                <span className="font-medium text-slate-900">
+                <span className="font-medium text-white">
                   {captain ? `Captain: ${captain.name}` : "Select Captain"}
                 </span>
               </div>
-              <span className="text-slate-400">
+              <span className="text-white/30">
                 {showCaptainSelect ? "▲" : "▼"}
               </span>
             </button>
 
             {showCaptainSelect && (
-              <div className="mt-3 space-y-2 bg-white border border-slate-200 rounded-lg p-3 shadow-sm">
+              <div className="mt-3 space-y-2 bg-white/5 border border-white/10 rounded-lg p-3 shadow-sm">
                 {teamPlayers.map((player) => (
                   <button
                     key={player.id}
@@ -223,13 +223,13 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                     className={`w-full text-left p-3 rounded-lg transition-colors border ${
                       team.captainId === player.id
                         ? "bg-amber-50 border-amber-300"
-                        : "hover:bg-slate-50 border-slate-200"
+                        : "hover:bg-white/5 border-white/10"
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="text-base">👤</span>
-                        <span className="font-medium text-slate-900">
+                        <span className="font-medium text-white">
                           {player.name}
                         </span>
                       </div>
@@ -248,7 +248,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
           {teamPlayers.map((player) => (
             <div
               key={player.id}
-              className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200"
+              className="flex items-center justify-between p-3 rounded-lg border border-white/10"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="w-8 h-8 bg-gradient-to-br from-slate-300 to-slate-400 rounded-full flex items-center justify-center">
@@ -257,7 +257,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-slate-900 truncate">
+                    <span className="font-semibold text-white truncate">
                       {player.name}
                     </span>
                     {team.captainId === player.id && (
@@ -267,7 +267,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                     )}
                   </div>
                   {player.handicap !== undefined && (
-                    <span className="text-sm text-slate-500 flex items-center gap-1">
+                    <span className="text-sm text-white/40 flex items-center gap-1">
                       <span className="text-xs">⛳</span>
                       Handicap: {player.handicap}
                     </span>
@@ -280,7 +280,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                   onClick={() =>
                     handleRemovePlayerClick(player.id, player.name)
                   }
-                  className="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded-full font-medium transition-colors border border-red-200"
+                  className="text-xs bg-red-500/15 hover:bg-red-200 text-red-700 px-3 py-1 rounded-full font-medium transition-colors border border-red-200"
                   title="Remove from team"
                 >
                   Remove
@@ -291,10 +291,10 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
 
           {/* Add Player Section */}
           {unassignedPlayers.length > 0 && (
-            <div className="pt-3 border-t border-slate-200">
+            <div className="pt-3 border-t border-white/10">
               <button
                 onClick={() => setShowPlayerAssignment(!showPlayerAssignment)}
-                className="w-full p-3 border-2 border-dashed border-slate-300 rounded-lg text-slate-600 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all font-medium"
+                className="w-full p-3 border-2 border-dashed border-white/15 rounded-lg text-white/50 hover:border-emerald-400 hover:text-emerald-400 hover:bg-emerald-50 transition-all font-medium"
               >
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-base">➕</span>
@@ -304,8 +304,8 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
 
               {/* Player Assignment Dropdown */}
               {showPlayerAssignment && (
-                <div className="mt-3 space-y-2 bg-white border border-slate-200 rounded-lg p-3 shadow-sm">
-                  <div className="text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+                <div className="mt-3 space-y-2 bg-white/5 border border-white/10 rounded-lg p-3 shadow-sm">
+                  <div className="text-sm font-medium text-white/70 mb-2 flex items-center gap-2">
                     <span className="text-base">👥</span>
                     Available Players:
                   </div>
@@ -313,17 +313,17 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                     <button
                       key={player.id}
                       onClick={() => handleAssignPlayer(player.id)}
-                      className="w-full text-left p-3 hover:bg-emerald-50 rounded-lg transition-colors border border-slate-200 hover:border-emerald-300"
+                      className="w-full text-left p-3 hover:bg-emerald-50 rounded-lg transition-colors border border-white/10 hover:border-emerald-300"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <span className="text-base">👤</span>
                           <div>
-                            <div className="font-medium text-slate-900">
+                            <div className="font-medium text-white">
                               {player.name}
                             </div>
                             {player.handicap !== undefined && (
-                              <div className="text-sm text-slate-500 flex items-center gap-1">
+                              <div className="text-sm text-white/40 flex items-center gap-1">
                                 <span className="text-xs">⛳</span>
                                 Handicap: {player.handicap}
                               </div>

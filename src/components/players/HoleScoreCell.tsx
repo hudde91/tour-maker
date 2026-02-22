@@ -19,7 +19,7 @@ export default function HoleScoreCell({
   return (
     <td
       className={`px-2 py-2 relative ${
-        valid ? "font-semibold text-slate-900" : "text-slate-400"
+        valid ? "font-semibold text-white" : "text-white/30"
       }`}
     >
       <span className="relative z-10 inline-block">{text}</span>

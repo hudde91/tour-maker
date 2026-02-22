@@ -11,7 +11,7 @@ interface SkeletonProps {
 
 const SkeletonBase = ({ className = "" }: SkeletonProps) => (
   <div
-    className={`animate-pulse bg-slate-200 rounded ${className}`}
+    className={`animate-pulse bg-white/10 rounded ${className}`}
     aria-label="Loading..."
   />
 );
@@ -20,7 +20,7 @@ export const Skeleton = memo(SkeletonBase);
 
 // Leaderboard entry skeleton
 export const LeaderboardEntrySkeleton = memo(() => (
-  <div className="p-4 sm:p-5 bg-white border-2 border-slate-200 rounded-xl">
+  <div className="p-4 sm:p-5 bg-white/5 border-2 border-white/10 rounded-xl">
     <div className="flex items-center gap-4">
       {/* Position Badge */}
       <Skeleton className="w-12 h-12 rounded-full flex-shrink-0" />
@@ -68,7 +68,7 @@ PlayerCardSkeleton.displayName = "PlayerCardSkeleton";
 
 // Round card skeleton
 export const RoundCardSkeleton = memo(() => (
-  <div className="bg-white rounded-xl border-2 border-slate-200 p-4 sm:p-5">
+  <div className="bg-white/5 rounded-xl border-2 border-white/10 p-4 sm:p-5">
     <div className="flex items-start justify-between mb-4">
       <div className="flex items-start gap-3 flex-1">
         <Skeleton className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex-shrink-0" />
@@ -84,21 +84,21 @@ export const RoundCardSkeleton = memo(() => (
     <Skeleton className="h-8 w-48 mb-4 rounded-lg" />
 
     <div className="grid grid-cols-3 gap-3 mb-4">
-      <div className="bg-slate-50 rounded-lg p-3">
+      <div className="rounded-lg p-3">
         <Skeleton className="h-8 w-12 mx-auto mb-2" />
         <Skeleton className="h-3 w-16 mx-auto" />
       </div>
-      <div className="bg-slate-50 rounded-lg p-3">
+      <div className="rounded-lg p-3">
         <Skeleton className="h-8 w-12 mx-auto mb-2" />
         <Skeleton className="h-3 w-16 mx-auto" />
       </div>
-      <div className="bg-slate-50 rounded-lg p-3">
+      <div className="rounded-lg p-3">
         <Skeleton className="h-8 w-12 mx-auto mb-2" />
         <Skeleton className="h-3 w-16 mx-auto" />
       </div>
     </div>
 
-    <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+    <div className="flex items-center justify-between pt-4 border-t border-white/10">
       <Skeleton className="h-4 w-32" />
       <Skeleton className="h-4 w-24" />
     </div>

@@ -53,7 +53,7 @@ export const RyderCupTournamentLeaderboard = ({
   if (!teamA || !teamB) {
     return (
       <div className="card text-center py-8">
-        <p className="text-slate-500">Need exactly 2 teams for Ryder Cup</p>
+        <p className="text-white/40">Need exactly 2 teams for Ryder Cup</p>
       </div>
     );
   }
@@ -71,11 +71,11 @@ export const RyderCupTournamentLeaderboard = ({
     <div className="card-elevated">
       {/* Tournament Points Header */}
       <div className="text-center card-spacing">
-        <h3 className="text-2xl font-bold text-slate-900 mb-2 flex items-center justify-center gap-3">
+        <h3 className="text-2xl font-bold text-white mb-2 flex items-center justify-center gap-3">
           <span className="text-3xl">🏆</span>
           Ryder Cup Standings
         </h3>
-        <p className="text-slate-600">
+        <p className="text-white/50">
           First to {target} points wins the tournament
         </p>
       </div>
@@ -97,14 +97,14 @@ export const RyderCupTournamentLeaderboard = ({
       {totalMatches > 0 && (
         <div className="card-spacing">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-slate-700">
+            <span className="text-sm font-medium text-white/70">
               Tournament Progress
             </span>
-            <span className="text-sm text-slate-500">
+            <span className="text-sm text-white/40">
               {completedMatches} of {totalMatches} matches completed
             </span>
           </div>
-          <div className="w-full bg-slate-200 rounded-full h-3">
+          <div className="w-full bg-white/10 rounded-full h-3">
             <div
               className="bg-emerald-500 h-3 rounded-full transition-all duration-300"
               style={{
@@ -118,7 +118,7 @@ export const RyderCupTournamentLeaderboard = ({
       {/* Match Results Breakdown */}
       {hasMatches && (
         <div className="card-spacing">
-          <h4 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <h4 className="font-semibold text-white/90 mb-4 flex items-center gap-2">
             <span className="text-lg">📋</span>
             Match Results
           </h4>
@@ -148,7 +148,7 @@ export const RyderCupTournamentLeaderboard = ({
       )}
 
       {/* Scoring Info Box */}
-      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mt-4 p-3 bg-blue-50 border border-blue-500/30 rounded-lg">
         <p className="text-sm text-blue-900">
           <span className="font-semibold">ℹ️ Scoring:</span> Win = 1 point, Tie
           (Halved) = 0.5 points each, Loss = 0 points

@@ -20,7 +20,17 @@ export const BottomNav = ({ tabs }: BottomNavProps) => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 safe-area-bottom z-50 shadow-lg" aria-label="Main navigation">
+    <nav
+      className="fixed bottom-0 left-0 right-0 safe-area-bottom z-50"
+      style={{
+        background: "rgba(255, 255, 255, 0.06)",
+        backdropFilter: "blur(32px)",
+        WebkitBackdropFilter: "blur(32px)",
+        borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+        boxShadow: "0 -8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+      }}
+      aria-label="Main navigation"
+    >
       <div
         className="grid max-w-6xl mx-auto"
         role="tablist"
@@ -40,11 +50,12 @@ export const BottomNav = ({ tabs }: BottomNavProps) => {
               role="tab"
               aria-selected={isActive}
               aria-label={tab.label}
-              className={`flex flex-col items-center justify-center py-3 px-2 min-h-[48px] transition-all duration-200 relative focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 outline-none ${
+              className={`flex flex-col items-center justify-center py-3 px-2 min-h-[48px] transition-all duration-200 relative outline-none ${
                 isActive
-                  ? "text-emerald-600 dark:text-emerald-500"
-                  : "text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400 active:scale-95"
+                  ? "text-emerald-400"
+                  : "text-white/40 hover:text-white/60 active:scale-95"
               }`}
+              style={isActive ? { filter: "drop-shadow(0 0 8px rgba(52, 211, 153, 0.4))" } : undefined}
             >
               <div
                 className={`mb-1 transition-transform duration-200 ${
@@ -62,11 +73,24 @@ export const BottomNav = ({ tabs }: BottomNavProps) => {
               </span>
 
               {isActive && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-emerald-600 dark:bg-emerald-500 rounded-b-full" />
+                <div
+                  className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 rounded-b-full"
+                  style={{
+                    background: "linear-gradient(90deg, rgba(16, 185, 129, 0.6), rgba(52, 211, 153, 0.8), rgba(16, 185, 129, 0.6))",
+                    boxShadow: "0 2px 8px rgba(16, 185, 129, 0.4)",
+                  }}
+                />
               )}
 
               {tab.badge !== undefined && tab.badge > 0 && (
-                <div className="absolute top-1 right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-md" aria-label={`${tab.badge} notifications`}>
+                <div
+                  className="absolute top-1 right-2 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+                  style={{
+                    background: "rgba(239, 68, 68, 0.8)",
+                    boxShadow: "0 0 8px rgba(239, 68, 68, 0.4)",
+                  }}
+                  aria-label={`${tab.badge} notifications`}
+                >
                   {tab.badge > 9 ? "9+" : tab.badge}
                 </div>
               )}

@@ -47,11 +47,11 @@ export default class ErrorBoundary extends React.Component<Props, State> {
     // Standard-fallback (ren, matchar appens stil)
     return (
       <div className="p-4">
-        <div className="rounded-xl border bg-white shadow-sm p-4">
-          <div className="text-base font-semibold text-slate-900">
+        <div className="rounded-xl border bg-white/5 shadow-sm p-4">
+          <div className="text-base font-semibold text-white">
             Something went wrong
           </div>
-          <p className="text-sm text-slate-600 mt-1">
+          <p className="text-sm text-white/50 mt-1">
             An unexpected error occurred. You can try again.
           </p>
 
@@ -64,7 +64,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
           <div className="mt-3">
             <button
               onClick={this.handleRetry}
-              className="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-900 shadow-sm hover:bg-slate-50"
+              className="inline-flex items-center rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-white/5"
             >
               Try again
             </button>

@@ -45,7 +45,7 @@ export const TourLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen pb-20">
       <Outlet />
       <BottomNav tabs={tabs} />
     </div>

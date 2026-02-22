@@ -137,10 +137,10 @@ export const SessionSummaryView = ({
           {/* Round Header */}
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-xl font-bold text-slate-900">
+              <h3 className="text-xl font-bold text-white">
                 {group.roundName}
               </h3>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-white/50">
                 {group.formatSections.reduce(
                   (sum, s) => sum + s.matches.length,
                   0
@@ -154,7 +154,7 @@ export const SessionSummaryView = ({
               </p>
             </div>
             <div className="text-right">
-              <div className="text-sm text-slate-600">Round Total</div>
+              <div className="text-sm text-white/50">Round Total</div>
               <div className="flex items-center gap-3 mt-1">
                 <div
                   className="px-3 py-1 rounded-lg font-semibold text-white"
@@ -162,7 +162,7 @@ export const SessionSummaryView = ({
                 >
                   {group.roundTotalA.toFixed(1)}
                 </div>
-                <span className="text-slate-400">-</span>
+                <span className="text-white/30">-</span>
                 <div
                   className="px-3 py-1 rounded-lg font-semibold text-white"
                   style={{ backgroundColor: teamBColor }}
@@ -178,7 +178,7 @@ export const SessionSummaryView = ({
             {group.formatSections.map((section, index) => (
               <div
                 key={index}
-                className="border border-slate-200 rounded-lg p-4 bg-slate-50"
+                className="border border-white/10 rounded-lg p-4"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -186,10 +186,10 @@ export const SessionSummaryView = ({
                       {getFormatIcon(section.format)}
                     </span>
                     <div>
-                      <h4 className="font-semibold text-slate-900">
+                      <h4 className="font-semibold text-white">
                         {section.formatName}
                       </h4>
-                      <p className="text-xs text-slate-600">
+                      <p className="text-xs text-white/50">
                         {section.matches.length}{" "}
                         {section.matches.length === 1 ? "match" : "matches"}
                       </p>
@@ -220,15 +220,15 @@ export const SessionSummaryView = ({
                     return (
                       <div
                         key={match.id}
-                        className="bg-white rounded-lg p-3 border border-slate-200"
+                        className="bg-white/5 rounded-lg p-3 border border-white/10"
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div className="flex-1">
-                            <div className="text-sm font-medium text-slate-800">
+                            <div className="text-sm font-medium text-white/90">
                               {getPlayerNames(match.teamA.playerIds)}
                             </div>
-                            <div className="text-sm text-slate-600">vs</div>
-                            <div className="text-sm font-medium text-slate-800">
+                            <div className="text-sm text-white/50">vs</div>
+                            <div className="text-sm font-medium text-white/90">
                               {getPlayerNames(match.teamB.playerIds)}
                             </div>
                           </div>
@@ -241,11 +241,11 @@ export const SessionSummaryView = ({
                             ) : (
                               <>
                                 <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1">
-                                  <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                                  <span className="w-1.5 h-1.5 bg-white/5 rounded-full animate-pulse"></span>
                                   In Progress
                                 </span>
                                 {holesCompleted < 18 && (
-                                  <span className="text-xs text-slate-600 font-medium">
+                                  <span className="text-xs text-white/50 font-medium">
                                     Thru {holesCompleted}
                                   </span>
                                 )}
@@ -255,7 +255,7 @@ export const SessionSummaryView = ({
                         </div>
 
                         {/* Points and Result */}
-                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-slate-200">
+                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-white/10">
                           <div className="flex items-center gap-3">
                             <div className="text-center">
                               <div
@@ -264,9 +264,9 @@ export const SessionSummaryView = ({
                               >
                                 {match.points.teamA}
                               </div>
-                              <div className="text-xs text-slate-500">pts</div>
+                              <div className="text-xs text-white/40">pts</div>
                             </div>
-                            <span className="text-slate-400 text-sm">-</span>
+                            <span className="text-white/30 text-sm">-</span>
                             <div className="text-center">
                               <div
                                 className="text-base font-bold"
@@ -274,17 +274,17 @@ export const SessionSummaryView = ({
                               >
                                 {match.points.teamB}
                               </div>
-                              <div className="text-xs text-slate-500">pts</div>
+                              <div className="text-xs text-white/40">pts</div>
                             </div>
                           </div>
 
                           {winner && (
-                            <div className="text-xs font-semibold text-emerald-600">
+                            <div className="text-xs font-semibold text-emerald-400">
                               {winner} wins
                             </div>
                           )}
                           {isHalved && (
-                            <div className="text-xs font-semibold text-slate-600">
+                            <div className="text-xs font-semibold text-white/50">
                               Halved
                             </div>
                           )}
@@ -300,7 +300,7 @@ export const SessionSummaryView = ({
       ))}
 
       {roundGroups.length === 0 && (
-        <div className="text-center py-8 text-slate-500">
+        <div className="text-center py-8 text-white/40">
           No matches have been played yet
         </div>
       )}

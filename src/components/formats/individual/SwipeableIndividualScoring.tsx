@@ -208,16 +208,16 @@ export const SwipeableIndividualScoring = ({
     return (
       <div className="flex flex-col items-center justify-center h-full p-8">
         <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-20 h-20 bg-blue-500/15 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-4xl">🔒</span>
           </div>
-          <h3 className="text-xl font-semibold text-slate-900 mb-2">
+          <h3 className="text-xl font-semibold text-white mb-2">
             No Players Available to Score
           </h3>
-          <p className="text-slate-600 mb-4">
+          <p className="text-white/50 mb-4">
             Please sign in to access scoring functionality.
           </p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-white/40">
             Authenticated users can score for all players in the round. Your
             backend will control who can score for which players.
           </p>
@@ -228,7 +228,7 @@ export const SwipeableIndividualScoring = ({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+      <div className="bg-white/5 border-b border-white/10 sticky top-0 z-10 shadow-sm">
         <div className="flex" role="tablist" aria-label="Scoring views">
           <button
             onClick={() => setActiveTab("score")}
@@ -237,8 +237,8 @@ export const SwipeableIndividualScoring = ({
             aria-controls="panel-score"
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset outline-none ${
               activeTab === "score"
-                ? "text-emerald-600 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
+                : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >
             <div className="flex items-center justify-center gap-2">
@@ -266,8 +266,8 @@ export const SwipeableIndividualScoring = ({
             aria-controls="panel-holes"
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset outline-none ${
               activeTab === "holes"
-                ? "text-emerald-600 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
+                : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >
             <div className="flex items-center justify-center gap-2">
@@ -295,8 +295,8 @@ export const SwipeableIndividualScoring = ({
             aria-controls="panel-leaderboard"
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset outline-none ${
               activeTab === "leaderboard"
-                ? "text-emerald-600 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
+                : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >
             <div className="flex items-center justify-center gap-2">
@@ -342,11 +342,11 @@ export const SwipeableIndividualScoring = ({
               }}
             >
               <div className="flex justify-between items-center mb-3">
-                <h3 className="text-sm font-semibold text-slate-600">
+                <h3 className="text-sm font-semibold text-white/50">
                   Player {currentPlayerIndex + 1} of {scoreablePlayers.length}
                 </h3>
                 {currentPlayerIndex < scoreablePlayers.length - 1 ? (
-                  <div className="text-xs text-slate-500 flex items-center gap-1">
+                  <div className="text-xs text-white/40 flex items-center gap-1">
                     Swipe to {scoreablePlayers[currentPlayerIndex + 1].name}
                     <svg
                       className="w-4 h-4"
@@ -363,7 +363,7 @@ export const SwipeableIndividualScoring = ({
                     </svg>
                   </div>
                 ) : currentHole < round.holes ? (
-                  <div className="text-xs text-slate-500 flex items-center gap-1">
+                  <div className="text-xs text-white/40 flex items-center gap-1">
                     Swipe to Hole {currentHole + 1}
                     <svg
                       className="w-4 h-4"
@@ -390,7 +390,7 @@ export const SwipeableIndividualScoring = ({
                         ? "bg-emerald-600"
                         : index < currentPlayerIndex
                         ? "bg-emerald-300"
-                        : "bg-slate-200"
+                        : "bg-white/10"
                     }`}
                   />
                 ))}
@@ -423,10 +423,10 @@ export const SwipeableIndividualScoring = ({
 
             {/* Competition Winners Button - Show if hole has competitions */}
             {(currentHoleInfo.closestToPin || currentHoleInfo.longestDrive) && (
-              <div className="card border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-amber-50">
+              <div className="card border-2 border-blue-500/30 bg-gradient-to-br from-blue-50 to-amber-50">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <h4 className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
                       <span className="text-lg">🏅</span>
                       Hole Competitions
                     </h4>
@@ -442,7 +442,7 @@ export const SwipeableIndividualScoring = ({
                             ? tour.players.find((p) => p.id === winner.playerId)
                             : null;
                           return (
-                            <div className="flex items-center gap-1 text-blue-800">
+                            <div className="flex items-center gap-1 text-blue-300">
                               <svg
                                 className="w-3 h-3"
                                 fill="currentColor"
@@ -461,7 +461,7 @@ export const SwipeableIndividualScoring = ({
                                     : ""}
                                 </span>
                               ) : (
-                                <span className="text-slate-500 italic">
+                                <span className="text-white/40 italic">
                                   Not selected
                                 </span>
                               )}
@@ -502,7 +502,7 @@ export const SwipeableIndividualScoring = ({
                                     : ""}
                                 </span>
                               ) : (
-                                <span className="text-slate-500 italic">
+                                <span className="text-white/40 italic">
                                   Not selected
                                 </span>
                               )}
@@ -573,11 +573,11 @@ export const SwipeableIndividualScoring = ({
           <div className="p-4 space-y-4">
             <div className="card">
               <div className="flex justify-between items-center mb-3">
-                <h3 className="text-sm font-semibold text-slate-600">
+                <h3 className="text-sm font-semibold text-white/50">
                   Player {currentPlayerIndex + 1} of {scoreablePlayers.length}
                 </h3>
                 {currentPlayerIndex < scoreablePlayers.length - 1 && (
-                  <div className="text-xs text-slate-500">
+                  <div className="text-xs text-white/40">
                     Swipe to {scoreablePlayers[currentPlayerIndex + 1].name} →
                   </div>
                 )}
@@ -591,7 +591,7 @@ export const SwipeableIndividualScoring = ({
                         ? "bg-emerald-600"
                         : index < currentPlayerIndex
                         ? "bg-emerald-300"
-                        : "bg-slate-200"
+                        : "bg-white/10"
                     }`}
                   />
                 ))}
@@ -744,22 +744,22 @@ const PlayerScoreCard = ({
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-slate-900">
+              <h3 className="text-xl font-bold text-white">
                 {player.name}
               </h3>
               <div className="flex items-center gap-3 text-sm">
                 {player.handicap !== undefined && (
-                  <span className="text-slate-600 font-medium">
+                  <span className="text-white/50 font-medium">
                     HC {player.handicap}
                   </span>
                 )}
                 {strokesForHole > 0 && (
-                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
+                  <span className="bg-blue-500/15 text-blue-300 px-2 py-1 rounded-full text-xs font-semibold">
                     {strokesForHole} Stroke{strokesForHole > 1 ? "s" : ""}
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-2 mt-1 text-sm text-slate-600">
+              <div className="flex items-center gap-2 mt-1 text-sm text-white/50">
                 <span className="font-semibold">Hole {currentHole}</span>
                 <span>•</span>
                 <span>Par {holeInfo.par}</span>
@@ -769,7 +769,7 @@ const PlayerScoreCard = ({
               {(holeInfo.closestToPin || holeInfo.longestDrive) && (
                 <div className="flex items-center gap-2 mt-2">
                   {holeInfo.closestToPin && (
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                    <span className="bg-blue-500/15 text-blue-300 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
                       <svg
                         className="w-3 h-3"
                         fill="currentColor"
@@ -812,7 +812,7 @@ const PlayerScoreCard = ({
       </div>
 
       <div className="card">
-        <h4 className="text-sm font-semibold text-slate-800 mb-4">
+        <h4 className="text-sm font-semibold text-white/90 mb-4">
           Select Score
         </h4>
 
@@ -837,8 +837,8 @@ const PlayerScoreCard = ({
                 localScore === option.score
                   ? `${option.bg} ${option.text} border-emerald-400 ring-2 ring-emerald-300 scale-105`
                   : option.score === par
-                  ? "bg-blue-50 text-slate-700 border-blue-300 active:border-blue-400"
-                  : "bg-white text-slate-700 border-slate-300 active:border-slate-400"
+                  ? "bg-blue-50 text-white/70 border-blue-300 active:border-blue-400"
+                  : "bg-white/5 text-white/70 border-white/15 active:border-slate-400"
               }`}
             >
               <div className="text-xl sm:text-2xl font-bold mb-0.5">
@@ -882,7 +882,7 @@ const PlayerScoreCard = ({
         onCompetitionWinnerChange && (
           <div className="space-y-3">
             {holeInfo.closestToPin && (
-              <div className="card border-2 border-blue-200 bg-blue-50">
+              <div className="card border-2 border-blue-500/30 bg-blue-50">
                 <div className="flex items-center gap-2 mb-3">
                   <svg
                     className="w-5 h-5 text-blue-600"
@@ -924,7 +924,7 @@ const PlayerScoreCard = ({
                         } ${
                           isWinner
                             ? "bg-blue-600 text-white border-blue-700 shadow-lg ring-4 ring-blue-300 scale-105 font-bold"
-                            : "bg-white text-slate-700 border-slate-300 hover:border-blue-400 hover:shadow-md"
+                            : "bg-white/5 text-white/70 border-white/15 hover:border-blue-400 hover:shadow-md"
                         }`}
                       >
                         {p.name}
@@ -950,8 +950,8 @@ const PlayerScoreCard = ({
                         round.competitionWinners?.closestToPin?.[currentHole] ||
                         []
                       ).length
-                        ? "bg-slate-100 text-slate-700 border-slate-400"
-                        : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
+                        ? "bg-white/5 text-white/70 border-slate-400"
+                        : "bg-white/5 text-white/50 border-white/15 hover:border-slate-400"
                     }`}
                   >
                     None
@@ -1040,7 +1040,7 @@ const PlayerScoreCard = ({
                         } ${
                           isWinner
                             ? "bg-amber-600 text-white border-amber-700 shadow-lg ring-4 ring-amber-300 scale-105 font-bold"
-                            : "bg-white text-slate-700 border-slate-300 hover:border-amber-400 hover:shadow-md"
+                            : "bg-white/5 text-white/70 border-white/15 hover:border-amber-400 hover:shadow-md"
                         }`}
                       >
                         {p.name}
@@ -1066,8 +1066,8 @@ const PlayerScoreCard = ({
                         round.competitionWinners?.longestDrive?.[currentHole] ||
                         []
                       ).length
-                        ? "bg-slate-100 text-slate-700 border-slate-400"
-                        : "bg-white text-slate-600 border-slate-300 hover:border-slate-400"
+                        ? "bg-white/5 text-white/70 border-slate-400"
+                        : "bg-white/5 text-white/50 border-white/15 hover:border-slate-400"
                     }`}
                   >
                     None
@@ -1111,29 +1111,29 @@ const PlayerScoreCard = ({
           </div>
         )}
 
-      <div className="card bg-slate-50">
-        <h5 className="text-sm font-semibold text-slate-800 mb-3">
+      <div className="card">
+        <h5 className="text-sm font-semibold text-white/90 mb-3">
           Round Stats
         </h5>
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <div className="text-2xl font-bold text-slate-900">
+            <div className="text-2xl font-bold text-white">
               {playerScore?.totalScore || 0}
             </div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide mt-1">
+            <div className="text-xs text-white/40 uppercase tracking-wide mt-1">
               Total
             </div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-slate-900">
+            <div className="text-2xl font-bold text-white">
               {playerScore?.scores.filter((s) => s !== null && s > 0).length}
             </div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide mt-1">
+            <div className="text-xs text-white/40 uppercase tracking-wide mt-1">
               Holes
             </div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-slate-900">
+            <div className="text-2xl font-bold text-white">
               {(() => {
                 const scores = playerScore?.scores || [];
                 const holesPlayed = scores.filter(
@@ -1149,7 +1149,7 @@ const PlayerScoreCard = ({
                 return diff > 0 ? `+${diff}` : diff;
               })()}
             </div>
-            <div className="text-xs text-slate-500 uppercase tracking-wide mt-1">
+            <div className="text-xs text-white/40 uppercase tracking-wide mt-1">
               To Par
             </div>
           </div>

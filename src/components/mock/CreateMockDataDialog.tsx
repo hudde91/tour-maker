@@ -45,19 +45,19 @@ export const CreateMockDataDialog = ({
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-lg bg-white rounded-xl shadow-2xl border border-slate-200 mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 sticky top-0 bg-white">
+      <div className="relative w-full max-w-lg bg-white/5 rounded-xl shadow-2xl border border-white/10 mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 sticky top-0 bg-white/5">
           <div>
-            <h2 className="text-xl font-bold text-slate-900">
+            <h2 className="text-xl font-bold text-white">
               Generate Mock Tournament
             </h2>
-            <p className="text-slate-600 mt-1 text-sm">
+            <p className="text-white/50 mt-1 text-sm">
               Create test data with random players and scores
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+            className="p-2 text-white/30 hover:text-white/50 hover:bg-white/10 rounded-full transition-colors"
           >
             <svg
               className="w-5 h-5"
@@ -78,7 +78,7 @@ export const CreateMockDataDialog = ({
         <div className="p-6 space-y-6">
           {/* Player Count */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-white/70 mb-2">
               Number of Players: {options.playerCount}
             </label>
             <input
@@ -90,9 +90,9 @@ export const CreateMockDataDialog = ({
               onChange={(e) =>
                 setOptions({ ...options, playerCount: parseInt(e.target.value) })
               }
-              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-600"
             />
-            <div className="flex justify-between text-xs text-slate-500 mt-1">
+            <div className="flex justify-between text-xs text-white/40 mt-1">
               <span>4 players</span>
               <span>32 players</span>
             </div>
@@ -100,7 +100,7 @@ export const CreateMockDataDialog = ({
 
           {/* Format */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-white/70 mb-2">
               Tournament Format
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -109,7 +109,7 @@ export const CreateMockDataDialog = ({
                 className={`px-4 py-3 rounded-lg border-2 font-medium text-sm transition-all ${
                   options.format === 'individual'
                     ? 'border-blue-600 bg-blue-50 text-blue-900'
-                    : 'border-slate-200 text-slate-700 hover:border-slate-300'
+                    : 'border-white/10 text-white/70 hover:border-white/15'
                 }`}
               >
                 Individual
@@ -119,7 +119,7 @@ export const CreateMockDataDialog = ({
                 className={`px-4 py-3 rounded-lg border-2 font-medium text-sm transition-all ${
                   options.format === 'team'
                     ? 'border-blue-600 bg-blue-50 text-blue-900'
-                    : 'border-slate-200 text-slate-700 hover:border-slate-300'
+                    : 'border-white/10 text-white/70 hover:border-white/15'
                 }`}
               >
                 Team
@@ -129,7 +129,7 @@ export const CreateMockDataDialog = ({
                 className={`px-4 py-3 rounded-lg border-2 font-medium text-sm transition-all ${
                   options.format === 'ryder-cup'
                     ? 'border-blue-600 bg-blue-50 text-blue-900'
-                    : 'border-slate-200 text-slate-700 hover:border-slate-300'
+                    : 'border-white/10 text-white/70 hover:border-white/15'
                 }`}
               >
                 Ryder Cup
@@ -139,7 +139,7 @@ export const CreateMockDataDialog = ({
 
           {/* Round Count */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-white/70 mb-2">
               Total Rounds: {options.roundCount}
             </label>
             <input
@@ -158,9 +158,9 @@ export const CreateMockDataDialog = ({
                   ),
                 })
               }
-              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-blue-600"
             />
-            <div className="flex justify-between text-xs text-slate-500 mt-1">
+            <div className="flex justify-between text-xs text-white/40 mt-1">
               <span>1 round</span>
               <span>5 rounds</span>
             </div>
@@ -168,7 +168,7 @@ export const CreateMockDataDialog = ({
 
           {/* Completed Rounds */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-white/70 mb-2">
               Completed Rounds: {options.completedRounds}
             </label>
             <input
@@ -183,21 +183,21 @@ export const CreateMockDataDialog = ({
                   completedRounds: parseInt(e.target.value),
                 })
               }
-              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
+              className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-green-600"
             />
-            <div className="flex justify-between text-xs text-slate-500 mt-1">
+            <div className="flex justify-between text-xs text-white/40 mt-1">
               <span>None</span>
               <span>All</span>
             </div>
             {options.completedRounds < options.roundCount && (
-              <p className="text-xs text-slate-500 mt-2">
+              <p className="text-xs text-white/40 mt-2">
                 {options.roundCount - options.completedRounds} round(s) will be in progress
               </p>
             )}
           </div>
 
           {/* Info Box */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-blue-50 border border-blue-500/30 rounded-lg p-4">
             <div className="flex items-start gap-2">
               <svg
                 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"
@@ -212,7 +212,7 @@ export const CreateMockDataDialog = ({
               </svg>
               <div className="flex-1 text-sm text-blue-900">
                 <p className="font-semibold mb-1">What will be generated:</p>
-                <ul className="list-disc list-inside space-y-1 text-blue-800">
+                <ul className="list-disc list-inside space-y-1 text-blue-300">
                   <li>{options.playerCount} players with random names and handicaps</li>
                   <li>{options.roundCount} rounds with 18 holes each</li>
                   <li>Random scores for all completed rounds</li>
@@ -227,12 +227,12 @@ export const CreateMockDataDialog = ({
           </div>
         </div>
 
-        <div className="border-t border-slate-200 p-6 bg-slate-50">
+        <div className="border-t border-white/10 p-6">
           <div className="flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-100 transition-colors"
+              className="flex-1 px-4 py-3 border border-white/15 text-white/70 rounded-lg hover:bg-white/10 transition-colors"
             >
               Cancel
             </button>

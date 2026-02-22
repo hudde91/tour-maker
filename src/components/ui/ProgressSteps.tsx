@@ -22,14 +22,14 @@ export const ProgressSteps = ({
     <div className={`w-full ${className}`}>
       <div className="block sm:hidden">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-slate-700">
+          <span className="text-sm font-medium text-white/70">
             Step {currentStep + 1} of {steps.length}
           </span>
-          <span className="text-sm text-slate-500">
+          <span className="text-sm text-white/40">
             {steps[currentStep].label}
           </span>
         </div>
-        <div className="w-full bg-slate-200 rounded-full h-2">
+        <div className="w-full bg-white/10 rounded-full h-2">
           <div
             className="bg-emerald-600 h-2 rounded-full transition-all duration-300"
             style={{
@@ -61,7 +61,7 @@ export const ProgressSteps = ({
                           ? "bg-emerald-600 text-white"
                           : isCurrent
                           ? "bg-emerald-600 text-white ring-4 ring-emerald-200"
-                          : "bg-slate-200 text-slate-500"
+                          : "bg-white/10 text-white/40"
                       }
                       ${
                         isClickable
@@ -93,16 +93,16 @@ export const ProgressSteps = ({
                     <div
                       className={`text-sm font-medium ${
                         isCurrent
-                          ? "text-emerald-700"
+                          ? "text-emerald-400"
                           : isCompleted
-                          ? "text-slate-700"
-                          : "text-slate-500"
+                          ? "text-white/70"
+                          : "text-white/40"
                       }`}
                     >
                       {step.label}
                     </div>
                     {step.description && (
-                      <div className="text-xs text-slate-500 mt-1">
+                      <div className="text-xs text-white/40 mt-1">
                         {step.description}
                       </div>
                     )}
@@ -112,7 +112,7 @@ export const ProgressSteps = ({
                 {index < steps.length - 1 && (
                   <div
                     className={`flex-1 h-1 mx-4 rounded transition-all duration-300 ${
-                      index < currentStep ? "bg-emerald-600" : "bg-slate-200"
+                      index < currentStep ? "bg-emerald-600" : "bg-white/10"
                     }`}
                     style={{ marginTop: "-40px" }}
                   />

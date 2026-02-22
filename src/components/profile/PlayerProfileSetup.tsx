@@ -74,17 +74,17 @@ export const PlayerProfileSetup = ({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in">
       <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
 
-      <div className="relative w-full sm:w-96 sm:max-w-md bg-white rounded-t-2xl sm:rounded-xl shadow-2xl border-t sm:border border-slate-200 animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col overscroll-contain">
+      <div className="relative w-full sm:w-96 sm:max-w-md bg-white/5 rounded-t-2xl sm:rounded-xl shadow-2xl border-t sm:border border-white/10 animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col overscroll-contain">
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
           <div className="w-12 h-1.5 bg-slate-300 rounded-full"></div>
         </div>
 
-        <div className="flex justify-between items-center px-6 py-4 sm:py-6 border-b border-slate-200">
+        <div className="flex justify-between items-center px-6 py-4 sm:py-6 border-b border-white/10">
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+            <h2 className="text-xl sm:text-2xl font-bold text-white">
               Complete Your Player Profile
             </h2>
-            <p className="text-slate-600 mt-1 text-sm">
+            <p className="text-white/50 mt-1 text-sm">
               Set up your player information to create tournaments
             </p>
           </div>
@@ -95,7 +95,7 @@ export const PlayerProfileSetup = ({
             ref={formContainerRef}
             className="px-6 py-4 sm:py-6 space-y-4 sm:space-y-6"
           >
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-blue-50 border border-blue-500/30 rounded-lg p-4">
               <div className="flex items-start">
                 <svg
                   className="w-5 h-5 text-blue-600 mt-0.5 mr-3"
@@ -114,7 +114,7 @@ export const PlayerProfileSetup = ({
                   <h3 className="text-sm font-semibold text-blue-900">
                     First Time Setup
                   </h3>
-                  <p className="text-sm text-blue-800 mt-1">
+                  <p className="text-sm text-blue-300 mt-1">
                     When you create a tournament, you'll automatically be added as a
                     player. Let's set up your player profile first.
                   </p>
@@ -162,7 +162,7 @@ export const PlayerProfileSetup = ({
             <div className="h-32 sm:h-0" />
           </div>
 
-          <div className="border-t border-slate-200 p-4 sm:p-6 bg-slate-50 sm:bg-white">
+          <div className="border-t border-white/10 p-4 sm:p-6 sm:bg-white/5">
             <button
               type="submit"
               disabled={saveProfile.isPending || !formData.playerName.trim()}

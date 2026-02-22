@@ -220,16 +220,16 @@ export const CreateRoundPage = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-slate-500 font-medium">Loading tournament...</div>
+        <div className="text-white/40 font-medium">Loading tournament...</div>
       </div>
     );
   }
 
   if (!tour) {
     return (
-      <div className="min-h-screen bg-slate-50 safe-area-top p-6">
+      <div className="min-h-screen safe-area-top p-6">
         <div className="card text-center py-12">
-          <h3 className="text-xl font-semibold text-slate-700 mb-3">
+          <h3 className="text-xl font-semibold text-white/70 mb-3">
             Tournament Not Found
           </h3>
           <button onClick={() => navigate("/")} className="btn-primary">
@@ -266,7 +266,7 @@ export const CreateRoundPage = () => {
 
                   {/* Standard Formats */}
                   <div className="card-spacing">
-                    <h4 className="text-sm font-medium text-slate-700 mb-3">
+                    <h4 className="text-sm font-medium text-white/70 mb-3">
                       Standard Formats
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -279,7 +279,7 @@ export const CreateRoundPage = () => {
                             className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
                               formData.format === key
                                 ? "border-emerald-500 bg-emerald-50"
-                                : "border-slate-200 hover:border-slate-300"
+                                : "border-white/10 hover:border-white/15"
                             }`}
                           >
                             <input
@@ -299,11 +299,11 @@ export const CreateRoundPage = () => {
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="text-lg">{format.icon}</span>
-                                <span className="font-medium text-slate-900">
+                                <span className="font-medium text-white">
                                   {format.name}
                                 </span>
                               </div>
-                              <p className="text-sm text-slate-600">
+                              <p className="text-sm text-white/50">
                                 {format.description}
                               </p>
                             </div>
@@ -325,7 +325,7 @@ export const CreateRoundPage = () => {
                     <div>
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-xl">🏆</span>
-                        <h4 className="text-sm font-medium text-slate-700">
+                        <h4 className="text-sm font-medium text-white/70">
                           Ryder Cup Formats
                         </h4>
                         <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-200">
@@ -342,7 +342,7 @@ export const CreateRoundPage = () => {
                               className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
                                 formData.format === key
                                   ? "border-amber-500 bg-amber-50"
-                                  : "border-slate-200 hover:border-slate-300"
+                                  : "border-white/10 hover:border-white/15"
                               }`}
                             >
                               <input
@@ -362,11 +362,11 @@ export const CreateRoundPage = () => {
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
                                   <span className="text-lg">{format.icon}</span>
-                                  <span className="font-medium text-slate-900">
+                                  <span className="font-medium text-white">
                                     {format.name}
                                   </span>
                                 </div>
-                                <p className="text-sm text-slate-600">
+                                <p className="text-sm text-white/50">
                                   {format.description}
                                 </p>
                                 {format.playersPerTeam && (
@@ -418,7 +418,7 @@ export const CreateRoundPage = () => {
                   <label className="form-label">
                     Select Players (1-4 players) *
                   </label>
-                  <p className="text-sm text-slate-600 mb-3">
+                  <p className="text-sm text-white/50 mb-3">
                     Each round can have a maximum of 4 players
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -448,21 +448,21 @@ export const CreateRoundPage = () => {
                             isSelected
                               ? 'border-emerald-500 bg-emerald-50 text-emerald-900'
                               : canSelect
-                              ? 'border-slate-300 hover:border-slate-400 bg-white'
-                              : 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'
+                              ? 'border-white/15 hover:border-slate-400 bg-white/5'
+                              : 'border-white/10 bg-white/5 text-white/30 cursor-not-allowed'
                           }`}
                         >
                           <div className="flex items-center justify-between">
                             <div>
                               <div className="font-medium">{player.name}</div>
                               {player.handicap !== undefined && (
-                                <div className="text-sm text-slate-600">
+                                <div className="text-sm text-white/50">
                                   Handicap: {player.handicap}
                                 </div>
                               )}
                             </div>
                             {isSelected && (
-                              <svg className="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                              <svg className="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                               </svg>
                             )}
@@ -471,7 +471,7 @@ export const CreateRoundPage = () => {
                       );
                     })}
                   </div>
-                  <div className="mt-2 text-sm text-slate-600">
+                  <div className="mt-2 text-sm text-white/50">
                     Selected: {formData.playerIds.length} / 4 players
                   </div>
                 </div>
@@ -479,7 +479,7 @@ export const CreateRoundPage = () => {
             </div>
 
             {/* Navigation */}
-            <div className="flex gap-4 pt-6 border-t border-slate-200">
+            <div className="flex gap-4 pt-6 border-t border-white/10">
               <button
                 type="button"
                 onClick={handleNext}
@@ -541,8 +541,8 @@ export const CreateRoundPage = () => {
                         data-testid={`holes-${holeCount}`}
                         className={`flex-1 p-3 border-2 rounded-lg font-medium transition-all ${
                           formData.holes === holeCount
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                            : "border-slate-300 hover:border-slate-400"
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-400"
+                            : "border-white/15 hover:border-slate-400"
                         }`}
                       >
                         {holeCount} Holes
@@ -581,24 +581,24 @@ export const CreateRoundPage = () => {
               <div className="flex justify-between items-center card-spacing flex-wrap gap-2">
                 <h2 className="section-header">Course Layout</h2>
                 <div className="flex items-center gap-4 text-sm">
-                  <span className="text-slate-600">Total Par: {totalPar}</span>
-                  <span className="text-slate-600">
+                  <span className="text-white/50">Total Par: {totalPar}</span>
+                  <span className="text-white/50">
                     Total Yardage: {totalYardage}
                   </span>
                 </div>
               </div>
 
               {/* Manual Total Par Option */}
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 card-spacing">
+              <div className="border border-white/10 rounded-lg p-4 card-spacing">
                 <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                   <div>
-                    <h3 className="font-semibold text-slate-900">Par Setup</h3>
-                    <p className="text-sm text-slate-600">
+                    <h3 className="font-semibold text-white">Par Setup</h3>
+                    <p className="text-sm text-white/50">
                       Set course par manually or configure individual holes
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm text-slate-600">
+                    <span className="text-sm text-white/50">
                       Manual Total Par:
                     </span>
                     <button
@@ -622,7 +622,7 @@ export const CreateRoundPage = () => {
                       }`}
                     >
                       <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white/5 transition-transform ${
                           formData.useManualPar
                             ? "translate-x-6"
                             : "translate-x-1"
@@ -634,7 +634,7 @@ export const CreateRoundPage = () => {
 
                 {formData.useManualPar ? (
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-white/70 mb-2">
                       Total Course Par
                     </label>
                     <input
@@ -651,7 +651,7 @@ export const CreateRoundPage = () => {
                       min={formData.holes * 3}
                       max={formData.holes * 6}
                     />
-                    <p className="text-sm text-slate-500 mt-1">
+                    <p className="text-sm text-white/40 mt-1">
                       Recommended: {formData.holes * 4}
                     </p>
                   </div>
@@ -659,17 +659,17 @@ export const CreateRoundPage = () => {
                   <div className="overflow-x-auto -mx-4 px-4">
                     <table className="w-full text-sm min-w-[500px]">
                       <thead>
-                        <tr className="border-b border-slate-200">
-                          <th className="text-left py-2 px-3 font-medium text-slate-700">
+                        <tr className="border-b border-white/10">
+                          <th className="text-left py-2 px-3 font-medium text-white/70">
                             Hole
                           </th>
-                          <th className="text-left py-2 px-3 font-medium text-slate-700">
+                          <th className="text-left py-2 px-3 font-medium text-white/70">
                             Par
                           </th>
-                          <th className="text-left py-2 px-3 font-medium text-slate-700">
+                          <th className="text-left py-2 px-3 font-medium text-white/70">
                             Yardage
                           </th>
-                          <th className="text-left py-2 px-3 font-medium text-slate-700">
+                          <th className="text-left py-2 px-3 font-medium text-white/70">
                             HCP
                           </th>
                         </tr>
@@ -692,7 +692,7 @@ export const CreateRoundPage = () => {
                                     parseInt(e.target.value)
                                   )
                                 }
-                                className="w-16 px-2 py-1 border border-slate-300 rounded focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
+                                className="w-16 px-2 py-1 border border-white/15 rounded focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
                               >
                                 <option value={3}>3</option>
                                 <option value={4}>4</option>
@@ -709,7 +709,7 @@ export const CreateRoundPage = () => {
                                     parseInt(e.target.value) || 0
                                   )
                                 }
-                                className="w-20 px-2 py-1 border border-slate-300 rounded focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
+                                className="w-20 px-2 py-1 border border-white/15 rounded focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
                                 placeholder="350"
                                 min="50"
                                 max="700"
@@ -730,7 +730,7 @@ export const CreateRoundPage = () => {
                                   (hole.handicap &&
                                     (hole.handicap < 1 || hole.handicap > 18))
                                     ? "border-red-300 bg-red-50"
-                                    : "border-slate-300"
+                                    : "border-white/15"
                                 }`}
                                 min="1"
                                 max="18"
@@ -747,7 +747,7 @@ export const CreateRoundPage = () => {
             </div>
 
             {/* Navigation */}
-            <div className="flex gap-4 pt-6 border-t border-slate-200">
+            <div className="flex gap-4 pt-6 border-t border-white/10">
               <button
                 type="button"
                 onClick={handleNext}
@@ -767,7 +767,7 @@ export const CreateRoundPage = () => {
             <div className="card-elevated">
               <div className="card-spacing">
                 <h2 className="section-header">Hole Competitions</h2>
-                <p className="text-sm text-slate-600 mt-2">
+                <p className="text-sm text-white/50 mt-2">
                   Select which holes have special competitions (optional)
                 </p>
               </div>
@@ -783,11 +783,11 @@ export const CreateRoundPage = () => {
                     >
                       <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
                     </svg>
-                    <h3 className="font-semibold text-slate-900">
+                    <h3 className="font-semibold text-white">
                       Closest to Pin
                     </h3>
                   </div>
-                  <p className="text-xs text-slate-600 mb-3">
+                  <p className="text-xs text-white/50 mb-3">
                     Typically used on par 3 holes
                   </p>
                   <div className="grid grid-cols-6 sm:grid-cols-9 gap-2">
@@ -804,7 +804,7 @@ export const CreateRoundPage = () => {
                         className={`aspect-square rounded-lg border-2 font-semibold text-sm transition-all ${
                           hole.closestToPin
                             ? "bg-blue-600 text-white border-blue-700 shadow-md"
-                            : "bg-white text-slate-700 border-slate-300 hover:border-blue-400"
+                            : "bg-white/5 text-white/70 border-white/15 hover:border-blue-400"
                         }`}
                       >
                         {hole.number}
@@ -827,11 +827,11 @@ export const CreateRoundPage = () => {
                         clipRule="evenodd"
                       />
                     </svg>
-                    <h3 className="font-semibold text-slate-900">
+                    <h3 className="font-semibold text-white">
                       Longest Drive
                     </h3>
                   </div>
-                  <p className="text-xs text-slate-600 mb-3">
+                  <p className="text-xs text-white/50 mb-3">
                     Typically used on par 4 or par 5 holes
                   </p>
                   <div className="grid grid-cols-6 sm:grid-cols-9 gap-2">
@@ -848,7 +848,7 @@ export const CreateRoundPage = () => {
                         className={`aspect-square rounded-lg border-2 font-semibold text-sm transition-all ${
                           hole.longestDrive
                             ? "bg-amber-600 text-white border-amber-700 shadow-md"
-                            : "bg-white text-slate-700 border-slate-300 hover:border-amber-400"
+                            : "bg-white/5 text-white/70 border-white/15 hover:border-amber-400"
                         }`}
                       >
                         {hole.number}
@@ -878,12 +878,12 @@ export const CreateRoundPage = () => {
                 </div>
 
                 <div className="grid grid-cols-1 gap-6">
-                  <label className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                  <label className="flex items-center justify-between p-4 rounded-lg">
                     <div>
-                      <div className="font-medium text-slate-900">
+                      <div className="font-medium text-white">
                         Apply Handicap Strokes
                       </div>
-                      <div className="text-sm text-slate-600">
+                      <div className="text-sm text-white/50">
                         Give strokes based on player handicaps and course slope
                       </div>
                     </div>
@@ -899,7 +899,7 @@ export const CreateRoundPage = () => {
                           },
                         })
                       }
-                      className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500"
+                      className="w-5 h-5 text-emerald-400 rounded focus:ring-emerald-500"
                     />
                   </label>
                 </div>
@@ -907,7 +907,7 @@ export const CreateRoundPage = () => {
             </div>
 
             {/* Navigation */}
-            <div className="flex gap-4 pt-6 border-t border-slate-200">
+            <div className="flex gap-4 pt-6 border-t border-white/10">
               <button
                 type="button"
                 onClick={handleNext}
@@ -932,22 +932,22 @@ export const CreateRoundPage = () => {
               <div className="space-y-6">
                 {/* Basic Information */}
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900 mb-3">
+                  <h3 className="text-sm font-semibold text-white mb-3">
                     Basic Information
                   </h3>
-                  <div className="bg-slate-50 rounded-lg p-4 space-y-2">
+                  <div className="rounded-lg p-4 space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Round Name:</span>
+                      <span className="text-white/50">Round Name:</span>
                       <span className="font-medium">
                         {formData.name.trim() || `Round at ${formData.courseName}`}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Course:</span>
+                      <span className="text-white/50">Course:</span>
                       <span className="font-medium">{formData.courseName}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Format:</span>
+                      <span className="text-white/50">Format:</span>
                       <span className="font-medium">
                         {formatInfo.icon} {formatInfo.name}
                       </span>
@@ -957,24 +957,24 @@ export const CreateRoundPage = () => {
 
                 {/* Course Details */}
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900 mb-3">
+                  <h3 className="text-sm font-semibold text-white mb-3">
                     Course Details
                   </h3>
-                  <div className="bg-slate-50 rounded-lg p-4 space-y-2">
+                  <div className="rounded-lg p-4 space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Holes:</span>
+                      <span className="text-white/50">Holes:</span>
                       <span className="font-medium">{formData.holes}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Total Par:</span>
+                      <span className="text-white/50">Total Par:</span>
                       <span className="font-medium">{totalPar}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Total Yardage:</span>
+                      <span className="text-white/50">Total Yardage:</span>
                       <span className="font-medium">{totalYardage}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Slope Rating:</span>
+                      <span className="text-white/50">Slope Rating:</span>
                       <span className="font-medium">
                         {formData.slopeRating}
                       </span>
@@ -986,13 +986,13 @@ export const CreateRoundPage = () => {
                 {(formData.holeInfo.some((h) => h.closestToPin) ||
                   formData.holeInfo.some((h) => h.longestDrive)) && (
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-900 mb-3">
+                    <h3 className="text-sm font-semibold text-white mb-3">
                       Competitions
                     </h3>
-                    <div className="bg-slate-50 rounded-lg p-4 space-y-2">
+                    <div className="rounded-lg p-4 space-y-2">
                       {formData.holeInfo.some((h) => h.closestToPin) && (
                         <div className="flex justify-between items-center">
-                          <span className="text-slate-600">
+                          <span className="text-white/50">
                             Closest to Pin:
                           </span>
                           <span className="font-medium">
@@ -1006,7 +1006,7 @@ export const CreateRoundPage = () => {
                       )}
                       {formData.holeInfo.some((h) => h.longestDrive) && (
                         <div className="flex justify-between items-center">
-                          <span className="text-slate-600">Longest Drive:</span>
+                          <span className="text-white/50">Longest Drive:</span>
                           <span className="font-medium">
                             Holes{" "}
                             {formData.holeInfo
@@ -1022,12 +1022,12 @@ export const CreateRoundPage = () => {
 
                 {/* Settings */}
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900 mb-3">
+                  <h3 className="text-sm font-semibold text-white mb-3">
                     Settings
                   </h3>
-                  <div className="bg-slate-50 rounded-lg p-4">
+                  <div className="rounded-lg p-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-slate-600">Handicap Strokes:</span>
+                      <span className="text-white/50">Handicap Strokes:</span>
                       <span className="font-medium">
                         {formData.settings.strokesGiven
                           ? "Enabled"
@@ -1040,7 +1040,7 @@ export const CreateRoundPage = () => {
             </div>
 
             {/* Navigation */}
-            <div className="flex gap-4 pt-6 border-t border-slate-200">
+            <div className="flex gap-4 pt-6 border-t border-white/10">
               <button
                 type="button"
                 onClick={handleSubmit}
@@ -1063,13 +1063,13 @@ export const CreateRoundPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="golf-hero-bg safe-area-top">
         <div className="flex items-center p-6">
           <button onClick={handleBack} className="nav-back mr-4">
             <svg
-              className="w-5 h-5 text-slate-600"
+              className="w-5 h-5 text-white/50"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

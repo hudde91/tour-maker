@@ -43,14 +43,14 @@ export const StepWizard = ({
         {/* Mobile: Simple progress bar */}
         <div className="md:hidden">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-slate-700">
+            <span className="text-sm font-medium text-white/70">
               Step {currentStep + 1} of {steps.length}
             </span>
-            <span className="text-sm text-slate-600">
+            <span className="text-sm text-white/50">
               {steps[currentStep].title}
             </span>
           </div>
-          <div className="w-full bg-slate-200 rounded-full h-2">
+          <div className="w-full bg-white/10 rounded-full h-2">
             <div
               className="bg-emerald-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
@@ -74,7 +74,7 @@ export const StepWizard = ({
                           ? "bg-emerald-600 text-white"
                           : isActive
                           ? "bg-emerald-600 text-white ring-4 ring-emerald-100"
-                          : "bg-slate-200 text-slate-600"
+                          : "bg-white/10 text-white/50"
                       }`}
                     >
                       {isCompleted ? (
@@ -96,13 +96,13 @@ export const StepWizard = ({
                     <div className="mt-2 text-center">
                       <div
                         className={`text-sm font-medium ${
-                          isActive ? "text-emerald-600" : "text-slate-700"
+                          isActive ? "text-emerald-400" : "text-white/70"
                         }`}
                       >
                         {step.title}
                       </div>
                       {step.description && (
-                        <div className="text-xs text-slate-500 mt-0.5">
+                        <div className="text-xs text-white/40 mt-0.5">
                           {step.description}
                         </div>
                       )}
@@ -111,7 +111,7 @@ export const StepWizard = ({
                   {index < steps.length - 1 && (
                     <div
                       className={`h-0.5 flex-1 mx-2 mb-8 transition-all ${
-                        index < currentStep ? "bg-emerald-600" : "bg-slate-200"
+                        index < currentStep ? "bg-emerald-600" : "bg-white/10"
                       }`}
                     />
                   )}
@@ -126,7 +126,7 @@ export const StepWizard = ({
       <div className="min-h-[400px]">{children}</div>
 
       {/* Navigation Buttons */}
-      <div className="flex gap-3 pt-6 border-t border-slate-200">
+      <div className="flex gap-3 pt-6 border-t border-white/10">
         {!isFirstStep && (
           <button
             type="button"

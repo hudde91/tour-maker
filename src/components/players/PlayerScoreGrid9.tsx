@@ -40,10 +40,10 @@ export default function PlayerScoreGrid9({
   );
 
   return (
-    <div className="rounded-xl border bg-white shadow-sm">
+    <div className="rounded-xl border bg-white/5 shadow-sm">
       <div className="flex items-center justify-between px-3 py-2 border-b">
-        <div className="text-sm font-semibold text-slate-900">{title}</div>
-        <div className="text-xs text-slate-600">
+        <div className="text-sm font-semibold text-white">{title}</div>
+        <div className="text-xs text-white/50">
           Subtotal:{" "}
           <span className="font-semibold">{subtotalStrokes || "—"}</span> / Par{" "}
           <span className="font-semibold">{subtotalPar}</span>
@@ -53,7 +53,7 @@ export default function PlayerScoreGrid9({
       <div className="overflow-x-auto">
         <table className="m-2 w-full min-w-[560px] md:min-w-0 text-center">
           <thead>
-            <tr className="text-[11px] uppercase tracking-wide text-slate-500">
+            <tr className="text-[11px] uppercase tracking-wide text-white/40">
               <th className="px-2 py-2 text-left">Hole</th>
               {idx.map((i) => (
                 <th key={`h-${i}`} className="px-2 py-2 font-medium">
@@ -65,7 +65,7 @@ export default function PlayerScoreGrid9({
           </thead>
           <tbody>
             <tr className="text-sm">
-              <td className="px-2 py-2 text-left text-slate-500">Par</td>
+              <td className="px-2 py-2 text-left text-white/40">Par</td>
               {idx.map((i) => (
                 <td key={`par-${i}`} className="px-2 py-2">
                   {pars[i]}
@@ -76,16 +76,16 @@ export default function PlayerScoreGrid9({
               </td>
             </tr>
             <tr className="text-sm">
-              <td className="px-2 py-2 text-left text-slate-500">Index</td>
+              <td className="px-2 py-2 text-left text-white/40">Index</td>
               {idx.map((i) => (
                 <td key={`si-${i}`} className="px-2 py-2">
                   {si[i]}
                 </td>
               ))}
-              <td className="px-2 py-2 text-right text-slate-400">—</td>
+              <td className="px-2 py-2 text-right text-white/30">—</td>
             </tr>
             <tr className="text-sm">
-              <td className="px-2 py-2 text-left font-medium text-slate-900">
+              <td className="px-2 py-2 text-left font-medium text-white">
                 Strokes
               </td>
               {idx.map((i) => (

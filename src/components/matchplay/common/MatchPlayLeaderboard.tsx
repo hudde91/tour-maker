@@ -23,7 +23,7 @@ export const MatchPlayLeaderboard = ({
   if (!teamA || !teamB) {
     return (
       <div className="card text-center py-8">
-        <p className="text-slate-500">Need exactly 2 teams for match play</p>
+        <p className="text-white/40">Need exactly 2 teams for match play</p>
       </div>
     );
   }
@@ -37,11 +37,11 @@ export const MatchPlayLeaderboard = ({
     <div className="card-elevated -mx-4">
       {/* Tournament Points Header */}
       <div className="text-center card-spacing">
-        <h3 className="text-2xl font-bold text-slate-900 mb-2 flex items-center justify-center gap-3">
+        <h3 className="text-2xl font-bold text-white mb-2 flex items-center justify-center gap-3">
           <span className="text-3xl">🏆</span>
           Ryder Cup Points
         </h3>
-        <p className="text-slate-600">
+        <p className="text-white/50">
           First to {target} points wins the tournament
         </p>
       </div>
@@ -62,7 +62,7 @@ export const MatchPlayLeaderboard = ({
           >
             <span className="text-2xl text-white font-bold">A</span>
           </div>
-          <h4 className="text-lg font-bold text-slate-900 mb-1">
+          <h4 className="text-lg font-bold text-white mb-1">
             {teamA.name}
           </h4>
           <div
@@ -71,7 +71,7 @@ export const MatchPlayLeaderboard = ({
           >
             {teamAPoints}
           </div>
-          <div className="text-sm text-slate-600">
+          <div className="text-sm text-white/50">
             {teamAPoints === 1 ? "1 point" : `${teamAPoints} points`}
           </div>
           {teamAPoints >= target && (
@@ -97,7 +97,7 @@ export const MatchPlayLeaderboard = ({
           >
             <span className="text-2xl text-white font-bold">B</span>
           </div>
-          <h4 className="text-lg font-bold text-slate-900 mb-1">
+          <h4 className="text-lg font-bold text-white mb-1">
             {teamB.name}
           </h4>
           <div
@@ -106,7 +106,7 @@ export const MatchPlayLeaderboard = ({
           >
             {teamBPoints}
           </div>
-          <div className="text-sm text-slate-600">
+          <div className="text-sm text-white/50">
             {teamBPoints === 1 ? "1 point" : `${teamBPoints} points`}
           </div>
           {teamBPoints >= target && (
@@ -122,14 +122,14 @@ export const MatchPlayLeaderboard = ({
       {/* Progress Bar */}
       <div className="card-spacing">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-slate-700">
+          <span className="text-sm font-medium text-white/70">
             Tournament Progress
           </span>
-          <span className="text-sm text-slate-500">
+          <span className="text-sm text-white/40">
             {completedMatches} of {totalMatches} matches
           </span>
         </div>
-        <div className="w-full bg-slate-200 rounded-full h-2">
+        <div className="w-full bg-white/10 rounded-full h-2">
           <div
             className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
             style={{
@@ -144,7 +144,7 @@ export const MatchPlayLeaderboard = ({
       {/* Match Results */}
       {matches.length > 0 && (
         <div>
-          <h4 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+          <h4 className="font-semibold text-white/90 mb-4 flex items-center gap-2">
             <span className="text-lg">📋</span>
             Match Results
           </h4>
@@ -170,16 +170,16 @@ export const MatchPlayLeaderboard = ({
               return (
                 <div
                   key={match.id}
-                  className="bg-slate-50 rounded-lg p-4 border border-slate-200"
+                  className="rounded-lg p-4 border border-white/10"
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex-1">
-                      <div className="text-sm font-medium text-slate-800 mb-1">
+                      <div className="text-sm font-medium text-white/90 mb-1">
                         Match {index + 1} -{" "}
                         {match.format.charAt(0).toUpperCase() +
                           match.format.slice(1)}
                       </div>
-                      <div className="text-xs text-slate-600">
+                      <div className="text-xs text-white/50">
                         {getPlayerNames(teamAInfo.playerIds)} vs{" "}
                         {getPlayerNames(teamBInfo.playerIds)}
                       </div>
@@ -218,11 +218,11 @@ export const MatchPlayLeaderboard = ({
                         >
                           {match.points.teamA}
                         </div>
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-white/40">
                           {teamA.name}
                         </div>
                       </div>
-                      <span className="text-slate-400 text-sm">pts</span>
+                      <span className="text-white/30 text-sm">pts</span>
                       <div className="text-center">
                         <div
                           className="text-lg font-bold"
@@ -230,14 +230,14 @@ export const MatchPlayLeaderboard = ({
                         >
                           {match.points.teamB}
                         </div>
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-white/40">
                           {teamB.name}
                         </div>
                       </div>
                     </div>
 
                     {match.status === "in-progress" && (
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-white/40">
                         {match.holes.length} of {round.holes} holes played
                       </div>
                     )}
