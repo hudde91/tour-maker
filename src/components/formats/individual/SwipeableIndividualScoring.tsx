@@ -229,10 +229,13 @@ export const SwipeableIndividualScoring = ({
   return (
     <div className="flex flex-col h-full">
       <div className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
-        <div className="flex">
+        <div className="flex" role="tablist" aria-label="Scoring views">
           <button
             onClick={() => setActiveTab("score")}
-            className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
+            role="tab"
+            aria-selected={activeTab === "score"}
+            aria-controls="panel-score"
+            className={`flex-1 px-4 py-4 text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset outline-none ${
               activeTab === "score"
                 ? "text-emerald-600 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
@@ -244,6 +247,7 @@ export const SwipeableIndividualScoring = ({
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -257,7 +261,10 @@ export const SwipeableIndividualScoring = ({
           </button>
           <button
             onClick={() => setActiveTab("holes")}
-            className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
+            role="tab"
+            aria-selected={activeTab === "holes"}
+            aria-controls="panel-holes"
+            className={`flex-1 px-4 py-4 text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset outline-none ${
               activeTab === "holes"
                 ? "text-emerald-600 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
@@ -269,6 +276,7 @@ export const SwipeableIndividualScoring = ({
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -282,7 +290,10 @@ export const SwipeableIndividualScoring = ({
           </button>
           <button
             onClick={() => setActiveTab("leaderboard")}
-            className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
+            role="tab"
+            aria-selected={activeTab === "leaderboard"}
+            aria-controls="panel-leaderboard"
+            className={`flex-1 px-4 py-4 text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset outline-none ${
               activeTab === "leaderboard"
                 ? "text-emerald-600 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
@@ -294,6 +305,7 @@ export const SwipeableIndividualScoring = ({
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -811,9 +823,12 @@ const PlayerScoreCard = ({
               type="button"
               onClick={() => handleScoreSelect(option.score)}
               disabled={round.status === "completed"}
+              aria-label={`Score ${option.score}${option.score === par ? ' (Par)' : option.score === par - 1 ? ' (Birdie)' : option.score === par - 2 ? ' (Eagle)' : option.score === par + 1 ? ' (Bogey)' : option.score === par + 2 ? ' (Double Bogey)' : option.score === 1 ? ' (Ace)' : ''}`}
+              aria-pressed={localScore === option.score}
               className={`relative p-3 sm:p-4 rounded-xl border-2 font-bold
                   flex flex-col items-center justify-center min-h-[72px] sm:min-h-[80px]
                   transition-all duration-200 hover:scale-105 active:scale-95
+                  focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2
                   outline-none shadow-sm hover:shadow-md ${
                     round.status === "completed"
                       ? "opacity-50 cursor-not-allowed"
@@ -902,7 +917,7 @@ const PlayerScoreCard = ({
                           );
                         }}
                         disabled={round.status === "completed"}
-                        className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
+                        className={`p-3 min-h-[44px] rounded-lg border-2 font-medium text-sm transition-all focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 outline-none ${
                           round.status === "completed"
                             ? "opacity-50 cursor-not-allowed"
                             : ""
@@ -926,7 +941,7 @@ const PlayerScoreCard = ({
                       )
                     }
                     disabled={round.status === "completed"}
-                    className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
+                    className={`p-3 min-h-[44px] rounded-lg border-2 font-medium text-sm transition-all focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 outline-none ${
                       round.status === "completed"
                         ? "opacity-50 cursor-not-allowed"
                         : ""
@@ -1018,7 +1033,7 @@ const PlayerScoreCard = ({
                           );
                         }}
                         disabled={round.status === "completed"}
-                        className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
+                        className={`p-3 min-h-[44px] rounded-lg border-2 font-medium text-sm transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 outline-none ${
                           round.status === "completed"
                             ? "opacity-50 cursor-not-allowed"
                             : ""
@@ -1042,7 +1057,7 @@ const PlayerScoreCard = ({
                       )
                     }
                     disabled={round.status === "completed"}
-                    className={`p-2 rounded-lg border-2 font-medium text-sm transition-all ${
+                    className={`p-3 min-h-[44px] rounded-lg border-2 font-medium text-sm transition-all focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 outline-none ${
                       round.status === "completed"
                         ? "opacity-50 cursor-not-allowed"
                         : ""

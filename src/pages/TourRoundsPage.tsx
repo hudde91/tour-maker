@@ -1,5 +1,6 @@
 import { RoundCard } from "@/components/rounds/RoundCard";
 import { useTour } from "@/hooks/useTours";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -15,6 +16,7 @@ import {
 export const TourRoundsPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
   const { data: tour, isLoading } = useTour(tourId!);
+  useDocumentTitle(tour ? `${tour.name} - Rounds` : "Rounds");
   const navigate = useNavigate();
 
   if (isLoading) {

@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import {
   useUpdateScore,
   useStartRound,
@@ -39,6 +40,8 @@ export const RoundPage = () => {
   const round = useMemo(() => {
     return tour?.rounds.find((r) => r.id === roundId);
   }, [tour?.rounds, roundId]);
+
+  useDocumentTitle(round ? `${round.name} - ${tour?.name}` : "Round");
 
   const formatConfig = useMemo(() => {
     return round ? getFormatConfig(round) : null;

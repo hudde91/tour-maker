@@ -1,4 +1,4 @@
-export const isFinitePos = (n: any): n is number =>
+export const isFinitePos = (n: unknown): n is number =>
   typeof n === "number" && Number.isFinite(n) && n > 0;
 
 // Safe min: returns null if no valid scores (instead of Infinity)

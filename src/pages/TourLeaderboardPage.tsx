@@ -1,6 +1,7 @@
 import { RyderCupTournamentLeaderboard } from "@/components/tournament/RyderCupTournamentLeaderboard";
 import { TournamentLeaderboard } from "@/components/tournament/TournamentLeaderboard";
 import { useTour } from "@/hooks/useTours";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useParams, Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Trophy, XCircle, Users, ClipboardList, User } from "lucide-react";
@@ -8,6 +9,7 @@ import { Trophy, XCircle, Users, ClipboardList, User } from "lucide-react";
 export const TourLeaderboardPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
   const { data: tour, isLoading } = useTour(tourId!);
+  useDocumentTitle(tour ? `${tour.name} - Leaderboard` : "Leaderboard");
 
   if (isLoading) {
     return (
