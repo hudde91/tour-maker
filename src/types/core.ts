@@ -5,6 +5,7 @@ export type {
   Round,
   Player,
   UserProfile,
+  Friend,
   Team,
   Tour,
 } from "@tour-maker/shared";

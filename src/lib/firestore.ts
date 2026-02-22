@@ -11,6 +11,7 @@ import {
   orderBy,
   onSnapshot,
   runTransaction,
+  limit as firestoreLimit,
   type Unsubscribe,
   type DocumentData,
 } from "firebase/firestore";
@@ -25,6 +26,7 @@ import type {
   TourFormat,
   RyderCupTournament,
   AppSettings,
+  Friend,
 } from "../types";
 import { DEFAULT_APP_SETTINGS } from "@tour-maker/shared";
 
@@ -709,6 +711,72 @@ export async function saveAppSettingsToFirestore(
   const merged = { ...current, ...settings };
   await updateDoc(userDoc(userId), { settings: merged });
   return merged;
+}
+
+// ============================================================
+// FRIENDS (stored in user document as an array)
+// ============================================================
+
+export async function getFriends(userId: string): Promise<Friend[]> {
+  const snap = await getDoc(userDoc(userId));
+  if (!snap.exists()) return [];
+  return (snap.data().friends as Friend[]) || [];
+}
+
+export async function addFriend(userId: string, friend: Friend): Promise<void> {
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(userDoc(userId));
+    if (!snap.exists()) return;
+    const friends: Friend[] = snap.data().friends || [];
+    // Don't add duplicate
+    if (friends.some((f) => f.userId === friend.userId)) return;
+    friends.push(friend);
+    transaction.update(userDoc(userId), { friends });
+  });
+}
+
+export async function removeFriend(userId: string, friendUserId: string): Promise<void> {
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(userDoc(userId));
+    if (!snap.exists()) return;
+    const friends: Friend[] = snap.data().friends || [];
+    transaction.update(userDoc(userId), {
+      friends: friends.filter((f) => f.userId !== friendUserId),
+    });
+  });
+}
+
+// ============================================================
+// USER SEARCH
+// ============================================================
+
+export async function searchUsers(
+  searchTerm: string,
+  excludeUserId?: string
+): Promise<Array<{ userId: string; playerName: string; handicap?: number }>> {
+  const usersCol = collection(db, "users");
+  // Firestore doesn't support LIKE queries, so we use range queries for prefix matching
+  const normalizedTerm = searchTerm.trim();
+  if (!normalizedTerm) return [];
+
+  const q = query(
+    usersCol,
+    where("playerName", ">=", normalizedTerm),
+    where("playerName", "<=", normalizedTerm + "\uf8ff"),
+    firestoreLimit(20)
+  );
+  const snap = await getDocs(q);
+  const results: Array<{ userId: string; playerName: string; handicap?: number }> = [];
+  for (const d of snap.docs) {
+    if (excludeUserId && d.id === excludeUserId) continue;
+    const data = d.data();
+    results.push({
+      userId: d.id,
+      playerName: data.playerName,
+      handicap: data.handicap ?? undefined,
+    });
+  }
+  return results;
 }
 
 // ============================================================
