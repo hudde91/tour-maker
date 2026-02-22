@@ -686,6 +686,14 @@ button:focus {
   @apply outline-none;
 }
 
+/* Keyboard-only focus ring (not shown on click/tap) */
+button:focus-visible,
+a:focus-visible,
+[role="tab"]:focus-visible,
+[role="button"]:focus-visible {
+  @apply ring-2 ring-emerald-500 ring-offset-2 outline-none;
+}
+
 /* ============================================
    SAFE AREA SUPPORT FOR MOBILE DEVICES
    (iPhone notch, Android gestures, etc.)

@@ -20,9 +20,10 @@ export const BottomNav = ({ tabs }: BottomNavProps) => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 safe-area-bottom z-50 shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 safe-area-bottom z-50 shadow-lg" aria-label="Main navigation">
       <div
         className="grid max-w-6xl mx-auto"
+        role="tablist"
         style={{
           gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))`,
         }}
@@ -36,7 +37,10 @@ export const BottomNav = ({ tabs }: BottomNavProps) => {
               to={tab.path}
               onClick={handleTabClick}
               data-testid={`tab-${tab.id}`}
-              className={`flex flex-col items-center justify-center py-3 px-1 transition-all duration-200 relative ${
+              role="tab"
+              aria-selected={isActive}
+              aria-label={tab.label}
+              className={`flex flex-col items-center justify-center py-3 px-2 min-h-[48px] transition-all duration-200 relative focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 outline-none ${
                 isActive
                   ? "text-emerald-600 dark:text-emerald-500"
                   : "text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400 active:scale-95"
@@ -62,7 +66,7 @@ export const BottomNav = ({ tabs }: BottomNavProps) => {
               )}
 
               {tab.badge !== undefined && tab.badge > 0 && (
-                <div className="absolute top-1 right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-md">
+                <div className="absolute top-1 right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-md" aria-label={`${tab.badge} notifications`}>
                   {tab.badge > 9 ? "9+" : tab.badge}
                 </div>
               )}
