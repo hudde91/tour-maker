@@ -154,7 +154,7 @@ export const CreateTeamSheet = ({
                     }
                     className={`aspect-square rounded-xl border-3 transition-all hover:scale-105 ${
                       formData.color === colorOption.color
-                        ? "border-slate-900 ring-4 ring-slate-300 scale-110 shadow-lg"
+                        ? "border-white ring-4 ring-white/30 scale-110 shadow-lg"
                         : "border-white/10 hover:border-white/15 shadow-sm"
                     }`}
                     style={{ backgroundColor: colorOption.color }}

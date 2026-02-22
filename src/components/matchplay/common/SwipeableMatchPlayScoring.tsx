@@ -318,7 +318,7 @@ export const SwipeableMatchPlayScoring = ({
               onClick={() => setActiveTab("score")}
               className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
                 activeTab === "score"
-                  ? "text-emerald-400 border-b-2 border-emerald-600 bg-emerald-50"
+                  ? "text-emerald-400 border-b-2 border-emerald-600 bg-emerald-500/15"
                   : "text-white/50 hover:text-white hover:bg-white/5"
               }`}
             >
@@ -343,7 +343,7 @@ export const SwipeableMatchPlayScoring = ({
               onClick={() => setActiveTab("leaderboard")}
               className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
                 activeTab === "leaderboard"
-                  ? "text-emerald-400 border-b-2 border-emerald-600 bg-emerald-50"
+                  ? "text-emerald-400 border-b-2 border-emerald-600 bg-emerald-500/15"
                   : "text-white/50 hover:text-white hover:bg-white/5"
               }`}
             >
@@ -424,7 +424,7 @@ export const SwipeableMatchPlayScoring = ({
 
         {/* Match Header - Players */}
         <div className="px-4 pb-4">
-          <div className="bg-gradient-to-r from-blue-50 to-emerald-50 rounded-lg p-4 border border-blue-500/30">
+          <div className="bg-gradient-to-r from-blue-500/15 to-emerald-500/15 rounded-lg p-4 border border-blue-500/30">
             <div className="text-center mb-3">
               <span className="inline-block px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full">
                 {selectedMatch.format.charAt(0).toUpperCase() +
@@ -462,7 +462,7 @@ export const SwipeableMatchPlayScoring = ({
             onClick={() => setActiveTab("score")}
             className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
               activeTab === "score"
-                ? "text-emerald-400 border-b-2 border-emerald-600 bg-emerald-50"
+                ? "text-emerald-400 border-b-2 border-emerald-600 bg-emerald-500/15"
                 : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >
@@ -487,7 +487,7 @@ export const SwipeableMatchPlayScoring = ({
             onClick={() => setActiveTab("holes")}
             className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
               activeTab === "holes"
-                ? "text-emerald-400 border-b-2 border-emerald-600 bg-emerald-50"
+                ? "text-emerald-400 border-b-2 border-emerald-600 bg-emerald-500/15"
                 : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >

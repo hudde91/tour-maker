@@ -66,16 +66,16 @@ export const CompetitionWinnerSelector = ({
       </div>
 
       {hasClosestToPin && (
-        <div className="card border-2 border-blue-500/30 bg-blue-50">
+        <div className="card border-2 border-blue-500/30 bg-blue-500/15">
           <div className="flex items-center gap-2 mb-3">
             <svg
-              className="w-5 h-5 text-blue-600"
+              className="w-5 h-5 text-blue-400"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
               <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
             </svg>
-            <h5 className="text-sm font-semibold text-blue-900">
+            <h5 className="text-sm font-semibold text-blue-400">
               Closest to Pin Winner
             </h5>
           </div>
@@ -108,7 +108,7 @@ export const CompetitionWinnerSelector = ({
                       : ""
                   } ${
                     isWinner
-                      ? "bg-blue-600 text-white border-blue-700 shadow-lg ring-4 ring-blue-300 scale-105 font-bold"
+                      ? "bg-blue-600 text-white border-blue-700 shadow-lg ring-4 ring-blue-500/40 scale-105 font-bold"
                       : "bg-white/5 text-white/70 border-white/15 hover:border-blue-400 hover:shadow-md active:scale-95"
                   }`}
                 >
@@ -130,7 +130,7 @@ export const CompetitionWinnerSelector = ({
                 !(
                   round.competitionWinners?.closestToPin?.[currentHole] || []
                 ).some((w) => w.matchId === match.id)
-                  ? "bg-slate-600 text-white border-slate-700 shadow-lg ring-4 ring-slate-300 scale-105 font-bold"
+                  ? "bg-slate-600 text-white border-slate-700 shadow-lg ring-4 ring-slate-500/40 scale-105 font-bold"
                   : "bg-white/5 text-white/50 border-white/15 hover:border-slate-400 active:scale-95"
               }`}
             >
@@ -138,7 +138,7 @@ export const CompetitionWinnerSelector = ({
             </button>
           </div>
           <div>
-            <label className="block text-xs font-medium text-blue-900 mb-1">
+            <label className="block text-xs font-medium text-blue-400 mb-1">
               Distance from Pin (feet/meters) - Optional
             </label>
             <input
@@ -165,7 +165,7 @@ export const CompetitionWinnerSelector = ({
               }}
               disabled={round.status === "completed"}
               placeholder="Enter distance (optional)"
-              className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="input-field text-sm"
               step="0.1"
               min="0"
             />
@@ -174,10 +174,10 @@ export const CompetitionWinnerSelector = ({
       )}
 
       {hasLongestDrive && (
-        <div className="card border-2 border-amber-200 bg-amber-50">
+        <div className="card border-2 border-amber-500/30 bg-amber-500/15">
           <div className="flex items-center gap-2 mb-3">
             <svg
-              className="w-5 h-5 text-amber-600"
+              className="w-5 h-5 text-amber-400"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -187,7 +187,7 @@ export const CompetitionWinnerSelector = ({
                 clipRule="evenodd"
               />
             </svg>
-            <h5 className="text-sm font-semibold text-amber-900">
+            <h5 className="text-sm font-semibold text-amber-400">
               Longest Drive Winner
             </h5>
           </div>
@@ -220,7 +220,7 @@ export const CompetitionWinnerSelector = ({
                       : ""
                   } ${
                     isWinner
-                      ? "bg-amber-600 text-white border-amber-700 shadow-lg ring-4 ring-amber-300 scale-105 font-bold"
+                      ? "bg-amber-600 text-white border-amber-700 shadow-lg ring-4 ring-amber-500/40 scale-105 font-bold"
                       : "bg-white/5 text-white/70 border-white/15 hover:border-amber-400 hover:shadow-md active:scale-95"
                   }`}
                 >
@@ -242,7 +242,7 @@ export const CompetitionWinnerSelector = ({
                 !(
                   round.competitionWinners?.longestDrive?.[currentHole] || []
                 ).some((w) => w.matchId === match.id)
-                  ? "bg-slate-600 text-white border-slate-700 shadow-lg ring-4 ring-slate-300 scale-105 font-bold"
+                  ? "bg-slate-600 text-white border-slate-700 shadow-lg ring-4 ring-slate-500/40 scale-105 font-bold"
                   : "bg-white/5 text-white/50 border-white/15 hover:border-slate-400 active:scale-95"
               }`}
             >
@@ -250,7 +250,7 @@ export const CompetitionWinnerSelector = ({
             </button>
           </div>
           <div>
-            <label className="block text-xs font-medium text-amber-900 mb-1">
+            <label className="block text-xs font-medium text-amber-400 mb-1">
               Drive Distance (yards/meters) - Optional
             </label>
             <input
@@ -277,7 +277,7 @@ export const CompetitionWinnerSelector = ({
               }}
               disabled={round.status === "completed"}
               placeholder="Enter distance (optional)"
-              className="w-full px-3 py-2 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+              className="input-field text-sm"
               step="0.1"
               min="0"
             />

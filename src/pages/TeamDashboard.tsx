@@ -191,8 +191,8 @@ export const TeamDashboard = () => {
             {/* Ryder Cup Info - when rounds exist but no stroke play stats */}
             {teamStats.roundsPlayed > 0 && teamStats.averageScore === 0 && (
               <div className="card-elevated card-spacing">
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-500/30 text-center">
-                  <p className="text-lg font-semibold text-blue-900 mb-2">
+                <div className="p-4 bg-blue-500/15 rounded-lg border border-blue-500/30 text-center">
+                  <p className="text-lg font-semibold text-blue-400 mb-2">
                     ⚔️ Ryder Cup Tournament
                   </p>
                   <p className="text-white/50">
@@ -212,30 +212,30 @@ export const TeamDashboard = () => {
                   Performance Statistics
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-500/30">
+                  <div className="p-4 bg-emerald-500/15 rounded-lg border border-emerald-500/30">
                     <div className="flex items-center gap-2 text-emerald-400 mb-1">
                       <span>📊</span>
                       <span className="text-sm font-medium">Average Score</span>
                     </div>
-                    <p className="text-2xl font-bold text-emerald-900">
+                    <p className="text-2xl font-bold text-emerald-400">
                       {teamStats.averageScore.toFixed(1)}
                     </p>
                   </div>
-                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-500/30">
-                    <div className="flex items-center gap-2 text-blue-700 mb-1">
+                  <div className="p-4 bg-blue-500/15 rounded-lg border border-blue-500/30">
+                    <div className="flex items-center gap-2 text-blue-400 mb-1">
                       <span>⛳</span>
                       <span className="text-sm font-medium">To Par</span>
                     </div>
-                    <p className="text-2xl font-bold text-blue-900">
+                    <p className="text-2xl font-bold text-blue-400">
                       {formatToPar(teamStats.toPar)}
                     </p>
                   </div>
-                  <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-                    <div className="flex items-center gap-2 text-purple-700 mb-1">
+                  <div className="p-4 bg-purple-500/15 rounded-lg border border-purple-500/30">
+                    <div className="flex items-center gap-2 text-purple-400 mb-1">
                       <span>🏆</span>
                       <span className="text-sm font-medium">Best Score</span>
                     </div>
-                    <p className="text-2xl font-bold text-purple-900">
+                    <p className="text-2xl font-bold text-purple-400">
                       {teamStats.bestScore}
                     </p>
                   </div>
@@ -559,39 +559,39 @@ const PlayerDetailView = ({
                 Performance Stats
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-500/30">
-                  <div className="flex items-center gap-2 text-blue-700 mb-1">
+                <div className="p-4 bg-blue-500/15 rounded-lg border border-blue-500/30">
+                  <div className="flex items-center gap-2 text-blue-400 mb-1">
                     <span>🏌️</span>
                     <span className="text-sm font-medium">Stroke Play</span>
                   </div>
-                  <p className="text-2xl font-bold text-blue-900">
+                  <p className="text-2xl font-bold text-blue-400">
                     {roundsPlayed}
                   </p>
                 </div>
-                <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-500/30">
+                <div className="p-4 bg-emerald-500/15 rounded-lg border border-emerald-500/30">
                   <div className="flex items-center gap-2 text-emerald-400 mb-1">
                     <span>📊</span>
                     <span className="text-sm font-medium">Avg Score</span>
                   </div>
-                  <p className="text-2xl font-bold text-emerald-900">
+                  <p className="text-2xl font-bold text-emerald-400">
                     {averageScore.toFixed(1)}
                   </p>
                 </div>
-                <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-                  <div className="flex items-center gap-2 text-purple-700 mb-1">
+                <div className="p-4 bg-purple-500/15 rounded-lg border border-purple-500/30">
+                  <div className="flex items-center gap-2 text-purple-400 mb-1">
                     <span>🏆</span>
                     <span className="text-sm font-medium">Best Score</span>
                   </div>
-                  <p className="text-2xl font-bold text-purple-900">
+                  <p className="text-2xl font-bold text-purple-400">
                     {bestScore}
                   </p>
                 </div>
-                <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
-                  <div className="flex items-center gap-2 text-amber-700 mb-1">
+                <div className="p-4 bg-amber-500/15 rounded-lg border border-amber-500/30">
+                  <div className="flex items-center gap-2 text-amber-400 mb-1">
                     <span>⛳</span>
                     <span className="text-sm font-medium">To Par</span>
                   </div>
-                  <p className="text-2xl font-bold text-amber-900">
+                  <p className="text-2xl font-bold text-amber-400">
                     {formatToPar(toPar)}
                   </p>
                 </div>
@@ -601,8 +601,8 @@ const PlayerDetailView = ({
 
           {roundsPlayed === 0 && playerRounds.length > 0 && (
             <div className="card-elevated card-spacing">
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-500/30 text-center">
-                <p className="text-sm text-blue-700 mb-1">⚔️ Match Play Only</p>
+              <div className="p-4 bg-blue-500/15 rounded-lg border border-blue-500/30 text-center">
+                <p className="text-sm text-blue-400 mb-1">⚔️ Match Play Only</p>
                 <p className="text-white/50 text-sm">
                   This player has participated in {playerRounds.length} Ryder
                   Cup round{playerRounds.length > 1 ? "s" : ""}. Stroke play
