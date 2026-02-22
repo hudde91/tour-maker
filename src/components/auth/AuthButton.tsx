@@ -27,8 +27,8 @@ export function AuthButton() {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-sm text-slate-600">
-        <div className="h-8 w-8 animate-pulse rounded-full bg-slate-200" />
+      <div className="flex items-center gap-2 text-sm text-white/50">
+        <div className="h-8 w-8 animate-pulse rounded-full bg-white/10" />
         <span>Loading...</span>
       </div>
     );
@@ -50,15 +50,15 @@ export function AuthButton() {
             </div>
           )}
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-slate-900">
+            <span className="text-sm font-medium text-white">
               {user.displayName || "User"}
             </span>
-            <span className="text-xs text-slate-500">{user.email}</span>
+            <span className="text-xs text-white/40">{user.email}</span>
           </div>
         </div>
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-2 rounded-lg bg-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-300"
+          className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:bg-slate-300"
         >
           <LogOut size={16} />
           Sign Out

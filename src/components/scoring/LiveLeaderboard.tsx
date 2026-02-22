@@ -65,19 +65,19 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
             {/* Clickable Player Row */}
             <button
               onClick={() => handlePlayerToggle(player.id)}
-              className="w-full flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 hover:bg-slate-50 hover:border-slate-300 cursor-pointer group active:scale-100"
+              className="w-full flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2 hover:bg-white/5 hover:border-white/15 cursor-pointer group active:scale-100"
             >
               {/* Left: position + name */}
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-6 text-right text-sm font-semibold text-slate-600">
+                <div className="w-6 text-right text-sm font-semibold text-white/50">
                   {idx + 1}
                 </div>
-                <div className="truncate font-medium text-slate-900">
+                <div className="truncate font-medium text-white">
                   {player.name}
                 </div>
                 {/* Chevron indicator */}
                 <svg
-                  className={`w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-transform ${
+                  className={`w-4 h-4 text-white/30 group-hover:text-white/50 transition-transform ${
                     isExpanded ? "rotate-180" : ""
                   }`}
                   fill="none"
@@ -98,10 +98,10 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
                 {/* Points (if available) */}
                 {typeof points === "number" && (
                   <div className="min-w-[56px]">
-                    <div className="text-base font-semibold text-slate-900">
+                    <div className="text-base font-semibold text-white">
                       {points}
                     </div>
-                    <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                    <div className="text-[10px] uppercase tracking-wide text-white/40">
                       Points
                     </div>
                   </div>
@@ -109,20 +109,20 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
 
                 {/* Stableford */}
                 <div className="min-w-[56px]">
-                  <div className="text-base font-semibold text-slate-900">
+                  <div className="text-base font-semibold text-white">
                     {stableford}
                   </div>
-                  <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                  <div className="text-[10px] uppercase tracking-wide text-white/40">
                     Stableford
                   </div>
                 </div>
 
                 {/* Total Strokes */}
                 <div className="min-w-[56px]">
-                  <div className="text-base font-semibold text-slate-900">
+                  <div className="text-base font-semibold text-white">
                     {totalStrokes}
                   </div>
-                  <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                  <div className="text-[10px] uppercase tracking-wide text-white/40">
                     Total Strokes
                   </div>
                 </div>
@@ -131,7 +131,7 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
 
             {/* Expanded PlayerScorecard */}
             {isExpanded && (
-              <div className="mt-2 rounded-xl border border-slate-200 bg-white p-4">
+              <div className="mt-2 rounded-xl border border-white/10 bg-white/5 p-4">
                 <PlayerScorecard
                   tour={tour}
                   player={player}
@@ -203,8 +203,8 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
         const longestDriveWinners = competitionWinners.filter(w => w.type === 'longestDrive');
 
         return (
-          <div className="border-t border-slate-200 pt-4 mt-4">
-            <h3 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+          <div className="border-t border-white/10 pt-4 mt-4">
+            <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
               <span className="text-xl">🏅</span>
               Competition Winners
             </h3>
@@ -212,7 +212,7 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
             <div className="space-y-3">
               {/* Closest to Pin */}
               {closestToPinWinners.length > 0 && (
-                <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-3">
+                <div className="bg-blue-50 border-2 border-blue-500/30 rounded-xl p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
@@ -223,10 +223,10 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
                     {closestToPinWinners.map((winner, idx) => {
                       const player = tour.players.find(p => p.id === winner.playerId);
                       return (
-                        <div key={idx} className="bg-white rounded-lg p-2 flex items-center justify-between">
+                        <div key={idx} className="bg-white/5 rounded-lg p-2 flex items-center justify-between">
                           <div className="flex-1">
-                            <div className="font-medium text-slate-900 text-sm">{player?.name || 'Unknown'}</div>
-                            <div className="text-xs text-slate-600">
+                            <div className="font-medium text-white text-sm">{player?.name || 'Unknown'}</div>
+                            <div className="text-xs text-white/50">
                               Hole {winner.holeNumber}
                               {winner.distance && <span className="ml-1">• {winner.distance} ft</span>}
                             </div>
@@ -254,10 +254,10 @@ export const LiveLeaderboard: React.FC<LiveLeaderboardProps> = ({
                     {longestDriveWinners.map((winner, idx) => {
                       const player = tour.players.find(p => p.id === winner.playerId);
                       return (
-                        <div key={idx} className="bg-white rounded-lg p-2 flex items-center justify-between">
+                        <div key={idx} className="bg-white/5 rounded-lg p-2 flex items-center justify-between">
                           <div className="flex-1">
-                            <div className="font-medium text-slate-900 text-sm">{player?.name || 'Unknown'}</div>
-                            <div className="text-xs text-slate-600">
+                            <div className="font-medium text-white text-sm">{player?.name || 'Unknown'}</div>
+                            <div className="text-xs text-white/50">
                               Hole {winner.holeNumber}
                               {winner.distance && <span className="ml-1">• {winner.distance} yds</span>}
                             </div>

@@ -32,19 +32,19 @@ export const HoleNavigation = ({
       case "current":
         return "bg-emerald-600 text-white border-emerald-600 shadow-lg ring-2 ring-emerald-200 scale-105";
       case "completed":
-        return "bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100";
+        return "bg-emerald-50 text-emerald-400 border-emerald-300 hover:bg-emerald-500/15";
       case "pending":
-        return "bg-white text-slate-600 border-slate-300 hover:bg-slate-50 hover:border-slate-400";
+        return "bg-white/5 text-white/50 border-white/15 hover:bg-white/5 hover:border-slate-400";
       default:
-        return "bg-white text-slate-600 border-slate-300 hover:bg-slate-50";
+        return "bg-white/5 text-white/50 border-white/15 hover:bg-white/5";
     }
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-6 shadow-sm">
+    <div className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-slate-900">Course Navigation</h3>
-        <div className="text-sm text-slate-500">
+        <h3 className="font-semibold text-white">Course Navigation</h3>
+        <div className="text-sm text-white/40">
           Hole {currentHole} of {holes.length}
         </div>
       </div>
@@ -93,7 +93,7 @@ export const HoleNavigation = ({
       </div>
 
       {/* Current Hole Info */}
-      <div className="bg-slate-50 rounded-lg p-3 sm:p-4 mt-4">
+      <div className="rounded-lg p-3 sm:p-4 mt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-2">
@@ -101,17 +101,17 @@ export const HoleNavigation = ({
                 {currentHole}
               </div>
               <div>
-                <div className="font-semibold text-slate-900 text-sm sm:text-base">
+                <div className="font-semibold text-white text-sm sm:text-base">
                   Hole {currentHole}
                 </div>
-                <div className="text-xs sm:text-sm text-slate-600">
+                <div className="text-xs sm:text-sm text-white/50">
                   Par {holes[currentHole - 1]?.par}
                 </div>
               </div>
             </div>
 
             {holes[currentHole - 1]?.yardage && (
-              <div className="text-xs sm:text-sm text-slate-600 hidden sm:block">
+              <div className="text-xs sm:text-sm text-white/50 hidden sm:block">
                 <span className="font-medium">
                   {holes[currentHole - 1].yardage}
                 </span>{" "}
@@ -125,11 +125,11 @@ export const HoleNavigation = ({
             <button
               onClick={() => currentHole > 1 && onHoleChange(currentHole - 1)}
               disabled={currentHole === 1}
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg border border-white/15 bg-white/5 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
               aria-label="Previous hole"
             >
               <svg
-                className="w-5 h-5 text-slate-600"
+                className="w-5 h-5 text-white/50"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -147,11 +147,11 @@ export const HoleNavigation = ({
                 currentHole < holes.length && onHoleChange(currentHole + 1)
               }
               disabled={currentHole === holes.length}
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg border border-white/15 bg-white/5 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
               aria-label="Next hole"
             >
               <svg
-                className="w-5 h-5 text-slate-600"
+                className="w-5 h-5 text-white/50"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

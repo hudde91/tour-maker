@@ -54,19 +54,19 @@ export const CompetitionWinnerSelector = ({
 
   return (
     <div className="p-4 space-y-4">
-      <div className="card bg-gradient-to-r from-blue-50 to-emerald-50 border-2 border-blue-200">
+      <div className="card bg-gradient-to-r from-blue-50 to-emerald-50 border-2 border-blue-500/30">
         <div className="text-center mb-4">
-          <h3 className="text-xl font-bold text-slate-900 mb-2">
+          <h3 className="text-xl font-bold text-white mb-2">
             Hole {currentHole} Competitions
           </h3>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-white/50">
             Select winners for this hole's competitions, then continue to the next hole
           </p>
         </div>
       </div>
 
       {hasClosestToPin && (
-        <div className="card border-2 border-blue-200 bg-blue-50">
+        <div className="card border-2 border-blue-500/30 bg-blue-50">
           <div className="flex items-center gap-2 mb-3">
             <svg
               className="w-5 h-5 text-blue-600"
@@ -109,7 +109,7 @@ export const CompetitionWinnerSelector = ({
                   } ${
                     isWinner
                       ? "bg-blue-600 text-white border-blue-700 shadow-lg ring-4 ring-blue-300 scale-105 font-bold"
-                      : "bg-white text-slate-700 border-slate-300 hover:border-blue-400 hover:shadow-md active:scale-95"
+                      : "bg-white/5 text-white/70 border-white/15 hover:border-blue-400 hover:shadow-md active:scale-95"
                   }`}
                 >
                   {p.name}
@@ -131,7 +131,7 @@ export const CompetitionWinnerSelector = ({
                   round.competitionWinners?.closestToPin?.[currentHole] || []
                 ).some((w) => w.matchId === match.id)
                   ? "bg-slate-600 text-white border-slate-700 shadow-lg ring-4 ring-slate-300 scale-105 font-bold"
-                  : "bg-white text-slate-600 border-slate-300 hover:border-slate-400 active:scale-95"
+                  : "bg-white/5 text-white/50 border-white/15 hover:border-slate-400 active:scale-95"
               }`}
             >
               None
@@ -221,7 +221,7 @@ export const CompetitionWinnerSelector = ({
                   } ${
                     isWinner
                       ? "bg-amber-600 text-white border-amber-700 shadow-lg ring-4 ring-amber-300 scale-105 font-bold"
-                      : "bg-white text-slate-700 border-slate-300 hover:border-amber-400 hover:shadow-md active:scale-95"
+                      : "bg-white/5 text-white/70 border-white/15 hover:border-amber-400 hover:shadow-md active:scale-95"
                   }`}
                 >
                   {p.name}
@@ -243,7 +243,7 @@ export const CompetitionWinnerSelector = ({
                   round.competitionWinners?.longestDrive?.[currentHole] || []
                 ).some((w) => w.matchId === match.id)
                   ? "bg-slate-600 text-white border-slate-700 shadow-lg ring-4 ring-slate-300 scale-105 font-bold"
-                  : "bg-white text-slate-600 border-slate-300 hover:border-slate-400 active:scale-95"
+                  : "bg-white/5 text-white/50 border-white/15 hover:border-slate-400 active:scale-95"
               }`}
             >
               None

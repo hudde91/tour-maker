@@ -21,10 +21,10 @@ export const TeamDashboard = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <Users className="w-8 h-8 text-emerald-600" />
+          <div className="w-16 h-16 bg-emerald-500/15 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <Users className="w-8 h-8 text-emerald-400" />
           </div>
-          <div className="text-lg font-semibold text-slate-700">
+          <div className="text-lg font-semibold text-white/70">
             Loading team...
           </div>
         </div>
@@ -34,16 +34,16 @@ export const TeamDashboard = () => {
 
   if (!tour || !teamId) {
     return (
-      <div className="min-h-screen bg-slate-50 safe-area-top">
+      <div className="min-h-screen safe-area-top">
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <XCircle className="w-10 h-10 text-red-600" />
+            <div className="w-20 h-20 bg-red-500/15 rounded-full flex items-center justify-center mx-auto mb-4">
+              <XCircle className="w-10 h-10 text-red-400" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-700 mb-3">
+            <h3 className="text-xl font-semibold text-white/70 mb-3">
               Team Not Found
             </h3>
-            <p className="text-slate-500 mb-6">
+            <p className="text-white/40 mb-6">
               The team you're looking for doesn't exist or has been removed.
             </p>
             <button onClick={() => navigate(-1)} className="btn-primary">
@@ -59,16 +59,16 @@ export const TeamDashboard = () => {
 
   if (!teamStats) {
     return (
-      <div className="min-h-screen bg-slate-50 safe-area-top">
+      <div className="min-h-screen safe-area-top">
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <XCircle className="w-10 h-10 text-red-600" />
+            <div className="w-20 h-20 bg-red-500/15 rounded-full flex items-center justify-center mx-auto mb-4">
+              <XCircle className="w-10 h-10 text-red-400" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-700 mb-3">
+            <h3 className="text-xl font-semibold text-white/70 mb-3">
               Team Not Found
             </h3>
-            <p className="text-slate-500 mb-6">
+            <p className="text-white/40 mb-6">
               The team you're looking for doesn't exist or has been removed.
             </p>
             <button onClick={() => navigate(-1)} className="btn-primary">
@@ -102,7 +102,7 @@ export const TeamDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 safe-area-top">
+    <div className="min-h-screen safe-area-top">
       <PageHeader
         title={team.name}
         subtitle="Team Dashboard"
@@ -113,7 +113,7 @@ export const TeamDashboard = () => {
       <div className="-mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
         {/* Player Selection */}
         <div className="card-elevated card-spacing">
-          <label className="block text-sm font-medium text-slate-700 mb-2">
+          <label className="block text-sm font-medium text-white/70 mb-2">
             View Statistics For:
           </label>
           <select
@@ -154,34 +154,34 @@ export const TeamDashboard = () => {
           <>
             {/* Team Overview */}
             <div className="card-elevated card-spacing">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">
+              <h2 className="text-xl font-bold text-white mb-4">
                 Team Overview
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="flex items-center gap-2 text-slate-600 mb-1">
+                <div className="p-4 rounded-lg border border-white/10">
+                  <div className="flex items-center gap-2 text-white/50 mb-1">
                     <span>👥</span>
                     <span className="text-sm font-medium">Team Size</span>
                   </div>
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-2xl font-bold text-white">
                     {team.playerIds.length}
                   </p>
                 </div>
-                <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="flex items-center gap-2 text-slate-600 mb-1">
+                <div className="p-4 rounded-lg border border-white/10">
+                  <div className="flex items-center gap-2 text-white/50 mb-1">
                     <span>👑</span>
                     <span className="text-sm font-medium">Captain</span>
                   </div>
-                  <p className="text-2xl font-bold text-slate-900 truncate">
+                  <p className="text-2xl font-bold text-white truncate">
                     {captain?.name || "None"}
                   </p>
                 </div>
-                <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="flex items-center gap-2 text-slate-600 mb-1">
+                <div className="p-4 rounded-lg border border-white/10">
+                  <div className="flex items-center gap-2 text-white/50 mb-1">
                     <span>🏌️</span>
                     <span className="text-sm font-medium">Rounds Played</span>
                   </div>
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-2xl font-bold text-white">
                     {teamStats.roundsPlayed}
                   </p>
                 </div>
@@ -191,11 +191,11 @@ export const TeamDashboard = () => {
             {/* Ryder Cup Info - when rounds exist but no stroke play stats */}
             {teamStats.roundsPlayed > 0 && teamStats.averageScore === 0 && (
               <div className="card-elevated card-spacing">
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 text-center">
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-500/30 text-center">
                   <p className="text-lg font-semibold text-blue-900 mb-2">
                     ⚔️ Ryder Cup Tournament
                   </p>
-                  <p className="text-slate-600">
+                  <p className="text-white/50">
                     This team has participated in {teamStats.roundsPlayed} Ryder
                     Cup round{teamStats.roundsPlayed > 1 ? "s" : ""}.
                     Traditional stroke play statistics are not available for
@@ -208,12 +208,12 @@ export const TeamDashboard = () => {
             {/* Performance Stats */}
             {teamStats.roundsPlayed > 0 && teamStats.averageScore > 0 && (
               <div className="card-elevated card-spacing">
-                <h2 className="text-xl font-bold text-slate-900 mb-4">
+                <h2 className="text-xl font-bold text-white mb-4">
                   Performance Statistics
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-                    <div className="flex items-center gap-2 text-emerald-700 mb-1">
+                  <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-500/30">
+                    <div className="flex items-center gap-2 text-emerald-400 mb-1">
                       <span>📊</span>
                       <span className="text-sm font-medium">Average Score</span>
                     </div>
@@ -221,7 +221,7 @@ export const TeamDashboard = () => {
                       {teamStats.averageScore.toFixed(1)}
                     </p>
                   </div>
-                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-500/30">
                     <div className="flex items-center gap-2 text-blue-700 mb-1">
                       <span>⛳</span>
                       <span className="text-sm font-medium">To Par</span>
@@ -255,7 +255,7 @@ export const TeamDashboard = () => {
                 {/* Recent Scores Chart */}
                 {teamStats.recentScores.length > 0 && (
                   <div className="mt-6">
-                    <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                    <h3 className="text-lg font-semibold text-white mb-3">
                       Recent Performance
                     </h3>
                     <div className="flex items-end gap-2 h-32">
@@ -271,10 +271,10 @@ export const TeamDashboard = () => {
                               className="w-full bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg transition-all"
                               style={{ height: `${height}%` }}
                             ></div>
-                            <p className="text-sm font-semibold text-slate-700 mt-2">
+                            <p className="text-sm font-semibold text-white/70 mt-2">
                               {score}
                             </p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-white/40">
                               Round{" "}
                               {tour.rounds.length -
                                 teamStats.recentScores.length +
@@ -293,7 +293,7 @@ export const TeamDashboard = () => {
             {/* Best Performers */}
             {bestPerformers.length > 0 && (
               <div className="card-elevated card-spacing">
-                <h2 className="text-xl font-bold text-slate-900 mb-4">
+                <h2 className="text-xl font-bold text-white mb-4">
                   🌟 Best Performers
                 </h2>
                 <div className="space-y-3">
@@ -304,7 +304,7 @@ export const TeamDashboard = () => {
                         index === 0
                           ? "bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-300"
                           : index === 1
-                          ? "bg-gradient-to-r from-slate-50 to-slate-100 border-slate-300"
+                          ? "bg-gradient-to-r from-slate-50 to-slate-100 border-white/15"
                           : "bg-gradient-to-r from-orange-50 to-amber-50 border-orange-300"
                       }`}
                     >
@@ -315,7 +315,7 @@ export const TeamDashboard = () => {
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <p className="font-bold text-lg text-slate-900">
+                              <p className="font-bold text-lg text-white">
                                 {playerStat.player.name}
                               </p>
                               {team.captainId === playerStat.player.id && (
@@ -324,16 +324,16 @@ export const TeamDashboard = () => {
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-slate-600">
+                            <p className="text-sm text-white/50">
                               {playerStat.roundsPlayed} rounds played
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-2xl font-bold text-slate-900">
+                          <p className="text-2xl font-bold text-white">
                             {playerStat.averageScore.toFixed(1)}
                           </p>
-                          <p className="text-sm text-slate-600">avg score</p>
+                          <p className="text-sm text-white/50">avg score</p>
                         </div>
                       </div>
                     </div>
@@ -345,29 +345,29 @@ export const TeamDashboard = () => {
             {/* All Player Stats */}
             {playerStats.length > 0 && (
               <div className="card-elevated card-spacing">
-                <h2 className="text-xl font-bold text-slate-900 mb-4">
+                <h2 className="text-xl font-bold text-white mb-4">
                   Player Statistics
                 </h2>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-slate-200">
-                        <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700">
+                      <tr className="border-b border-white/10">
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-white/70">
                           Player
                         </th>
-                        <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">
+                        <th className="text-center py-3 px-4 text-sm font-semibold text-white/70">
                           Stroke Play
                         </th>
-                        <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">
+                        <th className="text-center py-3 px-4 text-sm font-semibold text-white/70">
                           Avg Score
                         </th>
-                        <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">
+                        <th className="text-center py-3 px-4 text-sm font-semibold text-white/70">
                           Best
                         </th>
-                        <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">
+                        <th className="text-center py-3 px-4 text-sm font-semibold text-white/70">
                           To Par
                         </th>
-                        <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700">
+                        <th className="text-center py-3 px-4 text-sm font-semibold text-white/70">
                           Handicap
                         </th>
                       </tr>
@@ -378,11 +378,11 @@ export const TeamDashboard = () => {
                         .map((stat) => (
                           <tr
                             key={stat.player.id}
-                            className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                            className="border-b border-slate-100 hover:bg-white/5 transition-colors"
                           >
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-2">
-                                <span className="font-semibold text-slate-900">
+                                <span className="font-semibold text-white">
                                   {stat.player.name}
                                 </span>
                                 {team.captainId === stat.player.id && (
@@ -390,15 +390,15 @@ export const TeamDashboard = () => {
                                 )}
                               </div>
                             </td>
-                            <td className="text-center py-3 px-4 text-slate-700">
+                            <td className="text-center py-3 px-4 text-white/70">
                               {stat.roundsPlayed > 0 ? stat.roundsPlayed : "-"}
                             </td>
-                            <td className="text-center py-3 px-4 font-semibold text-slate-900">
+                            <td className="text-center py-3 px-4 font-semibold text-white">
                               {stat.roundsPlayed > 0
                                 ? stat.averageScore.toFixed(1)
                                 : "-"}
                             </td>
-                            <td className="text-center py-3 px-4 font-semibold text-emerald-700">
+                            <td className="text-center py-3 px-4 font-semibold text-emerald-400">
                               {stat.roundsPlayed > 0 ? stat.bestScore : "-"}
                             </td>
                             <td className="text-center py-3 px-4 font-semibold text-blue-700">
@@ -406,7 +406,7 @@ export const TeamDashboard = () => {
                                 ? formatToPar(stat.toPar)
                                 : "-"}
                             </td>
-                            <td className="text-center py-3 px-4 text-slate-600">
+                            <td className="text-center py-3 px-4 text-white/50">
                               {stat.player.handicap !== undefined
                                 ? stat.player.handicap
                                 : "-"}
@@ -424,10 +424,10 @@ export const TeamDashboard = () => {
               <div className="card-elevated card-spacing text-center">
                 <div className="py-12">
                   <span className="text-6xl mb-4 block">📊</span>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">
+                  <h3 className="text-xl font-bold text-white mb-2">
                     No Statistics Yet
                   </h3>
-                  <p className="text-slate-600 mb-6">
+                  <p className="text-white/50 mb-6">
                     Start playing rounds to see team statistics and performance
                     data.
                   </p>
@@ -534,7 +534,7 @@ const PlayerDetailView = ({
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-slate-900">
+              <h2 className="text-2xl font-bold text-white">
                 {player.name}
               </h2>
               {isCaptain && (
@@ -544,7 +544,7 @@ const PlayerDetailView = ({
               )}
             </div>
             {player.handicap !== undefined && (
-              <p className="text-slate-600">Handicap: {player.handicap}</p>
+              <p className="text-white/50">Handicap: {player.handicap}</p>
             )}
           </div>
         </div>
@@ -555,11 +555,11 @@ const PlayerDetailView = ({
         <>
           {roundsPlayed > 0 && (
             <div className="card-elevated card-spacing">
-              <h3 className="text-xl font-bold text-slate-900 mb-4">
+              <h3 className="text-xl font-bold text-white mb-4">
                 Performance Stats
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-500/30">
                   <div className="flex items-center gap-2 text-blue-700 mb-1">
                     <span>🏌️</span>
                     <span className="text-sm font-medium">Stroke Play</span>
@@ -568,8 +568,8 @@ const PlayerDetailView = ({
                     {roundsPlayed}
                   </p>
                 </div>
-                <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-                  <div className="flex items-center gap-2 text-emerald-700 mb-1">
+                <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-500/30">
+                  <div className="flex items-center gap-2 text-emerald-400 mb-1">
                     <span>📊</span>
                     <span className="text-sm font-medium">Avg Score</span>
                   </div>
@@ -601,9 +601,9 @@ const PlayerDetailView = ({
 
           {roundsPlayed === 0 && playerRounds.length > 0 && (
             <div className="card-elevated card-spacing">
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 text-center">
+              <div className="p-4 bg-blue-50 rounded-lg border border-blue-500/30 text-center">
                 <p className="text-sm text-blue-700 mb-1">⚔️ Match Play Only</p>
-                <p className="text-slate-600 text-sm">
+                <p className="text-white/50 text-sm">
                   This player has participated in {playerRounds.length} Ryder
                   Cup round{playerRounds.length > 1 ? "s" : ""}. Stroke play
                   statistics are not available for match play rounds.
@@ -614,14 +614,14 @@ const PlayerDetailView = ({
 
           {/* Round History */}
           <div className="card-elevated card-spacing">
-            <h3 className="text-xl font-bold text-slate-900 mb-4">
+            <h3 className="text-xl font-bold text-white mb-4">
               Round History
             </h3>
             <div className="space-y-3">
               {playerRounds.map((roundData: any, index: number) => (
                 <div
                   key={roundData.round.id}
-                  className="p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors"
+                  className="p-4 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
@@ -634,13 +634,13 @@ const PlayerDetailView = ({
                             : "📋"}
                         </span>
                         <div>
-                          <h4 className="font-semibold text-slate-900">
+                          <h4 className="font-semibold text-white">
                             {roundData.round.name}
                           </h4>
-                          <p className="text-sm text-slate-600">
+                          <p className="text-sm text-white/50">
                             {roundData.round.courseName}
                           </p>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-white/40">
                             {roundData.isMatchPlay ? (
                               <>Match Play • {roundData.round.holes} holes</>
                             ) : (
@@ -656,25 +656,25 @@ const PlayerDetailView = ({
                     <div className="text-right">
                       {roundData.isMatchPlay ? (
                         <>
-                          <p className="text-2xl font-bold text-slate-900">
+                          <p className="text-2xl font-bold text-white">
                             {roundData.matchesWon}/{roundData.matchesPlayed}
                           </p>
-                          <p className="text-sm font-semibold text-slate-600">
+                          <p className="text-sm font-semibold text-white/50">
                             Matches Won
                           </p>
                         </>
                       ) : (
                         <>
-                          <p className="text-3xl font-bold text-slate-900">
+                          <p className="text-3xl font-bold text-white">
                             {roundData.score}
                           </p>
                           <p
                             className={`text-sm font-semibold ${
                               roundData.toPar < 0
-                                ? "text-emerald-600"
+                                ? "text-emerald-400"
                                 : roundData.toPar > 0
-                                ? "text-red-600"
-                                : "text-slate-600"
+                                ? "text-red-400"
+                                : "text-white/50"
                             }`}
                           >
                             {formatToPar(roundData.toPar)}
@@ -691,10 +691,10 @@ const PlayerDetailView = ({
       ) : (
         <div className="card-elevated card-spacing text-center py-12">
           <span className="text-6xl mb-4 block">📊</span>
-          <h3 className="text-xl font-bold text-slate-900 mb-2">
+          <h3 className="text-xl font-bold text-white mb-2">
             No Rounds Yet
           </h3>
-          <p className="text-slate-600">
+          <p className="text-white/50">
             {player.name} hasn't played any rounds yet.
           </p>
         </div>

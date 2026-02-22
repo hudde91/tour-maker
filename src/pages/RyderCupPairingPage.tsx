@@ -21,10 +21,10 @@ export const RyderCupPairingPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <Settings className="w-8 h-8 text-emerald-600" />
+          <div className="w-16 h-16 bg-emerald-500/15 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <Settings className="w-8 h-8 text-emerald-400" />
           </div>
-          <div className="text-lg font-semibold text-slate-700">
+          <div className="text-lg font-semibold text-white/70">
             Loading pairing interface...
           </div>
         </div>
@@ -34,16 +34,16 @@ export const RyderCupPairingPage = () => {
 
   if (!tour) {
     return (
-      <div className="min-h-screen bg-slate-50 safe-area-top">
+      <div className="min-h-screen safe-area-top">
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <XCircle className="w-10 h-10 text-red-600" />
+            <div className="w-20 h-20 bg-red-500/15 rounded-full flex items-center justify-center mx-auto mb-4">
+              <XCircle className="w-10 h-10 text-red-400" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-700 mb-3">
+            <h3 className="text-xl font-semibold text-white/70 mb-3">
               Tournament Not Found
             </h3>
-            <p className="text-slate-500 mb-6">
+            <p className="text-white/40 mb-6">
               The tournament you're looking for doesn't exist or has been
               removed.
             </p>
@@ -60,16 +60,16 @@ export const RyderCupPairingPage = () => {
 
   if (!round) {
     return (
-      <div className="min-h-screen bg-slate-50 safe-area-top">
+      <div className="min-h-screen safe-area-top">
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <XCircle className="w-10 h-10 text-red-600" />
+            <div className="w-20 h-20 bg-red-500/15 rounded-full flex items-center justify-center mx-auto mb-4">
+              <XCircle className="w-10 h-10 text-red-400" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-700 mb-3">
+            <h3 className="text-xl font-semibold text-white/70 mb-3">
               Round Not Found
             </h3>
-            <p className="text-slate-500 mb-6">
+            <p className="text-white/40 mb-6">
               The round you're looking for doesn't exist.
             </p>
             <button
@@ -105,7 +105,7 @@ export const RyderCupPairingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 safe-area-top pb-20">
+    <div className="min-h-screen safe-area-top pb-20">
       <PageHeader
         title="Setup Pairings"
         subtitle={`${round.name} • ${tour.name}`}

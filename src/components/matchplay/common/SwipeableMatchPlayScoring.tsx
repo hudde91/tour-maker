@@ -156,10 +156,10 @@ export const SwipeableMatchPlayScoring = ({
     return (
       <div className="p-4 space-y-4">
         <div className="mb-4">
-          <h2 className="text-xl font-bold text-slate-900">
+          <h2 className="text-xl font-bold text-white">
             Select Your Match
           </h2>
-          <p className="text-sm text-slate-600 mt-1">
+          <p className="text-sm text-white/50 mt-1">
             Click on your match to start scoring
           </p>
         </div>
@@ -178,7 +178,7 @@ export const SwipeableMatchPlayScoring = ({
             >
               {/* Match Format Badge */}
               <div className="flex items-center justify-between mb-4">
-                <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full">
+                <span className="inline-block px-3 py-1 bg-blue-500/15 text-blue-300 text-sm font-semibold rounded-full">
                   {match.format.charAt(0).toUpperCase() + match.format.slice(1)}{" "}
                   Match
                 </span>
@@ -209,10 +209,10 @@ export const SwipeableMatchPlayScoring = ({
                     <span className="text-white font-bold">A</span>
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-slate-900 text-lg">
+                    <h3 className="font-bold text-white text-lg">
                       {teamAInfo.name}
                     </h3>
-                    <p className="text-slate-700 font-medium">
+                    <p className="text-white/70 font-medium">
                       {teamAInfo.players.join(" & ")}
                     </p>
                   </div>
@@ -221,7 +221,7 @@ export const SwipeableMatchPlayScoring = ({
 
               {/* VS Divider */}
               <div className="flex items-center justify-center my-3">
-                <div className="px-4 py-1 bg-slate-100 rounded-full text-slate-600 font-bold text-sm">
+                <div className="px-4 py-1 bg-white/5 rounded-full text-white/50 font-bold text-sm">
                   VS
                 </div>
               </div>
@@ -242,10 +242,10 @@ export const SwipeableMatchPlayScoring = ({
                     <span className="text-white font-bold">B</span>
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-slate-900 text-lg">
+                    <h3 className="font-bold text-white text-lg">
                       {teamBInfo.name}
                     </h3>
-                    <p className="text-slate-700 font-medium">
+                    <p className="text-white/70 font-medium">
                       {teamBInfo.players.join(" & ")}
                     </p>
                   </div>
@@ -254,7 +254,7 @@ export const SwipeableMatchPlayScoring = ({
 
               {/* Match Status */}
               {match.statusText && (
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-500/30 rounded-lg">
                   <div className="text-center">
                     <span className="text-sm font-semibold text-blue-900">
                       {match.statusText}
@@ -264,7 +264,7 @@ export const SwipeableMatchPlayScoring = ({
               )}
 
               {/* Click to Score Indicator */}
-              <div className="mt-4 flex items-center justify-center gap-2 text-emerald-600 font-semibold">
+              <div className="mt-4 flex items-center justify-center gap-2 text-emerald-400 font-semibold">
                 <span>Tap to score this match</span>
                 <svg
                   className="w-5 h-5"
@@ -291,16 +291,16 @@ export const SwipeableMatchPlayScoring = ({
     return (
       <div className="flex flex-col items-center justify-center h-full p-8">
         <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-20 h-20 bg-blue-500/15 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-4xl">🔒</span>
           </div>
-          <h3 className="text-xl font-semibold text-slate-900 mb-2">
+          <h3 className="text-xl font-semibold text-white mb-2">
             No Matches Available to Score
           </h3>
-          <p className="text-slate-600 mb-4">
+          <p className="text-white/50 mb-4">
             Please sign in to access scoring functionality.
           </p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-white/40">
             In match play, authenticated users can score for all matches in the round.
           </p>
         </div>
@@ -312,14 +312,14 @@ export const SwipeableMatchPlayScoring = ({
   if (!selectedMatchId) {
     return (
       <div className="flex flex-col h-full">
-        <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <div className="bg-white/5 border-b border-white/10 sticky top-0 z-10">
           <div className="flex">
             <button
               onClick={() => setActiveTab("score")}
               className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
                 activeTab === "score"
-                  ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  ? "text-emerald-400 border-b-2 border-emerald-600 bg-emerald-50"
+                  : "text-white/50 hover:text-white hover:bg-white/5"
               }`}
             >
               <div className="flex items-center justify-center gap-2">
@@ -343,8 +343,8 @@ export const SwipeableMatchPlayScoring = ({
               onClick={() => setActiveTab("leaderboard")}
               className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
                 activeTab === "leaderboard"
-                  ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  ? "text-emerald-400 border-b-2 border-emerald-600 bg-emerald-50"
+                  : "text-white/50 hover:text-white hover:bg-white/5"
               }`}
             >
               <div className="flex items-center justify-center gap-2">
@@ -399,11 +399,11 @@ export const SwipeableMatchPlayScoring = ({
   return (
     <div className="flex flex-col h-full">
       {/* Back Button and Header */}
-      <div className="bg-white border-b border-slate-200 top-0">
+      <div className="bg-white/5 border-b border-white/10 top-0">
         <div className="flex items-center gap-3 p-4">
           <button
             onClick={() => setSelectedMatchId(null)}
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-semibold"
+            className="flex items-center gap-2 text-white/50 hover:text-white font-semibold"
           >
             <svg
               className="w-5 h-5"
@@ -424,7 +424,7 @@ export const SwipeableMatchPlayScoring = ({
 
         {/* Match Header - Players */}
         <div className="px-4 pb-4">
-          <div className="bg-gradient-to-r from-blue-50 to-emerald-50 rounded-lg p-4 border border-blue-200">
+          <div className="bg-gradient-to-r from-blue-50 to-emerald-50 rounded-lg p-4 border border-blue-500/30">
             <div className="text-center mb-3">
               <span className="inline-block px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full">
                 {selectedMatch.format.charAt(0).toUpperCase() +
@@ -434,21 +434,21 @@ export const SwipeableMatchPlayScoring = ({
             </div>
             <div className="flex items-center justify-between gap-4">
               <div className="flex-1 text-center">
-                <div className="font-bold text-slate-900 mb-1">
+                <div className="font-bold text-white mb-1">
                   {teamAInfo.name}
                 </div>
-                <div className="text-sm text-slate-700">
+                <div className="text-sm text-white/70">
                   {teamAInfo.players.join(" & ")}
                 </div>
               </div>
-              <div className="px-3 py-1 bg-white rounded-full text-slate-600 font-bold text-sm shadow">
+              <div className="px-3 py-1 bg-white/5 rounded-full text-white/50 font-bold text-sm shadow">
                 VS
               </div>
               <div className="flex-1 text-center">
-                <div className="font-bold text-slate-900 mb-1">
+                <div className="font-bold text-white mb-1">
                   {teamBInfo.name}
                 </div>
-                <div className="text-sm text-slate-700">
+                <div className="text-sm text-white/70">
                   {teamBInfo.players.join(" & ")}
                 </div>
               </div>
@@ -462,8 +462,8 @@ export const SwipeableMatchPlayScoring = ({
             onClick={() => setActiveTab("score")}
             className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
               activeTab === "score"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                ? "text-emerald-400 border-b-2 border-emerald-600 bg-emerald-50"
+                : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >
             <div className="flex items-center justify-center gap-2">
@@ -487,8 +487,8 @@ export const SwipeableMatchPlayScoring = ({
             onClick={() => setActiveTab("holes")}
             className={`flex-1 px-4 py-3 text-sm font-semibold transition-all ${
               activeTab === "holes"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                ? "text-emerald-400 border-b-2 border-emerald-600 bg-emerald-50"
+                : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >
             <div className="flex items-center justify-center gap-2">
@@ -590,11 +590,11 @@ export const SwipeableMatchPlayScoring = ({
           <div className="p-4">
             <div className="card">
               <div className="mb-4">
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                <h3 className="text-lg font-semibold text-white mb-2">
                   {teamAInfo.players.join(" & ")} vs{" "}
                   {teamBInfo.players.join(" & ")}
                 </h3>
-                <div className="text-sm text-slate-600">
+                <div className="text-sm text-white/50">
                   {teamAInfo.name} vs {teamBInfo.name}
                 </div>
               </div>
@@ -711,7 +711,7 @@ const MatchScoringCard = ({
     if (isSelected) {
       return `${baseClasses} bg-emerald-600 text-white border-emerald-600 scale-105 ${disabledClasses}`;
     }
-    return `${baseClasses} bg-white text-slate-700 border-slate-300 active:border-slate-400 active:scale-95 ${disabledClasses}`;
+    return `${baseClasses} bg-white/5 text-white/70 border-white/15 active:border-slate-400 active:scale-95 ${disabledClasses}`;
   };
 
   const getHoleResultDisplay = () => {
@@ -720,7 +720,7 @@ const MatchScoringCard = ({
     if (teamAScore < teamBScore) {
       return (
         <div className="text-center py-2">
-          <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-semibold">
+          <span className="bg-emerald-500/15 text-emerald-300 px-3 py-1 rounded-full font-semibold">
             {teamAInfo.name} wins hole
           </span>
         </div>
@@ -728,7 +728,7 @@ const MatchScoringCard = ({
     } else if (teamBScore < teamAScore) {
       return (
         <div className="text-center py-2">
-          <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-semibold">
+          <span className="bg-emerald-500/15 text-emerald-300 px-3 py-1 rounded-full font-semibold">
             {teamBInfo.name} wins hole
           </span>
         </div>
@@ -736,7 +736,7 @@ const MatchScoringCard = ({
     } else {
       return (
         <div className="text-center py-2">
-          <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold">
+          <span className="bg-blue-500/15 text-blue-300 px-3 py-1 rounded-full font-semibold">
             Hole Tied
           </span>
         </div>
@@ -754,7 +754,7 @@ const MatchScoringCard = ({
               {match.format.charAt(0).toUpperCase() + match.format.slice(1)}{" "}
               Match
             </h3>
-            <div className="flex items-center gap-2 mt-1 text-sm text-slate-600">
+            <div className="flex items-center gap-2 mt-1 text-sm text-white/50">
               <span className="font-semibold">Hole {currentHole}</span>
               <span>•</span>
               <span>Par {currentHoleInfo.par}</span>
@@ -773,13 +773,13 @@ const MatchScoringCard = ({
           </span>
         </div>
 
-        <div className="text-sm text-slate-600 mb-3">
+        <div className="text-sm text-white/50 mb-3">
           {teamAInfo.name} vs {teamBInfo.name}
         </div>
 
         {/* Match Status Display */}
         {match.statusText && (
-          <div className="mb-3 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-200">
+          <div className="mb-3 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-500/30">
             <div className="flex items-center justify-center gap-2">
               <svg
                 className="w-5 h-5 text-blue-600"
@@ -813,8 +813,8 @@ const MatchScoringCard = ({
             disabled={currentHole === 1}
             className={`flex items-center gap-1 px-3 py-2 rounded-lg font-medium transition-all ${
               currentHole === 1
-                ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                : "bg-slate-200 text-slate-700 hover:bg-slate-300 active:scale-95"
+                ? "bg-white/5 text-white/30 cursor-not-allowed"
+                : "bg-white/10 text-white/70 hover:bg-slate-300 active:scale-95"
             }`}
           >
             <svg
@@ -834,10 +834,10 @@ const MatchScoringCard = ({
           </button>
 
           <div className="flex-1 text-center">
-            <div className="text-2xl font-bold text-emerald-600">
+            <div className="text-2xl font-bold text-emerald-400">
               Hole {currentHole}
             </div>
-            <div className="text-xs text-slate-500">of {round.holes}</div>
+            <div className="text-xs text-white/40">of {round.holes}</div>
           </div>
 
           <button
@@ -865,8 +865,8 @@ const MatchScoringCard = ({
             disabled={currentHole === round.holes}
             className={`flex items-center gap-1 px-3 py-2 rounded-lg font-medium transition-all ${
               currentHole === round.holes
-                ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                : "bg-slate-200 text-slate-700 hover:bg-slate-300 active:scale-95"
+                ? "bg-white/5 text-white/30 cursor-not-allowed"
+                : "bg-white/10 text-white/70 hover:bg-slate-300 active:scale-95"
             }`}
           >
             <span className="text-sm">Next</span>
@@ -931,13 +931,13 @@ const MatchScoringCard = ({
               <span className="text-white font-bold text-sm">A</span>
             </div>
             <div>
-              <h4 className="font-semibold text-slate-900">{teamAInfo.name}</h4>
-              <p className="text-sm text-slate-600">
+              <h4 className="font-semibold text-white">{teamAInfo.name}</h4>
+              <p className="text-sm text-white/50">
                 {teamAInfo.players.join(" & ")}
               </p>
             </div>
           </div>
-          <div className="text-3xl font-bold text-slate-900">
+          <div className="text-3xl font-bold text-white">
             {teamAScore || "–"}
           </div>
         </div>
@@ -959,10 +959,10 @@ const MatchScoringCard = ({
       {/* VS Divider */}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-300"></div>
+          <div className="w-full border-t border-white/15"></div>
         </div>
         <div className="relative flex justify-center">
-          <div className="bg-white px-4 py-1 rounded-full border border-slate-300 text-slate-600 font-semibold text-sm">
+          <div className="bg-white/5 px-4 py-1 rounded-full border border-white/15 text-white/50 font-semibold text-sm">
             VS
           </div>
         </div>
@@ -985,13 +985,13 @@ const MatchScoringCard = ({
               <span className="text-white font-bold text-sm">B</span>
             </div>
             <div>
-              <h4 className="font-semibold text-slate-900">{teamBInfo.name}</h4>
-              <p className="text-sm text-slate-600">
+              <h4 className="font-semibold text-white">{teamBInfo.name}</h4>
+              <p className="text-sm text-white/50">
                 {teamBInfo.players.join(" & ")}
               </p>
             </div>
           </div>
-          <div className="text-3xl font-bold text-slate-900">
+          <div className="text-3xl font-bold text-white">
             {teamBScore || "–"}
           </div>
         </div>
@@ -1014,32 +1014,32 @@ const MatchScoringCard = ({
       {getHoleResultDisplay()}
 
       {/* Match Progress Summary */}
-      <div className="card bg-slate-50">
-        <h5 className="font-semibold text-slate-800 mb-3">Match Progress</h5>
+      <div className="card">
+        <h5 className="font-semibold text-white/90 mb-3">Match Progress</h5>
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <div className="text-xl font-bold text-slate-900">
+            <div className="text-xl font-bold text-white">
               {match.holes.filter((h: any) => h.result === "team-a").length}
             </div>
-            <div className="text-xs text-slate-500">{teamAInfo.name} Wins</div>
+            <div className="text-xs text-white/40">{teamAInfo.name} Wins</div>
           </div>
           <div>
-            <div className="text-xl font-bold text-slate-900">
+            <div className="text-xl font-bold text-white">
               {match.holes.filter((h: any) => h.result === "tie").length}
             </div>
-            <div className="text-xs text-slate-500">Ties</div>
+            <div className="text-xs text-white/40">Ties</div>
           </div>
           <div>
-            <div className="text-xl font-bold text-slate-900">
+            <div className="text-xl font-bold text-white">
               {match.holes.filter((h: any) => h.result === "team-b").length}
             </div>
-            <div className="text-xs text-slate-500">{teamBInfo.name} Wins</div>
+            <div className="text-xs text-white/40">{teamBInfo.name} Wins</div>
           </div>
         </div>
 
         {/* Show current match status */}
         {match.statusText && (
-          <div className="mt-3 pt-3 border-t border-slate-200">
+          <div className="mt-3 pt-3 border-t border-white/10">
             <div className="text-center">
               <span
                 className={`text-sm font-semibold ${
@@ -1047,7 +1047,7 @@ const MatchScoringCard = ({
                     ? "text-amber-700"
                     : match.statusCode === "complete"
                     ? "text-green-700"
-                    : "text-slate-700"
+                    : "text-white/70"
                 }`}
               >
                 {match.statusText}

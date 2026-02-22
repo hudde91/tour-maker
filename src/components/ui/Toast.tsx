@@ -26,16 +26,22 @@ export const Toast = ({
 
   if (!isVisible) return null;
 
-  const getStyles = () => {
+  const getGlassStyle = (): React.CSSProperties => {
+    const base: React.CSSProperties = {
+      backdropFilter: "blur(32px)",
+      WebkitBackdropFilter: "blur(32px)",
+      boxShadow: "0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
+      color: "white",
+    };
     switch (type) {
       case "success":
-        return "bg-emerald-600 text-white border-emerald-700";
+        return { ...base, background: "rgba(16, 185, 129, 0.25)", border: "1px solid rgba(16, 185, 129, 0.4)" };
       case "error":
-        return "bg-red-600 text-white border-red-700";
+        return { ...base, background: "rgba(239, 68, 68, 0.25)", border: "1px solid rgba(239, 68, 68, 0.4)" };
       case "info":
-        return "bg-blue-600 text-white border-blue-700";
+        return { ...base, background: "rgba(59, 130, 246, 0.25)", border: "1px solid rgba(59, 130, 246, 0.4)" };
       default:
-        return "bg-emerald-600 text-white border-emerald-700";
+        return { ...base, background: "rgba(16, 185, 129, 0.25)", border: "1px solid rgba(16, 185, 129, 0.4)" };
     }
   };
 
@@ -97,7 +103,8 @@ export const Toast = ({
   return (
     <div className="fixed top-4 right-4 z-50 animate-slide-down">
       <div
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border-2 ${getStyles()} min-w-72 max-w-sm`}
+        className="flex items-center gap-3 px-4 py-3 rounded-2xl min-w-72 max-w-sm"
+        style={getGlassStyle()}
       >
         {getIcon()}
         <span className="font-medium flex-1">{message}</span>

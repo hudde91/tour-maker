@@ -60,16 +60,16 @@ export const EmptyState = ({
         <div className="mb-6">{illustration}</div>
       ) : (
         <div
-          className={`${classes.icon} bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4`}
+          className={`${classes.icon} bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4`}
         >
           <span className={classes.iconText}>{icon}</span>
         </div>
       )}
-      <h3 className={`${classes.title} font-bold text-slate-700 mb-3`}>
+      <h3 className={`${classes.title} font-bold text-white/70 mb-3`}>
         {title}
       </h3>
       <p
-        className={`${classes.description} text-slate-500 mb-6 max-w-md mx-auto leading-relaxed`}
+        className={`${classes.description} text-white/40 mb-6 max-w-md mx-auto leading-relaxed`}
       >
         {description}
       </p>

@@ -39,23 +39,39 @@ export const ConfirmDialog = ({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+        className="absolute inset-0 backdrop-blur-md"
+        style={{ background: "rgba(0, 0, 0, 0.5)" }}
+        data-testid="dialog-backdrop"
         onClick={onCancel}
       />
 
       {/* Dialog */}
-      <div className="relative w-full sm:w-96 bg-white sm:rounded-xl rounded-t-xl shadow-2xl border border-slate-200 animate-slide-up safe-area-bottom">
+      <div
+        className="relative w-full sm:w-96 sm:rounded-2xl rounded-t-2xl animate-slide-up safe-area-bottom"
+        style={{
+          background: "rgba(255, 255, 255, 0.08)",
+          border: "1px solid rgba(255, 255, 255, 0.12)",
+          backdropFilter: "blur(32px)",
+          WebkitBackdropFilter: "blur(32px)",
+          boxShadow: "0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
+        }}
+      >
         <div className="p-6">
           {/* Header */}
           <div className="flex items-start gap-4 mb-4">
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
-                isDestructive ? "bg-red-100" : "bg-blue-100"
-              }`}
+              className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+              data-testid={isDestructive ? "icon-destructive" : "icon-info"}
+              style={{
+                background: isDestructive
+                  ? "rgba(239, 68, 68, 0.15)"
+                  : "rgba(59, 130, 246, 0.15)",
+                border: `1px solid ${isDestructive ? "rgba(239, 68, 68, 0.3)" : "rgba(59, 130, 246, 0.3)"}`,
+              }}
             >
               {isDestructive ? (
                 <svg
-                  className="w-6 h-6 text-red-600"
+                  className="w-6 h-6 text-red-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -69,7 +85,7 @@ export const ConfirmDialog = ({
                 </svg>
               ) : (
                 <svg
-                  className="w-6 h-6 text-blue-600"
+                  className="w-6 h-6 text-blue-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -85,10 +101,10 @@ export const ConfirmDialog = ({
             </div>
 
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              <h3 className="text-lg font-semibold text-white mb-2">
                 {title}
               </h3>
-              <p className="text-slate-600 leading-relaxed">{message}</p>
+              <p className="text-white/60 leading-relaxed">{message}</p>
             </div>
           </div>
 

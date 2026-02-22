@@ -119,14 +119,11 @@ describe('ConfirmDialog Component', () => {
       />
     );
 
-    // Find the backdrop (first child with bg-black class)
-    const backdrop = container.querySelector('.bg-black');
+    const backdrop = screen.getByTestId('dialog-backdrop');
     expect(backdrop).toBeInTheDocument();
 
-    if (backdrop) {
-      await user.click(backdrop);
-      expect(mockCancel).toHaveBeenCalledTimes(1);
-    }
+    await user.click(backdrop);
+    expect(mockCancel).toHaveBeenCalledTimes(1);
   });
 
   it('should apply destructive styling when isDestructive is true', () => {
@@ -173,8 +170,7 @@ describe('ConfirmDialog Component', () => {
       />
     );
 
-    // Check for red background on icon container
-    const iconContainer = container.querySelector('.bg-red-100');
+    const iconContainer = screen.getByTestId('icon-destructive');
     expect(iconContainer).toBeInTheDocument();
   });
 
@@ -190,8 +186,7 @@ describe('ConfirmDialog Component', () => {
       />
     );
 
-    // Check for blue background on icon container
-    const iconContainer = container.querySelector('.bg-blue-100');
+    const iconContainer = screen.getByTestId('icon-info');
     expect(iconContainer).toBeInTheDocument();
   });
 });

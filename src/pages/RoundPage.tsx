@@ -196,11 +196,11 @@ export const RoundPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+          <div className="w-16 h-16 bg-emerald-500/15 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
             <svg
-              className="w-8 h-8 text-emerald-600"
+              className="w-8 h-8 text-emerald-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -213,10 +213,10 @@ export const RoundPage = () => {
               />
             </svg>
           </div>
-          <div className="text-lg font-semibold text-slate-700">
+          <div className="text-lg font-semibold text-white/70">
             Loading Tournament Round...
           </div>
-          <div className="text-slate-500 mt-1">Preparing scoring interface</div>
+          <div className="text-white/40 mt-1">Preparing scoring interface</div>
         </div>
       </div>
     );
@@ -225,10 +225,10 @@ export const RoundPage = () => {
   // Error State
   if (!tour || !round || !formatConfig) {
     return (
-      <div className="min-h-screen bg-slate-50 safe-area-top">
+      <div className="min-h-screen safe-area-top">
         <div className="p-6 w-full max-w-6xl mx-auto">
           <div className="card text-center py-12">
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto card-spacing">
+            <div className="w-20 h-20 bg-red-500/15 rounded-full flex items-center justify-center mx-auto card-spacing">
               <svg
                 className="w-10 h-10 text-red-500"
                 fill="none"
@@ -243,10 +243,10 @@ export const RoundPage = () => {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-slate-700 mb-3">
+            <h3 className="text-xl font-semibold text-white/70 mb-3">
               Round Not Found
             </h3>
-            <p className="text-slate-500 card-spacing">
+            <p className="text-white/40 card-spacing">
               The tournament round you're looking for doesn't exist or has been
               removed.
             </p>
@@ -280,7 +280,7 @@ export const RoundPage = () => {
 
   return (
     <ErrorBoundary resetKey={`${tour?.id}:${round?.id}`}>
-      <div className="min-h-screen bg-slate-50 safe-area-top safe-area-bottom">
+      <div className="min-h-screen safe-area-top safe-area-bottom">
         <RoundHeader
           tour={tour}
           round={round}

@@ -30,6 +30,12 @@ export default {
           indigo: "#4f46e5",
           gray: "#475569",
         },
+        // Liquid Glass palette
+        glass: {
+          white: "rgba(255, 255, 255, 0.06)",
+          border: "rgba(255, 255, 255, 0.1)",
+          highlight: "rgba(255, 255, 255, 0.08)",
+        },
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
@@ -37,7 +43,11 @@ export default {
       backgroundImage: {
         "golf-pattern": `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23059669' fill-opacity='0.05' fill-rule='nonzero'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         "fairway-gradient":
-          "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #a7f3d0 100%)",
+          "linear-gradient(135deg, #071a16 0%, #0a1628 50%, #020617 100%)",
+      },
+      backdropBlur: {
+        glass: "20px",
+        "glass-strong": "32px",
       },
     },
   },

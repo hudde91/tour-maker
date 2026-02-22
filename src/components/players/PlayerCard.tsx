@@ -110,7 +110,7 @@ const PlayerCardComponent = ({
                     placeholder="Player name"
                   />
                   <div className="flex items-center gap-3">
-                    <label className="text-sm font-medium text-slate-600">
+                    <label className="text-sm font-medium text-white/50">
                       Handicap:
                     </label>
                     <input
@@ -132,7 +132,7 @@ const PlayerCardComponent = ({
               ) : (
                 <>
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-xl font-semibold text-slate-900 truncate">
+                    <h3 className="text-xl font-semibold text-white truncate">
                       {player.name}
                     </h3>
                     {isCaptain && (
@@ -144,9 +144,9 @@ const PlayerCardComponent = ({
 
                   <div className="flex items-center gap-6 text-sm">
                     {player.handicap !== undefined && (
-                      <div className="flex items-center gap-2 text-slate-600">
+                      <div className="flex items-center gap-2 text-white/50">
                         <svg
-                          className="w-4 h-4 text-slate-400"
+                          className="w-4 h-4 text-white/30"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -170,7 +170,7 @@ const PlayerCardComponent = ({
                           className="w-3 h-3 rounded-full border border-white shadow-sm"
                           style={{ backgroundColor: team.color }}
                         />
-                        <span className="font-medium text-slate-700">
+                        <span className="font-medium text-white/70">
                           {team.name}
                         </span>
                       </div>
@@ -187,7 +187,7 @@ const PlayerCardComponent = ({
               <>
                 <button
                   onClick={cancelEdit}
-                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="p-2 text-white/30 hover:text-white/50 hover:bg-white/10 rounded-lg transition-colors"
                   title="Cancel"
                 >
                   <svg
@@ -207,7 +207,7 @@ const PlayerCardComponent = ({
                 <button
                   onClick={handleEdit}
                   disabled={updatePlayer.isPending || !editData.name.trim()}
-                  className="p-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50"
+                  className="p-2 text-emerald-400 hover:text-emerald-400 hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50"
                   title="Save"
                 >
                   <svg
@@ -229,7 +229,7 @@ const PlayerCardComponent = ({
               <>
                 <button
                   onClick={handleEdit}
-                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="p-2 text-white/30 hover:text-white/50 hover:bg-white/10 rounded-lg transition-colors"
                   title="Edit player"
                 >
                   <svg
@@ -249,7 +249,7 @@ const PlayerCardComponent = ({
                 <button
                   onClick={handleDeleteClick}
                   disabled={removePlayer.isPending}
-                  className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                  className="p-2 text-red-400 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
                   title="Remove player"
                 >
                   <svg

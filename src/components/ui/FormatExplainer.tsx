@@ -102,7 +102,7 @@ export const FormatExplainer = ({
 
   if (variant === "inline") {
     return (
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+      <div className="bg-blue-50 border border-blue-500/30 rounded-lg p-3 text-sm">
         <div className="flex items-start gap-2">
           <span className="text-xl flex-shrink-0">{info.icon}</span>
           <div className="flex-1 min-w-0">
@@ -119,29 +119,29 @@ export const FormatExplainer = ({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+    <div className="bg-white/5 rounded-xl border border-white/10 p-4 shadow-sm">
       <div className="flex items-center gap-3 mb-3">
         <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center">
           <span className="text-2xl">{info.icon}</span>
         </div>
         <div>
-          <h3 className="font-bold text-lg text-slate-900">{info.name}</h3>
-          <p className="text-xs text-emerald-600 font-medium">{info.bestFor}</p>
+          <h3 className="font-bold text-lg text-white">{info.name}</h3>
+          <p className="text-xs text-emerald-400 font-medium">{info.bestFor}</p>
         </div>
       </div>
 
       <div className="space-y-3">
         <div>
-          <p className="text-slate-700 text-sm leading-relaxed">
+          <p className="text-white/70 text-sm leading-relaxed">
             {info.description}
           </p>
         </div>
 
-        <div className="bg-slate-50 rounded-lg p-3">
-          <p className="text-xs text-slate-500 font-medium mb-1">
+        <div className="rounded-lg p-3">
+          <p className="text-xs text-white/40 font-medium mb-1">
             How it works:
           </p>
-          <p className="text-sm text-slate-700 italic">{info.example}</p>
+          <p className="text-sm text-white/70 italic">{info.example}</p>
         </div>
       </div>
     </div>

@@ -137,7 +137,7 @@ export const CaptainPairingInterface = ({
   return (
     <div className="space-y-6">
       <div className="card-elevated">
-        <h3 className="font-semibold text-slate-800 mb-3">Match Format</h3>
+        <h3 className="font-semibold text-white/90 mb-3">Match Format</h3>
         <div className="p-4 rounded-lg border-2 border-emerald-500 bg-emerald-50">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-lg">
@@ -147,11 +147,11 @@ export const CaptainPairingInterface = ({
                 ? "⭐"
                 : "👤"}
             </span>
-            <span className="font-medium text-slate-900 capitalize">
+            <span className="font-medium text-white capitalize">
               {sessionDisplayName[sessionType]}
             </span>
           </div>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-white/50">
             {sessionType === "singles"
               ? "1 player per team"
               : "2 players per team"}
@@ -161,34 +161,34 @@ export const CaptainPairingInterface = ({
 
       {/* Create New Pairing */}
       <div className="card-elevated">
-        <h3 className="font-semibold text-slate-800 mb-4">
+        <h3 className="font-semibold text-white/90 mb-4">
           Create New Pairing
         </h3>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-slate-50 rounded-lg p-4">
+          <div className="rounded-lg p-4">
             <div className="flex items-center gap-3 mb-3">
               <div
                 className="w-8 h-8 rounded-full"
                 style={{ backgroundColor: teamA.color }}
               />
               <div>
-                <h4 className="font-semibold text-slate-900">{teamA.name}</h4>
-                <p className="text-xs text-slate-600">
+                <h4 className="font-semibold text-white">{teamA.name}</h4>
+                <p className="text-xs text-white/50">
                   {getAvailablePlayers(teamA.id).length} players available
                 </p>
               </div>
             </div>
           </div>
-          <div className="bg-slate-50 rounded-lg p-4">
+          <div className="rounded-lg p-4">
             <div className="flex items-center gap-3 mb-3">
               <div
                 className="w-8 h-8 rounded-full"
                 style={{ backgroundColor: teamB.color }}
               />
               <div>
-                <h4 className="font-semibold text-slate-900">{teamB.name}</h4>
-                <p className="text-xs text-slate-600">
+                <h4 className="font-semibold text-white">{teamB.name}</h4>
+                <p className="text-xs text-white/50">
                   {getAvailablePlayers(teamB.id).length} players available
                 </p>
               </div>
@@ -198,7 +198,7 @@ export const CaptainPairingInterface = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
+            <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2">
               <div
                 className="w-4 h-4 rounded-full"
                 style={{ backgroundColor: teamA.color }}
@@ -209,7 +209,7 @@ export const CaptainPairingInterface = ({
               {getAvailablePlayers(teamA.id).map((player) => (
                 <label
                   key={player.id}
-                  className="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer"
+                  className="flex items-center gap-3 p-3 border border-white/10 rounded-lg hover:bg-white/5 cursor-pointer"
                 >
                   <input
                     type="checkbox"
@@ -225,14 +225,14 @@ export const CaptainPairingInterface = ({
                       !currentPairing.teamAPlayerIds.includes(player.id) &&
                       currentPairing.teamAPlayerIds.length >= playersRequired
                     }
-                    className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+                    className="w-4 h-4 text-emerald-400 rounded focus:ring-emerald-500"
                   />
                   <div className="flex-1">
-                    <div className="font-medium text-slate-900">
+                    <div className="font-medium text-white">
                       {player.name}
                     </div>
                     {player.handicap !== undefined && (
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-white/40">
                         HC: {player.handicap}
                       </div>
                     )}
@@ -240,14 +240,14 @@ export const CaptainPairingInterface = ({
                 </label>
               ))}
             </div>
-            <div className="text-xs text-slate-500 mt-2">
+            <div className="text-xs text-white/40 mt-2">
               Selected: {currentPairing.teamAPlayerIds.length} /{" "}
               {playersRequired}
             </div>
           </div>
 
           <div>
-            <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
+            <h4 className="font-medium text-white/70 mb-3 flex items-center gap-2">
               <div
                 className="w-4 h-4 rounded-full"
                 style={{ backgroundColor: teamB.color }}
@@ -258,7 +258,7 @@ export const CaptainPairingInterface = ({
               {getAvailablePlayers(teamB.id).map((player) => (
                 <label
                   key={player.id}
-                  className="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer"
+                  className="flex items-center gap-3 p-3 border border-white/10 rounded-lg hover:bg-white/5 cursor-pointer"
                 >
                   <input
                     type="checkbox"
@@ -274,14 +274,14 @@ export const CaptainPairingInterface = ({
                       !currentPairing.teamBPlayerIds.includes(player.id) &&
                       currentPairing.teamBPlayerIds.length >= playersRequired
                     }
-                    className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
+                    className="w-4 h-4 text-emerald-400 rounded focus:ring-emerald-500"
                   />
                   <div className="flex-1">
-                    <div className="font-medium text-slate-900">
+                    <div className="font-medium text-white">
                       {player.name}
                     </div>
                     {player.handicap !== undefined && (
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-white/40">
                         HC: {player.handicap}
                       </div>
                     )}
@@ -289,7 +289,7 @@ export const CaptainPairingInterface = ({
                 </label>
               ))}
             </div>
-            <div className="text-xs text-slate-500 mt-2">
+            <div className="text-xs text-white/40 mt-2">
               Selected: {currentPairing.teamBPlayerIds.length} /{" "}
               {playersRequired}
             </div>
@@ -356,7 +356,7 @@ export const CaptainPairingInterface = ({
       )}
 
       {/* Action Buttons */}
-      <div className="card-elevated bg-slate-50">
+      <div className="card-elevated">
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={onClose}

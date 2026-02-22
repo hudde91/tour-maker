@@ -158,28 +158,39 @@ export const AddPlayerSheet = ({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in">
       <div
-        className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+        className="absolute inset-0 backdrop-blur-md"
+        style={{ background: "rgba(0, 0, 0, 0.5)" }}
         onClick={onClose}
       />
 
-      <div className="relative w-full sm:w-[28rem] sm:max-w-lg bg-white rounded-t-2xl sm:rounded-xl shadow-2xl border-t sm:border border-slate-200 animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col overscroll-contain">
+      <div
+        className="relative w-full sm:w-[28rem] sm:max-w-lg rounded-t-2xl sm:rounded-2xl animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col overscroll-contain"
+        style={{
+          background: "rgba(255, 255, 255, 0.08)",
+          border: "1px solid rgba(255, 255, 255, 0.12)",
+          backdropFilter: "blur(32px)",
+          WebkitBackdropFilter: "blur(32px)",
+          boxShadow: "0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
+        }}
+      >
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
-          <div className="w-12 h-1.5 bg-slate-300 rounded-full"></div>
+          <div className="w-12 h-1.5 rounded-full" style={{ background: "rgba(255, 255, 255, 0.2)" }}></div>
         </div>
 
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 sm:py-5 border-b border-slate-200">
+        <div className="flex justify-between items-center px-6 py-4 sm:py-5" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)" }}>
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+            <h2 className="text-xl sm:text-2xl font-bold text-white">
               Add Player
             </h2>
-            <p className="text-slate-600 mt-1 text-sm">
+            <p className="text-white/50 mt-1 text-sm">
               Add a registered user or a guest
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+            className="p-2 text-white/40 hover:text-white/70 rounded-full transition-colors"
+            style={{ background: "rgba(255, 255, 255, 0.05)" }}
           >
             <svg
               className="w-5 h-5"
@@ -198,15 +209,16 @@ export const AddPlayerSheet = ({
         </div>
 
         {/* Tab Buttons */}
-        <div className="flex border-b border-slate-200">
+        <div className="flex" style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)" }}>
           <button
             type="button"
             onClick={() => setMode("registered")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors ${
-              mode === "registered"
-                ? "text-emerald-700 border-b-2 border-emerald-600 bg-emerald-50/50"
-                : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-            }`}
+            className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors"
+            style={{
+              color: mode === "registered" ? "rgb(52, 211, 153)" : "rgba(255, 255, 255, 0.4)",
+              borderBottom: mode === "registered" ? "2px solid rgb(16, 185, 129)" : "2px solid transparent",
+              background: mode === "registered" ? "rgba(16, 185, 129, 0.05)" : "transparent",
+            }}
           >
             <Users className="w-4 h-4" />
             Registered User
@@ -214,11 +226,12 @@ export const AddPlayerSheet = ({
           <button
             type="button"
             onClick={() => setMode("guest")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors ${
-              mode === "guest"
-                ? "text-emerald-700 border-b-2 border-emerald-600 bg-emerald-50/50"
-                : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-            }`}
+            className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors"
+            style={{
+              color: mode === "guest" ? "rgb(52, 211, 153)" : "rgba(255, 255, 255, 0.4)",
+              borderBottom: mode === "guest" ? "2px solid rgb(16, 185, 129)" : "2px solid transparent",
+              background: mode === "guest" ? "rgba(16, 185, 129, 0.05)" : "transparent",
+            }}
           >
             <UserPlus className="w-4 h-4" />
             Guest
@@ -231,7 +244,7 @@ export const AddPlayerSheet = ({
             <div className="px-6 py-4 space-y-4">
               {/* Search Input */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                 <input
                   type="text"
                   value={searchTerm}
@@ -248,10 +261,10 @@ export const AddPlayerSheet = ({
                   type="checkbox"
                   checked={addAsFriend}
                   onChange={(e) => setAddAsFriend(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                  className="w-4 h-4 rounded border-white/15 text-emerald-400 focus:ring-emerald-500"
                 />
                 <Star className="w-4 h-4 text-amber-500" />
-                <span className="text-sm text-slate-700">
+                <span className="text-sm text-white/70">
                   Add as Friend for easy access later
                 </span>
               </label>
@@ -259,15 +272,15 @@ export const AddPlayerSheet = ({
               {/* Search Results */}
               {searchTerm.trim().length >= 2 && (
                 <div className="space-y-2">
-                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider">
                     Search Results
                   </h3>
                   {isSearching ? (
-                    <div className="text-center py-4 text-slate-500 text-sm">
+                    <div className="text-center py-4 text-white/40 text-sm">
                       Searching...
                     </div>
                   ) : filteredSearchResults.length === 0 ? (
-                    <div className="text-center py-4 text-slate-500 text-sm">
+                    <div className="text-center py-4 text-white/40 text-sm">
                       No users found matching "{searchTerm}"
                     </div>
                   ) : (
@@ -282,15 +295,15 @@ export const AddPlayerSheet = ({
                             type="button"
                             onClick={() => handleAddRegisteredUser(result)}
                             disabled={addPlayer.isPending}
-                            className="flex items-center justify-between w-full p-3 border border-slate-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left disabled:opacity-50"
+                            className="flex items-center justify-between w-full p-3 border border-white/10 rounded-lg hover:border-emerald-500/30 hover:bg-emerald-500/10 transition-all text-left disabled:opacity-50"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-semibold">
+                              <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-semibold">
                                 {result.playerName.charAt(0).toUpperCase()}
                               </div>
                               <div>
                                 <div className="flex items-center gap-2">
-                                  <span className="font-medium text-slate-900">
+                                  <span className="font-medium text-white">
                                     {result.playerName}
                                   </span>
                                   {isFriend && (
@@ -298,13 +311,13 @@ export const AddPlayerSheet = ({
                                   )}
                                 </div>
                                 {result.handicap !== undefined && (
-                                  <span className="text-xs text-slate-500">
+                                  <span className="text-xs text-white/40">
                                     HC {result.handicap}
                                   </span>
                                 )}
                               </div>
                             </div>
-                            <span className="text-emerald-600 text-sm font-medium">
+                            <span className="text-emerald-400 text-sm font-medium">
                               Add
                             </span>
                           </button>
@@ -318,7 +331,7 @@ export const AddPlayerSheet = ({
               {/* Friends List */}
               {filteredFriends.length > 0 && (
                 <div className="space-y-2">
-                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider flex items-center gap-1.5">
                     <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                     Friends
                   </h3>
@@ -329,24 +342,24 @@ export const AddPlayerSheet = ({
                         type="button"
                         onClick={() => handleAddFriend(friend)}
                         disabled={addPlayer.isPending}
-                        className="flex items-center justify-between w-full p-3 border border-slate-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left disabled:opacity-50"
+                        className="flex items-center justify-between w-full p-3 border border-white/10 rounded-lg hover:border-emerald-500/30 hover:bg-emerald-500/10 transition-all text-left disabled:opacity-50"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-semibold">
+                          <div className="w-10 h-10 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-semibold">
                             {friend.playerName.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <span className="font-medium text-slate-900">
+                            <span className="font-medium text-white">
                               {friend.playerName}
                             </span>
                             {friend.handicap !== undefined && (
-                              <div className="text-xs text-slate-500">
+                              <div className="text-xs text-white/40">
                                 HC {friend.handicap}
                               </div>
                             )}
                           </div>
                         </div>
-                        <span className="text-emerald-600 text-sm font-medium">
+                        <span className="text-emerald-400 text-sm font-medium">
                           Add
                         </span>
                       </button>
@@ -359,7 +372,7 @@ export const AddPlayerSheet = ({
               {searchTerm.trim().length < 2 && filteredFriends.length === 0 && (
                 <div className="text-center py-8">
                   <Users className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                  <p className="text-slate-500 text-sm">
+                  <p className="text-white/40 text-sm">
                     Search for registered users by name, or switch to Guest to
                     add a player without an account.
                   </p>
@@ -373,8 +386,8 @@ export const AddPlayerSheet = ({
           {mode === "guest" && (
             <form onSubmit={handleGuestSubmit}>
               <div className="px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
-                  <p className="text-sm text-slate-600">
+                <div className="rounded-lg p-3" style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+                  <p className="text-sm text-white/50">
                     Add a player without an account. You must provide their name
                     and handicap.
                   </p>
@@ -452,7 +465,7 @@ export const AddPlayerSheet = ({
                 <div className="h-32 sm:h-0" />
               </div>
 
-              <div className="border-t border-slate-200 p-4 sm:p-6 bg-slate-50 sm:bg-white">
+              <div className="p-4 sm:p-6" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)", background: "rgba(255, 255, 255, 0.03)" }}>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     type="submit"

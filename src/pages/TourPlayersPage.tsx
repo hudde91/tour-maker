@@ -40,10 +40,10 @@ export const TourPlayersPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <Users className="w-8 h-8 text-emerald-600" />
+          <div className="w-16 h-16 bg-emerald-500/15 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <Users className="w-8 h-8 text-emerald-400" />
           </div>
-          <div className="text-lg font-semibold text-slate-700">
+          <div className="text-lg font-semibold text-white/70">
             Loading players...
           </div>
         </div>
@@ -53,13 +53,13 @@ export const TourPlayersPage = () => {
 
   if (!tour) {
     return (
-      <div className="min-h-screen bg-slate-50 safe-area-top">
+      <div className="min-h-screen safe-area-top">
         <div className="p-4 md:p-6">
           <div className="card text-center py-12">
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <XCircle className="w-10 h-10 text-red-600" />
+            <div className="w-20 h-20 bg-red-500/15 rounded-full flex items-center justify-center mx-auto mb-4">
+              <XCircle className="w-10 h-10 text-red-400" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-700 mb-3">
+            <h3 className="text-xl font-semibold text-white/70 mb-3">
               Tournament Not Found
             </h3>
             <Link to="/" className="btn-primary">
@@ -97,7 +97,7 @@ export const TourPlayersPage = () => {
       : `${playerCount} player${playerCount !== 1 ? "s" : ""}`;
 
   return (
-    <div className="min-h-screen bg-slate-50 safe-area-top">
+    <div className="min-h-screen safe-area-top">
       <PageHeader
         title={tour.name}
         subtitle={subtitle}
@@ -105,7 +105,7 @@ export const TourPlayersPage = () => {
         actions={
           <button
             onClick={() => setShowAddPlayer(true)}
-            className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm shadow-lg"
+            className="flex items-center gap-2 bg-white/5 bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm shadow-lg"
             data-testid="add-player-button"
           >
             <Plus className="w-4 h-4" />
@@ -120,7 +120,7 @@ export const TourPlayersPage = () => {
             <div className="flex justify-between items-center mb-4">
               <div>
                 <h2 className="section-header">Teams</h2>
-                <p className="text-slate-600 text-sm">
+                <p className="text-white/50 text-sm">
                   {tour.teams?.length || 0} team
                   {tour.teams?.length !== 1 ? "s" : ""}
                 </p>
@@ -137,7 +137,7 @@ export const TourPlayersPage = () => {
 
             {!tour.teams || tour.teams.length === 0 ? (
               <EmptyState
-                icon={<Building2 className="w-8 h-8 text-slate-400" />}
+                icon={<Building2 className="w-8 h-8 text-white/30" />}
                 title="No Teams Created"
                 description="Create teams to organize your tournament competition"
                 action={{
@@ -154,18 +154,18 @@ export const TourPlayersPage = () => {
                 ))}
 
                 {tour.players.filter((p) => !p.teamId).length > 0 && (
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <AlertTriangle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <AlertTriangle className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-semibold text-amber-900 mb-1">
+                        <h4 className="font-semibold text-amber-300 mb-1">
                           {tour.players.filter((p) => !p.teamId).length}{" "}
                           Unassigned Player
                           {tour.players.filter((p) => !p.teamId).length !== 1
                             ? "s"
                             : ""}
                         </h4>
-                        <p className="text-sm text-amber-800 mb-2">
+                        <p className="text-sm text-amber-300/70 mb-2">
                           These players need to be assigned to teams:
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -174,7 +174,7 @@ export const TourPlayersPage = () => {
                             .map((player) => (
                               <span
                                 key={player.id}
-                                className="bg-amber-100 text-amber-800 px-2 py-1 rounded text-sm font-medium"
+                                className="bg-amber-500/15 text-amber-300/70 px-2 py-1 rounded text-sm font-medium"
                               >
                                 {player.name}
                               </span>
@@ -195,21 +195,21 @@ export const TourPlayersPage = () => {
             <div>
               <h2 className="section-header">All Players</h2>
               {isTeamFormat && (
-                <p className="text-slate-600 text-xs mt-1">
+                <p className="text-white/50 text-xs mt-1">
                   {isRyderCup
                     ? "Individual scores shown on Leaderboard tab"
                     : "View individual player details"}
                 </p>
               )}
             </div>
-            <span className="text-sm text-slate-500">
+            <span className="text-sm text-white/40">
               {tour.players.length} total
             </span>
           </div>
 
           {tour.players.length === 0 ? (
             <EmptyState
-              icon={<Users className="w-8 h-8 text-slate-400" />}
+              icon={<Users className="w-8 h-8 text-white/30" />}
               title="No Players Yet"
               description="Add players to get your tournament started"
               action={{
@@ -229,16 +229,16 @@ export const TourPlayersPage = () => {
                 return (
                   <div
                     key={player.id}
-                    className="p-3 bg-white border border-slate-200 rounded-lg hover:border-slate-300 transition-colors"
+                    className="p-3 bg-white/5 border border-white/10 rounded-lg hover:border-white/15 transition-colors"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-semibold text-slate-700">
+                        <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-semibold text-white/70">
                           {player.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-slate-900">
+                            <span className="font-semibold text-white">
                               {player.name}
                             </span>
                             {isCaptain && (
@@ -251,7 +251,7 @@ export const TourPlayersPage = () => {
                                 className="w-3 h-3 rounded-full"
                                 style={{ backgroundColor: team.color }}
                               />
-                              <span className="text-sm text-slate-600">
+                              <span className="text-sm text-white/50">
                                 {team.name}
                               </span>
                             </div>
@@ -259,7 +259,7 @@ export const TourPlayersPage = () => {
                         </div>
                       </div>
                       {player.handicap !== undefined && (
-                        <div className="text-sm text-slate-600">
+                        <div className="text-sm text-white/50">
                           HC {player.handicap}
                         </div>
                       )}

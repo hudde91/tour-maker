@@ -89,23 +89,23 @@ export const CreateTeamSheet = ({
         onClick={onClose}
       />
 
-      <div className="relative w-full sm:w-96 sm:max-w-md bg-white rounded-t-2xl sm:rounded-xl shadow-2xl border-t sm:border border-slate-200 animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col overscroll-contain">
+      <div className="relative w-full sm:w-96 sm:max-w-md bg-white/5 rounded-t-2xl sm:rounded-xl shadow-2xl border-t sm:border border-white/10 animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col overscroll-contain">
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-12 h-1.5 bg-slate-300 rounded-full"></div>
         </div>
 
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200">
+        <div className="flex justify-between items-center px-6 py-4 border-b border-white/10">
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
+            <h2 className="text-xl sm:text-2xl font-bold text-white">
               Create Team
             </h2>
-            <p className="text-slate-600 mt-1 text-sm">
+            <p className="text-white/50 mt-1 text-sm">
               Build your tournament team
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+            className="p-2 text-white/30 hover:text-white/50 hover:bg-white/10 rounded-full transition-colors"
           >
             <svg
               className="w-5 h-5"
@@ -155,7 +155,7 @@ export const CreateTeamSheet = ({
                     className={`aspect-square rounded-xl border-3 transition-all hover:scale-105 ${
                       formData.color === colorOption.color
                         ? "border-slate-900 ring-4 ring-slate-300 scale-110 shadow-lg"
-                        : "border-slate-200 hover:border-slate-300 shadow-sm"
+                        : "border-white/10 hover:border-white/15 shadow-sm"
                     }`}
                     style={{ backgroundColor: colorOption.color }}
                     title={colorOption.name}
@@ -194,7 +194,7 @@ export const CreateTeamSheet = ({
             <div className="h-32 sm:h-0" />
           </div>
 
-          <div className="border-t border-slate-200 p-6 bg-slate-50">
+          <div className="border-t border-white/10 p-6">
             <div className="flex flex-col gap-3">
               <button
                 type="submit"

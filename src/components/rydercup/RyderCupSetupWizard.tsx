@@ -227,12 +227,12 @@ export const RyderCupSetupWizard = () => {
   // Auth gate: show sign-in prompt when not logged in
   if (!authLoading && !user) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen">
         <div className="golf-hero-bg safe-area-top">
           <div className="flex items-center p-6">
             <button onClick={() => navigate(-1)} className="nav-back mr-4">
               <svg
-                className="w-5 h-5 text-slate-600"
+                className="w-5 h-5 text-white/50"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -254,14 +254,14 @@ export const RyderCupSetupWizard = () => {
         </div>
 
         <div className="max-w-lg mx-auto px-4 py-16">
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8 text-center">
-            <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <LogIn className="text-emerald-600" size={32} />
+          <div className="bg-white/5 rounded-2xl shadow-lg border border-white/10 p-8 text-center">
+            <div className="w-16 h-16 bg-emerald-500/15 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <LogIn className="text-emerald-400" size={32} />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-3">
+            <h2 className="text-2xl font-bold text-white mb-3">
               Sign in to create a tournament
             </h2>
-            <p className="text-slate-600 mb-8 leading-relaxed">
+            <p className="text-white/50 mb-8 leading-relaxed">
               You need to be signed in to create and manage tournaments.
               Sign in with your Google account to get started.
             </p>
@@ -280,13 +280,13 @@ export const RyderCupSetupWizard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="golf-hero-bg safe-area-top">
         <div className="flex items-center p-6">
           <button onClick={() => navigate(-1)} className="nav-back mr-4">
             <svg
-              className="w-5 h-5 text-slate-600"
+              className="w-5 h-5 text-white/50"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -311,7 +311,7 @@ export const RyderCupSetupWizard = () => {
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-white border-b border-slate-200">
+      <div className="bg-white/5 border-b border-white/10">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             {WIZARD_STEPS.map((step, index) => (
@@ -323,7 +323,7 @@ export const RyderCupSetupWizard = () => {
                         ? "bg-emerald-500 text-white"
                         : currentStep === step.id
                         ? "bg-emerald-500 text-white ring-4 ring-emerald-100"
-                        : "bg-slate-200 text-slate-500"
+                        : "bg-white/10 text-white/40"
                     }`}
                   >
                     {currentStep > step.id ? (
@@ -346,8 +346,8 @@ export const RyderCupSetupWizard = () => {
                     <div
                       className={`text-sm font-semibold ${
                         currentStep >= step.id
-                          ? "text-slate-900"
-                          : "text-slate-500"
+                          ? "text-white"
+                          : "text-white/40"
                       }`}
                     >
                       {step.title}
@@ -357,7 +357,7 @@ export const RyderCupSetupWizard = () => {
                 {index < WIZARD_STEPS.length - 1 && (
                   <div
                     className={`h-1 flex-1 mx-2 rounded transition-all ${
-                      currentStep > step.id ? "bg-emerald-500" : "bg-slate-200"
+                      currentStep > step.id ? "bg-emerald-500" : "bg-white/10"
                     }`}
                   />
                 )}
@@ -374,10 +374,10 @@ export const RyderCupSetupWizard = () => {
           {currentStep === 1 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                <h2 className="text-2xl font-bold text-white mb-2">
                   Tournament Details
                 </h2>
-                <p className="text-slate-600">
+                <p className="text-white/50">
                   Give your Ryder Cup tournament a name and description
                 </p>
               </div>
@@ -420,10 +420,10 @@ export const RyderCupSetupWizard = () => {
           {currentStep === 2 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                <h2 className="text-2xl font-bold text-white mb-2">
                   Choose Your Format
                 </h2>
-                <p className="text-slate-600">
+                <p className="text-white/50">
                   Select a pre-configured template or customize later
                 </p>
               </div>
@@ -435,7 +435,7 @@ export const RyderCupSetupWizard = () => {
                     className={`relative flex items-start p-6 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md ${
                       wizardData.template === index
                         ? "border-emerald-500 bg-emerald-50 shadow-md"
-                        : "border-slate-200 bg-white hover:border-slate-300"
+                        : "border-white/10 bg-white/5 hover:border-white/15"
                     }`}
                   >
                     <input
@@ -453,19 +453,19 @@ export const RyderCupSetupWizard = () => {
                       className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 mt-1 transition-all ${
                         wizardData.template === index
                           ? "border-emerald-500 bg-emerald-500"
-                          : "border-slate-300"
+                          : "border-white/15"
                       }`}
                     >
                       {wizardData.template === index && (
-                        <div className="w-2 h-2 bg-white rounded-full" />
+                        <div className="w-2 h-2 bg-white/5 rounded-full" />
                       )}
                     </div>
 
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-slate-900 mb-1">
+                      <h3 className="text-lg font-semibold text-white mb-1">
                         {template.name}
                       </h3>
-                      <p className="text-slate-600 mb-3">
+                      <p className="text-white/50 mb-3">
                         {template.description}
                       </p>
 
@@ -474,27 +474,27 @@ export const RyderCupSetupWizard = () => {
                         {template.sessions.map((session) => (
                           <div
                             key={session.day}
-                            className="bg-white border border-slate-200 rounded-lg p-3"
+                            className="bg-white/5 border border-white/10 rounded-lg p-3"
                           >
-                            <div className="font-semibold text-sm text-slate-700 mb-2">
+                            <div className="font-semibold text-sm text-white/70 mb-2">
                               Day {session.day}: {session.dayName}
                             </div>
                             <div className="grid grid-cols-2 gap-2 text-sm">
                               {session.morning.matchCount > 0 && (
-                                <div className="bg-slate-50 rounded px-2 py-1">
-                                  <div className="text-slate-600">Morning</div>
-                                  <div className="font-semibold text-slate-900">
+                                <div className="rounded px-2 py-1">
+                                  <div className="text-white/50">Morning</div>
+                                  <div className="font-semibold text-white">
                                     {session.morning.matchCount}x{" "}
                                     {session.morning.name}
                                   </div>
                                 </div>
                               )}
                               {session.afternoon.matchCount > 0 && (
-                                <div className="bg-slate-50 rounded px-2 py-1">
-                                  <div className="text-slate-600">
+                                <div className="rounded px-2 py-1">
+                                  <div className="text-white/50">
                                     Afternoon
                                   </div>
-                                  <div className="font-semibold text-slate-900">
+                                  <div className="font-semibold text-white">
                                     {session.afternoon.matchCount}x{" "}
                                     {session.afternoon.name}
                                   </div>
@@ -509,7 +509,7 @@ export const RyderCupSetupWizard = () => {
                 ))}
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-blue-50 border border-blue-500/30 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <svg
                     className="w-5 h-5 text-blue-600 mt-0.5"
@@ -524,7 +524,7 @@ export const RyderCupSetupWizard = () => {
                       d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <div className="text-sm text-blue-800">
+                  <div className="text-sm text-blue-300">
                     <strong>Tip:</strong> These templates provide a starting
                     point. You can always customize the number of matches and
                     format after creating the tournament.
@@ -538,21 +538,21 @@ export const RyderCupSetupWizard = () => {
           {currentStep === 3 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                <h2 className="text-2xl font-bold text-white mb-2">
                   Team Setup
                 </h2>
-                <p className="text-slate-600">Name your two competing teams</p>
+                <p className="text-white/50">Name your two competing teams</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Team A */}
-                <div className="border-2 border-slate-200 rounded-xl p-6">
+                <div className="border-2 border-white/10 rounded-xl p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <div
                       className="w-12 h-12 rounded-full"
                       style={{ backgroundColor: wizardData.teamA.color }}
                     />
-                    <h3 className="text-lg font-semibold text-slate-900">
+                    <h3 className="text-lg font-semibold text-white">
                       Team A
                     </h3>
                   </div>
@@ -595,7 +595,7 @@ export const RyderCupSetupWizard = () => {
                           className={`w-10 h-10 rounded-full border-2 transition-all ${
                             wizardData.teamA.color === color
                               ? "border-slate-900 ring-2 ring-offset-2 ring-slate-900"
-                              : "border-slate-300 hover:border-slate-400"
+                              : "border-white/15 hover:border-slate-400"
                           }`}
                           style={{ backgroundColor: color }}
                           aria-label={`Select color ${color} for Team A`}
@@ -606,13 +606,13 @@ export const RyderCupSetupWizard = () => {
                 </div>
 
                 {/* Team B */}
-                <div className="border-2 border-slate-200 rounded-xl p-6">
+                <div className="border-2 border-white/10 rounded-xl p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <div
                       className="w-12 h-12 rounded-full"
                       style={{ backgroundColor: wizardData.teamB.color }}
                     />
-                    <h3 className="text-lg font-semibold text-slate-900">
+                    <h3 className="text-lg font-semibold text-white">
                       Team B
                     </h3>
                   </div>
@@ -655,7 +655,7 @@ export const RyderCupSetupWizard = () => {
                           className={`w-10 h-10 rounded-full border-2 transition-all ${
                             wizardData.teamB.color === color
                               ? "border-slate-900 ring-2 ring-offset-2 ring-slate-900"
-                              : "border-slate-300 hover:border-slate-400"
+                              : "border-white/15 hover:border-slate-400"
                           }`}
                           style={{ backgroundColor: color }}
                           aria-label={`Select color ${color} for Team B`}
@@ -672,31 +672,31 @@ export const RyderCupSetupWizard = () => {
           {currentStep === 4 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                <h2 className="text-2xl font-bold text-white mb-2">
                   Review Your Tournament
                 </h2>
-                <p className="text-slate-600">
+                <p className="text-white/50">
                   Review your settings before creating the tournament
                 </p>
               </div>
 
               <div className="space-y-4">
                 {/* Tournament Info */}
-                <div className="bg-slate-50 rounded-lg p-4">
-                  <h3 className="font-semibold text-slate-900 mb-2">
+                <div className="rounded-lg p-4">
+                  <h3 className="font-semibold text-white mb-2">
                     Tournament Information
                   </h3>
                   <dl className="space-y-1">
                     <div className="flex justify-between">
-                      <dt className="text-slate-600">Name:</dt>
-                      <dd className="font-semibold text-slate-900">
+                      <dt className="text-white/50">Name:</dt>
+                      <dd className="font-semibold text-white">
                         {wizardData.name}
                       </dd>
                     </div>
                     {wizardData.description && (
                       <div>
-                        <dt className="text-slate-600">Description:</dt>
-                        <dd className="text-slate-900 mt-1">
+                        <dt className="text-white/50">Description:</dt>
+                        <dd className="text-white mt-1">
                           {wizardData.description}
                         </dd>
                       </div>
@@ -705,15 +705,15 @@ export const RyderCupSetupWizard = () => {
                 </div>
 
                 {/* Format Info */}
-                <div className="bg-slate-50 rounded-lg p-4">
-                  <h3 className="font-semibold text-slate-900 mb-2">
+                <div className="rounded-lg p-4">
+                  <h3 className="font-semibold text-white mb-2">
                     Format Template
                   </h3>
                   <div className="mb-2">
-                    <span className="font-semibold text-emerald-600">
+                    <span className="font-semibold text-emerald-400">
                       {selectedTemplate.name}
                     </span>
-                    <span className="text-slate-600 text-sm ml-2">
+                    <span className="text-white/50 text-sm ml-2">
                       ({selectedTemplate.description})
                     </span>
                   </div>
@@ -721,12 +721,12 @@ export const RyderCupSetupWizard = () => {
                     {selectedTemplate.sessions.map((session) => (
                       <div
                         key={session.day}
-                        className="bg-white border border-slate-200 rounded p-3"
+                        className="bg-white/5 border border-white/10 rounded p-3"
                       >
-                        <div className="font-semibold text-sm text-slate-700 mb-1">
+                        <div className="font-semibold text-sm text-white/70 mb-1">
                           Day {session.day}: {session.dayName}
                         </div>
-                        <div className="text-sm text-slate-600">
+                        <div className="text-sm text-white/50">
                           {session.morning.matchCount > 0 &&
                             `${session.morning.matchCount}x ${session.morning.name}`}
                           {session.morning.matchCount > 0 &&
@@ -741,15 +741,15 @@ export const RyderCupSetupWizard = () => {
                 </div>
 
                 {/* Teams Info */}
-                <div className="bg-slate-50 rounded-lg p-4">
-                  <h3 className="font-semibold text-slate-900 mb-3">Teams</h3>
+                <div className="rounded-lg p-4">
+                  <h3 className="font-semibold text-white mb-3">Teams</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex items-center gap-3">
                       <div
                         className="w-8 h-8 rounded-full"
                         style={{ backgroundColor: wizardData.teamA.color }}
                       />
-                      <span className="font-semibold text-slate-900">
+                      <span className="font-semibold text-white">
                         {wizardData.teamA.name}
                       </span>
                     </div>
@@ -758,7 +758,7 @@ export const RyderCupSetupWizard = () => {
                         className="w-8 h-8 rounded-full"
                         style={{ backgroundColor: wizardData.teamB.color }}
                       />
-                      <span className="font-semibold text-slate-900">
+                      <span className="font-semibold text-white">
                         {wizardData.teamB.name}
                       </span>
                     </div>
@@ -767,10 +767,10 @@ export const RyderCupSetupWizard = () => {
               </div>
 
               {/* Next Steps Info */}
-              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+              <div className="bg-emerald-50 border border-emerald-500/30 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <svg
-                    className="w-5 h-5 text-emerald-600 mt-0.5"
+                    className="w-5 h-5 text-emerald-400 mt-0.5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -782,7 +782,7 @@ export const RyderCupSetupWizard = () => {
                       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <div className="text-sm text-emerald-800">
+                  <div className="text-sm text-emerald-300">
                     <strong>Next Steps:</strong> After creating the tournament,
                     you'll be able to:
                     <ul className="list-disc list-inside mt-2 space-y-1">
@@ -798,7 +798,7 @@ export const RyderCupSetupWizard = () => {
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex gap-4 pt-6 mt-6 border-t border-slate-200">
+          <div className="flex gap-4 pt-6 mt-6 border-t border-white/10">
             <button
               type="button"
               onClick={handleBack}

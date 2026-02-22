@@ -48,10 +48,10 @@ export const VisualPairingBoard = ({
 
   if (pairings.length === 0) {
     return (
-      <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+      <div className="text-center py-12 rounded-lg border-2 border-dashed border-white/15">
         <div className="text-4xl mb-3">{formatIcon}</div>
-        <p className="text-slate-600">No pairings yet</p>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-white/50">No pairings yet</p>
+        <p className="text-sm text-white/40 mt-1">
           Add players below to create {formatName.toLowerCase()} pairings
         </p>
       </div>
@@ -63,11 +63,11 @@ export const VisualPairingBoard = ({
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-2xl">{formatIcon}</span>
-          <h3 className="font-semibold text-slate-900">
+          <h3 className="font-semibold text-white">
             {formatName} Pairings
           </h3>
         </div>
-        <div className="text-sm text-slate-600">
+        <div className="text-sm text-white/50">
           {pairings.length} {pairings.length === 1 ? "match" : "matches"}
         </div>
       </div>
@@ -76,7 +76,7 @@ export const VisualPairingBoard = ({
         {pairings.map((pairing, index) => (
           <div
             key={pairing.id}
-            className={`relative bg-white border-2 border-slate-200 rounded-xl overflow-hidden hover:border-slate-300 transition-all ${
+            className={`relative bg-white/5 border-2 border-white/10 rounded-xl overflow-hidden hover:border-white/15 transition-all ${
               compact ? "p-3" : "p-4"
             }`}
           >
@@ -89,7 +89,7 @@ export const VisualPairingBoard = ({
             {onRemovePairing && (
               <button
                 onClick={() => onRemovePairing(pairing.id)}
-                className="absolute top-2 right-2 bg-red-100 hover:bg-red-200 text-red-600 w-6 h-6 rounded-full flex items-center justify-center transition-colors"
+                className="absolute top-2 right-2 bg-red-500/15 hover:bg-red-200 text-red-400 w-6 h-6 rounded-full flex items-center justify-center transition-colors"
                 title="Remove pairing"
                 style={{ minWidth: "2rem", minHeight: "2rem" }}
               >
@@ -145,11 +145,11 @@ export const VisualPairingBoard = ({
                         {getPlayerName(playerId).charAt(0)}
                       </div>
                       <div>
-                        <div className="font-semibold text-slate-900">
+                        <div className="font-semibold text-white">
                           {getPlayerName(playerId)}
                         </div>
                         {getPlayerHandicap(playerId) !== undefined && (
-                          <div className="text-xs text-slate-500">
+                          <div className="text-xs text-white/40">
                             HCP: {getPlayerHandicap(playerId)}
                           </div>
                         )}
@@ -161,7 +161,7 @@ export const VisualPairingBoard = ({
 
               {/* VS Divider */}
               <div className="mx-4 flex flex-col items-center">
-                <div className="bg-slate-200 text-slate-600 font-bold text-xs px-2 py-1 rounded">
+                <div className="bg-white/10 text-white/50 font-bold text-xs px-2 py-1 rounded">
                   VS
                 </div>
               </div>
@@ -191,11 +191,11 @@ export const VisualPairingBoard = ({
                       className="flex items-center gap-2 justify-end text-sm"
                     >
                       <div className="text-right">
-                        <div className="font-semibold text-slate-900">
+                        <div className="font-semibold text-white">
                           {getPlayerName(playerId)}
                         </div>
                         {getPlayerHandicap(playerId) !== undefined && (
-                          <div className="text-xs text-slate-500">
+                          <div className="text-xs text-white/40">
                             HCP: {getPlayerHandicap(playerId)}
                           </div>
                         )}

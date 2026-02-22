@@ -253,12 +253,12 @@ export const CreateTourPage = () => {
   // Auth gate: show sign-in prompt when not logged in
   if (!authLoading && !user) {
     return (
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen">
         <div className="golf-hero-bg safe-area-top">
           <div className="flex items-center p-6">
             <button onClick={() => navigate(-1)} className="nav-back mr-4">
               <svg
-                className="w-5 h-5 text-slate-600"
+                className="w-5 h-5 text-white/50"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -280,21 +280,26 @@ export const CreateTourPage = () => {
         </div>
 
         <div className="max-w-lg mx-auto px-4 py-16">
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8 text-center">
-            <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <LogIn className="text-emerald-600" size={32} />
+          <div className="card-elevated p-8 text-center">
+            <div className="w-16 h-16 bg-emerald-500/15 rounded-2xl flex items-center justify-center mx-auto mb-6" style={{ border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+              <LogIn className="text-emerald-400" size={32} />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-3">
+            <h2 className="text-2xl font-bold text-white mb-3">
               Sign in to create a tournament
             </h2>
-            <p className="text-slate-600 mb-8 leading-relaxed">
+            <p className="text-white/50 mb-8 leading-relaxed">
               You need to be signed in to create and manage tournaments.
               Sign in with your Google account to get started.
             </p>
             <button
               onClick={handleSignIn}
               disabled={isSigningIn}
-              className="flex items-center justify-center gap-3 w-full rounded-xl bg-blue-500 px-6 py-4 text-lg font-semibold text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+              className="flex items-center justify-center gap-3 w-full rounded-xl px-6 py-4 text-lg font-semibold text-white transition-all disabled:opacity-50"
+              style={{
+                background: "linear-gradient(135deg, rgba(59, 130, 246, 0.7), rgba(37, 99, 235, 0.8))",
+                border: "1px solid rgba(96, 165, 250, 0.3)",
+                boxShadow: "0 0 20px rgba(59, 130, 246, 0.2), 0 8px 24px rgba(0, 0, 0, 0.3)",
+              }}
             >
               <LogIn size={20} />
               {isSigningIn ? "Signing in..." : "Sign in with Google"}
@@ -306,13 +311,13 @@ export const CreateTourPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="golf-hero-bg safe-area-top">
         <div className="flex items-center p-6">
           <button onClick={handleBack} className="nav-back mr-4">
             <svg
-              className="w-5 h-5 text-slate-600"
+              className="w-5 h-5 text-white/50"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -354,35 +359,35 @@ export const CreateTourPage = () => {
                       });
                       handleNext();
                     }}
-                    className="relative flex items-start p-6 border-2 rounded-xl transition-all hover:shadow-md border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50 text-left w-full"
+                    className="relative flex items-start p-6 border-2 rounded-xl transition-all hover:shadow-md border-white/10 bg-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/10 text-left w-full"
                     data-testid={`format-${format.value}`}
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 rounded-lg bg-slate-100 text-slate-600">
+                        <div className="p-2 rounded-lg bg-white/5 text-white/50">
                           {format.icon}
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <h3 className="text-lg font-semibold text-slate-900">
+                          <h3 className="text-lg font-semibold text-white">
                             {format.name}
                           </h3>
 
                           {format.popular && (
-                            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-semibold border border-blue-200">
+                            <span className="bg-blue-500/15 text-blue-400 text-xs px-2 py-1 rounded-full font-semibold border border-blue-500/30">
                               Popular
                             </span>
                           )}
 
                           {format.premium && (
-                            <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-200">
+                            <span className="bg-amber-500/15 text-amber-400 text-xs px-2 py-1 rounded-full font-semibold border border-amber-500/30">
                               Premium
                             </span>
                           )}
                         </div>
                       </div>
 
-                      <p className="text-slate-600 leading-relaxed">
+                      <p className="text-white/50 leading-relaxed">
                         {format.description}
                       </p>
                     </div>
@@ -399,11 +404,11 @@ export const CreateTourPage = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/create/ryder-cup-wizard")}
-                  className="relative flex items-start p-6 border-2 rounded-xl transition-all hover:shadow-md border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50 text-left w-full"
+                  className="relative flex items-start p-6 border-2 rounded-xl transition-all hover:shadow-md border-white/10 bg-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/10 text-left w-full"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600">
+                      <div className="p-2 rounded-lg bg-emerald-500/15 text-emerald-400">
                         <svg
                           className="w-6 h-6"
                           fill="none"
@@ -419,15 +424,15 @@ export const CreateTourPage = () => {
                         </svg>
                       </div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-semibold text-slate-900">
+                        <h3 className="text-lg font-semibold text-white">
                           Setup Wizard
                         </h3>
-                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-semibold border border-blue-200">
+                        <span className="bg-blue-500/15 text-blue-400 text-xs px-2 py-1 rounded-full font-semibold border border-blue-500/30">
                           Recommended
                         </span>
                       </div>
                     </div>
-                    <p className="text-slate-600 leading-relaxed">
+                    <p className="text-white/50 leading-relaxed">
                       Guided step-by-step wizard with pre-filled templates and helpful tips. Perfect for first-time Ryder Cup setup.
                     </p>
                   </div>
@@ -439,11 +444,11 @@ export const CreateTourPage = () => {
                     setIsRyderCupAdvanced(true);
                     handleNext();
                   }}
-                  className="relative flex items-start p-6 border-2 rounded-xl transition-all hover:shadow-md border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50 text-left w-full"
+                  className="relative flex items-start p-6 border-2 rounded-xl transition-all hover:shadow-md border-white/10 bg-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/10 text-left w-full"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 rounded-lg bg-slate-100 text-slate-600">
+                      <div className="p-2 rounded-lg bg-white/5 text-white/50">
                         <svg
                           className="w-6 h-6"
                           fill="none"
@@ -464,11 +469,11 @@ export const CreateTourPage = () => {
                           />
                         </svg>
                       </div>
-                      <h3 className="text-lg font-semibold text-slate-900">
+                      <h3 className="text-lg font-semibold text-white">
                         Advanced Setup
                       </h3>
                     </div>
-                    <p className="text-slate-600 leading-relaxed">
+                    <p className="text-white/50 leading-relaxed">
                       Manual setup with complete control over team captains, player selection, and competition formats. For experienced users.
                     </p>
                   </div>
@@ -513,7 +518,7 @@ export const CreateTourPage = () => {
                 />
               </div>
 
-              <div className="flex gap-4 pt-6 border-t border-slate-200">
+              <div className="flex gap-4 pt-6 border-t border-white/10">
                 <button
                   type="button"
                   onClick={handleNext}
@@ -562,7 +567,7 @@ export const CreateTourPage = () => {
                 />
               </div>
 
-              <div className="flex gap-4 pt-6 border-t border-slate-200">
+              <div className="flex gap-4 pt-6 border-t border-white/10">
                 <button
                   type="button"
                   onClick={handleNext}

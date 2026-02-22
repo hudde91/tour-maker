@@ -104,7 +104,13 @@ export const PageHeader = ({
             {showShare && (
               <button
                 onClick={handleShare}
-                className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-3 py-2.5 min-h-[44px] min-w-[44px] rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700 outline-none"
+                className="flex items-center gap-2 text-white px-3 py-2.5 min-h-[44px] min-w-[44px] rounded-xl font-medium transition-all text-sm outline-none"
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                }}
                 aria-label="Share tournament"
               >
                 <svg

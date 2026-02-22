@@ -55,11 +55,11 @@ export const LeaderboardFilters = ({
     : ["score-asc", "score-desc"];
 
   return (
-    <div className="bg-white rounded-lg border border-slate-200 p-4 space-y-3">
+    <div className="bg-white/5 rounded-lg border border-white/10 p-4 space-y-3">
       {/* View Toggle */}
       {showViewToggle && (
         <div>
-          <label className="text-xs font-medium text-slate-500 mb-2 block uppercase tracking-wide">
+          <label className="text-xs font-medium text-white/40 mb-2 block uppercase tracking-wide">
             View
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -68,7 +68,7 @@ export const LeaderboardFilters = ({
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 view === "overall"
                   ? "bg-emerald-600 text-white shadow-md"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  : "bg-white/5 text-white/70 hover:bg-white/10"
               }`}
             >
               Overall
@@ -78,7 +78,7 @@ export const LeaderboardFilters = ({
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 view === "current-round"
                   ? "bg-emerald-600 text-white shadow-md"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  : "bg-white/5 text-white/70 hover:bg-white/10"
               }`}
             >
               Today
@@ -88,7 +88,7 @@ export const LeaderboardFilters = ({
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 view === "by-round"
                   ? "bg-emerald-600 text-white shadow-md"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  : "bg-white/5 text-white/70 hover:bg-white/10"
               }`}
             >
               By Round
@@ -100,13 +100,13 @@ export const LeaderboardFilters = ({
       {/* Round Selector (shown when "by-round" is selected) */}
       {view === "by-round" && rounds.length > 0 && onRoundSelect && (
         <div>
-          <label className="text-xs font-medium text-slate-500 mb-2 block uppercase tracking-wide">
+          <label className="text-xs font-medium text-white/40 mb-2 block uppercase tracking-wide">
             Select Round
           </label>
           <select
             value={selectedRoundId || ""}
             onChange={(e) => onRoundSelect(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full px-3 py-2 rounded-lg border border-white/15 bg-white/5 text-white font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             {rounds.map((round) => (
               <option key={round.id} value={round.id}>
@@ -125,13 +125,13 @@ export const LeaderboardFilters = ({
       {/* Sort Options */}
       {showSortOptions && (
         <div>
-          <label className="text-xs font-medium text-slate-500 mb-2 block uppercase tracking-wide">
+          <label className="text-xs font-medium text-white/40 mb-2 block uppercase tracking-wide">
             Sort By
           </label>
           <select
             value={sort}
             onChange={(e) => onSortChange(e.target.value as LeaderboardSort)}
-            className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full px-3 py-2 rounded-lg border border-white/15 bg-white/5 text-white font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             {defaultSortOptions.map((option) => (
               <option key={option} value={option}>

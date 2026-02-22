@@ -77,14 +77,14 @@ const VirtualizedLeaderboardComponent = ({
               className="pb-3"
             >
               <div
-                className={`p-4 sm:p-5 bg-white border-2 rounded-xl transition-all ${
+                className={`p-4 sm:p-5 bg-white/5 border-2 rounded-xl transition-all ${
                   index === 0
                     ? "border-yellow-400 bg-gradient-to-br from-yellow-50 via-amber-50 to-yellow-100 shadow-lg"
                     : index === 1
-                    ? "border-slate-300 bg-gradient-to-br from-slate-50 to-slate-100 shadow-md"
+                    ? "border-white/15 bg-gradient-to-br from-slate-50 to-slate-100 shadow-md"
                     : index === 2
                     ? "border-orange-300 bg-gradient-to-br from-orange-50 to-amber-50 shadow-md"
-                    : "border-slate-200 hover:border-slate-300"
+                    : "border-white/10 hover:border-white/15"
                 }`}
               >
                 <div className="flex items-center gap-4">
@@ -98,7 +98,7 @@ const VirtualizedLeaderboardComponent = ({
                           ? "bg-gradient-to-br from-slate-300 to-slate-400 text-white shadow-md"
                           : index === 2
                           ? "bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-md"
-                          : "bg-slate-100 text-slate-700"
+                          : "bg-white/5 text-white/70"
                       }`}
                     >
                       {index < 3 ? (
@@ -115,8 +115,8 @@ const VirtualizedLeaderboardComponent = ({
                         <div
                           className={`text-xs font-bold mt-1 flex items-center gap-0.5 ${
                             entry.positionChange > 0
-                              ? "text-emerald-600"
-                              : "text-red-600"
+                              ? "text-emerald-400"
+                              : "text-red-400"
                           }`}
                         >
                           <span className="text-base">
@@ -126,7 +126,7 @@ const VirtualizedLeaderboardComponent = ({
                         </div>
                       )}
                     {entry.positionChange === 0 && (
-                      <div className="text-xs font-medium mt-1 text-slate-400">
+                      <div className="text-xs font-medium mt-1 text-white/30">
                         −
                       </div>
                     )}
@@ -135,16 +135,16 @@ const VirtualizedLeaderboardComponent = ({
                   {/* Player Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-bold text-lg text-slate-900 truncate">
+                      <h3 className="font-bold text-lg text-white truncate">
                         {entry.player.name}
                       </h3>
                       {entry.isCaptain && <span className="text-base">👑</span>}
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+                    <div className="flex flex-wrap items-center gap-3 text-sm text-white/50">
                       {entry.player.handicap !== undefined && (
                         <span className="flex items-center gap-1">
-                          <span className="text-slate-400">HC</span>
+                          <span className="text-white/30">HC</span>
                           {entry.player.handicap}
                         </span>
                       )}
@@ -159,7 +159,7 @@ const VirtualizedLeaderboardComponent = ({
                         </div>
                       )}
 
-                      <span className="text-slate-400">
+                      <span className="text-white/30">
                         {entry.roundsPlayed} round
                         {entry.roundsPlayed !== 1 ? "s" : ""}
                       </span>
@@ -181,7 +181,7 @@ const VirtualizedLeaderboardComponent = ({
                               ).length;
                               if (holesCompleted > 0 && holesCompleted < 18) {
                                 return (
-                                  <span className="text-emerald-600 font-medium flex items-center gap-1">
+                                  <span className="text-emerald-400 font-medium flex items-center gap-1">
                                     <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
                                     Thru {holesCompleted}
                                   </span>
@@ -199,27 +199,27 @@ const VirtualizedLeaderboardComponent = ({
                     {hasSomeStableford ? (
                       // Stableford Format
                       <>
-                        <div className="text-3xl font-bold text-emerald-600 mb-1">
+                        <div className="text-3xl font-bold text-emerald-400 mb-1">
                           {stablefordPoints}
                         </div>
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-white/40">
                           {entry.totalScore} strokes
                         </div>
-                        <div className="text-xs text-emerald-600 font-medium mt-1">
+                        <div className="text-xs text-emerald-400 font-medium mt-1">
                           Stableford Points
                         </div>
                       </>
                     ) : isMatchPlay ? (
                       // Match Play Format
                       <>
-                        <div className="text-3xl font-bold text-slate-900 mb-1">
+                        <div className="text-3xl font-bold text-white mb-1">
                           {matchesWon}
                         </div>
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-white/40">
                           Matches Won
                         </div>
                         {entry.totalScore > 0 && (
-                          <div className="text-xs text-slate-400 mt-1">
+                          <div className="text-xs text-white/30 mt-1">
                             {entry.totalScore} total strokes
                           </div>
                         )}
@@ -231,20 +231,20 @@ const VirtualizedLeaderboardComponent = ({
                           className={`text-3xl font-bold mb-1 ${
                             hasHandicaps && entry.netToPar !== undefined
                               ? entry.netToPar < 0
-                                ? "text-emerald-600"
+                                ? "text-emerald-400"
                                 : entry.netToPar > 0
-                                ? "text-red-600"
-                                : "text-slate-900"
+                                ? "text-red-400"
+                                : "text-white"
                               : entry.totalToPar < 0
-                              ? "text-emerald-600"
+                              ? "text-emerald-400"
                               : entry.totalToPar > 0
-                              ? "text-red-600"
-                              : "text-slate-900"
+                              ? "text-red-400"
+                              : "text-white"
                           }`}
                         >
                           {displayScore}
                         </div>
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-white/40">
                           {entry.totalScore} strokes
                           {entry.netScore && entry.handicapStrokes
                             ? ` (-${entry.handicapStrokes} HC)`
@@ -254,15 +254,15 @@ const VirtualizedLeaderboardComponent = ({
                           className={`text-xs font-medium mt-1 ${
                             hasHandicaps && entry.netToPar !== undefined
                               ? entry.netToPar < 0
-                                ? "text-emerald-600"
+                                ? "text-emerald-400"
                                 : entry.netToPar > 0
-                                ? "text-red-600"
-                                : "text-slate-600"
+                                ? "text-red-400"
+                                : "text-white/50"
                               : entry.totalToPar < 0
-                              ? "text-emerald-600"
+                              ? "text-emerald-400"
                               : entry.totalToPar > 0
-                              ? "text-red-600"
-                              : "text-slate-600"
+                              ? "text-red-400"
+                              : "text-white/50"
                           }`}
                         >
                           {hasHandicaps && entry.netToPar !== undefined
@@ -275,17 +275,17 @@ const VirtualizedLeaderboardComponent = ({
                         </div>
                         {/* Today's Score (for Overall view) */}
                         {view === "overall" && entry.currentRoundScore && (
-                          <div className="text-xs text-slate-400 mt-1.5 pt-1.5 border-t border-slate-200">
+                          <div className="text-xs text-white/30 mt-1.5 pt-1.5 border-t border-white/10">
                             Today:{" "}
                             <span
                               className={`font-medium ${
                                 entry.currentRoundToPar !== undefined
                                   ? entry.currentRoundToPar < 0
-                                    ? "text-emerald-600"
+                                    ? "text-emerald-400"
                                     : entry.currentRoundToPar > 0
-                                    ? "text-red-600"
-                                    : "text-slate-600"
-                                  : "text-slate-600"
+                                    ? "text-red-400"
+                                    : "text-white/50"
+                                  : "text-white/50"
                               }`}
                             >
                               {entry.currentRoundScore}
