@@ -37,6 +37,7 @@ export const HomePage = () => {
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [showMockDataDialog, setShowMockDataDialog] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [authExpanded, setAuthExpanded] = useState(false);
   const [signInExpanded, setSignInExpanded] = useState(false);
 
   const handleSignIn = async () => {
@@ -195,45 +196,91 @@ export const HomePage = () => {
         </div>
       )}
 
-      {/* Auth & Dev Mode */}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-3 items-end">
-        {user && (
-          <div
-            className="rounded-xl p-3"
+      {/* Collapsible auth tab (logged-in users) */}
+      {user && (
+        <div
+          className="fixed right-0 top-4 z-50 flex items-start transition-transform duration-500 ease-in-out"
+          style={{
+            transform: authExpanded
+              ? "translateX(0)"
+              : "translateX(calc(100% - 44px))",
+          }}
+        >
+          {/* Tab handle */}
+          <button
+            onClick={() => setAuthExpanded(!authExpanded)}
+            className="flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-l-xl transition-colors"
             style={{
-              background: "rgba(255, 255, 255, 0.06)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
+              background: "rgba(15, 23, 42, 0.9)",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              borderRight: "none",
               backdropFilter: "blur(20px)",
               WebkitBackdropFilter: "blur(20px)",
-              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
             }}
+            aria-label={authExpanded ? "Hide profile" : "Show profile"}
           >
-            <AuthButton />
-          </div>
-        )}
-        {import.meta.env.DEV && (
-          <div
-            className="rounded-xl p-3"
-            style={{
-              background: "rgba(255, 255, 255, 0.06)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
-            }}
-          >
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showMockDataFeatures}
-                onChange={(e) => handleToggleMockDataFeatures(e.target.checked)}
-                className="w-4 h-4 text-purple-500 border-white/20 rounded focus:ring-purple-500 bg-white/10"
+            {authExpanded ? (
+              <ChevronRight size={18} className="text-white/60" />
+            ) : user.photoURL ? (
+              <img
+                src={user.photoURL}
+                alt=""
+                className="w-7 h-7 rounded-full"
               />
-              <span className="text-sm font-medium text-white/70">Dev Mode</span>
-            </label>
+            ) : (
+              <User size={18} className="text-white/60" />
+            )}
+          </button>
+
+          {/* Expanded panel */}
+          <div
+            className="rounded-l-xl p-4"
+            style={{
+              background: "rgba(15, 23, 42, 0.92)",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              borderRight: "none",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              boxShadow: "-8px 0 32px rgba(0, 0, 0, 0.4)",
+            }}
+          >
+            <div className="flex items-start justify-between mb-3">
+              <AuthButton />
+              <button
+                onClick={() => setAuthExpanded(false)}
+                className="text-white/30 hover:text-white/60 transition-colors -mt-1 ml-3 p-1 flex-shrink-0"
+              >
+                <X size={14} />
+              </button>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Dev mode toggle */}
+      {import.meta.env.DEV && (
+        <div
+          className="fixed top-4 right-4 z-40 rounded-xl p-3"
+          style={{
+            background: "rgba(255, 255, 255, 0.06)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+            ...(user ? { top: "4.5rem" } : {}),
+          }}
+        >
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showMockDataFeatures}
+              onChange={(e) => handleToggleMockDataFeatures(e.target.checked)}
+              className="w-4 h-4 text-purple-500 border-white/20 rounded focus:ring-purple-500 bg-white/10"
+            />
+            <span className="text-sm font-medium text-white/70">Dev Mode</span>
+          </label>
+        </div>
+      )}
 
       <div className="golf-hero-bg safe-area-top w-full">
         <div className="p-6 pb-12 w-full max-w-6xl mx-auto">
