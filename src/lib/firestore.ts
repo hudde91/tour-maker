@@ -347,20 +347,26 @@ export async function setTeamCaptain(
 // ROUNDS (subcollection under tour)
 // ============================================================
 
+function stripUndefined<T extends Record<string, unknown>>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined)
+  ) as T;
+}
+
 export async function createRound(tourId: string, round: Round): Promise<void> {
   await setDoc(roundDoc(tourId, round.id), {
     name: round.name,
     courseName: round.courseName,
     format: round.format,
     holes: round.holes,
-    holeInfo: round.holeInfo,
+    holeInfo: round.holeInfo.map(stripUndefined),
     totalPar: round.totalPar ?? null,
     teeBoxes: round.teeBoxes ?? null,
     slopeRating: round.slopeRating ?? null,
     totalYardage: round.totalYardage ?? null,
     startTime: round.startTime ?? null,
     playerIds: round.playerIds ?? [],
-    settings: round.settings,
+    settings: stripUndefined(round.settings),
     createdAt: round.createdAt,
     scores: round.scores || {},
     status: round.status,
@@ -376,14 +382,14 @@ export async function updateRound(tourId: string, round: Round): Promise<void> {
     courseName: round.courseName,
     format: round.format,
     holes: round.holes,
-    holeInfo: round.holeInfo,
+    holeInfo: round.holeInfo.map(stripUndefined),
     totalPar: round.totalPar ?? null,
     teeBoxes: round.teeBoxes ?? null,
     slopeRating: round.slopeRating ?? null,
     totalYardage: round.totalYardage ?? null,
     startTime: round.startTime ?? null,
     playerIds: round.playerIds ?? [],
-    settings: round.settings,
+    settings: stripUndefined(round.settings),
     createdAt: round.createdAt,
     startedAt: round.startedAt ?? null,
     completedAt: round.completedAt ?? null,
