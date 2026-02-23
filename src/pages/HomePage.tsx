@@ -484,7 +484,7 @@ export const HomePage = () => {
                   <Link
                     key={tour.id}
                     to={`/tour/${tour.id}`}
-                    className="block rounded-2xl p-4 md:p-6 transition-all duration-300 group cursor-pointer hover:-translate-y-0.5"
+                    className="block p-4 md:p-6 transition-all duration-300 group cursor-pointer hover:-translate-y-0.5"
                     style={{
                       background: "rgba(255, 255, 255, 0.06)",
                       border: "1px solid rgba(255, 255, 255, 0.1)",
