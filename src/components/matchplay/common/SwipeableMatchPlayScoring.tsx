@@ -185,8 +185,8 @@ export const SwipeableMatchPlayScoring = ({
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-semibold ${
                     isMatchComplete
-                      ? "bg-green-100 text-green-800"
-                      : "bg-yellow-100 text-yellow-800"
+                      ? "bg-green-500/20 text-green-400"
+                      : "bg-yellow-500/20 text-yellow-400"
                   }`}
                 >
                   {isMatchComplete ? "Completed" : "In Progress"}
@@ -254,9 +254,9 @@ export const SwipeableMatchPlayScoring = ({
 
               {/* Match Status */}
               {match.statusText && (
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-500/30 rounded-lg">
+                <div className="mt-4 p-3 bg-blue-500/15 border border-blue-500/30 rounded-lg">
                   <div className="text-center">
-                    <span className="text-sm font-semibold text-blue-900">
+                    <span className="text-sm font-semibold text-blue-400">
                       {match.statusText}
                     </span>
                   </div>
@@ -765,8 +765,8 @@ const MatchScoringCard = ({
           <span
             className={`px-3 py-1 rounded-full text-xs font-semibold ${
               isMatchComplete
-                ? "bg-green-100 text-green-800"
-                : "bg-yellow-100 text-yellow-800"
+                ? "bg-green-500/20 text-green-400"
+                : "bg-yellow-500/20 text-yellow-400"
             }`}
           >
             {isMatchComplete ? "Completed" : "In Progress"}

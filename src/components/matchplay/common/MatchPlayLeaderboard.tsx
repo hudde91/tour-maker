@@ -251,11 +251,11 @@ export const MatchPlayLeaderboard = ({
 
       {/* Championship Status */}
       {(teamAPoints >= target || teamBPoints >= target) && (
-        <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
-          <h4 className="text-lg font-bold text-yellow-900 mb-2">
+        <div className="mt-6 p-4 bg-yellow-500/15 border border-yellow-500/30 rounded-lg text-center">
+          <h4 className="text-lg font-bold text-yellow-400 mb-2">
             🏆 Tournament Complete!
           </h4>
-          <p className="text-yellow-800">
+          <p className="text-yellow-300">
             {teamAPoints >= target ? teamA.name : teamB.name} wins the Ryder Cup
             with {Math.max(teamAPoints, teamBPoints)} points!
           </p>

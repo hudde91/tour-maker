@@ -190,8 +190,8 @@ export const RoundSettingsModal = ({
           </div>
 
           {round.status === "in-progress" && (
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="text-sm text-amber-800">
+            <div className="p-3 bg-amber-500/15 border border-amber-500/30 rounded-lg">
+              <p className="text-sm text-amber-400">
                 <strong>Note:</strong> This round is currently in progress.
                 Changes to course details will not affect existing scores.
               </p>

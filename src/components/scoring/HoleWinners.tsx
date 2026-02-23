@@ -35,8 +35,8 @@ export const HoleWinners = ({ round, players, playerIds, className = "" }: Props
               key={winner.holeNumber}
               className={`rounded-lg border p-3 ${
                 winner.isTied
-                  ? 'bg-amber-50 border-amber-200'
-                  : 'bg-emerald-50 border-emerald-500/30'
+                  ? 'bg-amber-500/15 border-amber-500/30'
+                  : 'bg-emerald-500/15 border-emerald-500/30'
               }`}
             >
               <div className="flex items-center justify-between mb-1">

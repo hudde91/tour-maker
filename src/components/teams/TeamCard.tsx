@@ -174,7 +174,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
           <div className="flex items-center gap-2 self-start sm:self-auto">
             <Link
               to={`/tour/${tour.id}/team/${team.id}`}
-              className="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-colors"
               title="Team dashboard"
             >
               <span className="text-base">📊</span>
@@ -188,7 +188,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
             </button>
             <button
               onClick={handleDeleteTeam}
-              className="p-2 text-red-400 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors"
+              className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
               title="Delete team"
             >
               <span className="text-base">🗑️</span>
@@ -201,7 +201,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
           <div className="card-spacing border-t border-white/10">
             <button
               onClick={() => setShowCaptainSelect(!showCaptainSelect)}
-              className="w-full flex items-center justify-between p-3 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-200"
+              className="w-full flex items-center justify-between p-3 bg-amber-500/15 hover:bg-amber-500/20 rounded-lg transition-colors border border-amber-500/30"
             >
               <div className="flex items-center gap-2">
                 <span className="text-base">👑</span>
@@ -222,7 +222,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                     onClick={() => handleChangeCaptain(player.id)}
                     className={`w-full text-left p-3 rounded-lg transition-colors border ${
                       team.captainId === player.id
-                        ? "bg-amber-50 border-amber-300"
+                        ? "bg-amber-500/15 border-amber-500/30"
                         : "hover:bg-white/5 border-white/10"
                     }`}
                   >
@@ -261,7 +261,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                       {player.name}
                     </span>
                     {team.captainId === player.id && (
-                      <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-200">
+                      <span className="bg-amber-500/20 text-amber-400 text-xs px-2 py-1 rounded-full font-semibold border border-amber-500/30">
                         👑 Captain
                       </span>
                     )}
@@ -280,7 +280,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                   onClick={() =>
                     handleRemovePlayerClick(player.id, player.name)
                   }
-                  className="text-xs bg-red-500/15 hover:bg-red-200 text-red-700 px-3 py-1 rounded-full font-medium transition-colors border border-red-200"
+                  className="text-xs bg-red-500/15 hover:bg-red-500/25 text-red-400 px-3 py-1 rounded-full font-medium transition-colors border border-red-500/30"
                   title="Remove from team"
                 >
                   Remove
@@ -294,7 +294,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
             <div className="pt-3 border-t border-white/10">
               <button
                 onClick={() => setShowPlayerAssignment(!showPlayerAssignment)}
-                className="w-full p-3 border-2 border-dashed border-white/15 rounded-lg text-white/50 hover:border-emerald-400 hover:text-emerald-400 hover:bg-emerald-50 transition-all font-medium"
+                className="w-full p-3 border-2 border-dashed border-white/15 rounded-lg text-white/50 hover:border-emerald-400/40 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all font-medium"
               >
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-base">➕</span>
@@ -313,7 +313,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                     <button
                       key={player.id}
                       onClick={() => handleAssignPlayer(player.id)}
-                      className="w-full text-left p-3 hover:bg-emerald-50 rounded-lg transition-colors border border-white/10 hover:border-emerald-300"
+                      className="w-full text-left p-3 hover:bg-emerald-500/10 rounded-lg transition-colors border border-white/10 hover:border-emerald-400/40"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">

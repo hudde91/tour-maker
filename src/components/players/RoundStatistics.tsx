@@ -101,12 +101,12 @@ export const RoundStatistics = ({ stats, className = "" }: Props) => {
       {/* Best/Worst Holes & Streak */}
       <div className="grid grid-cols-1 gap-2">
         {bestHole && (
-          <div className="rounded-lg border bg-emerald-50 border-emerald-500/30 p-2">
+          <div className="rounded-lg border bg-emerald-500/15 border-emerald-500/30 p-2">
             <div className="flex items-center justify-between">
-              <div className="text-xs font-medium text-emerald-900">Best Hole</div>
+              <div className="text-xs font-medium text-emerald-400">Best Hole</div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-emerald-400">Hole {bestHole.holeNumber}</span>
-                <span className="text-sm font-bold text-emerald-900">{bestHole.score}</span>
+                <span className="text-sm font-bold text-emerald-400">{bestHole.score}</span>
                 <span className="text-xs text-emerald-400">
                   ({bestHole.toPar === 0 ? 'E' : bestHole.toPar > 0 ? `+${bestHole.toPar}` : bestHole.toPar})
                 </span>
@@ -133,27 +133,27 @@ export const RoundStatistics = ({ stats, className = "" }: Props) => {
         {currentStreak.type !== 'none' && currentStreak.length > 1 && (
           <div className={`rounded-lg border p-2 ${
             currentStreak.type === 'birdie' || currentStreak.type === 'under-par'
-              ? 'bg-blue-50 border-blue-500/30'
+              ? 'bg-blue-500/15 border-blue-500/30'
               : currentStreak.type === 'par'
               ? 'border-white/10'
-              : 'bg-orange-50 border-orange-200'
+              : 'bg-orange-500/15 border-orange-500/30'
           }`}>
             <div className="flex items-center justify-between">
               <div className={`text-xs font-medium ${
                 currentStreak.type === 'birdie' || currentStreak.type === 'under-par'
-                  ? 'text-blue-900'
+                  ? 'text-blue-400'
                   : currentStreak.type === 'par'
                   ? 'text-white/70'
-                  : 'text-orange-900'
+                  : 'text-orange-400'
               }`}>
                 Current Streak
               </div>
               <div className={`text-sm font-bold ${
                 currentStreak.type === 'birdie' || currentStreak.type === 'under-par'
-                  ? 'text-blue-900'
+                  ? 'text-blue-400'
                   : currentStreak.type === 'par'
                   ? 'text-white'
-                  : 'text-orange-900'
+                  : 'text-orange-400'
               }`}>
                 {formatStreak(currentStreak)}
               </div>

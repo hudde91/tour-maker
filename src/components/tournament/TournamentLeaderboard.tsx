@@ -504,7 +504,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                           {teamEntry.team.name}
                         </h3>
                         {isLeadingTeam && (
-                          <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded-full font-semibold flex-shrink-0">
+                          <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-0.5 rounded-full font-semibold flex-shrink-0">
                             Leading
                           </span>
                         )}
@@ -534,9 +534,9 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       ) : playersWithScores.length > VIRTUALIZATION_THRESHOLD ? (
         /* Virtualized Individual Tournament Leaderboard for large player counts */
         <div>
-          <div className="mb-3 text-sm text-white/50 bg-blue-50 border border-blue-500/30 rounded-lg p-3 flex items-center gap-2">
+          <div className="mb-3 text-sm text-white/50 bg-blue-500/15 border border-blue-500/30 rounded-lg p-3 flex items-center gap-2">
             <svg
-              className="w-5 h-5 text-blue-600 flex-shrink-0"
+              className="w-5 h-5 text-blue-400 flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -899,16 +899,16 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Closest to Pin */}
               {closestToPinWinners.length > 0 && (
-                <div className="bg-blue-50 border-2 border-blue-500/30 rounded-xl p-4">
+                <div className="bg-blue-500/15 border-2 border-blue-500/30 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <svg
-                      className="w-5 h-5 text-blue-600"
+                      className="w-5 h-5 text-blue-400"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
                       <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
                     </svg>
-                    <h4 className="font-semibold text-blue-900">
+                    <h4 className="font-semibold text-blue-400">
                       Closest to Pin
                     </h4>
                   </div>
@@ -953,10 +953,10 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
 
               {/* Longest Drive */}
               {longestDriveWinners.length > 0 && (
-                <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
+                <div className="bg-amber-500/15 border-2 border-amber-500/30 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <svg
-                      className="w-5 h-5 text-amber-600"
+                      className="w-5 h-5 text-amber-400"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -966,7 +966,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                         clipRule="evenodd"
                       />
                     </svg>
-                    <h4 className="font-semibold text-amber-900">
+                    <h4 className="font-semibold text-amber-400">
                       Longest Drive
                     </h4>
                   </div>

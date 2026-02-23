@@ -319,7 +319,7 @@ export const TeamDashboard = () => {
                                 {playerStat.player.name}
                               </p>
                               {team.captainId === playerStat.player.id && (
-                                <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-200">
+                                <span className="bg-amber-500/20 text-amber-400 text-xs px-2 py-1 rounded-full font-semibold border border-amber-500/30">
                                   👑 Captain
                                 </span>
                               )}
@@ -538,7 +538,7 @@ const PlayerDetailView = ({
                 {player.name}
               </h2>
               {isCaptain && (
-                <span className="bg-amber-100 text-amber-800 text-sm px-3 py-1 rounded-full font-semibold border border-amber-200">
+                <span className="bg-amber-500/20 text-amber-400 text-sm px-3 py-1 rounded-full font-semibold border border-amber-500/30">
                   👑 Captain
                 </span>
               )}

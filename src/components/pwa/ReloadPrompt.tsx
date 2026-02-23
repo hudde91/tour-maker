@@ -21,7 +21,7 @@ export function ReloadPrompt() {
         </div>
         <button
           onClick={() => updateServiceWorker(true)}
-          className="flex-shrink-0 bg-white/5 text-emerald-400 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-emerald-50 transition-colors"
+          className="flex-shrink-0 bg-white/5 text-emerald-400 px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-emerald-500/10 transition-colors"
         >
           Update
         </button>

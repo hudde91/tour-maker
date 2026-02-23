@@ -781,7 +781,7 @@ const PlayerScoreCard = ({
                     </span>
                   )}
                   {holeInfo.longestDrive && (
-                    <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                    <span className="bg-amber-500/20 text-amber-400 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
                       <svg
                         className="w-3 h-3"
                         fill="currentColor"

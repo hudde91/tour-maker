@@ -95,10 +95,10 @@ export const PlayerProfileSetup = ({
             ref={formContainerRef}
             className="px-6 py-4 sm:py-6 space-y-4 sm:space-y-6"
           >
-            <div className="bg-blue-50 border border-blue-500/30 rounded-lg p-4">
+            <div className="bg-blue-500/15 border border-blue-500/30 rounded-lg p-4">
               <div className="flex items-start">
                 <svg
-                  className="w-5 h-5 text-blue-600 mt-0.5 mr-3"
+                  className="w-5 h-5 text-blue-400 mt-0.5 mr-3"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -111,7 +111,7 @@ export const PlayerProfileSetup = ({
                   />
                 </svg>
                 <div>
-                  <h3 className="text-sm font-semibold text-blue-900">
+                  <h3 className="text-sm font-semibold text-blue-400">
                     First Time Setup
                   </h3>
                   <p className="text-sm text-blue-300 mt-1">
