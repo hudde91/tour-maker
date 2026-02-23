@@ -46,7 +46,7 @@ export const SwipeableTeamScoring = ({
     return allTeams.filter((team) => {
       // Check if any player on this team is in the round
       const teamPlayersInRound = team.playerIds.filter(
-        (playerId) => !roundPlayerIds || roundPlayerIds.has(playerId)
+        (playerId) => !roundPlayerIds || roundPlayerIds.has(playerId),
       );
 
       return teamPlayersInRound.length > 0;
@@ -328,8 +328,8 @@ export const SwipeableTeamScoring = ({
                       index === currentTeamIndex
                         ? "bg-emerald-600"
                         : index < currentTeamIndex
-                        ? "bg-emerald-300"
-                        : "bg-white/10"
+                          ? "bg-emerald-300"
+                          : "bg-white/10"
                     }`}
                   />
                 ))}
@@ -350,20 +350,6 @@ export const SwipeableTeamScoring = ({
                   : "All team members play their own ball. The best score from the team is used."}
               </p>
             </div>
-
-            {/* Team Score Card */}
-            {currentTeam && (
-              <TeamScoreCard
-                team={currentTeam}
-                tour={tour}
-                round={round}
-                currentHole={currentHole}
-                holeInfo={currentHoleInfo}
-                onScoreChange={(score) =>
-                  onTeamScoreChange(currentTeam.id, currentHole - 1, score)
-                }
-              />
-            )}
 
             {/* Competition Winners Button - Show if hole has competitions */}
             {(currentHoleInfo?.closestToPin ||
@@ -477,6 +463,20 @@ export const SwipeableTeamScoring = ({
                 </div>
               </div>
             )}
+
+            {/* Team Score Card */}
+            {currentTeam && (
+              <TeamScoreCard
+                team={currentTeam}
+                tour={tour}
+                round={round}
+                currentHole={currentHole}
+                holeInfo={currentHoleInfo}
+                onScoreChange={(score) =>
+                  onTeamScoreChange(currentTeam.id, currentHole - 1, score)
+                }
+              />
+            )}
           </div>
         )}
 
@@ -492,7 +492,7 @@ export const SwipeableTeamScoring = ({
               holeNumber,
               competitionType,
               winnerId,
-              distance
+              distance,
             ) => {
               updateCompetitionWinner.mutate({
                 holeNumber,
@@ -538,8 +538,8 @@ export const SwipeableTeamScoring = ({
                       index === currentTeamIndex
                         ? "bg-emerald-600"
                         : index < currentTeamIndex
-                        ? "bg-emerald-300"
-                        : "bg-white/10"
+                          ? "bg-emerald-300"
+                          : "bg-white/10"
                     }`}
                   />
                 ))}
@@ -708,10 +708,10 @@ const TeamScoreCard = ({
                       ? "opacity-50 cursor-not-allowed"
                       : ""
                   } ${
-                localScore === option.score
-                  ? `${option.bg} ${option.text} border-emerald-400 ring-2 ring-emerald-500/40 scale-105`
-                  : "bg-white/5 text-white/70 border-white/15 active:border-slate-400"
-              }`}
+                    localScore === option.score
+                      ? `${option.bg} ${option.text} border-emerald-400 ring-2 ring-emerald-500/40 scale-105`
+                      : "bg-white/5 text-white/70 border-white/15 active:border-slate-400"
+                  }`}
             >
               <div className="text-xl sm:text-2xl font-bold mb-0.5">
                 {option.score}
@@ -721,16 +721,16 @@ const TeamScoreCard = ({
                 {option.score === par
                   ? "Par"
                   : option.score === par + 1
-                  ? "Bogey"
-                  : option.score === par + 2
-                  ? "Double"
-                  : option.score === par - 1
-                  ? "Birdie"
-                  : option.score === par - 2
-                  ? "Eagle"
-                  : option.score === 1
-                  ? "Ace!"
-                  : ""}
+                    ? "Bogey"
+                    : option.score === par + 2
+                      ? "Double"
+                      : option.score === par - 1
+                        ? "Birdie"
+                        : option.score === par - 2
+                          ? "Eagle"
+                          : option.score === 1
+                            ? "Ace!"
+                            : ""}
               </div>
 
               {localScore === option.score && (
@@ -751,9 +751,7 @@ const TeamScoreCard = ({
 
       {/* Team Stats Card */}
       <div className="card">
-        <h5 className="text-sm font-semibold text-white/90 mb-3">
-          Team Stats
-        </h5>
+        <h5 className="text-sm font-semibold text-white/90 mb-3">Team Stats</h5>
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
             <div className="text-2xl font-bold text-white">
@@ -776,7 +774,7 @@ const TeamScoreCard = ({
               {(() => {
                 const scores = teamScore?.scores || [];
                 const holesPlayed = scores.filter(
-                  (s) => s !== null && s > 0
+                  (s) => s !== null && s > 0,
                 ).length;
                 if (holesPlayed === 0) return "–";
                 const totalScore = teamScore?.totalScore || 0;
