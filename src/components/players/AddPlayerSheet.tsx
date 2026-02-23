@@ -159,18 +159,18 @@ export const AddPlayerSheet = ({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in">
       <div
         className="absolute inset-0 backdrop-blur-md"
-        style={{ background: "rgba(0, 0, 0, 0.5)" }}
+        style={{ background: "rgba(0, 0, 0, 0.8)" }}
         onClick={onClose}
       />
 
       <div
         className="relative w-full sm:w-[28rem] sm:max-w-lg rounded-t-2xl sm:rounded-2xl animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col overscroll-contain"
         style={{
-          background: "rgba(255, 255, 255, 0.08)",
-          border: "1px solid rgba(255, 255, 255, 0.12)",
+          background: "rgba(15, 23, 42, 0.95)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
           backdropFilter: "blur(32px)",
           WebkitBackdropFilter: "blur(32px)",
-          boxShadow: "0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
+          boxShadow: "0 16px 48px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
         }}
       >
         <div className="flex justify-center pt-3 pb-1 sm:hidden">

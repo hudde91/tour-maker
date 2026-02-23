@@ -40,7 +40,7 @@ export const ConfirmDialog = ({
       {/* Backdrop */}
       <div
         className="absolute inset-0 backdrop-blur-md"
-        style={{ background: "rgba(0, 0, 0, 0.5)" }}
+        style={{ background: "rgba(0, 0, 0, 0.8)" }}
         data-testid="dialog-backdrop"
         onClick={onCancel}
       />
@@ -49,11 +49,11 @@ export const ConfirmDialog = ({
       <div
         className="relative w-full sm:w-96 sm:rounded-2xl rounded-t-2xl animate-slide-up safe-area-bottom"
         style={{
-          background: "rgba(255, 255, 255, 0.08)",
-          border: "1px solid rgba(255, 255, 255, 0.12)",
+          background: "rgba(15, 23, 42, 0.95)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
           backdropFilter: "blur(32px)",
           WebkitBackdropFilter: "blur(32px)",
-          boxShadow: "0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
+          boxShadow: "0 16px 48px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
         }}
       >
         <div className="p-6">

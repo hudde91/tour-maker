@@ -106,10 +106,10 @@ export const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
   const currentStepData = steps[currentStep];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 safe-area-top safe-area-bottom">
-      <div className="bg-white/5 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto overscroll-contain pb-24 sm:pb-0">
+    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 safe-area-top safe-area-bottom">
+      <div className="rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto overscroll-contain pb-24 sm:pb-0 border border-white/10" style={{ background: "rgba(15, 23, 42, 0.95)" }}>
         {/* Header */}
-        <div className="sticky top-0 bg-white/5 border-b border-white/10 px-6 py-4 rounded-t-2xl">
+        <div className="sticky top-0 border-b border-white/10 px-6 py-4 rounded-t-2xl" style={{ background: "rgba(15, 23, 42, 0.98)" }}>
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-white">
               How Tour Maker Works

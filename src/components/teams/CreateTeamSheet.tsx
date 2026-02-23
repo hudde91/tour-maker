@@ -85,11 +85,11 @@ export const CreateTeamSheet = ({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in">
       <div
-        className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      <div className="relative w-full sm:w-96 sm:max-w-md bg-white/5 rounded-t-2xl sm:rounded-xl shadow-2xl border-t sm:border border-white/10 animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col overscroll-contain">
+      <div className="relative w-full sm:w-96 sm:max-w-md rounded-t-2xl sm:rounded-xl shadow-2xl border-t sm:border border-white/10 animate-slide-up safe-area-bottom max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col overscroll-contain" style={{ background: "rgba(15, 23, 42, 0.95)" }}>
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-12 h-1.5 bg-slate-300 rounded-full"></div>
         </div>
