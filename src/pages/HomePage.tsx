@@ -110,10 +110,16 @@ export const HomePage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center px-4">
-          <p className="text-red-400 font-medium mb-2">Failed to load tournaments</p>
-          <p className="text-white/40 text-sm mb-4">{(error as Error).message}</p>
+          <p className="text-red-400 font-medium mb-2">
+            Failed to load tournaments
+          </p>
+          <p className="text-white/40 text-sm mb-4">
+            {(error as Error).message}
+          </p>
           <button
-            onClick={() => queryClient.invalidateQueries({ queryKey: ["tours"] })}
+            onClick={() =>
+              queryClient.invalidateQueries({ queryKey: ["tours"] })
+            }
             className="btn-primary"
           >
             Try Again
@@ -149,7 +155,7 @@ export const HomePage = () => {
     }
 
     const hasActiveRounds = tour.rounds.some(
-      (r: any) => r.status === "in-progress"
+      (r: any) => r.status === "in-progress",
     );
     if (hasActiveRounds) {
       return {
@@ -179,7 +185,9 @@ export const HomePage = () => {
       {(pullDistance > 0 || isRefreshing) && (
         <div
           className="fixed top-0 left-0 right-0 z-[55] flex items-center justify-center pointer-events-none"
-          style={{ height: `${Math.max(pullDistance, isRefreshing ? 48 : 0)}px` }}
+          style={{
+            height: `${Math.max(pullDistance, isRefreshing ? 48 : 0)}px`,
+          }}
         >
           <RefreshCw
             size={24}
@@ -355,7 +363,8 @@ export const HomePage = () => {
                 disabled={isSigningIn}
                 className="flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all disabled:opacity-50"
                 style={{
-                  background: "linear-gradient(135deg, rgba(59, 130, 246, 0.7), rgba(37, 99, 235, 0.8))",
+                  background:
+                    "linear-gradient(135deg, rgba(59, 130, 246, 0.7), rgba(37, 99, 235, 0.8))",
                   border: "1px solid rgba(96, 165, 250, 0.3)",
                   boxShadow: "0 0 15px rgba(59, 130, 246, 0.15)",
                 }}
@@ -445,7 +454,7 @@ export const HomePage = () => {
             <div className="card-elevated w-full max-w-2xl mx-auto">
               <div className="text-center py-16">
                 <div
-                  className="w-24 h-24 rounded-2xl flex items-center justify-center mx-auto card-spacing"
+                  className="w-24 h-24 flex items-center justify-center mx-auto card-spacing"
                   style={{ background: "rgba(255, 255, 255, 0.05)" }}
                 >
                   <ClipboardList
@@ -481,15 +490,20 @@ export const HomePage = () => {
                       border: "1px solid rgba(255, 255, 255, 0.1)",
                       backdropFilter: "blur(20px)",
                       WebkitBackdropFilter: "blur(20px)",
-                      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+                      boxShadow:
+                        "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.18)";
-                      e.currentTarget.style.boxShadow = "0 16px 48px rgba(0, 0, 0, 0.4), 0 0 20px rgba(16, 185, 129, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.08)";
+                      e.currentTarget.style.borderColor =
+                        "rgba(255, 255, 255, 0.18)";
+                      e.currentTarget.style.boxShadow =
+                        "0 16px 48px rgba(0, 0, 0, 0.4), 0 0 20px rgba(16, 185, 129, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.08)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
-                      e.currentTarget.style.boxShadow = "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)";
+                      e.currentTarget.style.borderColor =
+                        "rgba(255, 255, 255, 0.1)";
+                      e.currentTarget.style.boxShadow =
+                        "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)";
                     }}
                   >
                     <div className="flex justify-between">
@@ -502,9 +516,11 @@ export const HomePage = () => {
                                 <div
                                   className="w-12 h-12 md:w-16 md:h-16 rounded-xl flex items-center justify-center text-white"
                                   style={{
-                                    background: "linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(5, 150, 105, 0.7))",
+                                    background:
+                                      "linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(5, 150, 105, 0.7))",
                                     border: "1px solid rgba(16, 185, 129, 0.3)",
-                                    boxShadow: "0 0 20px rgba(16, 185, 129, 0.15), 0 4px 16px rgba(0, 0, 0, 0.2)",
+                                    boxShadow:
+                                      "0 0 20px rgba(16, 185, 129, 0.15), 0 4px 16px rgba(0, 0, 0, 0.2)",
                                   }}
                                 >
                                   <span className="text-xl md:text-2xl">
@@ -531,20 +547,46 @@ export const HomePage = () => {
                             {/* Tournament Stats */}
                             <div className="grid grid-cols-2 md:flex md:items-center gap-3 md:gap-6 text-xs md:text-sm text-white/40">
                               <div className="flex items-center gap-1.5">
-                                <Users size={16} strokeWidth={2} className="text-white/30" />
-                                <span className="font-medium">{tour.players.length} Players</span>
+                                <Users
+                                  size={16}
+                                  strokeWidth={2}
+                                  className="text-white/30"
+                                />
+                                <span className="font-medium">
+                                  {tour.players.length} Players
+                                </span>
                               </div>
                               <div className="flex items-center gap-1.5">
-                                <ClipboardList size={16} strokeWidth={2} className="text-white/30" />
-                                <span className="font-medium">{tour.rounds.length} Rounds</span>
+                                <ClipboardList
+                                  size={16}
+                                  strokeWidth={2}
+                                  className="text-white/30"
+                                />
+                                <span className="font-medium">
+                                  {tour.rounds.length} Rounds
+                                </span>
                               </div>
                               <div className="flex items-center gap-1.5">
-                                <Tag size={16} strokeWidth={2} className="text-white/30" />
-                                <span className="font-medium capitalize">{tour.format.replace("-", " ")}</span>
+                                <Tag
+                                  size={16}
+                                  strokeWidth={2}
+                                  className="text-white/30"
+                                />
+                                <span className="font-medium capitalize">
+                                  {tour.format.replace("-", " ")}
+                                </span>
                               </div>
                               <div className="flex items-center gap-1.5">
-                                <Calendar size={16} strokeWidth={2} className="text-white/30" />
-                                <span className="font-medium">{new Date(tour.createdAt).toLocaleDateString()}</span>
+                                <Calendar
+                                  size={16}
+                                  strokeWidth={2}
+                                  className="text-white/30"
+                                />
+                                <span className="font-medium">
+                                  {new Date(
+                                    tour.createdAt,
+                                  ).toLocaleDateString()}
+                                </span>
                               </div>
                             </div>
                           </div>

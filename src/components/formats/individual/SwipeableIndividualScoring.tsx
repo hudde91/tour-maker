@@ -410,7 +410,7 @@ export const SwipeableIndividualScoring = ({
               {/* Competition Winners Button - Show if hole has competitions */}
               {(currentHoleInfo.closestToPin ||
                 currentHoleInfo.longestDrive) && (
-                <div className="card border-2 border-blue-500/30 bg-gradient-to-br from-blue-50 to-amber-50">
+                <div className="card mb-2">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
