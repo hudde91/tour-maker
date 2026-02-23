@@ -337,12 +337,12 @@ export const SwipeableTeamScoring = ({
             </div>
 
             {/* Format Info */}
-            <div className="card bg-gradient-to-br from-emerald-50 to-teal-50">
+            <div className="card bg-gradient-to-br from-emerald-500/15 to-teal-500/15">
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-2xl">
                   {formatName === "Scramble" ? "🤝" : "⭐"}
                 </span>
-                <h3 className="font-semibold text-emerald-900">{formatName}</h3>
+                <h3 className="font-semibold text-emerald-400">{formatName}</h3>
               </div>
               <p className="text-sm text-emerald-300">
                 {formatName === "Scramble"
@@ -354,7 +354,7 @@ export const SwipeableTeamScoring = ({
             {/* Competition Winners Button - Show if hole has competitions */}
             {(currentHoleInfo?.closestToPin ||
               currentHoleInfo?.longestDrive) && (
-              <div className="card border-2 border-blue-500/30 bg-gradient-to-br from-blue-50 to-amber-50">
+              <div className="card border-2 border-blue-500/30 bg-gradient-to-br from-blue-500/15 to-amber-500/15">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
@@ -410,7 +410,7 @@ export const SwipeableTeamScoring = ({
                             ? tour.players.find((p) => p.id === winner.playerId)
                             : null;
                           return (
-                            <div className="flex items-center gap-1 text-amber-800">
+                            <div className="flex items-center gap-1 text-amber-400">
                               <svg
                                 className="w-3 h-3"
                                 fill="currentColor"

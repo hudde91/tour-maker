@@ -722,7 +722,7 @@ const PlayerScoreCard = ({
 
   return (
     <div className="space-y-4">
-      <div className="card bg-gradient-to-br from-emerald-50 to-teal-50">
+      <div className="card bg-gradient-to-br from-emerald-500/15 to-teal-500/15">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="relative">
