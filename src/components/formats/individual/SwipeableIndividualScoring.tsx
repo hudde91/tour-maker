@@ -423,7 +423,7 @@ export const SwipeableIndividualScoring = ({
 
             {/* Competition Winners Button - Show if hole has competitions */}
             {(currentHoleInfo.closestToPin || currentHoleInfo.longestDrive) && (
-              <div className="card border-2 border-blue-500/30 bg-gradient-to-br from-blue-50 to-amber-50">
+              <div className="card border-2 border-blue-500/30 bg-gradient-to-br from-blue-500/15 to-amber-500/15">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
@@ -479,7 +479,7 @@ export const SwipeableIndividualScoring = ({
                             ? tour.players.find((p) => p.id === winner.playerId)
                             : null;
                           return (
-                            <div className="flex items-center gap-1 text-amber-800">
+                            <div className="flex items-center gap-1 text-amber-400">
                               <svg
                                 className="w-3 h-3"
                                 fill="currentColor"
@@ -717,7 +717,7 @@ const PlayerScoreCard = ({
 
   return (
     <div className="space-y-4">
-      <div className="card bg-gradient-to-br from-emerald-50 to-teal-50">
+      <div className="card bg-gradient-to-br from-emerald-500/15 to-teal-500/15">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="relative">
