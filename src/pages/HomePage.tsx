@@ -13,6 +13,9 @@ import {
   Dice5,
   RefreshCw,
   LogIn,
+  ChevronLeft,
+  ChevronRight,
+  X,
 } from "lucide-react";
 import { useTours } from "../hooks/useTours";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
@@ -34,6 +37,7 @@ export const HomePage = () => {
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [showMockDataDialog, setShowMockDataDialog] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [signInExpanded, setSignInExpanded] = useState(false);
 
   const handleSignIn = async () => {
     setIsSigningIn(true);
@@ -243,38 +247,73 @@ export const HomePage = () => {
       </div>
 
       <div className="-mt-6 pb-8 w-full max-w-6xl mx-auto">
-        {/* Sign-in banner for unauthenticated users */}
+        {/* Collapsible sign-in tab for unauthenticated users */}
         {!authLoading && !user && (
-          <div className="w-full max-w-2xl mx-auto mb-4 px-4">
-            <div
-              className="rounded-xl p-5 flex flex-col sm:flex-row items-center gap-4"
+          <div
+            className="fixed right-0 top-1/2 -translate-y-1/2 z-40 flex items-center transition-transform duration-500 ease-in-out"
+            style={{
+              transform: signInExpanded
+                ? "translateY(-50%) translateX(0)"
+                : "translateY(-50%) translateX(calc(100% - 48px))",
+            }}
+          >
+            {/* Tab handle */}
+            <button
+              onClick={() => setSignInExpanded(!signInExpanded)}
+              className="flex-shrink-0 flex items-center justify-center w-12 h-24 rounded-l-xl transition-colors"
               style={{
-                background: "rgba(59, 130, 246, 0.1)",
-                border: "1px solid rgba(59, 130, 246, 0.2)",
+                background: "rgba(59, 130, 246, 0.2)",
+                border: "1px solid rgba(59, 130, 246, 0.3)",
+                borderRight: "none",
                 backdropFilter: "blur(20px)",
                 WebkitBackdropFilter: "blur(20px)",
-                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+              }}
+              aria-label={signInExpanded ? "Hide sign in" : "Show sign in"}
+            >
+              {signInExpanded ? (
+                <ChevronRight size={20} className="text-blue-400" />
+              ) : (
+                <LogIn size={18} className="text-blue-400" />
+              )}
+            </button>
+
+            {/* Expanded panel */}
+            <div
+              className="rounded-l-xl p-5 w-72 sm:w-80"
+              style={{
+                background: "rgba(15, 23, 42, 0.92)",
+                border: "1px solid rgba(59, 130, 246, 0.25)",
+                borderRight: "none",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                boxShadow: "-8px 0 32px rgba(0, 0, 0, 0.4)",
               }}
             >
-              <div className="flex-1 text-center sm:text-left">
-                <h3 className="text-lg font-semibold text-white mb-1">
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="text-base font-semibold text-white">
                   Sign in to get started
                 </h3>
-                <p className="text-sm text-white/60">
-                  Create and manage your golf tournaments by signing in with Google.
-                </p>
+                <button
+                  onClick={() => setSignInExpanded(false)}
+                  className="text-white/30 hover:text-white/60 transition-colors -mt-1 -mr-1 p-1"
+                >
+                  <X size={16} />
+                </button>
               </div>
+              <p className="text-sm text-white/50 mb-4">
+                Create and manage your golf tournaments.
+              </p>
               <button
                 onClick={handleSignIn}
                 disabled={isSigningIn}
-                className="flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold text-white transition-all disabled:opacity-50 whitespace-nowrap"
+                className="flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-all disabled:opacity-50"
                 style={{
                   background: "linear-gradient(135deg, rgba(59, 130, 246, 0.7), rgba(37, 99, 235, 0.8))",
                   border: "1px solid rgba(96, 165, 250, 0.3)",
-                  boxShadow: "0 0 20px rgba(59, 130, 246, 0.2), 0 8px 24px rgba(0, 0, 0, 0.3)",
+                  boxShadow: "0 0 15px rgba(59, 130, 246, 0.15)",
                 }}
               >
-                <LogIn size={18} />
+                <LogIn size={16} />
                 {isSigningIn ? "Signing in..." : "Sign in with Google"}
               </button>
             </div>
