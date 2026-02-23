@@ -310,7 +310,7 @@ export const TourSettingsPage = () => {
         <div className="card">
           <h2 className="section-header mb-4">Tournament Format</h2>
 
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-500/30 rounded-lg">
+          <div className="mb-4 p-3 bg-blue-500/15 border border-blue-500/30 rounded-lg">
             <p className="text-sm text-blue-300">
               <strong>Note:</strong> Changing the tournament format may affect
               existing teams and rounds. Proceed with caution.
@@ -332,7 +332,7 @@ export const TourSettingsPage = () => {
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      tour.format === format ? "bg-emerald-200" : "bg-white/10"
+                      tour.format === format ? "bg-emerald-500/20" : "bg-white/10"
                     }`}
                   >
                     {format === "individual" ? (
@@ -406,11 +406,11 @@ export const TourSettingsPage = () => {
               className="w-full flex items-center justify-between p-4 hover:bg-white/10 rounded-lg transition-colors text-left disabled:opacity-50"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center">
                   {tour.archived ? (
-                    <FolderOpen className="w-5 h-5 text-amber-600" />
+                    <FolderOpen className="w-5 h-5 text-amber-400" />
                   ) : (
-                    <Archive className="w-5 h-5 text-amber-600" />
+                    <Archive className="w-5 h-5 text-amber-400" />
                   )}
                 </div>
                 <div>
@@ -447,7 +447,7 @@ export const TourSettingsPage = () => {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-500/15 rounded-full flex items-center justify-center">
-                  <BarChart className="w-5 h-5 text-blue-600" />
+                  <BarChart className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
                   <div className="font-semibold text-white">
@@ -478,8 +478,8 @@ export const TourSettingsPage = () => {
               className="w-full flex items-center justify-between p-4 hover:bg-white/10 rounded-lg transition-colors text-left"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                  <Settings className="w-5 h-5 text-purple-600" />
+                <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
+                  <Settings className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
                   <div className="font-semibold text-white">
@@ -507,8 +507,8 @@ export const TourSettingsPage = () => {
           </div>
         </div>
 
-        <div className="card border-red-200">
-          <h2 className="section-header text-red-700 mb-4 flex items-center gap-2">
+        <div className="card border-red-500/30">
+          <h2 className="section-header text-red-400 mb-4 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5" />
             Danger Zone
           </h2>
@@ -517,18 +517,18 @@ export const TourSettingsPage = () => {
             <button
               onClick={handleDeleteTournament}
               disabled={deleteTour.isPending}
-              className="w-full flex items-center justify-between p-4 bg-red-50 hover:bg-red-500/15 rounded-lg transition-colors text-left disabled:opacity-50"
+              className="w-full flex items-center justify-between p-4 bg-red-500/15 hover:bg-red-500/20 rounded-lg transition-colors text-left disabled:opacity-50"
               data-testid="delete-tour-button"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-red-200 rounded-full flex items-center justify-center">
-                  <Trash2 className="w-5 h-5 text-red-700" />
+                <div className="w-10 h-10 bg-red-500/20 rounded-full flex items-center justify-center">
+                  <Trash2 className="w-5 h-5 text-red-400" />
                 </div>
                 <div>
-                  <div className="font-semibold text-red-900">
+                  <div className="font-semibold text-red-400">
                     Delete Tournament
                   </div>
-                  <div className="text-sm text-red-700">
+                  <div className="text-sm text-red-400/70">
                     Permanently remove all data
                   </div>
                 </div>
@@ -549,8 +549,8 @@ export const TourSettingsPage = () => {
             </button>
           </div>
 
-          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-sm text-amber-800">
+          <div className="mt-4 p-3 bg-amber-500/15 border border-amber-500/30 rounded-lg">
+            <p className="text-sm text-amber-400">
               <strong>Warning:</strong> Deleting this tournament will
               permanently remove all players, teams, rounds, and scores. This
               action cannot be undone.

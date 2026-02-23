@@ -237,7 +237,7 @@ export const SwipeableIndividualScoring = ({
             aria-controls="panel-score"
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset outline-none ${
               activeTab === "score"
-                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
+                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-500/15"
                 : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >
@@ -266,7 +266,7 @@ export const SwipeableIndividualScoring = ({
             aria-controls="panel-holes"
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset outline-none ${
               activeTab === "holes"
-                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
+                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-500/15"
                 : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >
@@ -295,7 +295,7 @@ export const SwipeableIndividualScoring = ({
             aria-controls="panel-leaderboard"
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset outline-none ${
               activeTab === "leaderboard"
-                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
+                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-500/15"
                 : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >
@@ -781,7 +781,7 @@ const PlayerScoreCard = ({
                     </span>
                   )}
                   {holeInfo.longestDrive && (
-                    <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                    <span className="bg-amber-500/20 text-amber-400 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
                       <svg
                         className="w-3 h-3"
                         fill="currentColor"
@@ -835,9 +835,9 @@ const PlayerScoreCard = ({
                       : ""
                   } ${
                 localScore === option.score
-                  ? `${option.bg} ${option.text} border-emerald-400 ring-2 ring-emerald-300 scale-105`
+                  ? `${option.bg} ${option.text} border-emerald-400 ring-2 ring-emerald-500/40 scale-105`
                   : option.score === par
-                  ? "bg-blue-50 text-white/70 border-blue-300 active:border-blue-400"
+                  ? "bg-blue-500/15 text-white/70 border-blue-400/40 active:border-blue-400"
                   : "bg-white/5 text-white/70 border-white/15 active:border-slate-400"
               }`}
             >
@@ -882,16 +882,16 @@ const PlayerScoreCard = ({
         onCompetitionWinnerChange && (
           <div className="space-y-3">
             {holeInfo.closestToPin && (
-              <div className="card border-2 border-blue-500/30 bg-blue-50">
+              <div className="card border-2 border-blue-500/30 bg-blue-500/15">
                 <div className="flex items-center gap-2 mb-3">
                   <svg
-                    className="w-5 h-5 text-blue-600"
+                    className="w-5 h-5 text-blue-400"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
                     <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
                   </svg>
-                  <h5 className="text-sm font-semibold text-blue-900">
+                  <h5 className="text-sm font-semibold text-blue-400">
                     Closest to Pin Winner
                   </h5>
                 </div>
@@ -923,7 +923,7 @@ const PlayerScoreCard = ({
                             : ""
                         } ${
                           isWinner
-                            ? "bg-blue-600 text-white border-blue-700 shadow-lg ring-4 ring-blue-300 scale-105 font-bold"
+                            ? "bg-blue-600 text-white border-blue-700 shadow-lg ring-4 ring-blue-500/40 scale-105 font-bold"
                             : "bg-white/5 text-white/70 border-white/15 hover:border-blue-400 hover:shadow-md"
                         }`}
                       >
@@ -958,7 +958,7 @@ const PlayerScoreCard = ({
                   </button>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-blue-900 mb-1">
+                  <label className="block text-xs font-medium text-blue-400 mb-1">
                     Distance from Pin (feet/meters)
                   </label>
                   <input
@@ -985,7 +985,7 @@ const PlayerScoreCard = ({
                     }}
                     disabled={round.status === "completed"}
                     placeholder="Enter distance"
-                    className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    className="input-field text-sm"
                     step="0.1"
                     min="0"
                   />
@@ -994,10 +994,10 @@ const PlayerScoreCard = ({
             )}
 
             {holeInfo.longestDrive && (
-              <div className="card border-2 border-amber-200 bg-amber-50">
+              <div className="card border-2 border-amber-500/30 bg-amber-500/15">
                 <div className="flex items-center gap-2 mb-3">
                   <svg
-                    className="w-5 h-5 text-amber-600"
+                    className="w-5 h-5 text-amber-400"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -1007,7 +1007,7 @@ const PlayerScoreCard = ({
                       clipRule="evenodd"
                     />
                   </svg>
-                  <h5 className="text-sm font-semibold text-amber-900">
+                  <h5 className="text-sm font-semibold text-amber-400">
                     Longest Drive Winner
                   </h5>
                 </div>
@@ -1039,7 +1039,7 @@ const PlayerScoreCard = ({
                             : ""
                         } ${
                           isWinner
-                            ? "bg-amber-600 text-white border-amber-700 shadow-lg ring-4 ring-amber-300 scale-105 font-bold"
+                            ? "bg-amber-600 text-white border-amber-700 shadow-lg ring-4 ring-amber-500/40 scale-105 font-bold"
                             : "bg-white/5 text-white/70 border-white/15 hover:border-amber-400 hover:shadow-md"
                         }`}
                       >
@@ -1074,7 +1074,7 @@ const PlayerScoreCard = ({
                   </button>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-amber-900 mb-1">
+                  <label className="block text-xs font-medium text-amber-400 mb-1">
                     Drive Distance (yards/meters)
                   </label>
                   <input
@@ -1101,7 +1101,7 @@ const PlayerScoreCard = ({
                     }}
                     disabled={round.status === "completed"}
                     placeholder="Enter distance"
-                    className="w-full px-3 py-2 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                    className="input-field text-sm"
                     step="0.1"
                     min="0"
                   />

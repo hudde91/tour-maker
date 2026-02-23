@@ -60,7 +60,7 @@ export const ProgressSteps = ({
                         isCompleted
                           ? "bg-emerald-600 text-white"
                           : isCurrent
-                          ? "bg-emerald-600 text-white ring-4 ring-emerald-200"
+                          ? "bg-emerald-600 text-white ring-4 ring-emerald-500/30"
                           : "bg-white/10 text-white/40"
                       }
                       ${

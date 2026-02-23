@@ -73,7 +73,7 @@ export const StepWizard = ({
                         isCompleted
                           ? "bg-emerald-600 text-white"
                           : isActive
-                          ? "bg-emerald-600 text-white ring-4 ring-emerald-100"
+                          ? "bg-emerald-600 text-white ring-4 ring-emerald-500/30"
                           : "bg-white/10 text-white/50"
                       }`}
                     >

@@ -322,7 +322,7 @@ export const RyderCupSetupWizard = () => {
                       currentStep > step.id
                         ? "bg-emerald-500 text-white"
                         : currentStep === step.id
-                        ? "bg-emerald-500 text-white ring-4 ring-emerald-100"
+                        ? "bg-emerald-500 text-white ring-4 ring-emerald-500/30"
                         : "bg-white/10 text-white/40"
                     }`}
                   >
@@ -434,7 +434,7 @@ export const RyderCupSetupWizard = () => {
                     key={index}
                     className={`relative flex items-start p-6 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md ${
                       wizardData.template === index
-                        ? "border-emerald-500 bg-emerald-50 shadow-md"
+                        ? "border-emerald-500 bg-emerald-500/15 shadow-md"
                         : "border-white/10 bg-white/5 hover:border-white/15"
                     }`}
                   >
@@ -457,7 +457,7 @@ export const RyderCupSetupWizard = () => {
                       }`}
                     >
                       {wizardData.template === index && (
-                        <div className="w-2 h-2 bg-white/5 rounded-full" />
+                        <div className="w-2 h-2 bg-white rounded-full" />
                       )}
                     </div>
 
@@ -509,10 +509,10 @@ export const RyderCupSetupWizard = () => {
                 ))}
               </div>
 
-              <div className="bg-blue-50 border border-blue-500/30 rounded-lg p-4">
+              <div className="bg-blue-500/15 border border-blue-500/30 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <svg
-                    className="w-5 h-5 text-blue-600 mt-0.5"
+                    className="w-5 h-5 text-blue-400 mt-0.5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -767,7 +767,7 @@ export const RyderCupSetupWizard = () => {
               </div>
 
               {/* Next Steps Info */}
-              <div className="bg-emerald-50 border border-emerald-500/30 rounded-lg p-4">
+              <div className="bg-emerald-500/15 border border-emerald-500/30 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <svg
                     className="w-5 h-5 text-emerald-400 mt-0.5"
@@ -782,7 +782,7 @@ export const RyderCupSetupWizard = () => {
                       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <div className="text-sm text-emerald-300">
+                  <div className="text-sm text-emerald-400">
                     <strong>Next Steps:</strong> After creating the tournament,
                     you'll be able to:
                     <ul className="list-disc list-inside mt-2 space-y-1">

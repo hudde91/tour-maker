@@ -89,7 +89,7 @@ export const VisualPairingBoard = ({
             {onRemovePairing && (
               <button
                 onClick={() => onRemovePairing(pairing.id)}
-                className="absolute top-2 right-2 bg-red-500/15 hover:bg-red-200 text-red-400 w-6 h-6 rounded-full flex items-center justify-center transition-colors"
+                className="absolute top-2 right-2 bg-red-500/15 hover:bg-red-500/25 text-red-400 w-6 h-6 rounded-full flex items-center justify-center transition-colors"
                 title="Remove pairing"
                 style={{ minWidth: "2rem", minHeight: "2rem" }}
               >

@@ -309,12 +309,12 @@ export const getMomentumColorClass = (
 ): string => {
   switch (momentum) {
     case "improving":
-      return "text-emerald-600 bg-emerald-50 border-emerald-200";
+      return "text-emerald-400 bg-emerald-500/15 border-emerald-500/30";
     case "declining":
-      return "text-red-600 bg-red-50 border-red-200";
+      return "text-red-400 bg-red-500/15 border-red-500/30";
     case "stable":
-      return "text-blue-600 bg-blue-50 border-blue-200";
+      return "text-blue-400 bg-blue-500/15 border-blue-500/30";
     default:
-      return "text-slate-600 bg-slate-50 border-slate-200";
+      return "text-slate-400 bg-slate-500/15 border-slate-500/30";
   }
 };

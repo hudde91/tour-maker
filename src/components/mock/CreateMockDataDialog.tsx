@@ -108,7 +108,7 @@ export const CreateMockDataDialog = ({
                 onClick={() => setOptions({ ...options, format: 'individual' })}
                 className={`px-4 py-3 rounded-lg border-2 font-medium text-sm transition-all ${
                   options.format === 'individual'
-                    ? 'border-blue-600 bg-blue-50 text-blue-900'
+                    ? 'border-blue-600 bg-blue-500/15 text-blue-400'
                     : 'border-white/10 text-white/70 hover:border-white/15'
                 }`}
               >
@@ -118,7 +118,7 @@ export const CreateMockDataDialog = ({
                 onClick={() => setOptions({ ...options, format: 'team' })}
                 className={`px-4 py-3 rounded-lg border-2 font-medium text-sm transition-all ${
                   options.format === 'team'
-                    ? 'border-blue-600 bg-blue-50 text-blue-900'
+                    ? 'border-blue-600 bg-blue-500/15 text-blue-400'
                     : 'border-white/10 text-white/70 hover:border-white/15'
                 }`}
               >
@@ -128,7 +128,7 @@ export const CreateMockDataDialog = ({
                 onClick={() => setOptions({ ...options, format: 'ryder-cup' })}
                 className={`px-4 py-3 rounded-lg border-2 font-medium text-sm transition-all ${
                   options.format === 'ryder-cup'
-                    ? 'border-blue-600 bg-blue-50 text-blue-900'
+                    ? 'border-blue-600 bg-blue-500/15 text-blue-400'
                     : 'border-white/10 text-white/70 hover:border-white/15'
                 }`}
               >
@@ -197,10 +197,10 @@ export const CreateMockDataDialog = ({
           </div>
 
           {/* Info Box */}
-          <div className="bg-blue-50 border border-blue-500/30 rounded-lg p-4">
+          <div className="bg-blue-500/15 border border-blue-500/30 rounded-lg p-4">
             <div className="flex items-start gap-2">
               <svg
-                className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"
+                className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -210,7 +210,7 @@ export const CreateMockDataDialog = ({
                   clipRule="evenodd"
                 />
               </svg>
-              <div className="flex-1 text-sm text-blue-900">
+              <div className="flex-1 text-sm text-blue-400">
                 <p className="font-semibold mb-1">What will be generated:</p>
                 <ul className="list-disc list-inside space-y-1 text-blue-300">
                   <li>{options.playerCount} players with random names and handicaps</li>

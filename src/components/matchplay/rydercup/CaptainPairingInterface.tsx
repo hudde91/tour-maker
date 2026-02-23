@@ -138,7 +138,7 @@ export const CaptainPairingInterface = ({
     <div className="space-y-6">
       <div className="card-elevated">
         <h3 className="font-semibold text-white/90 mb-3">Match Format</h3>
-        <div className="p-4 rounded-lg border-2 border-emerald-500 bg-emerald-50">
+        <div className="p-4 rounded-lg border-2 border-emerald-500 bg-emerald-500/15">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-lg">
               {sessionType === "foursomes"
@@ -326,7 +326,7 @@ export const CaptainPairingInterface = ({
 
       {/* Status and warnings */}
       {pairings.length > 0 && !allPlayersPaired && (
-        <div className="card-elevated bg-amber-50 border-amber-200">
+        <div className="card-elevated bg-amber-500/15 border-amber-500/30">
           <div className="flex items-start gap-3">
             <svg
               className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0"
@@ -342,10 +342,10 @@ export const CaptainPairingInterface = ({
               />
             </svg>
             <div>
-              <h4 className="font-semibold text-amber-900 mb-1">
+              <h4 className="font-semibold text-amber-400 mb-1">
                 Not All Players Paired
               </h4>
-              <p className="text-amber-800 text-sm">
+              <p className="text-amber-300 text-sm">
                 You need to pair all players before creating matches.{" "}
                 {teamA.name}: {getAvailablePlayers(teamA.id).length} remaining,{" "}
                 {teamB.name}: {getAvailablePlayers(teamB.id).length} remaining.

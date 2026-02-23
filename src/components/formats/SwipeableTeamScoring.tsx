@@ -189,7 +189,7 @@ export const SwipeableTeamScoring = ({
             onClick={() => setActiveTab("score")}
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
               activeTab === "score"
-                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
+                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-500/15"
                 : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >
@@ -214,7 +214,7 @@ export const SwipeableTeamScoring = ({
             onClick={() => setActiveTab("holes")}
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
               activeTab === "holes"
-                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
+                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-500/15"
                 : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >
@@ -239,7 +239,7 @@ export const SwipeableTeamScoring = ({
             onClick={() => setActiveTab("leaderboard")}
             className={`flex-1 px-4 py-4 text-sm font-semibold transition-all ${
               activeTab === "leaderboard"
-                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-50 shadow-inner"
+                ? "text-emerald-400 border-b-3 border-emerald-600 bg-emerald-500/15"
                 : "text-white/50 hover:text-white hover:bg-white/5"
             }`}
           >
@@ -709,7 +709,7 @@ const TeamScoreCard = ({
                       : ""
                   } ${
                 localScore === option.score
-                  ? `${option.bg} ${option.text} border-emerald-400 ring-2 ring-emerald-300 scale-105`
+                  ? `${option.bg} ${option.text} border-emerald-400 ring-2 ring-emerald-500/40 scale-105`
                   : "bg-white/5 text-white/70 border-white/15 active:border-slate-400"
               }`}
             >

@@ -102,14 +102,14 @@ export const FormatExplainer = ({
 
   if (variant === "inline") {
     return (
-      <div className="bg-blue-50 border border-blue-500/30 rounded-lg p-3 text-sm">
+      <div className="bg-blue-500/15 border border-blue-500/30 rounded-lg p-3 text-sm">
         <div className="flex items-start gap-2">
           <span className="text-xl flex-shrink-0">{info.icon}</span>
           <div className="flex-1 min-w-0">
-            <p className="text-blue-900 font-medium mb-1">
+            <p className="text-blue-400 font-medium mb-1">
               {info.name}: {info.description}
             </p>
-            <p className="text-blue-700 text-xs italic">
+            <p className="text-blue-300 text-xs italic">
               Example: {info.example}
             </p>
           </div>

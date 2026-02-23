@@ -278,7 +278,7 @@ export const CreateRoundPage = () => {
                             data-testid={`format-${key}`}
                             className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
                               formData.format === key
-                                ? "border-emerald-500 bg-emerald-50"
+                                ? "border-emerald-500 bg-emerald-500/15"
                                 : "border-white/10 hover:border-white/15"
                             }`}
                           >
@@ -328,7 +328,7 @@ export const CreateRoundPage = () => {
                         <h4 className="text-sm font-medium text-white/70">
                           Ryder Cup Formats
                         </h4>
-                        <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-200">
+                        <span className="bg-amber-500/20 text-amber-400 text-xs px-2 py-1 rounded-full font-semibold border border-amber-500/30">
                           Premium
                         </span>
                       </div>
@@ -341,7 +341,7 @@ export const CreateRoundPage = () => {
                               data-testid={`format-${key}`}
                               className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
                                 formData.format === key
-                                  ? "border-amber-500 bg-amber-50"
+                                  ? "border-amber-500 bg-amber-500/15"
                                   : "border-white/10 hover:border-white/15"
                               }`}
                             >
@@ -370,7 +370,7 @@ export const CreateRoundPage = () => {
                                   {format.description}
                                 </p>
                                 {format.playersPerTeam && (
-                                  <p className="text-xs text-amber-700 mt-1 font-medium">
+                                  <p className="text-xs text-amber-400 mt-1 font-medium">
                                     {format.playersPerTeam} player
                                     {format.playersPerTeam > 1 ? "s" : ""} per
                                     team
@@ -446,7 +446,7 @@ export const CreateRoundPage = () => {
                           disabled={!canSelect}
                           className={`p-3 border-2 rounded-lg text-left transition-all ${
                             isSelected
-                              ? 'border-emerald-500 bg-emerald-50 text-emerald-900'
+                              ? 'border-emerald-500 bg-emerald-500/15 text-emerald-400'
                               : canSelect
                               ? 'border-white/15 hover:border-slate-400 bg-white/5'
                               : 'border-white/10 bg-white/5 text-white/30 cursor-not-allowed'
@@ -497,7 +497,7 @@ export const CreateRoundPage = () => {
         return (
           <div className="space-y-6">
             {validationErrors.length > 0 && (
-              <div className="card-elevated border-red-200 bg-red-50">
+              <div className="card-elevated border-red-500/30 bg-red-500/15">
                 <div className="flex items-start gap-3">
                   <svg
                     className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0"
@@ -513,10 +513,10 @@ export const CreateRoundPage = () => {
                     />
                   </svg>
                   <div>
-                    <h3 className="font-semibold text-red-900 mb-2">
+                    <h3 className="font-semibold text-red-400 mb-2">
                       Please fix the following issues:
                     </h3>
-                    <ul className="list-disc list-inside space-y-1 text-red-800">
+                    <ul className="list-disc list-inside space-y-1 text-red-300">
                       {validationErrors.map((error, index) => (
                         <li key={index}>{error}</li>
                       ))}
@@ -541,7 +541,7 @@ export const CreateRoundPage = () => {
                         data-testid={`holes-${holeCount}`}
                         className={`flex-1 p-3 border-2 rounded-lg font-medium transition-all ${
                           formData.holes === holeCount
-                            ? "border-emerald-500 bg-emerald-50 text-emerald-400"
+                            ? "border-emerald-500 bg-emerald-500/15 text-emerald-400"
                             : "border-white/15 hover:border-slate-400"
                         }`}
                       >
@@ -729,7 +729,7 @@ export const CreateRoundPage = () => {
                                   getDuplicateHandicaps().has(hole.handicap) ||
                                   (hole.handicap &&
                                     (hole.handicap < 1 || hole.handicap > 18))
-                                    ? "border-red-300 bg-red-50"
+                                    ? "border-red-500/30 bg-red-500/15"
                                     : "border-white/15"
                                 }`}
                                 min="1"
@@ -865,14 +865,14 @@ export const CreateRoundPage = () => {
               </h2>
 
               <div className="space-y-6">
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-500/15 p-4 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-xl">{formatInfo.icon}</span>
-                    <span className="font-semibold text-blue-900">
+                    <span className="font-semibold text-blue-400">
                       {formatInfo.name}
                     </span>
                   </div>
-                  <p className="text-sm text-blue-700">
+                  <p className="text-sm text-blue-300">
                     {formatInfo.description}
                   </p>
                 </div>

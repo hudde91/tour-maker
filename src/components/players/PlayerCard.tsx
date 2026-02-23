@@ -136,7 +136,7 @@ const PlayerCardComponent = ({
                       {player.name}
                     </h3>
                     {isCaptain && (
-                      <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-200">
+                      <span className="bg-amber-500/20 text-amber-400 text-xs px-2 py-1 rounded-full font-semibold border border-amber-500/30">
                         Captain
                       </span>
                     )}
@@ -207,7 +207,7 @@ const PlayerCardComponent = ({
                 <button
                   onClick={handleEdit}
                   disabled={updatePlayer.isPending || !editData.name.trim()}
-                  className="p-2 text-emerald-400 hover:text-emerald-400 hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50"
+                  className="p-2 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-50"
                   title="Save"
                 >
                   <svg
@@ -249,7 +249,7 @@ const PlayerCardComponent = ({
                 <button
                   onClick={handleDeleteClick}
                   disabled={removePlayer.isPending}
-                  className="p-2 text-red-400 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                  className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50"
                   title="Remove player"
                 >
                   <svg

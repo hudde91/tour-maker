@@ -386,9 +386,10 @@ export const HomePage = () => {
                 const statusInfo = getStatusInfo(tour);
 
                 return (
-                  <div
+                  <Link
                     key={tour.id}
-                    className="rounded-2xl p-4 md:p-6 transition-all duration-300 group"
+                    to={`/tour/${tour.id}`}
+                    className="block rounded-2xl p-4 md:p-6 transition-all duration-300 group cursor-pointer hover:-translate-y-0.5"
                     style={{
                       background: "rgba(255, 255, 255, 0.06)",
                       border: "1px solid rgba(255, 255, 255, 0.1)",
@@ -396,9 +397,17 @@ export const HomePage = () => {
                       WebkitBackdropFilter: "blur(20px)",
                       boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
                     }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.18)";
+                      e.currentTarget.style.boxShadow = "0 16px 48px rgba(0, 0, 0, 0.4), 0 0 20px rgba(16, 185, 129, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.08)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                      e.currentTarget.style.boxShadow = "0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)";
+                    }}
                   >
                     <div className="flex justify-between">
-                      <Link to={`/tour/${tour.id}`} className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0">
                         <div className="space-y-3">
                           <div className="flex flex-col md:flex-row md:items-center gap-4">
                             {/* Tournament Icon & Header */}
@@ -463,12 +472,12 @@ export const HomePage = () => {
                             </div>
                           )}
                         </div>
-                      </Link>
+                      </div>
 
                       <div className="flex items-center gap-2 ml-2">
                         <div className="flex-shrink-0">
                           <svg
-                            className="w-5 h-5 md:w-6 md:h-6 text-white/20 group-hover:text-emerald-400 transition-colors"
+                            className="w-5 h-5 md:w-6 md:h-6 text-white/20 group-hover:text-emerald-400/70 transition-colors"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -483,7 +492,7 @@ export const HomePage = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

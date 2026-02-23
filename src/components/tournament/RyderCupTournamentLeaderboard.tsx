@@ -135,12 +135,12 @@ export const RyderCupTournamentLeaderboard = ({
 
       {/* Championship Status */}
       {championDecided && (
-        <div className="mt-6 p-4 bg-yellow-50 border-2 border-yellow-400 rounded-xl text-center">
-          <h4 className="text-xl font-bold text-yellow-900 mb-2 flex items-center justify-center gap-2">
+        <div className="mt-6 p-4 bg-yellow-500/15 border-2 border-yellow-500/40 rounded-xl text-center">
+          <h4 className="text-xl font-bold text-yellow-400 mb-2 flex items-center justify-center gap-2">
             <span className="text-2xl">🏆</span>
             Tournament Complete!
           </h4>
-          <p className="text-yellow-800 font-medium">
+          <p className="text-yellow-300 font-medium">
             {teamAPoints >= target ? teamA.name : teamB.name} wins the Ryder Cup
             with {Math.max(teamAPoints, teamBPoints)} points!
           </p>
@@ -148,8 +148,8 @@ export const RyderCupTournamentLeaderboard = ({
       )}
 
       {/* Scoring Info Box */}
-      <div className="mt-4 p-3 bg-blue-50 border border-blue-500/30 rounded-lg">
-        <p className="text-sm text-blue-900">
+      <div className="mt-4 p-3 bg-blue-500/15 border border-blue-500/30 rounded-lg">
+        <p className="text-sm text-blue-400">
           <span className="font-semibold">ℹ️ Scoring:</span> Win = 1 point, Tie
           (Halved) = 0.5 points each, Loss = 0 points
         </p>

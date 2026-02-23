@@ -89,17 +89,24 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
   return (
     <Link
       to={`/tour/${tour.id}/round/${round.id}`}
-      className="block bg-white/5 rounded-xl border-2 border-white/10 hover:border-emerald-400 transition-all p-4 sm:p-5"
+      className="card block group hover:-translate-y-0.5 p-4 sm:p-5"
       data-testid={`round-card-${round.id}`}
     >
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start gap-3 flex-1 min-w-0">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+          <div
+            className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{
+              background: "linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(5, 150, 105, 0.7))",
+              border: "1px solid rgba(16, 185, 129, 0.3)",
+              boxShadow: "0 0 16px rgba(16, 185, 129, 0.1), 0 4px 12px rgba(0, 0, 0, 0.2)",
+            }}
+          >
             <span className="text-2xl">{getFormatIcon(round.format)}</span>
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-lg sm:text-xl text-white mb-1 truncate">
+            <h3 className="font-bold text-lg sm:text-xl text-white mb-1 truncate group-hover:text-emerald-300 transition-colors">
               {round.name}
             </h3>
             <p className="text-sm text-white/50 mb-2">{round.courseName}</p>
@@ -114,10 +121,10 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <button
             onClick={handleSettings}
-            className="p-2 text-white/30 hover:text-emerald-400 hover:bg-emerald-50 rounded-lg transition-colors flex-shrink-0"
+            className="p-2 text-white/30 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors flex-shrink-0"
             title="Round settings"
           >
             <svg
@@ -144,7 +151,7 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
           <button
             onClick={handleDelete}
             disabled={deleteRound.isPending}
-            className="p-2 text-white/30 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 flex-shrink-0"
+            className="p-2 text-white/30 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 flex-shrink-0"
             title="Delete round"
           >
             <svg
@@ -165,45 +172,45 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
       </div>
 
       <div className="mb-4">
-        <span className="inline-flex items-center gap-2 bg-white/5 text-white/70 px-3 py-1.5 rounded-lg text-sm font-medium">
+        <span className="inline-flex items-center gap-2 bg-white/5 text-white/60 px-3 py-1.5 rounded-lg text-sm font-medium">
           <span>{getFormatIcon(round.format)}</span>
           {formatInfo.name}
           {round.settings.strokesGiven && (
             <>
-              <span className="text-slate-300">•</span>
-              <span className="text-emerald-400">⛳ Handicap Applied</span>
+              <span className="text-white/20">·</span>
+              <span className="text-emerald-400">⛳ Handicap</span>
             </>
           )}
         </span>
       </div>
 
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="rounded-lg p-3 text-center">
+        <div className="bg-white/[0.03] rounded-lg p-3 text-center">
           <div className="text-2xl font-bold text-white">{round.holes}</div>
-          <div className="text-xs text-white/40 mt-1 uppercase tracking-wide">
+          <div className="text-xs text-white/35 mt-1 uppercase tracking-wide">
             Holes
           </div>
         </div>
 
-        <div className="rounded-lg p-3 text-center">
+        <div className="bg-white/[0.03] rounded-lg p-3 text-center">
           <div className="text-2xl font-bold text-white">{totalPar}</div>
-          <div className="text-xs text-white/40 mt-1 uppercase tracking-wide">
+          <div className="text-xs text-white/35 mt-1 uppercase tracking-wide">
             Par
           </div>
         </div>
 
-        <div className="rounded-lg p-3 text-center">
+        <div className="bg-white/[0.03] rounded-lg p-3 text-center">
           <div className="text-2xl font-bold text-white">
             {playersWithScores}
           </div>
-          <div className="text-xs text-white/40 mt-1 uppercase tracking-wide">
+          <div className="text-xs text-white/35 mt-1 uppercase tracking-wide">
             Playing
           </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-white/10">
-        <div className="text-sm text-white/40">
+      <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
+        <div className="text-sm text-white/35">
           {round.status === "completed" && round.completedAt
             ? `Completed ${new Date(round.completedAt).toLocaleDateString()}`
             : round.status === "in-progress" && round.startedAt
@@ -211,7 +218,7 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
             : `Created ${new Date(round.createdAt).toLocaleDateString()}`}
         </div>
 
-        <div className="flex items-center gap-2 text-emerald-400 font-medium text-sm">
+        <div className="flex items-center gap-1.5 text-white/40 group-hover:text-emerald-400/70 font-medium text-sm transition-colors">
           {round.status === "created"
             ? "Start Round"
             : round.status === "in-progress"

@@ -135,7 +135,7 @@ export const PlayerSelectionStep = ({
             {selectedPlayers.map((player) => (
               <div
                 key={player.id}
-                className="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-500/30 rounded-lg"
+                className="flex items-center justify-between p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-lg"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center font-semibold text-sm">
@@ -195,7 +195,7 @@ export const PlayerSelectionStep = ({
           onClick={() => setMode("registered")}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold transition-colors ${
             mode === "registered"
-              ? "text-emerald-400 bg-emerald-50"
+              ? "text-emerald-400 bg-emerald-500/15"
               : "text-white/40 bg-white/5 hover:bg-white/5"
           }`}
         >
@@ -207,7 +207,7 @@ export const PlayerSelectionStep = ({
           onClick={() => setMode("guest")}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold transition-colors ${
             mode === "guest"
-              ? "text-emerald-400 bg-emerald-50"
+              ? "text-emerald-400 bg-emerald-500/15"
               : "text-white/40 bg-white/5 hover:bg-white/5"
           }`}
         >
@@ -270,7 +270,7 @@ export const PlayerSelectionStep = ({
                         key={result.userId}
                         type="button"
                         onClick={() => handleAddRegisteredUser(result)}
-                        className="flex items-center justify-between w-full p-3 border border-white/10 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left"
+                        className="flex items-center justify-between w-full p-3 border border-white/10 rounded-lg hover:border-emerald-400/40 hover:bg-emerald-500/10 transition-all text-left"
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center font-semibold text-sm">
@@ -316,9 +316,9 @@ export const PlayerSelectionStep = ({
                     key={friend.userId}
                     type="button"
                     onClick={() => handleAddFriend(friend)}
-                    className="flex items-center gap-2 p-3 border-2 border-white/10 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left"
+                    className="flex items-center gap-2 p-3 border-2 border-white/10 rounded-lg hover:border-emerald-400/40 hover:bg-emerald-500/10 transition-all text-left"
                   >
-                    <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-semibold text-sm">
+                    <div className="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-semibold text-sm">
                       {friend.playerName.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0">

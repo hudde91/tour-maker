@@ -30,9 +30,9 @@ export const HoleNavigation = ({
   const getHoleStyles = (status: string) => {
     switch (status) {
       case "current":
-        return "bg-emerald-600 text-white border-emerald-600 shadow-lg ring-2 ring-emerald-200 scale-105";
+        return "bg-emerald-600 text-white border-emerald-600 shadow-lg ring-2 ring-emerald-500/40 scale-105";
       case "completed":
-        return "bg-emerald-50 text-emerald-400 border-emerald-300 hover:bg-emerald-500/15";
+        return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/25";
       case "pending":
         return "bg-white/5 text-white/50 border-white/15 hover:bg-white/5 hover:border-slate-400";
       default:
