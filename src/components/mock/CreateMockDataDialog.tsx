@@ -41,12 +41,12 @@ export const CreateMockDataDialog = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in">
       <div
-        className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-lg bg-white/5 rounded-xl shadow-2xl border border-white/10 mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 sticky top-0 bg-white/5">
+      <div className="relative w-full max-w-lg rounded-xl shadow-2xl border border-white/10 mx-4 max-h-[90vh] overflow-y-auto" style={{ background: "rgba(15, 23, 42, 0.95)" }}>
+        <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 sticky top-0" style={{ background: "rgba(15, 23, 42, 0.98)" }}>
           <div>
             <h2 className="text-xl font-bold text-white">
               Generate Mock Tournament
