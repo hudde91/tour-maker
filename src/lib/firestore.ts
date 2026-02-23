@@ -154,7 +154,7 @@ export async function addPlayer(tourId: string, player: Player): Promise<void> {
     if (!snap.exists()) return;
     const data = snap.data();
     const players: Player[] = data.players || [];
-    players.push(player);
+    players.push(stripUndefined(player));
 
     const updates: Record<string, unknown> = { players };
 
@@ -188,7 +188,7 @@ export async function updatePlayer(tourId: string, player: Player): Promise<void
     const players: Player[] = snap.data().players || [];
     const idx = players.findIndex((p) => p.id === player.id);
     if (idx >= 0) {
-      players[idx] = player;
+      players[idx] = stripUndefined(player);
       transaction.update(tourDoc(tourId), { players });
     }
   });
