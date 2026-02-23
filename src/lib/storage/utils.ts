@@ -29,7 +29,6 @@ export const generateDefaultHoles = (numHoles: number): HoleInfo[] => {
             ? 5
             : 4
           : standardPars[i - 1] || 4,
-      yardage: undefined,
       handicap:
         numHoles === 9
           ? ((i - 1) % 9) + 1 // For 9 holes: 1-9 in order
