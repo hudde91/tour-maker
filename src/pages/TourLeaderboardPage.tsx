@@ -53,7 +53,7 @@ export const TourLeaderboardPage = () => {
   // Check if tournament has any completed or in-progress rounds
   const hasCompletedRounds = tour.rounds.some(
     (r) =>
-      r.status === "completed" || r.completedAt || r.status === "in-progress"
+      r.status === "completed" || r.completedAt || r.status === "in-progress",
   );
 
   const isRyderCup = tour.format === "ryder-cup";
@@ -75,7 +75,7 @@ export const TourLeaderboardPage = () => {
       />
 
       <div className="-mt-4 pb-8 w-full max-w-6xl mx-auto">
-        <div className="card-elevated card-spacing mt-1">
+        <div className="card-elevated rounded-2xl card-spacing mt-1">
           <div className="grid grid-cols-3 gap-3 md:gap-4">
             <div className="rounded-lg p-3 md:p-4 text-center">
               <Users className="w-6 h-6 mx-auto mb-1 text-white/50" />
