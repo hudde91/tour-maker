@@ -154,7 +154,7 @@ export const TourPlayersPage = () => {
                 ))}
 
                 {tour.players.filter((p) => !p.teamId).length > 0 && (
-                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
+                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 mt-4">
                     <div className="flex items-start gap-3">
                       <AlertTriangle className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" />
                       <div>
