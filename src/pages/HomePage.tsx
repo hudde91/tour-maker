@@ -376,7 +376,7 @@ export const HomePage = () => {
           </div>
         )}
 
-        <div className="card-elevated section-spacing w-full max-w-2xl mx-auto">
+        <div className="card-elevated rounded-2xl section-spacing w-full max-w-2xl mx-auto">
           <div className="text-center">
             <p className="text-white/60 text-lg section-spacing leading-relaxed">
               Get started by simply creating a golf tournament and follow the

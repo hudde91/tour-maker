@@ -122,22 +122,6 @@
       0 8px 24px rgba(0, 0, 0, 0.3);
   }
 
-  .btn-primary::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.15),
-      transparent
-    );
-    transition: left 0.5s;
-  }
-
   .btn-primary:hover::before {
     left: 100%;
   }
@@ -347,7 +331,7 @@
      ============================================ */
 
   .card {
-    @apply rounded-2xl p-4 transition-all duration-300 relative;
+    @apply p-4 transition-all duration-300 relative;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow), var(--glass-inner-highlight);
@@ -368,7 +352,7 @@
   }
 
   .card-elevated {
-    @apply rounded-2xl p-4 transition-all duration-300 relative;
+    @apply p-4 transition-all duration-300 relative;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow), var(--glass-inner-highlight);
@@ -400,7 +384,6 @@
     content: "";
     position: absolute;
     inset: 0;
-    /* border-radius: 1rem; */
     padding: 2px;
     background: linear-gradient(
       135deg,
