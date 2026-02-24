@@ -74,10 +74,10 @@ export const TourLeaderboardPage = () => {
         shareUrl={`${window.location.origin}/tour/${tourId}`}
       />
 
-      <div className="-mt-2 pb-8 w-full max-w-6xl mx-auto">
-        <div className="card-elevated rounded-2xl card-spacing mt-1">
+      <div className="pb-8 w-full max-w-6xl mx-auto">
+        <div className="card-elevated rounded-2xl card-spacing">
           <div className="grid grid-cols-3 gap-3 md:gap-4">
-            <div className="rounded-lg p-3 md:p-4 text-center">
+            <div className="p-3 md:p-4 text-center">
               <Users className="w-6 h-6 mx-auto mb-1 text-white/50" />
               <div className="text-xl md:text-2xl font-bold text-white">
                 {tour.players.length}
