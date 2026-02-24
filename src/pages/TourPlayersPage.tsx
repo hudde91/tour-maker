@@ -130,8 +130,10 @@ export const TourPlayersPage = () => {
                 className="btn-secondary text-sm"
                 data-testid="add-team-button"
               >
-                <Building2 className="w-4 h-4 mr-2" />
-                Add Team
+                <div className="flex items-center">
+                  <Building2 className="w-4 h-4 mr-2" />
+                  Add Team
+                </div>
               </button>
             </div>
 

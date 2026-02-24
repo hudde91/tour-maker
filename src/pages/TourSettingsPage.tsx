@@ -11,7 +11,25 @@ import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { TourFormat } from "@/types";
-import { Settings, XCircle, Home, Flag, Edit, Circle, Archive, FolderOpen, User, Users, Trophy, Check, Link as LinkIcon, BarChart, Trash2, RotateCw, AlertTriangle } from "lucide-react";
+import {
+  Settings,
+  XCircle,
+  Home,
+  Flag,
+  Edit,
+  Circle,
+  Archive,
+  FolderOpen,
+  User,
+  Users,
+  Trophy,
+  Check,
+  Link as LinkIcon,
+  BarChart,
+  Trash2,
+  RotateCw,
+  AlertTriangle,
+} from "lucide-react";
 
 export const TourSettingsPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -168,7 +186,11 @@ export const TourSettingsPage = () => {
 
   const breadcrumbs = [
     { label: "Home", path: "/", icon: <Home className="w-4 h-4" /> },
-    { label: tour.name, path: `/tour/${tourId}`, icon: <Flag className="w-4 h-4" /> },
+    {
+      label: tour.name,
+      path: `/tour/${tourId}`,
+      icon: <Flag className="w-4 h-4" />,
+    },
     { label: "Settings", icon: <Settings className="w-4 h-4" /> },
   ];
 
@@ -180,7 +202,7 @@ export const TourSettingsPage = () => {
         breadcrumbs={breadcrumbs}
       />
 
-      <div className="-mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
+      <div className="pb-8 w-full max-w-6xl mx-auto space-y-6">
         <div className="card-elevated">
           <div className="flex items-center justify-between mb-4">
             <h2 className="section-header">Tournament Information</h2>
@@ -279,7 +301,9 @@ export const TourSettingsPage = () => {
                       tour.isActive ? "status-active" : "status-completed"
                     }`}
                   >
-                    <Circle className={`w-3 h-3 fill-current ${tour.isActive ? "text-green-500" : "text-blue-500"}`} />
+                    <Circle
+                      className={`w-3 h-3 fill-current ${tour.isActive ? "text-green-500" : "text-blue-500"}`}
+                    />
                     {tour.isActive ? "Active" : "Completed"}
                   </span>
                   {tour.archived && (
@@ -332,7 +356,9 @@ export const TourSettingsPage = () => {
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      tour.format === format ? "bg-emerald-500/20" : "bg-white/10"
+                      tour.format === format
+                        ? "bg-emerald-500/20"
+                        : "bg-white/10"
                     }`}
                   >
                     {format === "individual" ? (
@@ -351,8 +377,8 @@ export const TourSettingsPage = () => {
                       {format === "individual"
                         ? "Solo tournament"
                         : format === "team"
-                        ? "Team-based tournament"
-                        : "Ryder Cup tournament"}
+                          ? "Team-based tournament"
+                          : "Ryder Cup tournament"}
                     </div>
                   </div>
                 </div>
@@ -450,9 +476,7 @@ export const TourSettingsPage = () => {
                   <BarChart className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <div className="font-semibold text-white">
-                    Export Data
-                  </div>
+                  <div className="font-semibold text-white">Export Data</div>
                   <div className="text-sm text-white/40">
                     Download scores and stats (Coming soon)
                   </div>
@@ -482,9 +506,7 @@ export const TourSettingsPage = () => {
                   <Settings className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
-                  <div className="font-semibold text-white">
-                    App Settings
-                  </div>
+                  <div className="font-semibold text-white">App Settings</div>
                   <div className="text-sm text-white/40">
                     Theme, preferences, and defaults
                   </div>
@@ -583,7 +605,7 @@ export const TourSettingsPage = () => {
         title="Change Tournament Format"
         message={`Change tournament format to "${newFormat.replace(
           "-",
-          " "
+          " ",
         )}"? This may affect existing teams and rounds. Are you sure you want to continue?`}
         confirmLabel="Change Format"
         cancelLabel="Cancel"

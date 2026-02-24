@@ -110,7 +110,7 @@ export const TeamDashboard = () => {
         onBack={() => navigate(-1)}
       />
 
-      <div className="-mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
+      <div className="pb-8 w-full max-w-6xl mx-auto space-y-6">
         {/* Player Selection */}
         <div className="card-elevated card-spacing">
           <label className="block text-sm font-medium text-white/70 mb-2">
@@ -120,7 +120,7 @@ export const TeamDashboard = () => {
             value={selectedPlayerId || "team"}
             onChange={(e) =>
               setSelectedPlayerId(
-                e.target.value === "team" ? null : e.target.value
+                e.target.value === "team" ? null : e.target.value,
               )
             }
             className="input-field w-full md:w-auto min-w-[250px]"
@@ -241,7 +241,7 @@ export const TeamDashboard = () => {
                   </div>
                   <div
                     className={`p-4 rounded-lg border ${getMomentumColorClass(
-                      momentum
+                      momentum,
                     )}`}
                   >
                     <div className="flex items-center gap-2 mb-1">
@@ -304,8 +304,8 @@ export const TeamDashboard = () => {
                         index === 0
                           ? "bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-300"
                           : index === 1
-                          ? "bg-gradient-to-r from-slate-50 to-slate-100 border-white/15"
-                          : "bg-gradient-to-r from-orange-50 to-amber-50 border-orange-300"
+                            ? "bg-gradient-to-r from-slate-50 to-slate-100 border-white/15"
+                            : "bg-gradient-to-r from-orange-50 to-amber-50 border-orange-300"
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -470,7 +470,7 @@ const PlayerDetailView = ({
         return round.ryderCup.matches.some(
           (match: any) =>
             match.teamA.playerIds.includes(player.id) ||
-            match.teamB.playerIds.includes(player.id)
+            match.teamB.playerIds.includes(player.id),
         );
       }
       // Check for regular rounds
@@ -482,7 +482,7 @@ const PlayerDetailView = ({
         const playerMatches = round.ryderCup.matches.filter(
           (match: any) =>
             match.teamA.playerIds.includes(player.id) ||
-            match.teamB.playerIds.includes(player.id)
+            match.teamB.playerIds.includes(player.id),
         );
 
         const matchesPlayed = playerMatches.length;
@@ -534,9 +534,7 @@ const PlayerDetailView = ({
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-white">
-                {player.name}
-              </h2>
+              <h2 className="text-2xl font-bold text-white">{player.name}</h2>
               {isCaptain && (
                 <span className="bg-amber-500/20 text-amber-400 text-sm px-3 py-1 rounded-full font-semibold border border-amber-500/30">
                   👑 Captain
@@ -614,9 +612,7 @@ const PlayerDetailView = ({
 
           {/* Round History */}
           <div className="card-elevated card-spacing">
-            <h3 className="text-xl font-bold text-white mb-4">
-              Round History
-            </h3>
+            <h3 className="text-xl font-bold text-white mb-4">Round History</h3>
             <div className="space-y-3">
               {playerRounds.map((roundData: any, index: number) => (
                 <div
@@ -630,8 +626,8 @@ const PlayerDetailView = ({
                           {roundData.isMatchPlay
                             ? "⚔️"
                             : index === 0 && roundData.score === bestScore
-                            ? "🏆"
-                            : "📋"}
+                              ? "🏆"
+                              : "📋"}
                         </span>
                         <div>
                           <h4 className="font-semibold text-white">
@@ -673,8 +669,8 @@ const PlayerDetailView = ({
                               roundData.toPar < 0
                                 ? "text-emerald-400"
                                 : roundData.toPar > 0
-                                ? "text-red-400"
-                                : "text-white/50"
+                                  ? "text-red-400"
+                                  : "text-white/50"
                             }`}
                           >
                             {formatToPar(roundData.toPar)}
@@ -691,9 +687,7 @@ const PlayerDetailView = ({
       ) : (
         <div className="card-elevated card-spacing text-center py-12">
           <span className="text-6xl mb-4 block">📊</span>
-          <h3 className="text-xl font-bold text-white mb-2">
-            No Rounds Yet
-          </h3>
+          <h3 className="text-xl font-bold text-white mb-2">No Rounds Yet</h3>
           <p className="text-white/50">
             {player.name} hasn't played any rounds yet.
           </p>

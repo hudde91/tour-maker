@@ -8,7 +8,15 @@ import {
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Home, Settings, Sun, Moon, RotateCw, Undo2, Check } from "lucide-react";
+import {
+  Home,
+  Settings,
+  Sun,
+  Moon,
+  RotateCw,
+  Undo2,
+  Check,
+} from "lucide-react";
 import {
   AppSettings,
   ThemeMode,
@@ -37,7 +45,7 @@ export const AppSettingsPage = () => {
 
   const handleSettingChange = async <K extends keyof AppSettings>(
     key: K,
-    value: AppSettings[K]
+    value: AppSettings[K],
   ) => {
     if (!localSettings) return;
 
@@ -104,7 +112,7 @@ export const AppSettingsPage = () => {
         breadcrumbs={breadcrumbs}
       />
 
-      <div className="-mt-4 pb-8 w-full max-w-6xl mx-auto space-y-6">
+      <div className="pb-8 w-full max-w-6xl mx-auto space-y-6">
         {/* Theme Settings */}
         <div className="card-elevated">
           <h2 className="section-header mb-4">Appearance</h2>
@@ -133,11 +141,35 @@ export const AppSettingsPage = () => {
                       }`}
                     >
                       {theme === "light" ? (
-                        <Sun size={20} strokeWidth={2} className={localSettings.theme === theme ? "text-emerald-400" : "text-white/50"} />
+                        <Sun
+                          size={20}
+                          strokeWidth={2}
+                          className={
+                            localSettings.theme === theme
+                              ? "text-emerald-400"
+                              : "text-white/50"
+                          }
+                        />
                       ) : theme === "dark" ? (
-                        <Moon size={20} strokeWidth={2} className={localSettings.theme === theme ? "text-emerald-400" : "text-white/50"} />
+                        <Moon
+                          size={20}
+                          strokeWidth={2}
+                          className={
+                            localSettings.theme === theme
+                              ? "text-emerald-400"
+                              : "text-white/50"
+                          }
+                        />
                       ) : (
-                        <RotateCw size={20} strokeWidth={2} className={localSettings.theme === theme ? "text-emerald-400" : "text-white/50"} />
+                        <RotateCw
+                          size={20}
+                          strokeWidth={2}
+                          className={
+                            localSettings.theme === theme
+                              ? "text-emerald-400"
+                              : "text-white/50"
+                          }
+                        />
                       )}
                     </div>
                     <div>
@@ -148,13 +180,17 @@ export const AppSettingsPage = () => {
                         {theme === "light"
                           ? "Always use light mode"
                           : theme === "dark"
-                          ? "Always use dark mode"
-                          : "Match system preference"}
+                            ? "Always use dark mode"
+                            : "Match system preference"}
                       </div>
                     </div>
                   </div>
                   {localSettings.theme === theme && (
-                    <Check size={20} strokeWidth={3} className="text-emerald-400" />
+                    <Check
+                      size={20}
+                      strokeWidth={3}
+                      className="text-emerald-400"
+                    />
                   )}
                 </button>
               ))}
@@ -198,7 +234,7 @@ export const AppSettingsPage = () => {
                 onChange={(e) =>
                   handleSettingChange(
                     "defaultHandicap",
-                    parseInt(e.target.value) || 0
+                    parseInt(e.target.value) || 0,
                   )
                 }
                 className="input-field"
@@ -234,15 +270,19 @@ export const AppSettingsPage = () => {
                           {display === "gross"
                             ? "Show actual scores"
                             : display === "net"
-                            ? "Show adjusted scores with handicap"
-                            : "Show both gross and net scores"}
+                              ? "Show adjusted scores with handicap"
+                              : "Show both gross and net scores"}
                         </div>
                       </div>
                       {localSettings.preferredScoringDisplay === display && (
-                        <Check size={20} strokeWidth={3} className="text-emerald-400" />
+                        <Check
+                          size={20}
+                          strokeWidth={3}
+                          className="text-emerald-400"
+                        />
                       )}
                     </button>
-                  )
+                  ),
                 )}
               </div>
             </div>
@@ -268,7 +308,11 @@ export const AppSettingsPage = () => {
                       </div>
                     </div>
                     {localSettings.measurementUnit === unit && (
-                      <Check size={20} strokeWidth={3} className="text-emerald-400" />
+                      <Check
+                        size={20}
+                        strokeWidth={3}
+                        className="text-emerald-400"
+                      />
                     )}
                   </button>
                 ))}
@@ -300,19 +344,21 @@ export const AppSettingsPage = () => {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="font-semibold text-white">
-                        {format}
-                      </div>
+                      <div className="font-semibold text-white">{format}</div>
                       <div className="text-sm text-white/40">
                         {format === "MM/DD/YYYY"
                           ? new Date().toLocaleDateString("en-US")
                           : format === "DD/MM/YYYY"
-                          ? new Date().toLocaleDateString("en-GB")
-                          : new Date().toISOString().split("T")[0]}
+                            ? new Date().toLocaleDateString("en-GB")
+                            : new Date().toISOString().split("T")[0]}
                       </div>
                     </div>
                     {localSettings.dateFormat === format && (
-                      <Check size={20} strokeWidth={3} className="text-emerald-400" />
+                      <Check
+                        size={20}
+                        strokeWidth={3}
+                        className="text-emerald-400"
+                      />
                     )}
                   </button>
                 ))}
@@ -343,7 +389,11 @@ export const AppSettingsPage = () => {
                       </div>
                     </div>
                     {localSettings.timeFormat === format && (
-                      <Check size={20} strokeWidth={3} className="text-emerald-400" />
+                      <Check
+                        size={20}
+                        strokeWidth={3}
+                        className="text-emerald-400"
+                      />
                     )}
                   </button>
                 ))}
@@ -390,7 +440,11 @@ export const AppSettingsPage = () => {
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center">
-                <Undo2 size={20} strokeWidth={2} className="text-amber-400/60" />
+                <Undo2
+                  size={20}
+                  strokeWidth={2}
+                  className="text-amber-400/60"
+                />
               </div>
               <div>
                 <div className="font-semibold text-amber-300">
