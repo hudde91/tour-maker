@@ -10,7 +10,7 @@ interface IndividualCompetitionWinnerSelectorProps {
     holeNumber: number,
     competitionType: "closestToPin" | "longestDrive",
     winnerId: string | null,
-    distance?: number
+    distance?: number,
   ) => void;
   onContinue: () => void;
   autoAdvance?: boolean;
@@ -51,13 +51,14 @@ export const IndividualCompetitionWinnerSelector = ({
 
   return (
     <div className="p-4 space-y-4">
-      <div className="card bg-gradient-to-r from-blue-50 to-emerald-50 border-2 border-blue-500/30">
+      <div className="card">
         <div className="text-center mb-4">
           <h3 className="text-xl font-bold text-white mb-2">
             Hole {currentHole} Competitions
           </h3>
           <p className="text-sm text-white/50">
-            Select winners for this hole's competitions, then continue to the next hole
+            Select winners for this hole's competitions, then continue to the
+            next hole
           </p>
         </div>
       </div>
@@ -76,7 +77,7 @@ export const IndividualCompetitionWinnerSelector = ({
               Closest to Pin Winner
             </h5>
           </div>
-          <div className="grid grid-cols-2 gap-2 mb-3">
+          <div className="grid grid-cols-2 gap-6 mb-3">
             {tour.players.map((p) => {
               const winners =
                 round.competitionWinners?.closestToPin?.[currentHole] || [];
@@ -94,7 +95,7 @@ export const IndividualCompetitionWinnerSelector = ({
                       currentHole,
                       "closestToPin",
                       isWinner ? null : p.id,
-                      distance
+                      distance,
                     );
                   }}
                   disabled={round.status === "completed"}
@@ -123,9 +124,8 @@ export const IndividualCompetitionWinnerSelector = ({
                   ? "opacity-50 cursor-not-allowed"
                   : ""
               } ${
-                !(
-                  round.competitionWinners?.closestToPin?.[currentHole] || []
-                ).length
+                !(round.competitionWinners?.closestToPin?.[currentHole] || [])
+                  .length
                   ? "bg-slate-600 text-white border-slate-700 shadow-lg ring-4 ring-slate-500/40 scale-105 font-bold"
                   : "bg-white/5 text-white/50 border-white/15 hover:border-slate-400 active:scale-95"
               }`}
@@ -153,7 +153,7 @@ export const IndividualCompetitionWinnerSelector = ({
                     currentHole,
                     "closestToPin",
                     currentWinner.playerId,
-                    distance
+                    distance,
                   );
                 }
               }}
@@ -203,7 +203,7 @@ export const IndividualCompetitionWinnerSelector = ({
                       currentHole,
                       "longestDrive",
                       isWinner ? null : p.id,
-                      distance
+                      distance,
                     );
                   }}
                   disabled={round.status === "completed"}
@@ -232,9 +232,8 @@ export const IndividualCompetitionWinnerSelector = ({
                   ? "opacity-50 cursor-not-allowed"
                   : ""
               } ${
-                !(
-                  round.competitionWinners?.longestDrive?.[currentHole] || []
-                ).length
+                !(round.competitionWinners?.longestDrive?.[currentHole] || [])
+                  .length
                   ? "bg-slate-600 text-white border-slate-700 shadow-lg ring-4 ring-slate-500/40 scale-105 font-bold"
                   : "bg-white/5 text-white/50 border-white/15 hover:border-slate-400 active:scale-95"
               }`}
@@ -262,7 +261,7 @@ export const IndividualCompetitionWinnerSelector = ({
                     currentHole,
                     "longestDrive",
                     currentWinner.playerId,
-                    distance
+                    distance,
                   );
                 }
               }}
@@ -280,7 +279,7 @@ export const IndividualCompetitionWinnerSelector = ({
         onClick={onContinue}
         className="w-full bg-emerald-600 text-white px-6 py-4 rounded-lg font-bold text-lg hover:bg-emerald-700 transition-all active:scale-95 shadow-lg"
       >
-        {autoAdvance ? 'Continue to Next Hole' : 'Done'}
+        {autoAdvance ? "Continue to Next Hole" : "Done"}
       </button>
     </div>
   );

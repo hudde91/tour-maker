@@ -11,7 +11,7 @@ interface CompetitionWinnerSelectorProps {
     holeNumber: number,
     competitionType: "closestToPin" | "longestDrive",
     winnerId: string | null,
-    distance?: number
+    distance?: number,
   ) => void;
   onContinue: () => void;
 }
@@ -41,12 +41,9 @@ export const CompetitionWinnerSelector = ({
   }, [currentHole, match.id, round.competitionWinners]);
 
   // Get only players in this match
-  const matchPlayerIds = [
-    ...match.teamA.playerIds,
-    ...match.teamB.playerIds,
-  ];
+  const matchPlayerIds = [...match.teamA.playerIds, ...match.teamB.playerIds];
   const matchPlayers = tour.players.filter((p) =>
-    matchPlayerIds.includes(p.id)
+    matchPlayerIds.includes(p.id),
   );
 
   const hasClosestToPin = currentHoleInfo.closestToPin;
@@ -54,13 +51,14 @@ export const CompetitionWinnerSelector = ({
 
   return (
     <div className="p-4 space-y-4">
-      <div className="card bg-gradient-to-r from-blue-50 to-emerald-50 border-2 border-blue-500/30">
+      <div className="card">
         <div className="text-center mb-4">
           <h3 className="text-xl font-bold text-white mb-2">
             Hole {currentHole} Competitions
           </h3>
           <p className="text-sm text-white/50">
-            Select winners for this hole's competitions, then continue to the next hole
+            Select winners for this hole's competitions, then continue to the
+            next hole
           </p>
         </div>
       </div>
@@ -79,12 +77,12 @@ export const CompetitionWinnerSelector = ({
               Closest to Pin Winner
             </h5>
           </div>
-          <div className="grid grid-cols-2 gap-2 mb-3">
+          <div className="grid grid-cols-2 gap-6 mb-3">
             {matchPlayers.map((p) => {
               const winners =
                 round.competitionWinners?.closestToPin?.[currentHole] || [];
               const isWinner = winners.some(
-                (w) => w.matchId === match.id && w.playerId === p.id
+                (w) => w.matchId === match.id && w.playerId === p.id,
               );
               return (
                 <button
@@ -98,7 +96,7 @@ export const CompetitionWinnerSelector = ({
                       currentHole,
                       "closestToPin",
                       isWinner ? null : p.id,
-                      distance
+                      distance,
                     );
                   }}
                   disabled={round.status === "completed"}
@@ -149,7 +147,7 @@ export const CompetitionWinnerSelector = ({
                 const winners =
                   round.competitionWinners?.closestToPin?.[currentHole] || [];
                 const currentWinner = winners.find(
-                  (w) => w.matchId === match.id
+                  (w) => w.matchId === match.id,
                 );
                 if (currentWinner?.playerId) {
                   const distance = closestToPinDistance
@@ -159,7 +157,7 @@ export const CompetitionWinnerSelector = ({
                     currentHole,
                     "closestToPin",
                     currentWinner.playerId,
-                    distance
+                    distance,
                   );
                 }
               }}
@@ -196,7 +194,7 @@ export const CompetitionWinnerSelector = ({
               const winners =
                 round.competitionWinners?.longestDrive?.[currentHole] || [];
               const isWinner = winners.some(
-                (w) => w.matchId === match.id && w.playerId === p.id
+                (w) => w.matchId === match.id && w.playerId === p.id,
               );
               return (
                 <button
@@ -210,7 +208,7 @@ export const CompetitionWinnerSelector = ({
                       currentHole,
                       "longestDrive",
                       isWinner ? null : p.id,
-                      distance
+                      distance,
                     );
                   }}
                   disabled={round.status === "completed"}
@@ -261,7 +259,7 @@ export const CompetitionWinnerSelector = ({
                 const winners =
                   round.competitionWinners?.longestDrive?.[currentHole] || [];
                 const currentWinner = winners.find(
-                  (w) => w.matchId === match.id
+                  (w) => w.matchId === match.id,
                 );
                 if (currentWinner?.playerId) {
                   const distance = longestDriveDistance
@@ -271,7 +269,7 @@ export const CompetitionWinnerSelector = ({
                     currentHole,
                     "longestDrive",
                     currentWinner.playerId,
-                    distance
+                    distance,
                   );
                 }
               }}
