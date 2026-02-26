@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e"/>
+      <stop offset="100%" style="stop-color:#16a34a"/>
+    </linearGradient>
+    <linearGradient id="flagGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24"/>
+      <stop offset="100%" style="stop-color:#f59e0b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Circular background -->
+  <circle cx="256" cy="256" r="256" fill="url(#bgGrad)"/>
+
+  <!-- Subtle green contour / putting green shape -->
+  <ellipse cx="256" cy="370" rx="150" ry="40" fill="#15803d" opacity="0.5"/>
+
+  <!-- Flag pole -->
+  <rect x="248" y="100" width="8" height="260" rx="4" fill="white"/>
+
+  <!-- Flag (triangle/pennant) -->
+  <path d="M256 100 L256 190 L170 145 Z" fill="url(#flagGrad)"/>
+
+  <!-- Golf ball -->
+  <circle cx="300" cy="350" r="40" fill="white"/>
+  <!-- Ball dimples -->
+  <circle cx="288" cy="338" r="4" fill="#e5e7eb" opacity="0.7"/>
+  <circle cx="300" cy="332" r="4" fill="#e5e7eb" opacity="0.7"/>
+  <circle cx="312" cy="338" r="4" fill="#e5e7eb" opacity="0.7"/>
+  <circle cx="294" cy="350" r="4" fill="#e5e7eb" opacity="0.7"/>
+  <circle cx="306" cy="350" r="4" fill="#e5e7eb" opacity="0.7"/>
+  <circle cx="288" cy="362" r="4" fill="#e5e7eb" opacity="0.7"/>
+  <circle cx="300" cy="356" r="4" fill="#e5e7eb" opacity="0.7"/>
+  <circle cx="312" cy="362" r="4" fill="#e5e7eb" opacity="0.7"/>
+  <circle cx="300" cy="344" r="4" fill="#e5e7eb" opacity="0.7"/>
+
+  <!-- Hole -->
+  <ellipse cx="252" cy="368" rx="16" ry="6" fill="#15803d"/>
+</svg>

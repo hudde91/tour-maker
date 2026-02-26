@@ -406,9 +406,61 @@ export async function deleteRound(tourId: string, roundId: string): Promise<void
 }
 
 export async function startRound(tourId: string, roundId: string): Promise<void> {
-  await updateDoc(roundDoc(tourId, roundId), {
-    status: "in-progress",
-    startedAt: new Date().toISOString(),
+  await runTransaction(db, async (transaction) => {
+    const tourSnap = await transaction.get(tourDoc(tourId));
+    const roundSnap = await transaction.get(roundDoc(tourId, roundId));
+    if (!tourSnap.exists() || !roundSnap.exists()) return;
+
+    const tourData = tourSnap.data();
+    const roundData = roundSnap.data();
+    const players: Player[] = tourData.players || [];
+    const teams: Team[] = tourData.teams || [];
+    const scores: Record<string, PlayerScore> = roundData.scores || {};
+    const holes: number = roundData.holes || 18;
+
+    const isTeamScoring =
+      roundData.format === "scramble" ||
+      (roundData.format === "best-ball" &&
+        roundData.settings?.teamScoring === "scramble");
+
+    if (isTeamScoring && teams.length > 0) {
+      for (const team of teams) {
+        const teamScoreKey = `team_${team.id}`;
+        if (!scores[teamScoreKey]) {
+          scores[teamScoreKey] = {
+            playerId: teamScoreKey,
+            scores: new Array(holes).fill(0),
+            totalScore: 0,
+            totalToPar: 0,
+            isTeamScore: true,
+            teamId: team.id,
+          };
+        }
+      }
+    } else {
+      const roundPlayerIds: string[] = roundData.playerIds || [];
+      const participatingPlayers =
+        roundPlayerIds.length > 0
+          ? players.filter((p) => roundPlayerIds.includes(p.id))
+          : players;
+
+      for (const player of participatingPlayers) {
+        if (!scores[player.id]) {
+          scores[player.id] = {
+            playerId: player.id,
+            scores: new Array(holes).fill(null),
+            totalScore: 0,
+            totalToPar: 0,
+          };
+        }
+      }
+    }
+
+    transaction.update(roundDoc(tourId, roundId), {
+      status: "in-progress",
+      startedAt: new Date().toISOString(),
+      scores,
+    });
   });
 }
 

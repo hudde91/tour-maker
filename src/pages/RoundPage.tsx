@@ -120,9 +120,9 @@ export const RoundPage = () => {
     async (playerId: string, holeIndex: number, score: number | null) => {
       if (!round) return;
       const playerScore = round.scores[playerId];
-      if (!playerScore) return;
+      const currentScores = playerScore?.scores || new Array(round.holes).fill(null);
 
-      const newScores = [...playerScore.scores];
+      const newScores = [...currentScores];
       newScores[holeIndex] = score;
 
       try {
@@ -131,7 +131,7 @@ export const RoundPage = () => {
         console.error("Failed to update score:", error);
       }
     },
-    [round?.scores, updateScore]
+    [round?.scores, round?.holes, updateScore]
   );
 
   const handleTeamScoreChange = useCallback(
