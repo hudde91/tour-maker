@@ -14,7 +14,7 @@ export default defineConfig({
         short_name: "Tour Maker",
         description: "Create and manage golf tours with friends",
         theme_color: "#22c55e",
-        background_color: "#ffffff",
+        background_color: "#268237",
         display: "standalone",
         orientation: "portrait",
         scope: "/",
