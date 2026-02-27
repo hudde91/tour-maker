@@ -522,7 +522,7 @@ export const SwipeableTeamScoring = ({
             <div className="card">
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-sm font-semibold text-white/50">
-                  Team {currentTeamIndex + 1} of {teams.length}
+                  Hole {currentHole} - {currentTeam.name}
                 </h3>
                 {currentTeamIndex < teams.length - 1 && (
                   <div className="text-xs text-white/40">

@@ -343,7 +343,7 @@ export const SwipeableIndividualScoring = ({
             >
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-sm font-semibold text-white/50">
-                  Hole {currentHole}
+                  Hole {currentHole} - {currentPlayer.name}
                 </h3>
                 {currentPlayerIndex < scoreablePlayers.length - 1 ? (
                   <div className="text-xs text-white/40 flex items-center gap-1">
@@ -579,7 +579,7 @@ export const SwipeableIndividualScoring = ({
             <div className="card">
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-sm font-semibold text-white/50">
-                  Player {currentPlayerIndex + 1} of {scoreablePlayers.length}
+                  Hole {currentHole}
                 </h3>
                 {currentPlayerIndex < scoreablePlayers.length - 1 && (
                   <div className="text-xs text-white/40">
