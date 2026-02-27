@@ -26,9 +26,14 @@ service cloud.firestore {
         // Anyone authenticated can read rounds (for shared scoring view)
         allow read: if request.auth != null;
 
-        // Only the tour owner can manage rounds
-        allow create, update, delete: if request.auth != null
-                                      && get(/databases/$(database)/documents/tours/$(tourId)).data.ownerId == request.auth.uid;
+        // Only the tour owner can create or delete rounds
+        allow create, delete: if request.auth != null
+                              && get(/databases/$(database)/documents/tours/$(tourId)).data.ownerId == request.auth.uid;
+
+        // Tour owner or any tour participant can update rounds (for scoring)
+        allow update: if request.auth != null
+                      && (get(/databases/$(database)/documents/tours/$(tourId)).data.ownerId == request.auth.uid
+                          || request.auth.uid in get(/databases/$(database)/documents/tours/$(tourId)).data.participantIds);
       }
     }
   }

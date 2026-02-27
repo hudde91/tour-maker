@@ -6,7 +6,7 @@ import { CompetitionWinnerSelector } from "./CompetitionWinnerSelector";
 import { useParams } from "react-router-dom";
 import { useUpdateCompetitionWinner } from "../../../hooks/useScoring";
 import { useAuth } from "../../../contexts/AuthContext";
-import { canUserScore } from "../../../lib/auth/permissions";
+import { canUserScore, getScoreablePlayers } from "../../../lib/auth/permissions";
 
 interface SwipeableMatchPlayScoringProps {
   tour: Tour;
@@ -36,34 +36,21 @@ export const SwipeableMatchPlayScoring = ({
   const [showingCompetitionSelector, setShowingCompetitionSelector] =
     useState(false);
 
-  // Filter matches to only those that authenticated user can score for
-  // TODO: Implement backend authorization to restrict which matches a user can score for
+  // Filter matches to only those with players the authenticated user can score for
   const scoreableMatches = useMemo(() => {
-    // Only authenticated users can score
-    if (!canUserScore(user)) {
-      return [];
-    }
+    if (!canUserScore(user, tour, round)) return [];
 
+    const scoreablePlayers = getScoreablePlayers(user, tour, round);
+    const scoreablePlayerIds = new Set(scoreablePlayers.map((p) => p.id));
     const allMatches = round.ryderCup?.matches || [];
 
-    // Filter by round participants (1-4 players max)
-    // If round.playerIds is not set, all tournament players can participate (backward compatibility)
-    const roundPlayerIds = round.playerIds ? new Set(round.playerIds) : null;
-
     return allMatches.filter((match: any) => {
-      // Check if match has players in the round
       const teamAPlayerIds = match.teamA?.playerIds || [];
       const teamBPlayerIds = match.teamB?.playerIds || [];
       const allPlayerIds = [...teamAPlayerIds, ...teamBPlayerIds];
-
-      // Filter by players in this round
-      const playersInRound = roundPlayerIds
-        ? allPlayerIds.filter((id: string) => roundPlayerIds.has(id))
-        : allPlayerIds;
-
-      return playersInRound.length > 0;
+      return allPlayerIds.some((id: string) => scoreablePlayerIds.has(id));
     });
-  }, [user, round.ryderCup?.matches, round.playerIds]);
+  }, [user, tour, round]);
 
   const matches = scoreableMatches;
 
