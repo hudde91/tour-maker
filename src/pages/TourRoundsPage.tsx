@@ -74,7 +74,7 @@ export const TourRoundsPage = () => {
   const subtitle = `${roundCount} round${roundCount !== 1 ? "s" : ""}`;
 
   return (
-    <div className="min-h-screen safe-area-top">
+    <div className="min-h-screen">
       <PageHeader
         title="Rounds"
         subtitle={subtitle}

@@ -97,7 +97,7 @@ export const TourPlayersPage = () => {
       : `${playerCount} player${playerCount !== 1 ? "s" : ""}`;
 
   return (
-    <div className="min-h-screen safe-area-top">
+    <div className="min-h-screen">
       <PageHeader
         title={tour.name}
         subtitle={subtitle}

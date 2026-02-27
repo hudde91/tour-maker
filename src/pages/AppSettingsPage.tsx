@@ -105,7 +105,7 @@ export const AppSettingsPage = () => {
   ];
 
   return (
-    <div className="min-h-screen safe-area-top">
+    <div className="min-h-screen">
       <PageHeader
         title="App Settings"
         subtitle="Customize your preferences"
