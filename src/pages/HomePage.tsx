@@ -24,7 +24,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { HowItWorksModal } from "@/components/ui/Howitworksmodal";
 import { BottomNav } from "../components/BottomNav";
 import { CreateMockDataDialog } from "@/components/mock/CreateMockDataDialog";
-import { Logo } from "@/components/ui/Logo";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { useAuth } from "../contexts/AuthContext";
 import { usePullToRefresh } from "../hooks/usePullToRefresh";
@@ -293,7 +292,13 @@ export const HomePage = () => {
       <div className="golf-hero-bg safe-area-top w-full">
         <div className="p-6 pb-12 w-full max-w-6xl mx-auto">
           <div className="flex flex-col items-center text-center">
-            <Logo size="xl" variant="white" className="mb-4" />
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-4xl">🍺</span>
+              <span className="font-bold text-3xl text-white tracking-tight font-['Poppins']">
+                Tour<span className="text-emerald-400"> Maker</span>
+              </span>
+              <span className="text-4xl">⛳</span>
+            </div>
             <p className="text-emerald-200/80 text-lg md:text-xl font-medium">
               Playing with drunk friends can actually be organized
             </p>
