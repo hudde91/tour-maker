@@ -436,7 +436,10 @@ export const SwipeableTeamScoring = ({
               <HoleNavigation
                 holes={round.holeInfo}
                 currentHole={currentHole}
-                onHoleChange={setCurrentHole}
+                onHoleChange={(hole) => {
+                  setCurrentHole(hole);
+                  setActiveTab("score");
+                }}
                 playerScores={{
                   [currentTeam.id]:
                     storage.getTeamScore(tour.id, round.id, currentTeam.id)

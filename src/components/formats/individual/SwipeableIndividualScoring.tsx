@@ -485,7 +485,10 @@ export const SwipeableIndividualScoring = ({
               <HoleNavigation
                 holes={round.holeInfo}
                 currentHole={currentHole}
-                onHoleChange={setCurrentHole}
+                onHoleChange={(hole) => {
+                  setCurrentHole(hole);
+                  setActiveTab("score");
+                }}
                 playerScores={{
                   [currentPlayer.id]:
                     round.scores[currentPlayer.id]?.scores || [],
