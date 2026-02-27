@@ -11,6 +11,7 @@ import { IndividualCompetitionWinnerSelector } from "./IndividualCompetitionWinn
 import { useAuth } from "@/contexts/AuthContext";
 import { getScoreablePlayers } from "@/lib/auth/permissions";
 import { hapticLight, hapticSelection } from "@/lib/haptics";
+import { shortenName } from "@/lib/nameUtils";
 
 interface SwipeableIndividualScoringProps {
   tour: Tour;
@@ -329,11 +330,11 @@ export const SwipeableIndividualScoring = ({
             >
               <div className="flex justify-between items-center mb-3">
                 <h3 className="text-sm font-semibold text-white/50">
-                  Hole {currentHole} - {currentPlayer.name}
+                  Hole {currentHole} - {shortenName(currentPlayer.name)}
                 </h3>
                 {currentPlayerIndex < scoreablePlayers.length - 1 ? (
                   <div className="text-xs text-white/40 flex items-center gap-1">
-                    Swipe to {scoreablePlayers[currentPlayerIndex + 1].name}
+                    Swipe to {shortenName(scoreablePlayers[currentPlayerIndex + 1].name)}
                     <svg
                       className="w-4 h-4"
                       fill="none"
@@ -452,7 +453,7 @@ export const SwipeableIndividualScoring = ({
                 </h3>
                 {currentPlayerIndex < scoreablePlayers.length - 1 && (
                   <div className="text-xs text-white/40">
-                    Swipe to {scoreablePlayers[currentPlayerIndex + 1].name} →
+                    Swipe to {shortenName(scoreablePlayers[currentPlayerIndex + 1].name)} →
                   </div>
                 )}
               </div>
@@ -618,7 +619,7 @@ const PlayerScoreCard = ({
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-white">{player.name}</h3>
+              <h3 className="text-xl font-bold text-white">{shortenName(player.name)}</h3>
               <div className="flex items-center gap-3 text-sm">
                 {player.handicap !== undefined && (
                   <span className="text-white/50 font-medium">
@@ -799,7 +800,7 @@ const PlayerScoreCard = ({
                             : "bg-white/5 text-white/70 border-white/15 hover:border-blue-400 hover:shadow-md"
                         }`}
                       >
-                        {p.name}
+                        {shortenName(p.name)}
                       </button>
                     );
                   })}
@@ -915,7 +916,7 @@ const PlayerScoreCard = ({
                             : "bg-white/5 text-white/70 border-white/15 hover:border-amber-400 hover:shadow-md"
                         }`}
                       >
-                        {p.name}
+                        {shortenName(p.name)}
                       </button>
                     );
                   })}
