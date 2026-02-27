@@ -26,64 +26,30 @@ export const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
       title: "Create a Tournament",
       description:
         "Start by creating a tournament. Choose between Individual, Team, or Ryder Cup formats to match your competition style.",
-      illustration: (
-        <div className="w-full h-48 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg flex items-center justify-center">
-          <span className="text-6xl">🏌️</span>
-        </div>
-      ),
     },
     {
       icon: "👥",
       title: "Add Players & Teams",
       description:
         "Invite players to your tournament. For team formats, organize players into teams and assign captains to lead the way.",
-      illustration: (
-        <div className="w-full h-48 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center">
-          <div className="flex gap-4">
-            <span className="text-5xl">👤</span>
-            <span className="text-5xl">👤</span>
-            <span className="text-5xl">👤</span>
-          </div>
-        </div>
-      ),
     },
     {
       icon: "📋",
       title: "Create Rounds",
       description:
         "Add rounds with different play formats like Stroke Play, Match Play, Scramble, and more. Each round can have its own scoring rules.",
-      illustration: (
-        <div className="w-full h-48 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg flex items-center justify-center">
-          <span className="text-6xl">📋</span>
-        </div>
-      ),
     },
     {
       icon: "🎯",
       title: "Score as You Play",
       description:
         "Enter scores hole-by-hole with our intuitive swipeable interface. Scores update in real-time on the leaderboard for all players to see.",
-      illustration: (
-        <div className="w-full h-48 bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg flex items-center justify-center">
-          <div className="space-y-2">
-            <div className="text-4xl">⛳ → 📝 → 🏆</div>
-          </div>
-        </div>
-      ),
     },
     {
       icon: "🏆",
       title: "Track & Share",
       description:
         "View live leaderboards, share tournament links with friends, and celebrate winners when the tournament completes!",
-      illustration: (
-        <div className="w-full h-48 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-5xl mb-2">🥇</div>
-            <div className="text-3xl">🥈 🥉</div>
-          </div>
-        </div>
-      ),
     },
   ];
 
@@ -107,9 +73,15 @@ export const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 safe-area-top safe-area-bottom">
-      <div className="rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto overscroll-contain pb-24 sm:pb-0 border border-white/10" style={{ background: "rgba(15, 23, 42, 0.95)" }}>
+      <div
+        className="rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto overscroll-contain sm:pb-0 border border-white/10"
+        style={{ background: "rgba(15, 23, 42, 0.95)" }}
+      >
         {/* Header */}
-        <div className="sticky top-0 border-b border-white/10 px-6 py-4 rounded-t-2xl" style={{ background: "rgba(15, 23, 42, 0.98)" }}>
+        <div
+          className="sticky top-0 border-b border-white/10 px-6 py-4 rounded-t-2xl"
+          style={{ background: "rgba(15, 23, 42, 0.98)" }}
+        >
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-white">
               How Tour Maker Works
@@ -139,27 +111,6 @@ export const HowItWorksModal = ({ isOpen, onClose }: HowItWorksModalProps) => {
 
         {/* Content */}
         <div className="p-6">
-          {/* Step Indicator */}
-          <div className="flex items-center justify-center gap-2 mb-6">
-            {steps.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentStep(index)}
-                className={`h-2 rounded-full transition-all ${
-                  index === currentStep
-                    ? "w-8 bg-emerald-600"
-                    : "w-2 bg-slate-300 hover:bg-slate-400"
-                }`}
-                aria-label={`Go to step ${index + 1}`}
-              >
-                <span className="sr-only">{`Go to step ${index + 1}`}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Illustration */}
-          <div className="mb-6">{currentStepData.illustration}</div>
-
           {/* Icon & Title */}
           <div className="text-center mb-4">
             <div className="text-5xl mb-3">{currentStepData.icon}</div>
