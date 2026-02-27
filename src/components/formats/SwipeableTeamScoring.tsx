@@ -10,6 +10,7 @@ import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { canUserScore, getScoreablePlayers } from "@/lib/auth/permissions";
+import { shortenName } from "@/lib/nameUtils";
 interface SwipeableTeamScoringProps {
   tour: Tour;
   round: Round;
@@ -435,7 +436,10 @@ export const SwipeableTeamScoring = ({
               <HoleNavigation
                 holes={round.holeInfo}
                 currentHole={currentHole}
-                onHoleChange={setCurrentHole}
+                onHoleChange={(hole) => {
+                  setCurrentHole(hole);
+                  setActiveTab("score");
+                }}
                 playerScores={{
                   [currentTeam.id]:
                     storage.getTeamScore(tour.id, round.id, currentTeam.id)
@@ -490,7 +494,10 @@ const TeamScoreCard = ({
 
   // Get team members
   const teamMembers = team.playerIds
-    .map((id) => tour.players.find((p) => p.id === id)?.name)
+    .map((id) => {
+      const name = tour.players.find((p) => p.id === id)?.name;
+      return name ? shortenName(name) : undefined;
+    })
     .filter(Boolean);
 
   const handleScoreSelect = (score: number) => {
