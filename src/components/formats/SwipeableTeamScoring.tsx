@@ -9,7 +9,7 @@ import { IndividualCompetitionWinnerSelector } from "./individual/IndividualComp
 import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { canUserScore } from "@/lib/auth/permissions";
+import { canUserScore, getScoreablePlayers } from "@/lib/auth/permissions";
 interface SwipeableTeamScoringProps {
   tour: Tour;
   round: Round;
@@ -29,29 +29,18 @@ export const SwipeableTeamScoring = ({
   const { user } = useAuth();
   const updateCompetitionWinner = useUpdateCompetitionWinner(tourId!, round.id);
 
-  // Filter teams to only those that authenticated user can score for
-  // TODO: Implement backend authorization to restrict which teams a user can score for
+  // Filter teams to only those with players the authenticated user can score for
   const scoreableTeams = useMemo(() => {
-    // Only authenticated users can score
-    if (!canUserScore(user)) {
-      return [];
-    }
+    if (!canUserScore(user, tour, round)) return [];
 
+    const scoreablePlayers = getScoreablePlayers(user, tour, round);
+    const scoreablePlayerIds = new Set(scoreablePlayers.map((p) => p.id));
     const allTeams = tour.teams || [];
 
-    // Filter by round participants (1-4 players max)
-    // If round.playerIds is not set, all tournament players can participate (backward compatibility)
-    const roundPlayerIds = round.playerIds ? new Set(round.playerIds) : null;
-
-    return allTeams.filter((team) => {
-      // Check if any player on this team is in the round
-      const teamPlayersInRound = team.playerIds.filter(
-        (playerId) => !roundPlayerIds || roundPlayerIds.has(playerId),
-      );
-
-      return teamPlayersInRound.length > 0;
-    });
-  }, [user, tour.teams, round.playerIds]);
+    return allTeams.filter((team) =>
+      team.playerIds.some((playerId) => scoreablePlayerIds.has(playerId)),
+    );
+  }, [user, tour, round]);
 
   const [currentHole, setCurrentHole] = useState(1);
   const [currentTeamIndex, setCurrentTeamIndex] = useState(0);

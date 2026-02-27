@@ -24,6 +24,7 @@ export const useUpdateScore = (tourId: string, roundId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tours"] });
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
       invalidateTourCache(tourId);
     },
   });
@@ -45,6 +46,7 @@ export const useUpdateTeamScore = (tourId: string, roundId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tours"] });
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
       invalidateTourCache(tourId);
     },
   });
@@ -60,6 +62,7 @@ export const useStartRound = (tourId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tours"] });
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
       invalidateTourCache(tourId);
     },
   });
@@ -75,6 +78,7 @@ export const useCompleteRound = (tourId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tours"] });
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
       invalidateTourCache(tourId);
     },
   });
@@ -102,6 +106,7 @@ export const useUpdateCompetitionWinner = (tourId: string, roundId: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tours"] });
+      queryClient.invalidateQueries({ queryKey: ["tour", tourId] });
       invalidateTourCache(tourId);
     },
   });

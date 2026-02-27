@@ -9,7 +9,7 @@ import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
 import { IndividualCompetitionWinnerSelector } from "./IndividualCompetitionWinnerSelector";
 import { useAuth } from "@/contexts/AuthContext";
-import { canUserScore } from "@/lib/auth/permissions";
+import { getScoreablePlayers } from "@/lib/auth/permissions";
 import { hapticLight, hapticSelection } from "@/lib/haptics";
 
 interface SwipeableIndividualScoringProps {
@@ -35,24 +35,10 @@ export const SwipeableIndividualScoring = ({
   const { user } = useAuth();
   const updateCompetitionWinner = useUpdateCompetitionWinner(tourId!, round.id);
 
-  // Filter players to only those that can be scored by authenticated user
-  // TODO: Implement backend authorization to restrict which players a user can score for
+  // Filter players to only those in the round that the authenticated user can score for
   const scoreablePlayers = useMemo(() => {
-    // Only authenticated users can score
-    if (!canUserScore(user)) {
-      return [];
-    }
-
-    // Filter by round participants (1-4 players max)
-    // If round.playerIds is not set, all tournament players can participate (backward compatibility)
-    const roundPlayers = round.playerIds
-      ? tour.players.filter((player) => round.playerIds!.includes(player.id))
-      : tour.players;
-
-    // For now, authenticated users can score for all players in the round
-    // Backend will handle fine-grained authorization later
-    return roundPlayers;
-  }, [user, tour.players, round.playerIds]);
+    return getScoreablePlayers(user, tour, round);
+  }, [user, tour, round]);
 
   const [currentHole, setCurrentHole] = useState(1);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
