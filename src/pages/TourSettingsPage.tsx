@@ -195,7 +195,7 @@ export const TourSettingsPage = () => {
   ];
 
   return (
-    <div className="min-h-screen safe-area-top">
+    <div className="min-h-screen">
       <PageHeader
         title="Settings"
         subtitle={`Manage ${tour.name}`}

@@ -102,7 +102,7 @@ export const TeamDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen safe-area-top">
+    <div className="min-h-screen">
       <PageHeader
         title={team.name}
         subtitle="Team Dashboard"

@@ -65,7 +65,7 @@ export const TourLeaderboardPage = () => {
   ];
 
   return (
-    <div className="min-h-screen safe-area-top">
+    <div className="min-h-screen">
       <PageHeader
         title={tour.name}
         subtitle={tour.description}

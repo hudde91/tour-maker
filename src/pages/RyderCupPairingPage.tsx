@@ -105,7 +105,7 @@ export const RyderCupPairingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen safe-area-top pb-20">
+    <div className="min-h-screen pb-20">
       <PageHeader
         title="Setup Pairings"
         subtitle={`${round.name} • ${tour.name}`}
