@@ -27,6 +27,7 @@ export const CreateRoundPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [saveCourseOnCreate, setSaveCourseOnCreate] = useState(false);
   const [editingCourse, setEditingCourse] = useState<SavedCourse | null>(null);
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     courseName: "",
@@ -97,6 +98,7 @@ export const CreateRoundPage = () => {
   };
 
   const handleSelectSavedCourse = (course: SavedCourse) => {
+    setSelectedCourseId(course.id);
     setFormData({
       ...formData,
       courseName: course.name,
@@ -168,6 +170,19 @@ export const CreateRoundPage = () => {
         return;
       }
       setValidationErrors([]);
+
+      // Auto-save course layout changes back to the saved course
+      if (selectedCourseId) {
+        saveCourse.mutateAsync({
+          id: selectedCourseId,
+          name: formData.courseName,
+          holes: formData.holes,
+          holeInfo: formData.holeInfo,
+          teeBoxes: formData.teeBoxes || undefined,
+          slopeRating: formData.slopeRating || undefined,
+          totalYardage: formData.totalYardage || undefined,
+        }).catch((err) => console.error("Failed to auto-save course:", err));
+      }
     }
 
     setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
