@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Round } from "@/types";
 import { useUpdateRoundCourseDetails, useUpdateRoundStartTime } from "@/hooks/useRounds";
 import { useToast } from "@/components/ui/Toast";
@@ -90,8 +91,8 @@ export const RoundSettingsModal = ({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80">
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80" onClick={(e) => e.stopPropagation()}>
       <div className="rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto overscroll-contain pb-24 sm:pb-0 border border-white/10" style={{ background: "rgba(15, 23, 42, 0.95)" }}>
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
@@ -214,6 +215,7 @@ export const RoundSettingsModal = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
