@@ -1125,7 +1125,12 @@ export const CreateRoundPage = () => {
   };
 
   const handleBack = () => {
-    navigate(`/tour/${tourId}/rounds`);
+    if (currentStep > 1) {
+      setCurrentStep((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      navigate(`/tour/${tourId}/rounds`);
+    }
   };
 
   return (
