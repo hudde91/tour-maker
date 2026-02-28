@@ -26,6 +26,7 @@ import type {
   RyderCupTournament,
   AppSettings,
   Friend,
+  SavedCourse,
 } from "../types";
 import { DEFAULT_APP_SETTINGS } from "@tour-maker/shared";
 
@@ -866,6 +867,48 @@ export async function searchUsers(
     });
   }
   return results;
+}
+
+// ============================================================
+// SAVED COURSES (subcollection under user)
+// ============================================================
+
+const savedCoursesCol = (userId: string) =>
+  collection(db, "users", userId, "savedCourses");
+const savedCourseDoc = (userId: string, courseId: string) =>
+  doc(db, "users", userId, "savedCourses", courseId);
+
+export async function getSavedCourses(userId: string): Promise<SavedCourse[]> {
+  const snap = await getDocs(savedCoursesCol(userId));
+  const courses: SavedCourse[] = snap.docs.map((d) => ({
+    id: d.id,
+    ...d.data(),
+  })) as SavedCourse[];
+  courses.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  return courses;
+}
+
+export async function saveSavedCourse(
+  userId: string,
+  course: SavedCourse
+): Promise<void> {
+  await setDoc(savedCourseDoc(userId, course.id), {
+    name: course.name,
+    holes: course.holes,
+    holeInfo: course.holeInfo.map(stripUndefined),
+    teeBoxes: course.teeBoxes ?? null,
+    slopeRating: course.slopeRating ?? null,
+    totalYardage: course.totalYardage ?? null,
+    createdAt: course.createdAt,
+    updatedAt: course.updatedAt,
+  });
+}
+
+export async function deleteSavedCourse(
+  userId: string,
+  courseId: string
+): Promise<void> {
+  await deleteDoc(savedCourseDoc(userId, courseId));
 }
 
 // ============================================================

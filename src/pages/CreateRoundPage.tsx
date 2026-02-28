@@ -2,10 +2,13 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
 import { useCreateRound } from "../hooks/useRounds";
-import { PlayFormat, RoundSettings, GOLF_FORMATS } from "../types";
+import { useSaveCourse } from "../hooks/useSavedCourses";
+import { PlayFormat, RoundSettings, SavedCourse, GOLF_FORMATS } from "../types";
 import { storage } from "../lib/storage";
 import { GolfTermTooltip } from "../components/ui/Tooltip";
 import { FormatExplainer } from "../components/ui/FormatExplainer";
+import { SavedCourseSelector } from "../components/rounds/SavedCourseSelector";
+import { EditSavedCourseModal } from "../components/rounds/EditSavedCourseModal";
 
 const WIZARD_STEPS = [
   { id: "basic", title: "Basic Details", description: "Round & format" },
@@ -19,8 +22,11 @@ export const CreateRoundPage = () => {
   const navigate = useNavigate();
   const { data: tour, isLoading } = useTour(tourId!);
   const createRound = useCreateRound(tourId!);
+  const saveCourse = useSaveCourse();
 
   const [currentStep, setCurrentStep] = useState(1);
+  const [saveCourseOnCreate, setSaveCourseOnCreate] = useState(false);
+  const [editingCourse, setEditingCourse] = useState<SavedCourse | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     courseName: "",
@@ -88,6 +94,18 @@ export const CreateRoundPage = () => {
       hole.number === holeNumber ? { ...hole, longestDrive: checked } : hole
     );
     setFormData({ ...formData, holeInfo: updatedHoles });
+  };
+
+  const handleSelectSavedCourse = (course: SavedCourse) => {
+    setFormData({
+      ...formData,
+      courseName: course.name,
+      holes: course.holes,
+      holeInfo: course.holeInfo,
+      slopeRating: course.slopeRating || "113",
+      teeBoxes: course.teeBoxes || "Championship Tees",
+      totalYardage: course.totalYardage || "",
+    });
   };
 
   const validateHandicaps = () => {
@@ -195,6 +213,22 @@ export const CreateRoundPage = () => {
         name: roundName,
         totalPar,
       });
+
+      // Save course if user opted in
+      if (saveCourseOnCreate && formData.courseName.trim()) {
+        try {
+          await saveCourse.mutateAsync({
+            name: formData.courseName,
+            holes: formData.holes,
+            holeInfo: formData.holeInfo,
+            teeBoxes: formData.teeBoxes || undefined,
+            slopeRating: formData.slopeRating || undefined,
+            totalYardage: formData.totalYardage || undefined,
+          });
+        } catch (saveError) {
+          console.error("Failed to save course:", saveError);
+        }
+      }
 
       navigate(`/tour/${tourId}/round/${newRound.id}`);
     } catch (error) {
@@ -395,6 +429,13 @@ export const CreateRoundPage = () => {
                     className="input-field"
                     placeholder="Pine Valley Golf Club"
                     required
+                  />
+                </div>
+
+                <div className="form-group md:col-span-2">
+                  <SavedCourseSelector
+                    onSelect={handleSelectSavedCourse}
+                    onEdit={(course) => setEditingCourse(course)}
                   />
                 </div>
 
@@ -744,6 +785,41 @@ export const CreateRoundPage = () => {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Save Course Option */}
+            <div className="card-elevated">
+              <label className="flex items-center justify-between p-4 cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <svg
+                    className="w-5 h-5 text-emerald-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                    />
+                  </svg>
+                  <div>
+                    <div className="font-medium text-white">
+                      Save this course
+                    </div>
+                    <div className="text-sm text-white/50">
+                      Reuse this course setup in future rounds
+                    </div>
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={saveCourseOnCreate}
+                  onChange={(e) => setSaveCourseOnCreate(e.target.checked)}
+                  className="w-5 h-5 text-emerald-400 rounded focus:ring-emerald-500"
+                />
+              </label>
             </div>
 
             {/* Navigation */}
@@ -1097,6 +1173,15 @@ export const CreateRoundPage = () => {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div>{renderStepContent()}</div>
       </div>
+
+      {/* Edit Saved Course Modal */}
+      {editingCourse && (
+        <EditSavedCourseModal
+          course={editingCourse}
+          isOpen={!!editingCourse}
+          onClose={() => setEditingCourse(null)}
+        />
+      )}
     </div>
   );
 };
