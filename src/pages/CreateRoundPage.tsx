@@ -777,41 +777,6 @@ export const CreateRoundPage = () => {
               </div>
             </div>
 
-            {/* Save Course Option */}
-            <div className="card-elevated">
-              <label className="flex items-center justify-between p-4 cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <svg
-                    className="w-5 h-5 text-emerald-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                    />
-                  </svg>
-                  <div>
-                    <div className="font-medium text-white">
-                      Save this course
-                    </div>
-                    <div className="text-sm text-white/50">
-                      Reuse this course setup in future rounds
-                    </div>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={saveCourseOnCreate}
-                  onChange={(e) => setSaveCourseOnCreate(e.target.checked)}
-                  className="w-5 h-5 text-emerald-400 rounded focus:ring-emerald-500"
-                />
-              </label>
-            </div>
-
             {/* Navigation */}
             <div className="flex gap-4 pt-6 border-t border-white/10">
               <button
@@ -1103,6 +1068,41 @@ export const CreateRoundPage = () => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Save Course Option */}
+            <div className="card-elevated">
+              <label className="flex items-center justify-between p-4 cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <svg
+                    className="w-5 h-5 text-emerald-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                    />
+                  </svg>
+                  <div>
+                    <div className="font-medium text-white">
+                      Save this course for later
+                    </div>
+                    <div className="text-sm text-white/50">
+                      Reuse "{formData.courseName}" when creating future rounds
+                    </div>
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={saveCourseOnCreate}
+                  onChange={(e) => setSaveCourseOnCreate(e.target.checked)}
+                  className="w-5 h-5 text-emerald-400 rounded focus:ring-emerald-500"
+                />
+              </label>
             </div>
 
             {/* Navigation */}

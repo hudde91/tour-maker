@@ -870,20 +870,29 @@ export async function searchUsers(
 }
 
 // ============================================================
-// SAVED COURSES (subcollection under user)
+// SAVED COURSES (top-level collection)
 // ============================================================
 
-const savedCoursesCol = (userId: string) =>
-  collection(db, "users", userId, "savedCourses");
-const savedCourseDoc = (userId: string, courseId: string) =>
-  doc(db, "users", userId, "savedCourses", courseId);
+const savedCoursesCol = () => collection(db, "savedCourses");
+const savedCourseDocRef = (courseId: string) => doc(db, "savedCourses", courseId);
 
 export async function getSavedCourses(userId: string): Promise<SavedCourse[]> {
-  const snap = await getDocs(savedCoursesCol(userId));
-  const courses: SavedCourse[] = snap.docs.map((d) => ({
-    id: d.id,
-    ...d.data(),
-  })) as SavedCourse[];
+  const q = query(savedCoursesCol(), where("userId", "==", userId));
+  const snap = await getDocs(q);
+  const courses: SavedCourse[] = snap.docs.map((d) => {
+    const data = d.data();
+    return {
+      id: d.id,
+      name: data.name,
+      holes: data.holes,
+      holeInfo: data.holeInfo || [],
+      teeBoxes: data.teeBoxes ?? undefined,
+      slopeRating: data.slopeRating ?? undefined,
+      totalYardage: data.totalYardage ?? undefined,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+    };
+  });
   courses.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   return courses;
 }
@@ -892,10 +901,23 @@ export async function saveSavedCourse(
   userId: string,
   course: SavedCourse
 ): Promise<void> {
-  await setDoc(savedCourseDoc(userId, course.id), {
+  const holeData = course.holeInfo.map((h) => {
+    const hole: Record<string, unknown> = {
+      number: h.number,
+      par: h.par,
+    };
+    if (h.yardage !== undefined) hole.yardage = h.yardage;
+    if (h.handicap !== undefined) hole.handicap = h.handicap;
+    if (h.closestToPin !== undefined) hole.closestToPin = h.closestToPin;
+    if (h.longestDrive !== undefined) hole.longestDrive = h.longestDrive;
+    return hole;
+  });
+
+  await setDoc(savedCourseDocRef(course.id), {
+    userId,
     name: course.name,
     holes: course.holes,
-    holeInfo: course.holeInfo.map(stripUndefined),
+    holeInfo: holeData,
     teeBoxes: course.teeBoxes ?? null,
     slopeRating: course.slopeRating ?? null,
     totalYardage: course.totalYardage ?? null,
@@ -908,7 +930,7 @@ export async function deleteSavedCourse(
   userId: string,
   courseId: string
 ): Promise<void> {
-  await deleteDoc(savedCourseDoc(userId, courseId));
+  await deleteDoc(savedCourseDocRef(courseId));
 }
 
 // ============================================================
