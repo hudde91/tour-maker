@@ -26,6 +26,7 @@ import type {
   RyderCupTournament,
   AppSettings,
   Friend,
+  SavedCourse,
 } from "../types";
 import { DEFAULT_APP_SETTINGS } from "@tour-maker/shared";
 
@@ -866,6 +867,69 @@ export async function searchUsers(
     });
   }
   return results;
+}
+
+// ============================================================
+// SAVED COURSES (top-level collection)
+// ============================================================
+
+const savedCoursesCol = () => collection(db, "savedCourses");
+const savedCourseDocRef = (courseId: string) => doc(db, "savedCourses", courseId);
+
+export async function getSavedCourses(): Promise<SavedCourse[]> {
+  const snap = await getDocs(savedCoursesCol());
+  const courses: SavedCourse[] = snap.docs.map((d) => {
+    const data = d.data();
+    return {
+      id: d.id,
+      name: data.name,
+      holes: data.holes,
+      holeInfo: data.holeInfo || [],
+      teeBoxes: data.teeBoxes ?? undefined,
+      slopeRating: data.slopeRating ?? undefined,
+      totalYardage: data.totalYardage ?? undefined,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+    };
+  });
+  courses.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  return courses;
+}
+
+export async function saveSavedCourse(
+  userId: string,
+  course: SavedCourse
+): Promise<void> {
+  const holeData = course.holeInfo.map((h) => {
+    const hole: Record<string, unknown> = {
+      number: h.number,
+      par: h.par,
+    };
+    if (h.yardage !== undefined) hole.yardage = h.yardage;
+    if (h.handicap !== undefined) hole.handicap = h.handicap;
+    if (h.closestToPin !== undefined) hole.closestToPin = h.closestToPin;
+    if (h.longestDrive !== undefined) hole.longestDrive = h.longestDrive;
+    return hole;
+  });
+
+  await setDoc(savedCourseDocRef(course.id), {
+    userId,
+    name: course.name,
+    holes: course.holes,
+    holeInfo: holeData,
+    teeBoxes: course.teeBoxes ?? null,
+    slopeRating: course.slopeRating ?? null,
+    totalYardage: course.totalYardage ?? null,
+    createdAt: course.createdAt,
+    updatedAt: course.updatedAt,
+  });
+}
+
+export async function deleteSavedCourse(
+  userId: string,
+  courseId: string
+): Promise<void> {
+  await deleteDoc(savedCourseDocRef(courseId));
 }
 
 // ============================================================

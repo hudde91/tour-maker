@@ -94,6 +94,18 @@ export interface Team {
   color: string;
 }
 
+export interface SavedCourse {
+  id: string;
+  name: string;
+  holes: number;
+  holeInfo: HoleInfo[];
+  teeBoxes?: string;
+  slopeRating?: string;
+  totalYardage?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Tour {
   id: string;
   name: string;

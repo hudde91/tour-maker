@@ -8,4 +8,5 @@ export type {
   Friend,
   Team,
   Tour,
+  SavedCourse,
 } from "@tour-maker/shared";
