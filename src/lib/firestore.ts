@@ -876,9 +876,8 @@ export async function searchUsers(
 const savedCoursesCol = () => collection(db, "savedCourses");
 const savedCourseDocRef = (courseId: string) => doc(db, "savedCourses", courseId);
 
-export async function getSavedCourses(userId: string): Promise<SavedCourse[]> {
-  const q = query(savedCoursesCol(), where("userId", "==", userId));
-  const snap = await getDocs(q);
+export async function getSavedCourses(): Promise<SavedCourse[]> {
+  const snap = await getDocs(savedCoursesCol());
   const courses: SavedCourse[] = snap.docs.map((d) => {
     const data = d.data();
     return {

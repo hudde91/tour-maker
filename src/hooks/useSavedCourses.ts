@@ -12,11 +12,8 @@ export const useSavedCourses = () => {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ["savedCourses", user?.uid],
-    queryFn: async (): Promise<SavedCourse[]> => {
-      if (!user) return [];
-      return getSavedCourses(user.uid);
-    },
+    queryKey: ["savedCourses"],
+    queryFn: (): Promise<SavedCourse[]> => getSavedCourses(),
     enabled: !!user,
   });
 };
@@ -53,7 +50,6 @@ export const useSaveCourse = () => {
       if (data.id) {
         const existing = queryClient.getQueryData<SavedCourse[]>([
           "savedCourses",
-          user.uid,
         ]);
         const original = existing?.find((c) => c.id === data.id);
         if (original) {
