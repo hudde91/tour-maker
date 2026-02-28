@@ -419,21 +419,11 @@ export const CreateRoundPage = () => {
                 </div>
 
                 <div className="form-group md:col-span-2">
-                  <label className="form-label">Course Name *</label>
-                  <input
-                    type="text"
-                    value={formData.courseName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, courseName: e.target.value })
-                    }
-                    className="input-field"
-                    placeholder="Pine Valley Golf Club"
-                    required
-                  />
-                </div>
-
-                <div className="form-group md:col-span-2">
                   <SavedCourseSelector
+                    value={formData.courseName}
+                    onChange={(val) =>
+                      setFormData({ ...formData, courseName: val })
+                    }
                     onSelect={handleSelectSavedCourse}
                     onEdit={(course) => setEditingCourse(course)}
                   />
