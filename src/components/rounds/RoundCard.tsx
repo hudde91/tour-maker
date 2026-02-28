@@ -87,6 +87,7 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
   const statusInfo = getStatusInfo();
 
   return (
+    <>
     <Link
       to={`/tour/${tour.id}/round/${round.id}`}
       className="card block group hover:-translate-y-0.5 p-4 sm:p-5"
@@ -240,6 +241,8 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
         </div>
       </div>
 
+    </Link>
+
       <ConfirmDialog
         isOpen={showDeleteConfirm}
         title="Delete Round"
@@ -257,7 +260,7 @@ const RoundCardComponent = ({ round, tour }: RoundCardProps) => {
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
       />
-    </Link>
+    </>
   );
 };
 
