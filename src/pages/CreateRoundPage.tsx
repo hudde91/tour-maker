@@ -27,6 +27,7 @@ export const CreateRoundPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [saveCourseOnCreate, setSaveCourseOnCreate] = useState(false);
   const [editingCourse, setEditingCourse] = useState<SavedCourse | null>(null);
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     courseName: "",
@@ -97,6 +98,7 @@ export const CreateRoundPage = () => {
   };
 
   const handleSelectSavedCourse = (course: SavedCourse) => {
+    setSelectedCourseId(course.id);
     setFormData({
       ...formData,
       courseName: course.name,
@@ -168,6 +170,19 @@ export const CreateRoundPage = () => {
         return;
       }
       setValidationErrors([]);
+
+      // Auto-save course layout changes back to the saved course
+      if (selectedCourseId) {
+        saveCourse.mutateAsync({
+          id: selectedCourseId,
+          name: formData.courseName,
+          holes: formData.holes,
+          holeInfo: formData.holeInfo,
+          teeBoxes: formData.teeBoxes || undefined,
+          slopeRating: formData.slopeRating || undefined,
+          totalYardage: formData.totalYardage || undefined,
+        }).catch((err) => console.error("Failed to auto-save course:", err));
+      }
     }
 
     setCurrentStep((prev) => Math.min(prev + 1, WIZARD_STEPS.length));
@@ -723,11 +738,11 @@ export const CreateRoundPage = () => {
                                     parseInt(e.target.value)
                                   )
                                 }
-                                className="w-16 px-2 py-1 border border-white/15 rounded focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
+                                className="w-16 px-2 py-1 border border-white/15 rounded bg-white/5 text-white focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
                               >
-                                <option value={3}>3</option>
-                                <option value={4}>4</option>
-                                <option value={5}>5</option>
+                                <option value={3} className="bg-slate-800">3</option>
+                                <option value={4} className="bg-slate-800">4</option>
+                                <option value={5} className="bg-slate-800">5</option>
                               </select>
                             </td>
                             <td className="py-2 px-3">
@@ -740,7 +755,7 @@ export const CreateRoundPage = () => {
                                     parseInt(e.target.value) || 0
                                   )
                                 }
-                                className="w-20 px-2 py-1 border border-white/15 rounded focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
+                                className="w-20 px-2 py-1 border border-white/15 rounded bg-white/5 text-white placeholder-white/40 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
                                 placeholder="350"
                                 min="50"
                                 max="700"
@@ -756,7 +771,7 @@ export const CreateRoundPage = () => {
                                     parseInt(e.target.value) || hole.number
                                   )
                                 }
-                                className={`w-16 px-2 py-1 border rounded focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 ${
+                                className={`w-16 px-2 py-1 border rounded bg-white/5 text-white placeholder-white/40 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 ${
                                   getDuplicateHandicaps().has(hole.handicap) ||
                                   (hole.handicap &&
                                     (hole.handicap < 1 || hole.handicap > 18))
