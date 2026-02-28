@@ -36,5 +36,13 @@ service cloud.firestore {
                           || request.auth.uid in get(/databases/$(database)/documents/tours/$(tourId)).data.participantIds);
       }
     }
+
+    // Saved courses collection: any authenticated user can read; creator can update/delete
+    match /savedCourses/{courseId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null
+                            && resource.data.userId == request.auth.uid;
+    }
   }
 }
