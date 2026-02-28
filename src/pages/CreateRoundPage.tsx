@@ -738,11 +738,11 @@ export const CreateRoundPage = () => {
                                     parseInt(e.target.value)
                                   )
                                 }
-                                className="w-16 px-2 py-1 border border-white/15 rounded focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
+                                className="w-16 px-2 py-1 border border-white/15 rounded bg-white/5 text-white focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
                               >
-                                <option value={3}>3</option>
-                                <option value={4}>4</option>
-                                <option value={5}>5</option>
+                                <option value={3} className="bg-slate-800">3</option>
+                                <option value={4} className="bg-slate-800">4</option>
+                                <option value={5} className="bg-slate-800">5</option>
                               </select>
                             </td>
                             <td className="py-2 px-3">
@@ -755,7 +755,7 @@ export const CreateRoundPage = () => {
                                     parseInt(e.target.value) || 0
                                   )
                                 }
-                                className="w-20 px-2 py-1 border border-white/15 rounded focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
+                                className="w-20 px-2 py-1 border border-white/15 rounded bg-white/5 text-white placeholder-white/40 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
                                 placeholder="350"
                                 min="50"
                                 max="700"
@@ -771,7 +771,7 @@ export const CreateRoundPage = () => {
                                     parseInt(e.target.value) || hole.number
                                   )
                                 }
-                                className={`w-16 px-2 py-1 border rounded focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 ${
+                                className={`w-16 px-2 py-1 border rounded bg-white/5 text-white placeholder-white/40 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 ${
                                   getDuplicateHandicaps().has(hole.handicap) ||
                                   (hole.handicap &&
                                     (hole.handicap < 1 || hole.handicap > 18))
