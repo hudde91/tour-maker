@@ -334,7 +334,8 @@ export const SwipeableIndividualScoring = ({
                 </h3>
                 {currentPlayerIndex < scoreablePlayers.length - 1 ? (
                   <div className="text-xs text-white/40 flex items-center gap-1">
-                    Swipe to {shortenName(scoreablePlayers[currentPlayerIndex + 1].name)}
+                    Swipe to{" "}
+                    {shortenName(scoreablePlayers[currentPlayerIndex + 1].name)}
                     <svg
                       className="w-4 h-4"
                       fill="none"
@@ -453,7 +454,9 @@ export const SwipeableIndividualScoring = ({
                 </h3>
                 {currentPlayerIndex < scoreablePlayers.length - 1 && (
                   <div className="text-xs text-white/40">
-                    Swipe to {shortenName(scoreablePlayers[currentPlayerIndex + 1].name)} →
+                    Swipe to{" "}
+                    {shortenName(scoreablePlayers[currentPlayerIndex + 1].name)}{" "}
+                    →
                   </div>
                 )}
               </div>
@@ -622,7 +625,9 @@ const PlayerScoreCard = ({
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-white">{shortenName(player.name)}</h3>
+              <h3 className="text-xl font-bold text-white">
+                {shortenName(player.name)}
+              </h3>
               <div className="flex items-center gap-3 text-sm">
                 {player.handicap !== undefined && (
                   <span className="text-white/50 font-medium">
@@ -758,7 +763,7 @@ const PlayerScoreCard = ({
         onCompetitionWinnerChange && (
           <div className="space-y-3">
             {holeInfo.closestToPin && (
-              <div className="card border-2 border-blue-500/30 bg-blue-500/15">
+              <div className="card border-2 border-blue-500/30">
                 <div className="flex items-center gap-2 mb-3">
                   <svg
                     className="w-5 h-5 text-blue-400"
@@ -799,7 +804,7 @@ const PlayerScoreCard = ({
                             : ""
                         } ${
                           isWinner
-                            ? "bg-blue-600 text-white border-blue-700 shadow-lg ring-4 ring-blue-500/40 scale-105 font-bold"
+                            ? "bg-blue-600 text-white border-blue-700 shadow-lg font-bold"
                             : "bg-white/5 text-white/70 border-white/15 hover:border-blue-400 hover:shadow-md"
                         }`}
                       >
@@ -915,7 +920,7 @@ const PlayerScoreCard = ({
                             : ""
                         } ${
                           isWinner
-                            ? "bg-amber-600 text-white border-amber-700 shadow-lg ring-4 ring-amber-500/40 scale-105 font-bold"
+                            ? "bg-amber-600 text-white border-amber-700 shadow-lg font-bold"
                             : "bg-white/5 text-white/70 border-white/15 hover:border-amber-400 hover:shadow-md"
                         }`}
                       >

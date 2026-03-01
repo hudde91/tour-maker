@@ -1,12 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
-import { Tour, Round, HoleInfo } from "../../../types";
+import { Tour, Round } from "../../../types";
 import { HoleNavigation } from "../../scoring/HoleNavigation";
 import { MatchPlayLeaderboard } from "./MatchPlayLeaderboard";
 import { CompetitionWinnerSelector } from "./CompetitionWinnerSelector";
 import { useParams } from "react-router-dom";
 import { useUpdateCompetitionWinner } from "../../../hooks/useScoring";
 import { useAuth } from "../../../contexts/AuthContext";
-import { canUserScore, getScoreablePlayers } from "../../../lib/auth/permissions";
+import {
+  canUserScore,
+  getScoreablePlayers,
+} from "../../../lib/auth/permissions";
 
 interface SwipeableMatchPlayScoringProps {
   tour: Tour;
@@ -15,7 +18,7 @@ interface SwipeableMatchPlayScoringProps {
     matchId: string,
     holeNumber: number,
     teamAScore: number,
-    teamBScore: number
+    teamBScore: number,
   ) => void;
   onFinishRound?: () => void;
 }
@@ -79,7 +82,7 @@ export const SwipeableMatchPlayScoring = ({
           // If all holes are scored, stay on the last hole
           if (firstUnscoredHole === 1 && match.holes.length > 0) {
             const allScored = match.holes.every(
-              (h: any) => h && h.teamAScore > 0 && h.teamBScore > 0
+              (h: any) => h && h.teamAScore > 0 && h.teamBScore > 0,
             );
             if (allScored) {
               firstUnscoredHole = match.holes.length;
@@ -143,9 +146,7 @@ export const SwipeableMatchPlayScoring = ({
     return (
       <div className="p-4 space-y-4">
         <div className="mb-4">
-          <h2 className="text-xl font-bold text-white">
-            Select Your Match
-          </h2>
+          <h2 className="text-xl font-bold text-white">Select Your Match</h2>
           <p className="text-sm text-white/50 mt-1">
             Click on your match to start scoring
           </p>
@@ -288,7 +289,8 @@ export const SwipeableMatchPlayScoring = ({
             Please sign in to access scoring functionality.
           </p>
           <p className="text-sm text-white/40">
-            In match play, authenticated users can score for all matches in the round.
+            In match play, authenticated users can score for all matches in the
+            round.
           </p>
         </div>
       </div>
@@ -376,11 +378,11 @@ export const SwipeableMatchPlayScoring = ({
   const currentHole = getCurrentHoleForMatch(selectedMatch.id);
   const teamAInfo = getTeamInfo(
     selectedMatch.teamA.id,
-    selectedMatch.teamA.playerIds
+    selectedMatch.teamA.playerIds,
   );
   const teamBInfo = getTeamInfo(
     selectedMatch.teamB.id,
-    selectedMatch.teamB.playerIds
+    selectedMatch.teamB.playerIds,
   );
 
   return (
@@ -511,7 +513,7 @@ export const SwipeableMatchPlayScoring = ({
                   selectedMatch.id,
                   holeNumber,
                   teamAScore,
-                  teamBScore
+                  teamBScore,
                 );
               }}
               onHoleChange={(newHole) => {
@@ -522,7 +524,7 @@ export const SwipeableMatchPlayScoring = ({
                 holeNumber,
                 competitionType,
                 winnerId,
-                distance
+                distance,
               ) => {
                 updateCompetitionWinner.mutate({
                   holeNumber,
@@ -556,7 +558,7 @@ export const SwipeableMatchPlayScoring = ({
               holeNumber,
               competitionType,
               winnerId,
-              distance
+              distance,
             ) => {
               updateCompetitionWinner.mutate({
                 holeNumber,
@@ -610,14 +612,14 @@ interface MatchScoringCardProps {
   onHoleUpdate: (
     holeNumber: number,
     teamAScore: number,
-    teamBScore: number
+    teamBScore: number,
   ) => void;
   onHoleChange: (newHole: number) => void;
   onCompetitionWinnerChange?: (
     holeNumber: number,
     competitionType: "closestToPin" | "longestDrive",
     winnerId: string | null,
-    distance?: number
+    distance?: number,
   ) => void;
   onShowCompetitionSelector?: () => void;
 }
@@ -1033,8 +1035,8 @@ const MatchScoringCard = ({
                   match.statusCode === "dormie"
                     ? "text-amber-700"
                     : match.statusCode === "complete"
-                    ? "text-green-700"
-                    : "text-white/70"
+                      ? "text-green-700"
+                      : "text-white/70"
                 }`}
               >
                 {match.statusText}
