@@ -24,12 +24,12 @@ interface TournamentLeaderboardProps {
 
 export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   const [leaderboardView, setLeaderboardView] = useState<"individual" | "team">(
-    "individual"
+    "individual",
   );
   const [view, setView] = useState<LeaderboardView>("overall");
   const [sort, setSort] = useState<LeaderboardSort>("score-asc");
   const [selectedRoundId, setSelectedRoundId] = useState<string>(
-    tour.rounds[0]?.id || ""
+    tour.rounds[0]?.id || "",
   );
 
   // Memoize event handlers to prevent unnecessary re-renders
@@ -49,7 +49,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     (newView: "individual" | "team") => {
       setLeaderboardView(newView);
     },
-    []
+    [],
   );
 
   // Memoize rounds to include based on view - prevents recalculation on every render
@@ -71,13 +71,13 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
         .sort(
           (a, b) =>
             new Date(b.completedAt || 0).getTime() -
-            new Date(a.completedAt || 0).getTime()
+            new Date(a.completedAt || 0).getTime(),
         )[0];
       rounds = activeRound
         ? [activeRound]
         : latestCompletedRound
-        ? [latestCompletedRound]
-        : [];
+          ? [latestCompletedRound]
+          : [];
       // For position change in current round, compare to overall standings before this round
       const allCompleted = getCompletedRounds(tour.rounds);
       if (rounds.length > 0 && allCompleted.length > 0) {
@@ -91,7 +91,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       // For position change in specific round, compare to all previous rounds
       if (selectedRound) {
         const selectedRoundIndex = tour.rounds.findIndex(
-          (r) => r.id === selectedRoundId
+          (r) => r.id === selectedRoundId,
         );
         if (selectedRoundIndex > 0) {
           previousRounds = tour.rounds
@@ -253,11 +253,11 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
           if (hasSomeStableford) {
             const prevSf = storage.calculateTournamentStableford(
               tour,
-              prev.player.id
+              prev.player.id,
             );
             const currSf = storage.calculateTournamentStableford(
               tour,
-              entry.player.id
+              entry.player.id,
             );
             isTied = prevSf === currSf;
           } else if (hasHandicaps) {
@@ -278,10 +278,10 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       // Calculate position changes if we have previous rounds to compare
       if (previousRoundsToInclude.length > 0 && useRounds === roundsToInclude) {
         const previousLeaderboard = calculateTournamentLeaderboard(
-          previousRoundsToInclude
+          previousRoundsToInclude,
         );
         const previousPositionMap = new Map(
-          previousLeaderboard.map((e) => [e.player.id, e.position])
+          previousLeaderboard.map((e) => [e.player.id, e.position]),
         );
 
         playersWithScores.forEach((entry) => {
@@ -320,7 +320,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       roundsToInclude,
       previousRoundsToInclude,
       sort,
-    ]
+    ],
   );
 
   // Memoize the individual leaderboard calculation - this is expensive!
@@ -335,7 +335,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
 
   const playersWithScores = individualLeaderboard;
   const teamsWithScores = teamLeaderboard.filter(
-    (entry) => entry.totalScore > 0
+    (entry) => entry.totalScore > 0,
   );
 
   // Determine format characteristics for display
@@ -343,7 +343,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   const isRyderCup = tour.format === "ryder-cup";
   const hasSomeStableford = completedRounds.some(isStablefordScoring);
   const isMatchPlay = completedRounds.some(
-    (r) => isMatchPlayRound(r) && !isRyderCup
+    (r) => isMatchPlayRound(r) && !isRyderCup,
   );
   const hasHandicaps = completedRounds.some(hasHandicapsEnabled);
 
@@ -354,7 +354,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     playersWithScores.forEach((entry) => {
       points.set(
         entry.player.id,
-        storage.calculateTournamentStableford(tour, entry.player.id)
+        storage.calculateTournamentStableford(tour, entry.player.id),
       );
     });
     return points;
@@ -367,7 +367,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     playersWithScores.forEach((entry) => {
       matches.set(
         entry.player.id,
-        storage.calculateMatchesWon(tour, entry.player.id)
+        storage.calculateMatchesWon(tour, entry.player.id),
       );
     });
     return matches;
@@ -411,8 +411,8 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                 completedRoundsList.length
               } completed round${completedRoundsList.length !== 1 ? "s" : ""}`
             : view === "current-round"
-            ? "Current round standings"
-            : "Round-specific standings"}
+              ? "Current round standings"
+              : "Round-specific standings"}
         </p>
       </div>
 
@@ -468,7 +468,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
           ) : (
             teamsWithScores.map((teamEntry, index) => {
               const captain = tour.players.find(
-                (p) => p.id === teamEntry.team.captainId
+                (p) => p.id === teamEntry.team.captainId,
               );
               const isLeadingTeam = index === 0;
 
@@ -555,7 +555,6 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
           </div>
           <VirtualizedLeaderboard
             entries={playersWithScores}
-            tour={tour}
             hasSomeStableford={hasSomeStableford}
             isMatchPlay={isMatchPlay}
             hasHandicaps={hasHandicaps}
@@ -576,7 +575,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
 
             // Determine display score
             const displayScore = hasHandicaps
-              ? entry.netScore ?? entry.totalScore
+              ? (entry.netScore ?? entry.totalScore)
               : entry.totalScore;
 
             return (
@@ -584,36 +583,24 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                 key={entry.player.id}
                 className={`p-4 sm:p-5 bg-white/5 border-2 rounded-xl transition-all ${
                   index === 0
-                    ? "border-yellow-400 bg-gradient-to-br from-yellow-50 via-amber-50 to-yellow-100 shadow-lg"
+                    ? "border-yellow-400"
                     : index === 1
-                    ? "border-white/15 bg-gradient-to-br from-slate-50 to-slate-100 shadow-md"
-                    : index === 2
-                    ? "border-orange-300 bg-gradient-to-br from-orange-50 to-amber-50 shadow-md"
-                    : "border-white/10 hover:border-white/15"
+                      ? "border-white/35"
+                      : index === 2
+                        ? "border-orange-300"
+                        : "border-white/10 hover:border-white/15"
                 }`}
               >
                 <div className="flex items-center gap-4">
                   {/* Position Badge with Movement Arrow */}
                   <div className="flex flex-col items-center flex-shrink-0">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
-                        index === 0
-                          ? "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-lg"
-                          : index === 1
-                          ? "bg-gradient-to-br from-slate-300 to-slate-400 text-white shadow-md"
-                          : index === 2
-                          ? "bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-md"
-                          : "bg-white/5 text-white/70"
-                      }`}
-                    >
-                      {index < 3 ? (
-                        <span className="text-2xl">
-                          {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
-                        </span>
-                      ) : (
-                        entry.position
-                      )}
-                    </div>
+                    {index < 3 ? (
+                      <span className="text-2xl">
+                        {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+                      </span>
+                    ) : (
+                      entry.position
+                    )}
                     {/* Movement Arrow */}
                     {entry.positionChange !== undefined &&
                       entry.positionChange !== 0 && (
@@ -682,7 +669,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                             if (playerScores) {
                               // Count non-zero scores to determine holes completed
                               const holesCompleted = playerScores.scores.filter(
-                                (score) => score !== null && score > 0
+                                (score) => score !== null && score > 0,
                               ).length;
                               if (holesCompleted > 0 && holesCompleted < 18) {
                                 return (
@@ -720,9 +707,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                         <div className="text-3xl font-bold text-white mb-1">
                           {matchesWon}
                         </div>
-                        <div className="text-xs text-white/40">
-                          Matches Won
-                        </div>
+                        <div className="text-xs text-white/40">Matches Won</div>
                         {entry.totalScore > 0 && (
                           <div className="text-xs text-white/30 mt-1">
                             {entry.totalScore} total strokes
@@ -738,13 +723,13 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                               ? entry.netToPar < 0
                                 ? "text-emerald-400"
                                 : entry.netToPar > 0
-                                ? "text-red-400"
-                                : "text-white"
+                                  ? "text-red-400"
+                                  : "text-white"
                               : entry.totalToPar < 0
-                              ? "text-emerald-400"
-                              : entry.totalToPar > 0
-                              ? "text-red-400"
-                              : "text-white"
+                                ? "text-emerald-400"
+                                : entry.totalToPar > 0
+                                  ? "text-red-400"
+                                  : "text-white"
                           }`}
                         >
                           {displayScore}
@@ -761,13 +746,13 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                               ? entry.netToPar < 0
                                 ? "text-emerald-400"
                                 : entry.netToPar > 0
-                                ? "text-red-400"
-                                : "text-white/50"
+                                  ? "text-red-400"
+                                  : "text-white/50"
                               : entry.totalToPar < 0
-                              ? "text-emerald-400"
-                              : entry.totalToPar > 0
-                              ? "text-red-400"
-                              : "text-white/50"
+                                ? "text-emerald-400"
+                                : entry.totalToPar > 0
+                                  ? "text-red-400"
+                                  : "text-white/50"
                           }`}
                         >
                           {hasHandicaps && entry.netToPar !== undefined
@@ -788,8 +773,8 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                                   ? entry.currentRoundToPar < 0
                                     ? "text-emerald-400"
                                     : entry.currentRoundToPar > 0
-                                    ? "text-red-400"
-                                    : "text-white/50"
+                                      ? "text-red-400"
+                                      : "text-white/50"
                                   : "text-white/50"
                               }`}
                             >
@@ -851,7 +836,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                     distance: overallWinner.distance,
                   });
                 }
-              }
+              },
             );
             Object.entries(round.competitionWinners.longestDrive).forEach(
               ([holeNum, winners]) => {
@@ -872,7 +857,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                     distance: overallWinner.distance,
                   });
                 }
-              }
+              },
             );
           }
         });
@@ -883,10 +868,10 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
 
         // Group by type
         const closestToPinWinners = competitionWinners.filter(
-          (w) => w.type === "closestToPin"
+          (w) => w.type === "closestToPin",
         );
         const longestDriveWinners = competitionWinners.filter(
-          (w) => w.type === "longestDrive"
+          (w) => w.type === "longestDrive",
         );
 
         return (
@@ -915,7 +900,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                   <div className="space-y-2">
                     {closestToPinWinners.map((winner, idx) => {
                       const player = tour.players.find(
-                        (p) => p.id === winner.playerId
+                        (p) => p.id === winner.playerId,
                       );
                       return (
                         <div
@@ -973,7 +958,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
                   <div className="space-y-2">
                     {longestDriveWinners.map((winner, idx) => {
                       const player = tour.players.find(
-                        (p) => p.id === winner.playerId
+                        (p) => p.id === winner.playerId,
                       );
                       return (
                         <div

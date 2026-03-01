@@ -1,11 +1,9 @@
 import { useRef, memo } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { LeaderboardEntry, Tour } from "../../types";
-import { storage } from "../../lib/storage";
+import { LeaderboardEntry } from "../../types";
 
 interface VirtualizedLeaderboardProps {
   entries: LeaderboardEntry[];
-  tour: Tour;
   hasSomeStableford: boolean;
   isMatchPlay: boolean;
   hasHandicaps: boolean;
@@ -21,7 +19,6 @@ interface VirtualizedLeaderboardProps {
  */
 const VirtualizedLeaderboardComponent = ({
   entries,
-  tour,
   hasSomeStableford,
   isMatchPlay,
   hasHandicaps,
@@ -61,7 +58,7 @@ const VirtualizedLeaderboardComponent = ({
           const matchesWon = playerMatchesWon.get(entry.player.id) || 0;
 
           const displayScore = hasHandicaps
-            ? entry.netScore ?? entry.totalScore
+            ? (entry.netScore ?? entry.totalScore)
             : entry.totalScore;
 
           return (
@@ -79,36 +76,24 @@ const VirtualizedLeaderboardComponent = ({
               <div
                 className={`p-4 sm:p-5 bg-white/5 border-2 rounded-xl transition-all ${
                   index === 0
-                    ? "border-yellow-400 bg-gradient-to-br from-yellow-50 via-amber-50 to-yellow-100 shadow-lg"
+                    ? "border-yellow-400"
                     : index === 1
-                    ? "border-white/15 bg-gradient-to-br from-slate-50 to-slate-100 shadow-md"
-                    : index === 2
-                    ? "border-orange-300 bg-gradient-to-br from-orange-50 to-amber-50 shadow-md"
-                    : "border-white/10 hover:border-white/15"
+                      ? "border-white/15"
+                      : index === 2
+                        ? "border-orange-300"
+                        : "border-white/10 hover:border-white/15"
                 }`}
               >
                 <div className="flex items-center gap-4">
                   {/* Position Badge with Movement Arrow */}
                   <div className="flex flex-col items-center flex-shrink-0">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
-                        index === 0
-                          ? "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-lg"
-                          : index === 1
-                          ? "bg-gradient-to-br from-slate-300 to-slate-400 text-white shadow-md"
-                          : index === 2
-                          ? "bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-md"
-                          : "bg-white/5 text-white/70"
-                      }`}
-                    >
-                      {index < 3 ? (
-                        <span className="text-2xl">
-                          {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
-                        </span>
-                      ) : (
-                        entry.position
-                      )}
-                    </div>
+                    {index < 3 ? (
+                      <span className="text-2xl">
+                        {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+                      </span>
+                    ) : (
+                      entry.position
+                    )}
                     {/* Movement Arrow */}
                     {entry.positionChange !== undefined &&
                       entry.positionChange !== 0 && (
@@ -177,7 +162,7 @@ const VirtualizedLeaderboardComponent = ({
                             if (playerScores) {
                               const holesCompleted = playerScores.scores.filter(
                                 (score: number | null) =>
-                                  score !== null && score > 0
+                                  score !== null && score > 0,
                               ).length;
                               if (holesCompleted > 0 && holesCompleted < 18) {
                                 return (
@@ -215,9 +200,7 @@ const VirtualizedLeaderboardComponent = ({
                         <div className="text-3xl font-bold text-white mb-1">
                           {matchesWon}
                         </div>
-                        <div className="text-xs text-white/40">
-                          Matches Won
-                        </div>
+                        <div className="text-xs text-white/40">Matches Won</div>
                         {entry.totalScore > 0 && (
                           <div className="text-xs text-white/30 mt-1">
                             {entry.totalScore} total strokes
@@ -233,13 +216,13 @@ const VirtualizedLeaderboardComponent = ({
                               ? entry.netToPar < 0
                                 ? "text-emerald-400"
                                 : entry.netToPar > 0
-                                ? "text-red-400"
-                                : "text-white"
+                                  ? "text-red-400"
+                                  : "text-white"
                               : entry.totalToPar < 0
-                              ? "text-emerald-400"
-                              : entry.totalToPar > 0
-                              ? "text-red-400"
-                              : "text-white"
+                                ? "text-emerald-400"
+                                : entry.totalToPar > 0
+                                  ? "text-red-400"
+                                  : "text-white"
                           }`}
                         >
                           {displayScore}
@@ -256,13 +239,13 @@ const VirtualizedLeaderboardComponent = ({
                               ? entry.netToPar < 0
                                 ? "text-emerald-400"
                                 : entry.netToPar > 0
-                                ? "text-red-400"
-                                : "text-white/50"
+                                  ? "text-red-400"
+                                  : "text-white/50"
                               : entry.totalToPar < 0
-                              ? "text-emerald-400"
-                              : entry.totalToPar > 0
-                              ? "text-red-400"
-                              : "text-white/50"
+                                ? "text-emerald-400"
+                                : entry.totalToPar > 0
+                                  ? "text-red-400"
+                                  : "text-white/50"
                           }`}
                         >
                           {hasHandicaps && entry.netToPar !== undefined
@@ -283,8 +266,8 @@ const VirtualizedLeaderboardComponent = ({
                                   ? entry.currentRoundToPar < 0
                                     ? "text-emerald-400"
                                     : entry.currentRoundToPar > 0
-                                    ? "text-red-400"
-                                    : "text-white/50"
+                                      ? "text-red-400"
+                                      : "text-white/50"
                                   : "text-white/50"
                               }`}
                             >
