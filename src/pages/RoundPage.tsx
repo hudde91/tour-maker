@@ -74,7 +74,7 @@ export const RoundPage = () => {
         path: `/tour/${tourId}/leaderboard`,
       },
     ],
-    [tourId]
+    [tourId],
   );
 
   // Check if this is a Ryder Cup format
@@ -120,7 +120,8 @@ export const RoundPage = () => {
     async (playerId: string, holeIndex: number, score: number | null) => {
       if (!round) return;
       const playerScore = round.scores[playerId];
-      const currentScores = playerScore?.scores || new Array(round.holes).fill(null);
+      const currentScores =
+        playerScore?.scores || new Array(round.holes).fill(null);
 
       const newScores = [...currentScores];
       newScores[holeIndex] = score;
@@ -131,7 +132,7 @@ export const RoundPage = () => {
         console.error("Failed to update score:", error);
       }
     },
-    [round?.scores, round?.holes, updateScore]
+    [round?.scores, round?.holes, updateScore],
   );
 
   const handleTeamScoreChange = useCallback(
@@ -148,7 +149,7 @@ export const RoundPage = () => {
         console.error("Failed to update team score:", error);
       }
     },
-    [tour?.id, round?.id, round?.holes, updateTeamScore]
+    [tour?.id, round?.id, round?.holes, updateTeamScore],
   );
 
   const handleMatchHoleUpdate = useCallback(
@@ -160,7 +161,7 @@ export const RoundPage = () => {
       individualScores?: {
         teamA: { [playerId: string]: number };
         teamB: { [playerId: string]: number };
-      }
+      },
     ) => {
       if (!round) return;
       try {
@@ -191,7 +192,7 @@ export const RoundPage = () => {
         console.error("Failed to update match hole:", error);
       }
     },
-    [round?.format, round?.scores, updateMatchHole, updateScore]
+    [round?.format, round?.scores, updateMatchHole, updateScore],
   );
 
   if (isLoading) {
@@ -280,7 +281,7 @@ export const RoundPage = () => {
 
   return (
     <ErrorBoundary resetKey={`${tour?.id}:${round?.id}`}>
-      <div className="min-h-screen safe-area-top safe-area-bottom">
+      <div className="min-h-screen safe-area-bottom">
         <RoundHeader
           tour={tour}
           round={round}
