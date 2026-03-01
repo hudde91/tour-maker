@@ -376,8 +376,8 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   // If no scores at all, show empty state
   if (playersWithScores.length === 0) {
     return (
-      <div className="card max-w-5xl mx-auto">
-        <h2 className="section-header card-spacing flex items-center gap-3">
+      <div className="max-w-5xl mx-auto p-1">
+        <h2 className="section-header card-spacing flex items-center justify-center gap-3">
           <span className="text-3xl">🏆</span>
           Tournament Leaderboard
         </h2>
@@ -399,8 +399,8 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
   const completedRoundsList = getCompletedRounds(tour.rounds);
 
   return (
-    <div className="card max-w-5xl mx-auto space-y-6">
-      <div>
+    <div className="m-4 max-w-5xl space-y-6">
+      <div className="card">
         <h2 className="section-header flex items-center gap-3 mb-2">
           <span className="text-3xl">🏆</span>
           Tournament Leaderboard

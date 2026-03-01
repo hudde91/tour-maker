@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Round } from "@/types";
-import { useUpdateRoundCourseDetails, useUpdateRoundStartTime } from "@/hooks/useRounds";
+import {
+  useUpdateRoundCourseDetails,
+  useUpdateRoundStartTime,
+} from "@/hooks/useRounds";
 import { useToast } from "@/components/ui/Toast";
 
 interface RoundSettingsModalProps {
@@ -92,8 +95,14 @@ export const RoundSettingsModal = ({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80" onClick={(e) => e.stopPropagation()}>
-      <div className="rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto overscroll-contain pb-24 sm:pb-0 border border-white/10" style={{ background: "rgba(15, 23, 42, 0.95)" }}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div
+        className="rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto overscroll-contain pb-24 sm:pb-0 border border-white/10"
+        style={{ background: "rgba(15, 23, 42, 0.95)" }}
+      >
         <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-white">Round Settings</h2>
@@ -116,7 +125,7 @@ export const RoundSettingsModal = ({
               type="text"
               value={formData.name}
               onChange={(e) => handleChange("name", e.target.value)}
-              className="w-full px-4 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="input-field"
               placeholder="e.g., Round 1, Final Round"
             />
           </div>
@@ -130,7 +139,7 @@ export const RoundSettingsModal = ({
               type="text"
               value={formData.courseName}
               onChange={(e) => handleChange("courseName", e.target.value)}
-              className="w-full px-4 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="input-field"
               placeholder="e.g., Pebble Beach Golf Links"
             />
           </div>
@@ -145,7 +154,7 @@ export const RoundSettingsModal = ({
                 type="text"
                 value={formData.teeBoxes}
                 onChange={(e) => handleChange("teeBoxes", e.target.value)}
-                className="w-full px-4 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="input-field"
                 placeholder="e.g., Championship"
               />
             </div>
@@ -158,7 +167,7 @@ export const RoundSettingsModal = ({
                 type="text"
                 value={formData.slopeRating}
                 onChange={(e) => handleChange("slopeRating", e.target.value)}
-                className="w-full px-4 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="input-field"
                 placeholder="e.g., 142"
               />
             </div>
@@ -171,7 +180,7 @@ export const RoundSettingsModal = ({
                 type="text"
                 value={formData.totalYardage}
                 onChange={(e) => handleChange("totalYardage", e.target.value)}
-                className="w-full px-4 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="input-field"
                 placeholder="e.g., 7040"
               />
             </div>
@@ -186,7 +195,7 @@ export const RoundSettingsModal = ({
               type="datetime-local"
               value={formData.startTime}
               onChange={(e) => handleChange("startTime", e.target.value)}
-              className="w-full px-4 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="input-field"
             />
           </div>
 
@@ -203,7 +212,9 @@ export const RoundSettingsModal = ({
         <div className="p-6 border-t border-white/10 flex gap-3">
           <button
             onClick={handleSave}
-            disabled={updateCourseDetails.isPending || updateStartTime.isPending}
+            disabled={
+              updateCourseDetails.isPending || updateStartTime.isPending
+            }
             className="btn-primary flex-1"
           >
             {updateCourseDetails.isPending || updateStartTime.isPending
@@ -216,6 +227,6 @@ export const RoundSettingsModal = ({
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };

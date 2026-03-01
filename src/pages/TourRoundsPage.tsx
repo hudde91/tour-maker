@@ -56,7 +56,7 @@ export const TourRoundsPage = () => {
 
   const activeRounds = tour.rounds.filter((r) => r.status === "in-progress");
   const upcomingRounds = tour.rounds.filter(
-    (r) => r.status === "created" || !r.status
+    (r) => r.status === "created" || !r.status,
   );
   const completedRounds = tour.rounds.filter((r) => r.status === "completed");
 
@@ -91,7 +91,7 @@ export const TourRoundsPage = () => {
         }
       />
 
-      <div className="pt-6 pb-8 w-full max-w-6xl mx-auto">
+      <div className="pb-8 w-full max-w-6xl mx-auto">
         {tour.rounds.length === 0 ? (
           <EmptyState
             icon={<GolfFlag className="w-12 h-12 text-white/30" />}
@@ -109,7 +109,7 @@ export const TourRoundsPage = () => {
           <>
             {activeRounds.length > 0 && (
               <div className="mb-8">
-                <div className="mb-4 flex items-center gap-3 px-4">
+                <div className="card m-4 flex items-center gap-3 px-4">
                   <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                   <h2 className="text-xl font-bold text-white">
                     Active Rounds
@@ -118,7 +118,7 @@ export const TourRoundsPage = () => {
                     ({activeRounds.length})
                   </span>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-4 m-4">
                   {activeRounds.map((round) => (
                     <RoundCard key={round.id} round={round} tour={tour} />
                   ))}
@@ -128,7 +128,7 @@ export const TourRoundsPage = () => {
 
             {upcomingRounds.length > 0 && (
               <div className="mb-8">
-                <div className="mb-4 flex items-center gap-3 px-4">
+                <div className="card m-4 flex items-center gap-3 px-4">
                   <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
                   <h2 className="text-xl font-bold text-white">
                     Upcoming Rounds
@@ -137,7 +137,7 @@ export const TourRoundsPage = () => {
                     ({upcomingRounds.length})
                   </span>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-4 m-4">
                   {upcomingRounds.map((round) => (
                     <RoundCard key={round.id} round={round} tour={tour} />
                   ))}
@@ -147,7 +147,7 @@ export const TourRoundsPage = () => {
 
             {completedRounds.length > 0 && (
               <div className="mb-8">
-                <div className="mb-4 flex items-center gap-3 px-4">
+                <div className="card m-4 flex items-center gap-3 px-4">
                   <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
                   <h2 className="text-xl font-bold text-white">
                     Completed Rounds
@@ -156,7 +156,7 @@ export const TourRoundsPage = () => {
                     ({completedRounds.length})
                   </span>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-4 m-4">
                   {completedRounds.map((round) => (
                     <RoundCard key={round.id} round={round} tour={tour} />
                   ))}

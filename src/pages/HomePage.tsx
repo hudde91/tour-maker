@@ -435,7 +435,7 @@ export const HomePage = () => {
         {/* Tournaments Section */}
         <div className="section-spacing">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-4 section-spacing w-full max-w-5xl mx-auto">
-            <div>
+            <div className="card">
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
                 Your Tournaments
               </h2>
@@ -481,7 +481,7 @@ export const HomePage = () => {
               </div>
             </div>
           ) : (
-            <div className="w-full max-w-5xl mx-auto space-y-4">
+            <div className="w-full max-w-5xl mx-auto space-y-4 p-4">
               {tours.map((tour) => {
                 const statusInfo = getStatusInfo(tour);
 
@@ -491,7 +491,7 @@ export const HomePage = () => {
                     to={`/tour/${tour.id}`}
                     className="block p-4 md:p-6 transition-all duration-300 group cursor-pointer hover:-translate-y-0.5"
                     style={{
-                      background: "rgba(255, 255, 255, 0.06)",
+                      background: "rgba(255, 255, 255, 0.03)",
                       border: "1px solid rgba(255, 255, 255, 0.1)",
                       backdropFilter: "blur(20px)",
                       WebkitBackdropFilter: "blur(20px)",
@@ -568,7 +568,9 @@ export const HomePage = () => {
                                   className="text-white/30"
                                 />
                                 <span className="font-medium">
-                                  {tour.rounds.length} Rounds
+                                  {tour.rounds.length === 1
+                                    ? "1 Round"
+                                    : `${tour.rounds.length} Rounds`}
                                 </span>
                               </div>
                               <div className="flex items-center gap-1.5">
@@ -598,7 +600,6 @@ export const HomePage = () => {
 
                           {tour.description && (
                             <div className="flex items-start gap-4">
-                              <div className="w-12 md:w-16 flex-shrink-0"></div>
                               <p className="text-white/40 text-sm line-clamp-2 leading-relaxed flex-1 min-w-0">
                                 {tour.description}
                               </p>

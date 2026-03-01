@@ -114,7 +114,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
 
   return (
     <>
-      <div className="card-elevated -mx-4">
+      <div className="card-elevated">
         {/* Team Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 card-spacing">
           <div className="flex items-center gap-4 flex-1 min-w-0">

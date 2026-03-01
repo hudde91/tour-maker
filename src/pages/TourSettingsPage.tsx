@@ -227,7 +227,7 @@ export const TourSettingsPage = () => {
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-4 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="input-field"
                   placeholder="Enter tournament name"
                 />
               </div>
@@ -239,7 +239,7 @@ export const TourSettingsPage = () => {
                 <textarea
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
-                  className="w-full px-4 py-2 border border-white/15 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 min-h-[100px]"
+                  className="input-field"
                   placeholder="Enter tournament description (optional)"
                 />
               </div>

@@ -116,8 +116,8 @@ export const TourPlayersPage = () => {
 
       <div className="rounded-2xl pb-8 w-full max-w-6xl mx-auto space-y-6">
         {isTeamFormat && (
-          <div className="card card-spacing">
-            <div className="flex justify-between items-center mb-4">
+          <div>
+            <div className="card flex justify-between items-center m-4">
               <div>
                 <h2 className="section-header">Teams</h2>
                 <p className="text-white/50 text-sm">
@@ -150,7 +150,7 @@ export const TourPlayersPage = () => {
                 size="medium"
               />
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-6 m-4">
                 {tour.teams.map((team) => (
                   <TeamCard key={team.id} team={team} tour={tour} />
                 ))}
@@ -192,7 +192,7 @@ export const TourPlayersPage = () => {
         )}
 
         {/* All Players Section - Different display based on format */}
-        <div className="card-elevated card-spacing">
+        <div className="card-elevated card-spacing m-4">
           <div className="flex justify-between items-center mb-4">
             <div>
               <h2 className="section-header">All Players</h2>
