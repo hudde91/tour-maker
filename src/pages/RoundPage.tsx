@@ -11,7 +11,6 @@ import {
 import { useUpdateMatchHole } from "../hooks/useMatchPlay";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { getFormatConfig } from "../lib/roundFormatManager";
-import { storage } from "../lib/storage";
 import { PreRoundComponent } from "../components/rounds/PreRoundComponent";
 import { RoundHeader } from "../components/rounds/RoundHeader";
 import ErrorBoundary from "../components/common/ErrorBoundary";
@@ -137,9 +136,10 @@ export const RoundPage = () => {
 
   const handleTeamScoreChange = useCallback(
     async (teamId: string, holeIndex: number, score: number) => {
-      if (!tour || !round) return;
-      const teamScore = storage.getTeamScore(tour.id, round.id, teamId);
-      const currentScores = teamScore?.scores || new Array(round.holes).fill(0);
+      if (!round) return;
+      const teamScoreKey = `team_${teamId}`;
+      const teamScore = round.scores[teamScoreKey];
+      const currentScores = (teamScore?.scores || new Array(round.holes).fill(0)).map((s: number | null) => s ?? 0);
       const newScores = [...currentScores];
       newScores[holeIndex] = score;
 
@@ -149,7 +149,7 @@ export const RoundPage = () => {
         console.error("Failed to update team score:", error);
       }
     },
-    [tour?.id, round?.id, round?.holes, updateTeamScore],
+    [round, updateTeamScore],
   );
 
   const handleMatchHoleUpdate = useCallback(

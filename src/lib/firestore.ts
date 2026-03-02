@@ -157,7 +157,7 @@ export async function addPlayer(tourId: string, player: Player): Promise<void> {
     const players: Player[] = data.players || [];
     players.push(stripUndefined(player));
 
-    const updates: Record<string, unknown> = { players };
+    const updates: DocumentData = { players };
 
     // If the player has a teamId, also update that team's playerIds
     if (player.teamId) {
@@ -212,7 +212,7 @@ export async function removePlayer(tourId: string, playerId: string): Promise<vo
       if (team.captainId === playerId) team.captainId = "";
     }
 
-    const updates: Record<string, unknown> = {
+    const updates: DocumentData = {
       players: players.filter((p) => p.id !== playerId),
       teams,
     };
@@ -348,7 +348,7 @@ export async function setTeamCaptain(
 // ROUNDS (subcollection under tour)
 // ============================================================
 
-function stripUndefined<T extends Record<string, unknown>>(obj: T): T {
+function stripUndefined<T extends object>(obj: T): T {
   return Object.fromEntries(
     Object.entries(obj).filter(([, v]) => v !== undefined)
   ) as T;
@@ -557,7 +557,7 @@ export async function updateTeamScore(
     const totalScore = scores.reduce((a, b) => a + b, 0);
     const totalToPar = totalScore - playedPars;
 
-    const syntheticId = `${teamId}_score`;
+    const syntheticId = `team_${teamId}`;
     allScores[syntheticId] = {
       playerId: syntheticId,
       scores,
@@ -926,7 +926,7 @@ export async function saveSavedCourse(
 }
 
 export async function deleteSavedCourse(
-  userId: string,
+  _userId: string,
   courseId: string
 ): Promise<void> {
   await deleteDoc(savedCourseDocRef(courseId));

@@ -1,5 +1,4 @@
 import { getScoreInfo } from "@/lib/scoreUtils";
-import { storage } from "@/lib/storage";
 import { formatUtils } from "@/types/formats";
 import { Tour, Round, Team } from "@/types";
 import React, { useState, useEffect, useRef, useMemo } from "react";
@@ -74,7 +73,7 @@ export const SwipeableTeamScoring = ({
   // Check if all teams have scored the current hole
   const haveAllTeamsScoredCurrentHole = () => {
     return teams.every((team) => {
-      const teamScore = storage.getTeamScore(tour.id, round.id, team.id);
+      const teamScore = round.scores[`team_${team.id}`];
       if (!teamScore) return false;
 
       const score = teamScore.scores[currentHole - 1];
@@ -442,8 +441,7 @@ export const SwipeableTeamScoring = ({
                 }}
                 playerScores={{
                   [currentTeam.id]:
-                    storage.getTeamScore(tour.id, round.id, currentTeam.id)
-                      ?.scores || [],
+                    round.scores[`team_${currentTeam.id}`]?.scores || [],
                 }}
               />
             </div>
@@ -479,7 +477,7 @@ const TeamScoreCard = ({
   holeInfo,
   onScoreChange,
 }: TeamScoreCardProps) => {
-  const teamScore = storage.getTeamScore(tour.id, round.id, team.id);
+  const teamScore = round.scores[`team_${team.id}`] || null;
   const currentScore = teamScore?.scores[currentHole - 1] || 0;
   const [localScore, setLocalScore] = useState(currentScore);
   const par = holeInfo.par;
