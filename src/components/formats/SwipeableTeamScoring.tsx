@@ -3,7 +3,7 @@ import { formatUtils } from "@/types/formats";
 import { Tour, Round, Team } from "@/types";
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { HoleNavigation } from "../scoring/HoleNavigation";
-import { LiveLeaderboard } from "../scoring/LiveLeaderboard";
+import { TeamRoundLeaderboard } from "../scoring/TeamRoundLeaderboard";
 import { IndividualCompetitionWinnerSelector } from "./individual/IndividualCompetitionWinnerSelector";
 import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
@@ -451,7 +451,7 @@ export const SwipeableTeamScoring = ({
         {/* Leaderboard Tab */}
         {activeTab === "leaderboard" && (
           <div className="p-4">
-            <LiveLeaderboard tour={tour} round={round} />
+            <TeamRoundLeaderboard tour={tour} round={round} />
           </div>
         )}
       </div>
