@@ -80,6 +80,8 @@ export {
   calculateStablefordForPlayer,
   calculateTournamentStableford,
   calculateMatchesWon,
+  calculateTournamentPoints,
+  getRoundWinnerIds,
 } from "./scoring";
 
 // Match Play
@@ -171,6 +173,8 @@ export const storage = {
   calculateStablefordForPlayer: scoring.calculateStablefordForPlayer,
   calculateTournamentStableford: scoring.calculateTournamentStableford,
   calculateMatchesWon: scoring.calculateMatchesWon,
+  calculateTournamentPoints: scoring.calculateTournamentPoints,
+  getRoundWinnerIds: scoring.getRoundWinnerIds,
 
   // Match Play
   createMatchPlayRound: matchplay.createMatchPlayRound,

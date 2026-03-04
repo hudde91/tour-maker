@@ -1,4 +1,5 @@
-import { Tour, Round, TeamLeaderboardEntry } from "../../types";
+import { Tour, Round, TeamLeaderboardEntry, LeaderboardEntry } from "../../types";
+import type { ScoringConfig, PointsDistributionEntry } from "../../types";
 import { safeMin } from "../scoringUtils";
 import { isRoundCompleted } from "../roundUtils";
 import { getTotalPar } from "./rounds";
@@ -465,4 +466,253 @@ export const calculateMatchesWon = (tour: Tour, playerId: string): number => {
   }
 
   return matchesWon;
+};
+
+/**
+ * Get points for a given position from the distribution table.
+ * Players beyond the last defined position get 0 points.
+ * Tied players share the average of the points for their positions.
+ */
+const getPointsForPosition = (
+  position: number,
+  tiedCount: number,
+  distribution: PointsDistributionEntry[]
+): number => {
+  // Sum up the points for all positions covered by the tied group
+  let totalPoints = 0;
+  for (let i = 0; i < tiedCount; i++) {
+    const pos = position + i;
+    const entry = distribution.find((d) => d.position === pos);
+    totalPoints += entry?.points ?? 0;
+  }
+  // Each tied player gets an equal share
+  return totalPoints / tiedCount;
+};
+
+/**
+ * Calculate round placements for all players in a single round.
+ * Returns an array of { playerId, position, tiedCount } sorted by position.
+ */
+const calculateRoundPlacements = (
+  tour: Tour,
+  round: Round
+): Array<{ playerId: string; position: number; tiedCount: number }> => {
+  // Build player scores for this round
+  const playerScores: Array<{ playerId: string; score: number }> = [];
+
+  for (const player of tour.players) {
+    // Check for regular stroke play scores
+    if (round.scores[player.id] && round.scores[player.id].totalScore > 0) {
+      const ps = round.scores[player.id];
+      // Use net score if handicaps enabled, otherwise gross
+      const score = ps.netScore ?? ps.totalScore;
+      playerScores.push({ playerId: player.id, score });
+    }
+    // Check for match play scores
+    else if (round.isMatchPlay && hasRyderCupScores(round, player.id)) {
+      const score = getPlayerScoreFromRyderCup(round, player.id);
+      playerScores.push({ playerId: player.id, score });
+    }
+  }
+
+  if (playerScores.length === 0) return [];
+
+  // Check if this is a Stableford round
+  const isStableford = round.format === "stroke-play" && round.settings.stablefordScoring;
+
+  if (isStableford) {
+    // For Stableford, higher is better - calculate Stableford points
+    const stablefordScores = playerScores.map((ps) => ({
+      playerId: ps.playerId,
+      score: calculateStablefordForPlayer(round, ps.playerId),
+    }));
+    // Sort descending (higher is better)
+    stablefordScores.sort((a, b) => b.score - a.score);
+
+    return assignPositions(stablefordScores, false);
+  }
+
+  // For stroke play: lower is better
+  playerScores.sort((a, b) => a.score - b.score);
+  return assignPositions(playerScores, true);
+};
+
+/**
+ * Assign positions to sorted scores, handling ties
+ */
+const assignPositions = (
+  sortedScores: Array<{ playerId: string; score: number }>,
+  lowerIsBetter: boolean
+): Array<{ playerId: string; position: number; tiedCount: number }> => {
+  const placements: Array<{ playerId: string; position: number; tiedCount: number }> = [];
+
+  let i = 0;
+  while (i < sortedScores.length) {
+    // Find how many players are tied at this score
+    let tiedCount = 1;
+    while (
+      i + tiedCount < sortedScores.length &&
+      sortedScores[i + tiedCount].score === sortedScores[i].score
+    ) {
+      tiedCount++;
+    }
+
+    const position = i + 1;
+    for (let j = 0; j < tiedCount; j++) {
+      placements.push({
+        playerId: sortedScores[i + j].playerId,
+        position,
+        tiedCount,
+      });
+    }
+
+    i += tiedCount;
+  }
+
+  return placements;
+};
+
+/**
+ * Calculate tournament points for all players across all completed rounds.
+ * Uses the points distribution from the scoring config.
+ */
+export const calculateTournamentPoints = (
+  tour: Tour,
+  scoringConfig: ScoringConfig
+): Map<string, number> => {
+  const pointsMap = new Map<string, number>();
+
+  // Initialize all players with 0 points
+  for (const player of tour.players) {
+    pointsMap.set(player.id, 0);
+  }
+
+  // Process each completed round
+  for (const round of tour.rounds) {
+    if (!isRoundCompleted(round)) continue;
+
+    // Check if this is a team round
+    const isTeamRound =
+      round.format === "scramble" ||
+      round.format === "best-ball" ||
+      round.format === "alternate-shot";
+
+    if (isTeamRound && tour.teams && tour.teams.length > 0 && scoringConfig.teamPointsEnabled) {
+      // For team rounds, determine team placements and award points to each player on the team
+      const teamPlacements = calculateTeamRoundPlacements(tour, round);
+      for (const placement of teamPlacements) {
+        const pts = getPointsForPosition(
+          placement.position,
+          placement.tiedCount,
+          scoringConfig.pointsDistribution
+        );
+        // Award points to every player on the team
+        const team = tour.teams.find((t) => t.id === placement.teamId);
+        if (team) {
+          for (const playerId of team.playerIds) {
+            pointsMap.set(playerId, (pointsMap.get(playerId) || 0) + pts);
+          }
+        }
+      }
+    } else {
+      // Individual round placements
+      const placements = calculateRoundPlacements(tour, round);
+      for (const placement of placements) {
+        const pts = getPointsForPosition(
+          placement.position,
+          placement.tiedCount,
+          scoringConfig.pointsDistribution
+        );
+        pointsMap.set(
+          placement.playerId,
+          (pointsMap.get(placement.playerId) || 0) + pts
+        );
+      }
+    }
+  }
+
+  return pointsMap;
+};
+
+/**
+ * Calculate team placements for a team round
+ */
+const calculateTeamRoundPlacements = (
+  tour: Tour,
+  round: Round
+): Array<{ teamId: string; position: number; tiedCount: number }> => {
+  if (!tour.teams) return [];
+
+  const teamScores: Array<{ teamId: string; score: number }> = [];
+
+  for (const team of tour.teams) {
+    const teamPlayers = tour.players.filter((p) => p.teamId === team.id);
+
+    if (round.format === "scramble") {
+      const teamScoreKey = `team_${team.id}`;
+      const ts = round.scores[teamScoreKey];
+      if (ts && ts.totalScore > 0) {
+        teamScores.push({ teamId: team.id, score: ts.totalScore });
+      }
+    } else if (round.format === "best-ball") {
+      let totalBestBall = 0;
+      const holesCount = round.holeInfo?.length || round.holes || 18;
+      for (let h = 0; h < holesCount; h++) {
+        const holeScores = teamPlayers
+          .map((p) => round.scores[p.id]?.scores?.[h])
+          .filter((s): s is number => typeof s === "number" && s > 0);
+        if (holeScores.length > 0) {
+          totalBestBall += Math.min(...holeScores);
+        }
+      }
+      if (totalBestBall > 0) {
+        teamScores.push({ teamId: team.id, score: totalBestBall });
+      }
+    } else {
+      // Sum individual scores
+      let teamTotal = 0;
+      let hasScores = false;
+      for (const player of teamPlayers) {
+        if (round.scores[player.id]?.totalScore > 0) {
+          teamTotal += round.scores[player.id].totalScore;
+          hasScores = true;
+        }
+      }
+      if (hasScores) {
+        teamScores.push({ teamId: team.id, score: teamTotal });
+      }
+    }
+  }
+
+  // Lower is better for stroke play
+  teamScores.sort((a, b) => a.score - b.score);
+
+  const placements: Array<{ teamId: string; position: number; tiedCount: number }> = [];
+  let i = 0;
+  while (i < teamScores.length) {
+    let tiedCount = 1;
+    while (
+      i + tiedCount < teamScores.length &&
+      teamScores[i + tiedCount].score === teamScores[i].score
+    ) {
+      tiedCount++;
+    }
+    const position = i + 1;
+    for (let j = 0; j < tiedCount; j++) {
+      placements.push({ teamId: teamScores[i + j].teamId, position, tiedCount });
+    }
+    i += tiedCount;
+  }
+
+  return placements;
+};
+
+/**
+ * Determine the winner of a round (for bonus strokes calculation)
+ * Returns the player IDs of the winner(s) - could be multiple in case of a tie
+ */
+export const getRoundWinnerIds = (tour: Tour, round: Round): string[] => {
+  if (!isRoundCompleted(round)) return [];
+  const placements = calculateRoundPlacements(tour, round);
+  return placements.filter((p) => p.position === 1).map((p) => p.playerId);
 };

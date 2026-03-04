@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../contexts/AuthContext";
-import { Tour, TourFormat, Player } from "../types";
+import { Tour, TourFormat, Player, ScoringConfig } from "../types";
 import {
   getTours,
   getTour,
@@ -12,6 +12,7 @@ import {
   deleteTour,
   addPlayer,
   subscribeTour,
+  updateScoringConfig,
 } from "../lib/firestore";
 import { nanoid } from "nanoid";
 
@@ -58,12 +59,13 @@ export const useCreateTour = () => {
       description?: string;
       format: TourFormat;
       players?: Player[];
+      scoringConfig?: ScoringConfig;
     }) => {
       if (!user) throw new Error("Must be logged in");
       const id = nanoid();
       await createTour(
         user.uid,
-        { name: data.name, description: data.description, format: data.format },
+        { name: data.name, description: data.description, format: data.format, scoringConfig: data.scoringConfig },
         id
       );
 
@@ -139,6 +141,19 @@ export const useUpdateTourFormat = () => {
   return useMutation({
     mutationFn: async (data: { tourId: string; format: TourFormat }) => {
       await updateTourFormat(data.tourId, data.format);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
+    },
+  });
+};
+
+export const useUpdateScoringConfig = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { tourId: string; scoringConfig: ScoringConfig }) => {
+      await updateScoringConfig(data.tourId, data.scoringConfig);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tours"] });
