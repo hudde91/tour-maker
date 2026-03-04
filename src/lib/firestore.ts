@@ -787,6 +787,21 @@ export async function saveUserProfile(
   });
 }
 
+export async function updateUserHandicap(
+  userId: string,
+  handicap: number | undefined
+): Promise<void> {
+  const ref = userDoc(userId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    throw new Error("User profile not found");
+  }
+  await updateDoc(ref, {
+    handicap: handicap ?? null,
+    updatedAt: new Date().toISOString(),
+  });
+}
+
 export async function getAppSettingsFromFirestore(userId: string): Promise<AppSettings> {
   const snap = await getDoc(userDoc(userId));
   if (!snap.exists()) return DEFAULT_APP_SETTINGS;
