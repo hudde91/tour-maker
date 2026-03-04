@@ -81,6 +81,12 @@ export const HomePage = () => {
       path: "/create",
     },
     {
+      id: "profile",
+      label: "Profile",
+      icon: <User size={22} strokeWidth={2} />,
+      path: "/profile",
+    },
+    {
       id: "settings",
       label: "Settings",
       icon: <Settings size={22} strokeWidth={2} />,

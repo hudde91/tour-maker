@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserProfile, saveUserProfile } from "../lib/firestore";
+import { getUserProfile, saveUserProfile, updateUserHandicap } from "../lib/firestore";
 import { UserProfile } from "../types/core";
 
 export const useUserProfile = (userId: string | null) => {
@@ -52,6 +52,20 @@ export const useSaveUserProfile = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["userProfile", data.userId] });
       queryClient.invalidateQueries({ queryKey: ["hasUserProfile", data.userId] });
+    },
+  });
+};
+
+export const useUpdateHandicap = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { userId: string; handicap?: number }) => {
+      await updateUserHandicap(data.userId, data.handicap);
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["userProfile", data.userId] });
     },
   });
 };

@@ -11,6 +11,7 @@ import { TourPlayersPage } from "./pages/TourPlayersPage";
 import { TourRoundsPage } from "./pages/TourRoundsPage";
 import { TourSettingsPage } from "./pages/TourSettingsPage";
 import { AppSettingsPage } from "./pages/AppSettingsPage";
+import { ProfilePage } from "./pages/ProfilePage";
 import { RyderCupPairingPage } from "./pages/RyderCupPairingPage";
 import { TeamDashboard } from "./pages/TeamDashboard";
 import { RyderCupSetupWizard } from "./components/rydercup/RyderCupSetupWizard";
@@ -30,6 +31,7 @@ function App() {
 
           <Route path="/create" element={<CreateTourPage />} />
           <Route path="/create/ryder-cup-wizard" element={<RyderCupSetupWizard />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<AppSettingsPage />} />
 
           <Route path="/tour/:tourId" element={<TourLayout />}>
