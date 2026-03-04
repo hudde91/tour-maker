@@ -6,11 +6,14 @@ import {
   useUpdateTourDetails,
   useToggleTourArchive,
   useUpdateTourFormat,
+  useUpdateScoringConfig,
 } from "@/hooks/useTours";
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { TourFormat } from "@/types";
+import { TourFormat, ScoringConfig } from "@/types";
+import { DEFAULT_SCORING_CONFIG } from "@/types";
+import { ScoringConfigStep } from "@/components/tournament/ScoringConfigStep";
 import {
   Settings,
   XCircle,
@@ -39,14 +42,17 @@ export const TourSettingsPage = () => {
   const updateTourDetails = useUpdateTourDetails();
   const toggleArchive = useToggleTourArchive();
   const updateFormat = useUpdateTourFormat();
+  const updateScoringConfig = useUpdateScoringConfig();
   const { showToast, ToastComponent } = useToast();
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showFormatChangeConfirm, setShowFormatChangeConfirm] = useState(false);
   const [isEditingDetails, setIsEditingDetails] = useState(false);
+  const [isEditingScoring, setIsEditingScoring] = useState(false);
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [newFormat, setNewFormat] = useState<TourFormat>("individual");
+  const [editScoringConfig, setEditScoringConfig] = useState<ScoringConfig>({ ...DEFAULT_SCORING_CONFIG });
 
   const handleShareTournament = () => {
     const url = `${window.location.origin}/tour/${tourId}`;
@@ -147,6 +153,32 @@ export const TourSettingsPage = () => {
 
   const cancelFormatChange = () => {
     setShowFormatChangeConfirm(false);
+  };
+
+  const startEditingScoring = () => {
+    if (tour) {
+      setEditScoringConfig(tour.scoringConfig ? { ...tour.scoringConfig } : { ...DEFAULT_SCORING_CONFIG });
+      setIsEditingScoring(true);
+    }
+  };
+
+  const cancelEditingScoring = () => {
+    setIsEditingScoring(false);
+  };
+
+  const saveScoring = async () => {
+    if (!tour) return;
+    try {
+      await updateScoringConfig.mutateAsync({
+        tourId: tour.id,
+        scoringConfig: editScoringConfig,
+      });
+      showToast("Scoring configuration updated", "success");
+      setIsEditingScoring(false);
+    } catch (error) {
+      console.error("Failed to update scoring config:", error);
+      showToast("Failed to update scoring configuration", "error");
+    }
   };
 
   if (isLoading) {
@@ -391,6 +423,91 @@ export const TourSettingsPage = () => {
         </div>
 
         <div className="card">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="section-header">Scoring Configuration</h2>
+            {!isEditingScoring && (
+              <button
+                onClick={startEditingScoring}
+                className="text-emerald-400 hover:text-emerald-400 font-semibold text-sm flex items-center gap-1"
+              >
+                <Edit className="w-4 h-4" />
+                Edit
+              </button>
+            )}
+          </div>
+
+          {isEditingScoring ? (
+            <div className="space-y-4">
+              <ScoringConfigStep
+                config={editScoringConfig}
+                onChange={setEditScoringConfig}
+                hasTeams={tour.format === "team" || tour.format === "ryder-cup"}
+              />
+
+              <div className="flex gap-3 pt-4 border-t border-white/10">
+                <button
+                  onClick={saveScoring}
+                  disabled={updateScoringConfig.isPending}
+                  className="btn-primary flex-1"
+                >
+                  {updateScoringConfig.isPending ? "Saving..." : "Save Changes"}
+                </button>
+                <button
+                  onClick={cancelEditingScoring}
+                  className="btn-secondary flex-1"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div>
+                <label className="text-sm font-semibold text-white/50 block mb-1">
+                  Scoring Method
+                </label>
+                <div className="text-base text-white font-medium">
+                  {(tour.scoringConfig?.method || "total-score") === "total-score"
+                    ? "Total Score (cumulative across rounds)"
+                    : "Points Per Round (placement-based)"}
+                </div>
+              </div>
+
+              {tour.scoringConfig?.method === "points-per-round" && (
+                <div>
+                  <label className="text-sm font-semibold text-white/50 block mb-1">
+                    Points Distribution
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {tour.scoringConfig.pointsDistribution.map((entry) => (
+                      <span
+                        key={entry.position}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-white/5 rounded-lg text-sm"
+                      >
+                        <span className="text-white/50">{getOrdinalSuffix(entry.position)}:</span>
+                        <span className="font-semibold text-emerald-400">{entry.points}pts</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {(tour.scoringConfig?.bonusStrokesForWinner ?? 0) > 0 && (
+                <div>
+                  <label className="text-sm font-semibold text-white/50 block mb-1">
+                    Bonus Strokes
+                  </label>
+                  <div className="text-base text-white/70">
+                    Winner gets {tour.scoringConfig!.bonusStrokesForWinner} extra stroke
+                    {tour.scoringConfig!.bonusStrokesForWinner !== 1 ? "s" : ""} for the next round
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="card">
           <h2 className="section-header mb-4">Actions</h2>
 
           <div className="space-y-3">
@@ -619,3 +736,9 @@ export const TourSettingsPage = () => {
     </div>
   );
 };
+
+function getOrdinalSuffix(n: number): string {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}

@@ -36,6 +36,7 @@ export interface LeaderboardEntry {
   positionChange?: number;
   currentRoundScore?: number;
   currentRoundToPar?: number;
+  tournamentPoints?: number;
 }
 
 export interface TeamLeaderboardEntry {

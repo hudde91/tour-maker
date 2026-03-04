@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { Round, Tour, LeaderboardEntry } from "../../types";
 import { storage } from "../../lib/storage";
+import { calculateTournamentPoints } from "../../lib/storage/scoring";
 import {
   LeaderboardFilters,
   LeaderboardView,
@@ -195,85 +196,106 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       // Filter out players with no scores
       const playersWithScores = entries.filter((entry) => entry.totalScore > 0);
 
-      // ===== FORMAT-SPECIFIC SORTING =====
-      const completedRounds = getCompletedRounds(tour.rounds);
-      const isRyderCup = tour.format === "ryder-cup";
-      const hasSomeStableford = completedRounds.some(isStablefordScoring);
-      const isMatchPlay = completedRounds.some(isMatchPlayRound);
-      const hasHandicaps = completedRounds.some(hasHandicapsEnabled);
+      // ===== CHECK POINTS-PER-ROUND SCORING =====
+      const isPointsPerRound = tour.scoringConfig?.method === "points-per-round";
 
-      if (isRyderCup) {
-        // Ryder Cup: Individual leaderboard is less relevant
-        // Sort by total strokes as a fallback, but team view is primary
+      if (isPointsPerRound && tour.scoringConfig && view === "overall") {
+        // Calculate tournament points for all players
+        const pointsMap = calculateTournamentPoints(tour, tour.scoringConfig);
+
+        // Attach points to entries
+        playersWithScores.forEach((entry) => {
+          entry.tournamentPoints = pointsMap.get(entry.player.id) || 0;
+        });
+
+        // Sort by tournament points (highest first)
         playersWithScores.sort((a, b) => {
+          const aPts = a.tournamentPoints || 0;
+          const bPts = b.tournamentPoints || 0;
+          if (aPts !== bPts) return bPts - aPts;
+          // Tiebreaker: lower total strokes
           return (a.totalScore || 0) - (b.totalScore || 0);
         });
-      } else if (hasSomeStableford) {
-        // Stableford: Sort by HIGHEST Stableford points
-        playersWithScores.sort((a, b) => {
-          const aSf = storage.calculateTournamentStableford(tour, a.player.id);
-          const bSf = storage.calculateTournamentStableford(tour, b.player.id);
-          if (aSf !== bSf) return bSf - aSf; // Higher is better
-          return (a.totalScore || 0) - (b.totalScore || 0); // Lower strokes as tiebreaker
-        });
-      } else if (isMatchPlay) {
-        // Match Play: Sort by matches won
-        playersWithScores.sort((a, b) => {
-          const aMatchesWon = storage.calculateMatchesWon
-            ? storage.calculateMatchesWon(tour, a.player.id)
-            : 0;
-          const bMatchesWon = storage.calculateMatchesWon
-            ? storage.calculateMatchesWon(tour, b.player.id)
-            : 0;
-          if (aMatchesWon !== bMatchesWon) return bMatchesWon - aMatchesWon;
-          return (a.totalScore || 0) - (b.totalScore || 0);
+
+        // Set positions
+        let currentPosition = 1;
+        playersWithScores.forEach((entry, index) => {
+          if (index > 0) {
+            const prev = playersWithScores[index - 1];
+            if ((prev.tournamentPoints || 0) !== (entry.tournamentPoints || 0)) {
+              currentPosition = index + 1;
+            }
+          }
+          entry.position = currentPosition;
         });
       } else {
-        // Stroke Play (default): Sort by LOWEST total strokes
-        // Use NET score if handicaps are applied, otherwise GROSS
-        playersWithScores.sort((a, b) => {
-          if (hasHandicaps) {
-            const aScore = a.netScore ?? a.totalScore;
-            const bScore = b.netScore ?? b.totalScore;
-            return aScore - bScore; // Lower is better
-          } else {
-            return (a.totalScore || 0) - (b.totalScore || 0); // Lower is better
+        // ===== FORMAT-SPECIFIC SORTING =====
+        const completedRounds = getCompletedRounds(tour.rounds);
+        const isRyderCup = tour.format === "ryder-cup";
+        const hasSomeStableford = completedRounds.some(isStablefordScoring);
+        const isMatchPlay = completedRounds.some(isMatchPlayRound);
+        const hasHandicaps = completedRounds.some(hasHandicapsEnabled);
+
+        if (isRyderCup) {
+          playersWithScores.sort((a, b) => {
+            return (a.totalScore || 0) - (b.totalScore || 0);
+          });
+        } else if (hasSomeStableford) {
+          playersWithScores.sort((a, b) => {
+            const aSf = storage.calculateTournamentStableford(tour, a.player.id);
+            const bSf = storage.calculateTournamentStableford(tour, b.player.id);
+            if (aSf !== bSf) return bSf - aSf;
+            return (a.totalScore || 0) - (b.totalScore || 0);
+          });
+        } else if (isMatchPlay) {
+          playersWithScores.sort((a, b) => {
+            const aMatchesWon = storage.calculateMatchesWon
+              ? storage.calculateMatchesWon(tour, a.player.id)
+              : 0;
+            const bMatchesWon = storage.calculateMatchesWon
+              ? storage.calculateMatchesWon(tour, b.player.id)
+              : 0;
+            if (aMatchesWon !== bMatchesWon) return bMatchesWon - aMatchesWon;
+            return (a.totalScore || 0) - (b.totalScore || 0);
+          });
+        } else {
+          playersWithScores.sort((a, b) => {
+            if (hasHandicaps) {
+              const aScore = a.netScore ?? a.totalScore;
+              const bScore = b.netScore ?? b.totalScore;
+              return aScore - bScore;
+            } else {
+              return (a.totalScore || 0) - (b.totalScore || 0);
+            }
+          });
+        }
+
+        // Set positions (handle ties)
+        let currentPosition = 1;
+        playersWithScores.forEach((entry, index) => {
+          if (index > 0) {
+            const prev = playersWithScores[index - 1];
+            let isTied = false;
+
+            if (hasSomeStableford) {
+              const prevSf = storage.calculateTournamentStableford(tour, prev.player.id);
+              const currSf = storage.calculateTournamentStableford(tour, entry.player.id);
+              isTied = prevSf === currSf;
+            } else if (hasHandicaps) {
+              isTied =
+                (prev.netScore ?? prev.totalScore) ===
+                (entry.netScore ?? entry.totalScore);
+            } else {
+              isTied = prev.totalScore === entry.totalScore;
+            }
+
+            if (!isTied) {
+              currentPosition = index + 1;
+            }
           }
+          entry.position = currentPosition;
         });
       }
-
-      // Set positions (handle ties)
-      let currentPosition = 1;
-      playersWithScores.forEach((entry, index) => {
-        if (index > 0) {
-          const prev = playersWithScores[index - 1];
-          // Determine if there's a tie based on scoring method
-          let isTied = false;
-
-          if (hasSomeStableford) {
-            const prevSf = storage.calculateTournamentStableford(
-              tour,
-              prev.player.id,
-            );
-            const currSf = storage.calculateTournamentStableford(
-              tour,
-              entry.player.id,
-            );
-            isTied = prevSf === currSf;
-          } else if (hasHandicaps) {
-            isTied =
-              (prev.netScore ?? prev.totalScore) ===
-              (entry.netScore ?? entry.totalScore);
-          } else {
-            isTied = prev.totalScore === entry.totalScore;
-          }
-
-          if (!isTied) {
-            currentPosition = index + 1;
-          }
-        }
-        entry.position = currentPosition;
-      });
 
       // Calculate position changes if we have previous rounds to compare
       if (previousRoundsToInclude.length > 0 && useRounds === roundsToInclude) {
@@ -316,6 +338,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       tour.players,
       tour.rounds,
       tour.format,
+      tour.scoringConfig,
       view,
       roundsToInclude,
       previousRoundsToInclude,
@@ -346,6 +369,7 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     (r) => isMatchPlayRound(r) && !isRyderCup,
   );
   const hasHandicaps = completedRounds.some(hasHandicapsEnabled);
+  const isPointsPerRound = tour.scoringConfig?.method === "points-per-round";
 
   // Pre-calculate stableford and matches won for all players to avoid repeated calls in render loop
   const playerStablefordPoints = useMemo(() => {
@@ -407,9 +431,13 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
         </h2>
         <p className="text-white/40 text-sm">
           {view === "overall"
-            ? `Overall standings across ${
-                completedRoundsList.length
-              } completed round${completedRoundsList.length !== 1 ? "s" : ""}`
+            ? isPointsPerRound
+              ? `Points standings across ${
+                  completedRoundsList.length
+                } completed round${completedRoundsList.length !== 1 ? "s" : ""}`
+              : `Overall standings across ${
+                  completedRoundsList.length
+                } completed round${completedRoundsList.length !== 1 ? "s" : ""}`
             : view === "current-round"
               ? "Current round standings"
               : "Round-specific standings"}
@@ -688,7 +716,20 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
 
                   {/* Score Display - FORMAT AWARE */}
                   <div className="text-right flex-shrink-0">
-                    {hasSomeStableford ? (
+                    {isPointsPerRound && view === "overall" ? (
+                      // Points Per Round Format
+                      <>
+                        <div className="text-3xl font-bold text-amber-400 mb-1">
+                          {entry.tournamentPoints ?? 0}
+                        </div>
+                        <div className="text-xs text-white/40">
+                          {entry.totalScore} strokes
+                        </div>
+                        <div className="text-xs text-amber-400 font-medium mt-1">
+                          Tournament Points
+                        </div>
+                      </>
+                    ) : hasSomeStableford ? (
                       // Stableford Format
                       <>
                         <div className="text-3xl font-bold text-emerald-400 mb-1">

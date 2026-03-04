@@ -60,6 +60,7 @@ export interface Round {
       Array<{ playerId: string; distance?: number; matchId?: string }>
     >;
   };
+  bonusStrokes?: Record<string, number>;
 }
 
 export interface Player {
@@ -106,6 +107,34 @@ export interface SavedCourse {
   updatedAt: string;
 }
 
+export type TournamentScoringMethod = "total-score" | "points-per-round";
+
+export interface PointsDistributionEntry {
+  position: number;
+  points: number;
+}
+
+export interface ScoringConfig {
+  method: TournamentScoringMethod;
+  pointsDistribution: PointsDistributionEntry[];
+  teamPointsEnabled: boolean;
+  bonusStrokesForWinner: number;
+}
+
+export const DEFAULT_SCORING_CONFIG: ScoringConfig = {
+  method: "total-score",
+  pointsDistribution: [
+    { position: 1, points: 10 },
+    { position: 2, points: 7 },
+    { position: 3, points: 5 },
+    { position: 4, points: 3 },
+    { position: 5, points: 2 },
+    { position: 6, points: 1 },
+  ],
+  teamPointsEnabled: true,
+  bonusStrokesForWinner: 0,
+};
+
 export interface Tour {
   id: string;
   name: string;
@@ -118,4 +147,5 @@ export interface Tour {
   rounds: Round[];
   isActive: boolean;
   archived?: boolean;
+  scoringConfig?: ScoringConfig;
 }

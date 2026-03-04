@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { LogIn } from "lucide-react";
 import { useCreateTour } from "../hooks/useTours";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
-import { TourFormat, Player } from "../types";
+import { TourFormat, Player, ScoringConfig } from "../types";
+import { DEFAULT_SCORING_CONFIG } from "../types";
 import { useAuth } from "../contexts/AuthContext";
 import { useUserProfile } from "../hooks/useUserProfile";
 import { PlayerProfileSetup } from "../components/profile/PlayerProfileSetup";
 import { PlayerSelectionStep } from "../components/players/PlayerSelectionStep";
+import { ScoringConfigStep } from "../components/tournament/ScoringConfigStep";
 
 interface WizardStep {
   id: number;
@@ -28,6 +30,11 @@ const WIZARD_STEPS: WizardStep[] = [
   },
   {
     id: 3,
+    title: "Scoring",
+    description: "Configure how the winner is decided",
+  },
+  {
+    id: 4,
     title: "Add players",
     description: "Add players to your tournament",
   },
@@ -51,6 +58,11 @@ const RYDER_CUP_ADVANCED_STEPS: WizardStep[] = [
   },
   {
     id: 4,
+    title: "Scoring",
+    description: "Configure how the winner is decided",
+  },
+  {
+    id: 5,
     title: "Add players",
     description: "Add players to your tournament",
   },
@@ -68,6 +80,9 @@ export const CreateTourPage = () => {
     name: "",
     description: "",
     format: "individual" as TourFormat,
+  });
+  const [scoringConfig, setScoringConfig] = useState<ScoringConfig>({
+    ...DEFAULT_SCORING_CONFIG,
   });
   const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([]);
   const [isRyderCupAdvanced, setIsRyderCupAdvanced] = useState(false);
@@ -96,8 +111,8 @@ export const CreateTourPage = () => {
   // Check if user needs to set up profile when reaching player selection step
   useEffect(() => {
     const isPlayerStep =
-      (currentStep === 3 && (formData.format !== "ryder-cup" || !isRyderCupAdvanced)) ||
-      (currentStep === 4 && formData.format === "ryder-cup" && isRyderCupAdvanced);
+      (currentStep === 4 && (formData.format !== "ryder-cup" || !isRyderCupAdvanced)) ||
+      (currentStep === 5 && formData.format === "ryder-cup" && isRyderCupAdvanced);
 
     if (isPlayerStep && user && !userProfile) {
       setShowProfileSetup(true);
@@ -143,6 +158,10 @@ export const CreateTourPage = () => {
       const tourData = {
         ...formData,
         players,
+        // Only include scoringConfig if not using the default total-score method
+        ...(scoringConfig.method !== "total-score" || scoringConfig.bonusStrokesForWinner > 0
+          ? { scoringConfig }
+          : {}),
       };
       const tour = await createTour.mutateAsync(tourData);
       navigate(`/tour/${tour.id}`);
@@ -162,23 +181,32 @@ export const CreateTourPage = () => {
   };
 
   const isStepValid = () => {
-    switch (currentStep) {
-      case 1:
-        return true; // Format is always selected
-      case 2:
-        if (formData.format === "ryder-cup") {
-          return true; // Setup type selection is always valid
-        }
-        return formData.name.trim().length > 0; // Name required for other formats
-      case 3:
-        if (formData.format === "ryder-cup" && isRyderCupAdvanced) {
-          return formData.name.trim().length > 0; // Name required for Ryder Cup advanced
-        }
-        return selectedPlayers.length > 0; // At least one player required for other formats
-      case 4:
-        return selectedPlayers.length > 0; // At least one player required for Ryder Cup advanced
-      default:
-        return false;
+    if (formData.format === "ryder-cup" && isRyderCupAdvanced) {
+      // Ryder Cup advanced: 1=Format, 2=SetupType, 3=Name, 4=Scoring, 5=Players
+      switch (currentStep) {
+        case 1: return true;
+        case 2: return true;
+        case 3: return formData.name.trim().length > 0;
+        case 4: return true; // Scoring config is always valid
+        case 5: return selectedPlayers.length > 0;
+        default: return false;
+      }
+    } else if (formData.format === "ryder-cup") {
+      // Ryder Cup non-advanced: 1=Format, 2=SetupType
+      switch (currentStep) {
+        case 1: return true;
+        case 2: return true;
+        default: return false;
+      }
+    } else {
+      // Individual/Team: 1=Format, 2=Name, 3=Scoring, 4=Players
+      switch (currentStep) {
+        case 1: return true;
+        case 2: return formData.name.trim().length > 0;
+        case 3: return true; // Scoring config is always valid
+        case 4: return selectedPlayers.length > 0;
+        default: return false;
+      }
     }
   };
 
@@ -525,7 +553,7 @@ export const CreateTourPage = () => {
                   disabled={!isStepValid()}
                   className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next: Add players
+                  Next: Scoring
                 </button>
               </div>
             </div>
@@ -574,14 +602,36 @@ export const CreateTourPage = () => {
                   disabled={!isStepValid()}
                   className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
                 >
+                  Next: Scoring
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Scoring Configuration Step */}
+          {((currentStep === 3 && formData.format !== "ryder-cup") ||
+            (currentStep === 4 && formData.format === "ryder-cup" && isRyderCupAdvanced)) && (
+            <div className="space-y-6">
+              <ScoringConfigStep
+                config={scoringConfig}
+                onChange={setScoringConfig}
+                hasTeams={formData.format === "team" || formData.format === "ryder-cup"}
+              />
+
+              <div className="flex gap-4 pt-6 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="btn-primary w-full"
+                >
                   Next: Add players
                 </button>
               </div>
             </div>
           )}
 
-          {/* Step 4: Add Players (for Ryder Cup Advanced) */}
-          {currentStep === 4 && formData.format === "ryder-cup" && isRyderCupAdvanced && (
+          {/* Add Players (for Ryder Cup Advanced) */}
+          {currentStep === 5 && formData.format === "ryder-cup" && isRyderCupAdvanced && (
             <PlayerSelectionStep
               selectedPlayers={selectedPlayers}
               onAddPlayer={handleAddPlayer}
@@ -593,8 +643,8 @@ export const CreateTourPage = () => {
             />
           )}
 
-          {/* Step 3: Add Players (for non-Ryder Cup formats) */}
-          {currentStep === 3 && (formData.format !== "ryder-cup" || !isRyderCupAdvanced) && (
+          {/* Add Players (for non-Ryder Cup formats) */}
+          {currentStep === 4 && formData.format !== "ryder-cup" && (
             <PlayerSelectionStep
               selectedPlayers={selectedPlayers}
               onAddPlayer={handleAddPlayer}

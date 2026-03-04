@@ -27,8 +27,10 @@ import type {
   AppSettings,
   Friend,
   SavedCourse,
+  ScoringConfig,
 } from "../types";
 import { DEFAULT_APP_SETTINGS } from "@tour-maker/shared";
+import { getRoundWinnerIds } from "./storage/scoring";
 
 // --- Collection references ---
 
@@ -104,7 +106,7 @@ export function subscribeTour(
 
 export async function createTour(
   ownerId: string,
-  data: { name: string; description?: string; format: TourFormat },
+  data: { name: string; description?: string; format: TourFormat; scoringConfig?: ScoringConfig },
   id: string
 ): Promise<void> {
   await setDoc(tourDoc(id), {
@@ -119,7 +121,15 @@ export async function createTour(
     players: [],
     teams: [],
     participantIds: [ownerId],
+    ...(data.scoringConfig && { scoringConfig: data.scoringConfig }),
   });
+}
+
+export async function updateScoringConfig(
+  tourId: string,
+  scoringConfig: ScoringConfig
+): Promise<void> {
+  await updateDoc(tourDoc(tourId), { scoringConfig });
 }
 
 export async function updateTourDetails(
@@ -374,6 +384,7 @@ export async function createRound(tourId: string, round: Round): Promise<void> {
     ryderCup: round.ryderCup ?? null,
     isMatchPlay: round.isMatchPlay ?? false,
     competitionWinners: round.competitionWinners ?? { closestToPin: {}, longestDrive: {} },
+    bonusStrokes: round.bonusStrokes ?? null,
   });
 }
 
@@ -399,6 +410,7 @@ export async function updateRound(tourId: string, round: Round): Promise<void> {
     ryderCup: round.ryderCup ?? null,
     isMatchPlay: round.isMatchPlay ?? false,
     competitionWinners: round.competitionWinners ?? { closestToPin: {}, longestDrive: {} },
+    bonusStrokes: round.bonusStrokes ?? null,
   });
 }
 
@@ -455,6 +467,17 @@ export async function startRound(tourId: string, roundId: string): Promise<void>
           };
         }
       }
+
+      // Apply bonus strokes from previous round wins
+      const bonusStrokes: Record<string, number> = roundData.bonusStrokes || {};
+      for (const [playerId, bonus] of Object.entries(bonusStrokes)) {
+        if (scores[playerId] && bonus > 0) {
+          scores[playerId] = {
+            ...scores[playerId],
+            handicapStrokes: (scores[playerId].handicapStrokes || 0) + bonus,
+          };
+        }
+      }
     }
 
     transaction.update(roundDoc(tourId, roundId), {
@@ -466,9 +489,58 @@ export async function startRound(tourId: string, roundId: string): Promise<void>
 }
 
 export async function completeRound(tourId: string, roundId: string): Promise<void> {
-  await updateDoc(roundDoc(tourId, roundId), {
-    status: "completed",
-    completedAt: new Date().toISOString(),
+  await runTransaction(db, async (transaction) => {
+    const tourSnap = await transaction.get(tourDoc(tourId));
+    const roundSnap = await transaction.get(roundDoc(tourId, roundId));
+    if (!tourSnap.exists() || !roundSnap.exists()) return;
+
+    // Mark round as completed
+    transaction.update(roundDoc(tourId, roundId), {
+      status: "completed",
+      completedAt: new Date().toISOString(),
+    });
+
+    // Check if bonus strokes should be awarded
+    const tourData = tourSnap.data();
+    const scoringConfig = tourData.scoringConfig as ScoringConfig | undefined;
+    if (!scoringConfig || scoringConfig.bonusStrokesForWinner <= 0) return;
+
+    // Assemble the tour to calculate winner
+    const allRoundSnap = await getDocs(roundsCol(tourId));
+    const allRounds = allRoundSnap.docs.map((d) => docToRound(d.id, d.data()));
+
+    // Mark the current round as completed for the calculation
+    const completedRound = allRounds.find((r) => r.id === roundId);
+    if (completedRound) {
+      completedRound.status = "completed";
+      completedRound.completedAt = new Date().toISOString();
+    }
+
+    const tour = assembleTourSync(tourId, tourData, allRounds.map((r) => ({
+      ...r,
+      id: r.id,
+    })));
+
+    if (!completedRound) return;
+    const winnerIds = getRoundWinnerIds(tour, completedRound);
+    if (winnerIds.length === 0) return;
+
+    // Find the next upcoming round (created but not started/completed)
+    const roundOrder = allRounds
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+    const completedIndex = roundOrder.findIndex((r) => r.id === roundId);
+    const nextRound = roundOrder.slice(completedIndex + 1).find(
+      (r) => r.status === "created" || r.status === "in-progress"
+    );
+
+    if (nextRound) {
+      // Set bonus strokes on the next round
+      const bonusStrokes: Record<string, number> = nextRound.bonusStrokes || {};
+      for (const winnerId of winnerIds) {
+        bonusStrokes[winnerId] = (bonusStrokes[winnerId] || 0) + scoringConfig.bonusStrokesForWinner;
+      }
+      transaction.update(roundDoc(tourId, nextRound.id), { bonusStrokes });
+    }
   });
 }
 
@@ -967,6 +1039,7 @@ async function assembleTour(tourId: string, data: DocumentData): Promise<Tour> {
     rounds,
     isActive: data.isActive ?? true,
     archived: data.archived ?? false,
+    scoringConfig: data.scoringConfig ?? undefined,
   };
 }
 
@@ -983,6 +1056,7 @@ function assembleTourSync(tourId: string, data: DocumentData, roundDocs: Documen
     rounds: roundDocs.map((d) => docToRound(d.id, d)),
     isActive: data.isActive ?? true,
     archived: data.archived ?? false,
+    scoringConfig: data.scoringConfig ?? undefined,
   };
 }
 
@@ -1009,5 +1083,6 @@ function docToRound(id: string, data: DocumentData): Round {
     ryderCup: data.ryderCup ?? undefined,
     isMatchPlay: data.isMatchPlay ?? undefined,
     competitionWinners: data.competitionWinners ?? undefined,
+    bonusStrokes: data.bonusStrokes ?? undefined,
   };
 }
