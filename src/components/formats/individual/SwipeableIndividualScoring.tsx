@@ -1,5 +1,6 @@
 import { HoleNavigation } from "@/components/scoring/HoleNavigation";
 import { LiveLeaderboard } from "@/components/scoring/LiveLeaderboard";
+import { SkinsLeaderboard } from "@/components/scoring/SkinsLeaderboard";
 import { getScoreInfo } from "@/lib/scoreUtils";
 import { storage } from "@/lib/storage";
 import { formatUtils } from "@/types/formats";
@@ -503,7 +504,11 @@ export const SwipeableIndividualScoring = ({
 
         {activeTab === "leaderboard" && (
           <div className="p-4">
-            <LiveLeaderboard tour={tour} round={round} />
+            {round.format === "skins" ? (
+              <SkinsLeaderboard tour={tour} round={round} />
+            ) : (
+              <LiveLeaderboard tour={tour} round={round} />
+            )}
           </div>
         )}
       </div>
