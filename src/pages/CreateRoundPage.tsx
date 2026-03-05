@@ -9,6 +9,12 @@ import { GolfTermTooltip } from "../components/ui/Tooltip";
 import { FormatExplainer } from "../components/ui/FormatExplainer";
 import { SavedCourseSelector } from "../components/rounds/SavedCourseSelector";
 import { EditSavedCourseModal } from "../components/rounds/EditSavedCourseModal";
+import { TeeBoxPickerModal } from "../components/rounds/TeeBoxPickerModal";
+import {
+  useGolfCourseDetail,
+  GolfCourseSearchResult,
+} from "../hooks/useGolfCourseSearch";
+import { GolfCourseDetail, TeeBox } from "../lib/golfCourseApi";
 
 const WIZARD_STEPS = [
   { id: "basic", title: "Basic Details", description: "Round & format" },
@@ -28,6 +34,9 @@ export const CreateRoundPage = () => {
   const [saveCourseOnCreate, setSaveCourseOnCreate] = useState(false);
   const [editingCourse, setEditingCourse] = useState<SavedCourse | null>(null);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [apiCourseId, setApiCourseId] = useState<string | null>(null);
+  const [pendingApiCourse, setPendingApiCourse] = useState<GolfCourseDetail | null>(null);
+  const { data: apiCourseDetail } = useGolfCourseDetail(apiCourseId);
   const [formData, setFormData] = useState({
     name: "",
     courseName: "",
@@ -108,6 +117,34 @@ export const CreateRoundPage = () => {
       teeBoxes: course.teeBoxes || "Championship Tees",
       totalYardage: course.totalYardage || "",
     });
+  };
+
+  const handleSelectApiCourse = (course: GolfCourseSearchResult) => {
+    setApiCourseId(course.id);
+    setFormData({ ...formData, courseName: course.name });
+  };
+
+  // Show tee box picker when API course detail loads
+  if (apiCourseDetail && apiCourseId && !pendingApiCourse) {
+    setPendingApiCourse(apiCourseDetail);
+    setApiCourseId(null);
+  }
+
+  const handleTeeBoxSelected = (teeBox: TeeBox) => {
+    const holes = teeBox.holes.length || 18;
+    const holeInfo =
+      teeBox.holes.length > 0
+        ? teeBox.holes
+        : storage.generateDefaultHoles(holes);
+
+    setFormData({
+      ...formData,
+      holes,
+      holeInfo,
+      teeBoxes: teeBox.name,
+      totalYardage: teeBox.totalYards ? teeBox.totalYards.toString() : "",
+    });
+    setPendingApiCourse(null);
   };
 
   const validateHandicaps = () => {
@@ -441,6 +478,7 @@ export const CreateRoundPage = () => {
                     }
                     onSelect={handleSelectSavedCourse}
                     onEdit={(course) => setEditingCourse(course)}
+                    onSelectApiCourse={handleSelectApiCourse}
                   />
                 </div>
 
@@ -1190,6 +1228,14 @@ export const CreateRoundPage = () => {
           course={editingCourse}
           isOpen={!!editingCourse}
           onClose={() => setEditingCourse(null)}
+        />
+      )}
+
+      {pendingApiCourse && (
+        <TeeBoxPickerModal
+          course={pendingApiCourse}
+          onSelect={handleTeeBoxSelected}
+          onCancel={() => setPendingApiCourse(null)}
         />
       )}
     </div>
