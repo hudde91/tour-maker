@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { Tour, Round, Team } from "../../types";
+import { BroadcastHeader } from "../tournament/BroadcastHeader";
 
 interface TeamRoundLeaderboardProps {
   tour: Tour;
@@ -41,11 +42,9 @@ export const TeamRoundLeaderboard: React.FC<TeamRoundLeaderboardProps> = ({
         if (winners.length === 1) {
           winningTeamIds = [winners[0].team.id];
         } else if (winners.length > 1 && winners.length < validScores.length) {
-          // All tied among some teams
           isTied = true;
           winningTeamIds = winners.map((w) => w.team.id);
         } else if (winners.length === validScores.length && validScores.length > 1) {
-          // All teams tied
           isTied = true;
           winningTeamIds = [];
         }
@@ -99,61 +98,94 @@ export const TeamRoundLeaderboard: React.FC<TeamRoundLeaderboardProps> = ({
   const front9 = holeResults.slice(0, 9);
   const back9 = isFull18 ? holeResults.slice(9, 18) : [];
 
+  // Sort teams by total strokes for the standings
+  const sortedTeams = [...teams].sort(
+    (a, b) => (totalStrokesByTeam[a.id] || 0) - (totalStrokesByTeam[b.id] || 0)
+  );
+
+  const isLive = round.status === "in-progress";
+
   return (
     <div className="space-y-4">
-      {/* Summary - Holes Won */}
-      <div className="card">
-        <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wide mb-3">
-          Holes Won
-        </h3>
-        <div className="space-y-2">
-          {teams.map((team) => {
+      {/* Team Standings - Broadcast Style */}
+      <div className="leaderboard-broadcast">
+        <BroadcastHeader
+          tournamentName={round.name || "Team Standings"}
+          subtitle={round.courseName || "Team scoring"}
+          isLive={isLive}
+        />
+
+        <div className="rounded-b-xl border border-t-0 border-white/10 overflow-hidden bg-white/[0.02]">
+          {/* Column headers */}
+          <div className="flex items-center gap-3 px-3 py-2 sm:px-4 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-white/30 border-b border-white/10 bg-white/[0.03]">
+            <div className="w-8 text-center">Pos</div>
+            <div className="flex-1">Team</div>
+            <div className="min-w-[40px] text-right">Won</div>
+            <div className="min-w-[36px] text-right">Strk</div>
+          </div>
+
+          {/* Team rows */}
+          {sortedTeams.map((team, index) => {
             const won = holesWonByTeam.counts[team.id];
-            const totalPlayedHoles = holeResults.filter(
-              (hr) => hr.teamScores.some((ts) => ts.team.id === team.id && ts.score !== null)
-            ).length;
-            const percentage =
-              totalPlayedHoles > 0 ? (won / totalPlayedHoles) * 100 : 0;
+            const strokes = totalStrokesByTeam[team.id] || 0;
+            const posClass =
+              index === 0
+                ? "lb-pos-1"
+                : index === 1
+                  ? "lb-pos-2"
+                  : index === 2
+                    ? "lb-pos-3"
+                    : "";
+            const rowClass =
+              index === 0
+                ? "lb-row-leader"
+                : index === 1
+                  ? "lb-row-2"
+                  : index === 2
+                    ? "lb-row-3"
+                    : "";
 
             return (
-              <div key={team.id} className="flex items-center gap-3">
-                <div
-                  className="w-3 h-3 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: team.color }}
-                />
+              <div key={team.id} className={`lb-row ${rowClass}`}>
+                <div className={`lb-pos ${posClass}`}>{index + 1}</div>
+
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-white truncate">
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: team.color }}
+                    />
+                    <span className="font-semibold text-white text-sm sm:text-base truncate">
                       {team.name}
                     </span>
-                    <span className="text-sm font-bold text-white ml-2">
-                      {won}
-                    </span>
+                    {index === 0 && strokes > 0 && (
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-yellow-400 bg-yellow-400/15 px-1.5 py-0.5 rounded flex-shrink-0">
+                        Leader
+                      </span>
+                    )}
                   </div>
-                  <div className="w-full bg-white/10 rounded-full h-2">
-                    <div
-                      className="h-2 rounded-full transition-all duration-500"
-                      style={{
-                        width: `${percentage}%`,
-                        backgroundColor: team.color,
-                      }}
-                    />
+                </div>
+
+                <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 text-right">
+                  <div className="min-w-[40px]">
+                    <div className="text-lg sm:text-xl font-bold text-emerald-400">
+                      {won}
+                    </div>
+                    <div className="text-[10px] text-white/30 uppercase">Won</div>
+                  </div>
+                  <div className="min-w-[36px] text-white/40">
+                    <div className="text-sm font-medium">{strokes || "–"}</div>
+                    <div className="text-[10px]">Strk</div>
                   </div>
                 </div>
               </div>
             );
           })}
+
+          {/* Tied holes indicator */}
           {holesWonByTeam.tiedCount > 0 && (
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full flex-shrink-0 bg-white/30" />
-              <div className="flex items-center justify-between flex-1">
-                <span className="text-sm font-medium text-white/60">
-                  Tied
-                </span>
-                <span className="text-sm font-bold text-white/60">
-                  {holesWonByTeam.tiedCount}
-                </span>
-              </div>
+            <div className="text-center py-2 text-xs text-white/30 border-t border-white/10 bg-white/[0.02]">
+              {holesWonByTeam.tiedCount} hole{holesWonByTeam.tiedCount !== 1 ? "s" : ""} tied
             </div>
           )}
         </div>
@@ -168,40 +200,6 @@ export const TeamRoundLeaderboard: React.FC<TeamRoundLeaderboardProps> = ({
       {isFull18 && back9.length > 0 && (
         <HoleResultsTable title="Back 9" holes={back9} teams={teams} />
       )}
-
-      {/* Total strokes */}
-      <div className="card">
-        <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wide mb-3">
-          Total Strokes
-        </h3>
-        <div className="space-y-2">
-          {[...teams]
-            .sort(
-              (a, b) =>
-                (totalStrokesByTeam[a.id] || 0) -
-                (totalStrokesByTeam[b.id] || 0)
-            )
-            .map((team) => (
-              <div
-                key={team.id}
-                className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2"
-              >
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: team.color }}
-                  />
-                  <span className="text-sm font-medium text-white">
-                    {team.name}
-                  </span>
-                </div>
-                <span className="text-sm font-bold text-white">
-                  {totalStrokesByTeam[team.id] || 0}
-                </span>
-              </div>
-            ))}
-        </div>
-      </div>
     </div>
   );
 };
@@ -219,15 +217,17 @@ const HoleResultsTable: React.FC<HoleResultsTableProps> = ({
   teams,
 }) => {
   return (
-    <div className="card overflow-hidden">
-      <h3 className="text-sm font-semibold text-white/50 uppercase tracking-wide mb-3">
-        {title}
-      </h3>
-      <div className="overflow-x-auto -mx-4 px-4">
+    <div className="rounded-xl border border-white/10 overflow-hidden bg-white/[0.02]">
+      <div className="px-4 py-2.5 border-b border-white/10 bg-white/[0.03]">
+        <h3 className="text-xs font-semibold text-white/50 uppercase tracking-wider">
+          {title}
+        </h3>
+      </div>
+      <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/10">
-              <th className="text-left text-white/40 font-medium py-2 pr-2 sticky left-0 bg-slate-950">
+              <th className="text-left text-white/40 font-medium py-2 pl-4 pr-2 sticky left-0 bg-[#0a0f1a]">
                 Hole
               </th>
               {holes.map((hr) => (
@@ -240,7 +240,7 @@ const HoleResultsTable: React.FC<HoleResultsTableProps> = ({
               ))}
             </tr>
             <tr className="border-b border-white/10">
-              <td className="text-left text-white/30 font-medium py-1 pr-2 text-xs sticky left-0 bg-slate-950">
+              <td className="text-left text-white/30 font-medium py-1 pl-4 pr-2 text-xs sticky left-0 bg-[#0a0f1a]">
                 Par
               </td>
               {holes.map((hr) => (
@@ -256,7 +256,7 @@ const HoleResultsTable: React.FC<HoleResultsTableProps> = ({
           <tbody>
             {teams.map((team) => (
               <tr key={team.id} className="border-b border-white/5">
-                <td className="py-2 pr-2 sticky left-0 bg-slate-950">
+                <td className="py-2 pl-4 pr-2 sticky left-0 bg-[#0a0f1a]">
                   <div className="flex items-center gap-1.5">
                     <div
                       className="w-2.5 h-2.5 rounded-full flex-shrink-0"
