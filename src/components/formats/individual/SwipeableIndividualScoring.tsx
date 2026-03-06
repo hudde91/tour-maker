@@ -1,11 +1,12 @@
 import { HoleNavigation } from "@/components/scoring/HoleNavigation";
 import { LiveLeaderboard } from "@/components/scoring/LiveLeaderboard";
 import { SkinsLeaderboard } from "@/components/scoring/SkinsLeaderboard";
+import { ScoreCelebration, getCelebrationType, CelebrationType } from "@/components/scoring/ScoreCelebration";
 import { getScoreInfo } from "@/lib/scoreUtils";
 import { storage } from "@/lib/storage";
 import { formatUtils } from "@/types/formats";
 import { Tour, Round, Player, HoleInfo, PlayerScore } from "@/types";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
 import { IndividualCompetitionWinnerSelector } from "./IndividualCompetitionWinnerSelector";
@@ -548,6 +549,7 @@ const PlayerScoreCard = ({
   const [localScore, setLocalScore] = useState<number>(currentScore ?? 0);
   const [closestToPinDistance, setClosestToPinDistance] = useState<string>("");
   const [longestDriveDistance, setLongestDriveDistance] = useState<string>("");
+  const [celebration, setCelebration] = useState<CelebrationType>(null);
   const par = holeInfo.par;
 
   // Reset local score and distances when hole changes
@@ -578,7 +580,17 @@ const PlayerScoreCard = ({
     hapticSelection();
     setLocalScore(score);
     onScoreChange(score);
+
+    // Trigger celebration for birdie or better
+    const celebrationType = getCelebrationType(score, effectivePar);
+    if (celebrationType) {
+      setCelebration(celebrationType);
+    }
   };
+
+  const handleCelebrationComplete = useCallback(() => {
+    setCelebration(null);
+  }, []);
 
   // Generate score options
   const generateScoreOptions = () => {
@@ -601,9 +613,19 @@ const PlayerScoreCard = ({
 
   const scoreOptions = generateScoreOptions();
 
+  // Determine celebration CSS class for the score box
+  const celebrationCardClass = celebration
+    ? celebration === "ace"
+      ? "celebrate-ace"
+      : celebration === "eagle"
+        ? "celebrate-eagle"
+        : "celebrate-birdie"
+    : "";
+
   return (
     <div className="space-y-4">
-      <div className="card bg-gradient-to-br from-emerald-500/15 to-teal-500/15">
+      <ScoreCelebration type={celebration} onComplete={handleCelebrationComplete} />
+      <div className={`card bg-gradient-to-br from-emerald-500/15 to-teal-500/15 ${celebrationCardClass}`}>
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="relative">
@@ -689,7 +711,8 @@ const PlayerScoreCard = ({
 
           <div className="text-right">
             <div
-              className={`text-4xl font-bold px-5 py-3 rounded-xl border-2 shadow-md transition-all duration-200 ${scoreInfo.bg} ${scoreInfo.text}`}
+              key={localScore}
+              className={`text-4xl font-bold px-5 py-3 rounded-xl border-2 shadow-md transition-all duration-200 ${scoreInfo.bg} ${scoreInfo.text} ${localScore ? "score-flash" : ""}`}
             >
               {localScore || "–"}
             </div>
