@@ -491,77 +491,141 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
       {/* Leaderboard Content */}
       {leaderboardView === "team" &&
       (tour.format === "team" || tour.format === "ryder-cup") ? (
-        /* Team Tournament Leaderboard */
-        <div className="space-y-3">
+        /* Team Tournament Leaderboard - Broadcast Style */
+        <div className="rounded-xl border border-white/10 overflow-hidden bg-white/[0.02]">
           {teamsWithScores.length === 0 ? (
             <div className="text-center py-8">
               <span className="text-4xl mb-4 block">👥</span>
               <p className="text-white/40">No team scores yet</p>
             </div>
           ) : (
-            teamsWithScores.map((teamEntry, index) => {
-              const captain = tour.players.find(
-                (p) => p.id === teamEntry.team.captainId,
-              );
-              const isLeadingTeam = index === 0;
+            <>
+              {/* Column headers */}
+              <div className="flex items-center gap-3 px-3 py-2 sm:px-4 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-white/30 border-b border-white/10 bg-white/[0.03]">
+                <div className="w-8 text-center">Pos</div>
+                <div className="flex-1">Team</div>
+                {isRyderCup ? (
+                  <div className="min-w-[40px] text-right">Pts</div>
+                ) : (
+                  <>
+                    <div className="min-w-[44px] text-right">
+                      {hasHandicaps ? "Net" : "Par"}
+                    </div>
+                    <div className="min-w-[36px] text-right">Strk</div>
+                  </>
+                )}
+              </div>
 
-              return (
-                <div
-                  key={teamEntry.team.id}
-                  className={`p-4 sm:p-5 bg-white/5 border-2 rounded-xl transition-all ${
-                    isLeadingTeam
-                      ? "border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50"
-                      : "border-white/10 hover:border-white/15"
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    {/* Position Badge */}
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0 ${
-                        isLeadingTeam
-                          ? "bg-yellow-500 text-white"
-                          : "bg-white/5 text-white/70"
-                      }`}
-                    >
-                      {index + 1}
+              {/* Team rows */}
+              {teamsWithScores.map((teamEntry, index) => {
+                const captain = tour.players.find(
+                  (p) => p.id === teamEntry.team.captainId,
+                );
+                const posClass =
+                  index === 0
+                    ? "lb-pos-1"
+                    : index === 1
+                      ? "lb-pos-2"
+                      : index === 2
+                        ? "lb-pos-3"
+                        : "";
+                const rowClass =
+                  index === 0
+                    ? "lb-row-leader"
+                    : index === 1
+                      ? "lb-row-2"
+                      : index === 2
+                        ? "lb-row-3"
+                        : "";
+
+                const displayScore = hasHandicaps
+                  ? (teamEntry.netScore ?? teamEntry.totalScore)
+                  : teamEntry.totalScore;
+                const toPar = hasHandicaps
+                  ? (teamEntry.netToPar ?? teamEntry.totalToPar)
+                  : teamEntry.totalToPar;
+
+                const formatToPar = (v: number) =>
+                  v === 0 ? "E" : v > 0 ? `+${v}` : `${v}`;
+                const getToParClass = (v: number) =>
+                  v < 0
+                    ? "lb-score-under"
+                    : v > 0
+                      ? "lb-score-over"
+                      : "lb-score-even";
+
+                return (
+                  <div key={teamEntry.team.id} className={`lb-row ${rowClass}`}>
+                    {/* Position */}
+                    <div className={`lb-pos ${posClass}`}>
+                      {teamEntry.position}
                     </div>
 
-                    {/* Team Info */}
+                    {/* Team name and meta */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div
-                          className="w-4 h-4 rounded-full border-2 border-white shadow-sm flex-shrink-0"
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                           style={{ backgroundColor: teamEntry.team.color }}
                         />
-                        <h3 className="font-bold text-lg text-white truncate">
+                        <span className="font-semibold text-white text-sm sm:text-base truncate">
                           {teamEntry.team.name}
-                        </h3>
-                        {isLeadingTeam && (
-                          <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-0.5 rounded-full font-semibold flex-shrink-0">
-                            Leading
+                        </span>
+                        {index === 0 && (
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-yellow-400 bg-yellow-400/15 px-1.5 py-0.5 rounded flex-shrink-0">
+                            Leader
                           </span>
                         )}
                       </div>
-
-                      <div className="flex items-center gap-4 text-sm text-white/50">
-                        <span>{teamEntry.playersWithScores} players</span>
-                        {captain && <span>Captain: {captain.name}</span>}
+                      <div className="flex items-center gap-2 text-[11px] sm:text-xs text-white/40 mt-0.5">
+                        <span>
+                          {teamEntry.playersWithScores}/{teamEntry.totalPlayers} players
+                        </span>
+                        {captain && (
+                          <span className="flex items-center gap-1">
+                            <svg className="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                            {captain.name}
+                          </span>
+                        )}
                       </div>
                     </div>
 
-                    {/* Score */}
-                    <div className="text-right flex-shrink-0">
-                      <div className="text-3xl font-bold text-white">
-                        {teamEntry.netScore || teamEntry.totalScore}
-                      </div>
-                      <div className="text-xs text-white/40 mt-1">
-                        {teamEntry.totalScore} strokes
-                      </div>
+                    {/* Score section */}
+                    <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 text-right">
+                      {isRyderCup ? (
+                        <div className="min-w-[40px]">
+                          <div className="text-lg sm:text-xl font-bold text-amber-400">
+                            {teamEntry.ryderCupPoints ?? 0}
+                          </div>
+                          <div className="text-[10px] text-white/30 uppercase">Pts</div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="min-w-[44px]">
+                            <div className={`text-lg sm:text-xl font-bold ${getToParClass(toPar)}`}>
+                              {formatToPar(toPar)}
+                            </div>
+                            <div className="text-[10px] text-white/30 uppercase">
+                              {hasHandicaps ? "Net" : "Par"}
+                            </div>
+                          </div>
+                          <div className="min-w-[36px] text-white/40">
+                            <div className="text-sm font-medium">{displayScore}</div>
+                            <div className="text-[10px]">
+                              {hasHandicaps && teamEntry.totalHandicapStrokes
+                                ? `(-${teamEntry.totalHandicapStrokes})`
+                                : "Strk"}
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
-                </div>
-              );
-            })
+                );
+              })}
+            </>
           )}
         </div>
       ) : playersWithScores.length > VIRTUALIZATION_THRESHOLD ? (
