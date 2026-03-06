@@ -1,10 +1,11 @@
 import { getScoreInfo } from "@/lib/scoreUtils";
 import { formatUtils } from "@/types/formats";
 import { Tour, Round, Team } from "@/types";
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { HoleNavigation } from "../scoring/HoleNavigation";
 import { TeamRoundLeaderboard } from "../scoring/TeamRoundLeaderboard";
 import { IndividualCompetitionWinnerSelector } from "./individual/IndividualCompetitionWinnerSelector";
+import { ScoreCelebration, getCelebrationType, CelebrationType } from "../scoring/ScoreCelebration";
 import { useUpdateCompetitionWinner } from "@/hooks/useScoring";
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -480,6 +481,7 @@ const TeamScoreCard = ({
   const teamScore = round.scores[`team_${team.id}`] || null;
   const currentScore = teamScore?.scores[currentHole - 1] || 0;
   const [localScore, setLocalScore] = useState(currentScore);
+  const [celebration, setCelebration] = useState<CelebrationType>(null);
   const par = holeInfo.par;
 
   // Reset local score when hole changes
@@ -501,7 +503,16 @@ const TeamScoreCard = ({
   const handleScoreSelect = (score: number) => {
     setLocalScore(score);
     onScoreChange(score);
+
+    const celebrationType = getCelebrationType(score, par);
+    if (celebrationType) {
+      setCelebration(celebrationType);
+    }
   };
+
+  const handleCelebrationComplete = useCallback(() => {
+    setCelebration(null);
+  }, []);
 
   // Generate score options
   const generateScoreOptions = () => {
@@ -524,11 +535,20 @@ const TeamScoreCard = ({
 
   const scoreOptions = generateScoreOptions();
 
+  const celebrationCardClass = celebration
+    ? celebration === "ace"
+      ? "celebrate-ace"
+      : celebration === "eagle"
+        ? "celebrate-eagle"
+        : "celebrate-birdie"
+    : "";
+
   return (
     <div className="space-y-4">
+      <ScoreCelebration type={celebration} onComplete={handleCelebrationComplete} />
       {/* Team Header Card */}
       <div
-        className="card"
+        className={`card ${celebrationCardClass}`}
         style={{
           background: `linear-gradient(135deg, ${team.color}20 0%, ${team.color}08 100%)`,
           borderLeft: `4px solid ${team.color}`,

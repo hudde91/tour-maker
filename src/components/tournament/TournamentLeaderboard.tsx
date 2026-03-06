@@ -15,6 +15,8 @@ import {
   getCompletedRounds,
 } from "../../lib/roundUtils";
 import { VirtualizedLeaderboard } from "./VirtualizedLeaderboard";
+import { BroadcastHeader } from "./BroadcastHeader";
+import { LeaderboardRow } from "./LeaderboardRow";
 
 // Threshold for enabling virtualization - improves performance for large tournaments
 const VIRTUALIZATION_THRESHOLD = 50;
@@ -397,22 +399,27 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
     return matches;
   }, [isMatchPlay, playersWithScores, tour]);
 
+  // Check if any round is currently live
+  const hasLiveRound = tour.rounds.some((r) => r.status === "in-progress");
+
   // If no scores at all, show empty state
   if (playersWithScores.length === 0) {
     return (
       <div className="max-w-5xl mx-auto p-1">
-        <h2 className="section-header card-spacing flex items-center justify-center gap-3">
-          <span className="text-3xl">🏆</span>
-          Tournament Leaderboard
-        </h2>
-        <div className="text-center py-12">
-          <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto card-spacing">
-            <span className="text-4xl">📊</span>
+        <BroadcastHeader
+          tournamentName="Leaderboard"
+          subtitle="No scores recorded yet"
+        />
+        <div className="text-center py-12 rounded-b-xl border border-t-0 border-white/10 bg-white/[0.02]">
+          <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
           </div>
-          <h3 className="text-xl font-semibold text-white/70 card-spacing">
+          <h3 className="text-lg font-semibold text-white/60 mb-2">
             No Scores Yet
           </h3>
-          <p className="text-white/40 card-spacing max-w-md mx-auto">
+          <p className="text-white/30 text-sm">
             Complete rounds to see the leaderboard
           </p>
         </div>
@@ -422,27 +429,25 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
 
   const completedRoundsList = getCompletedRounds(tour.rounds);
 
+  const subtitleText =
+    view === "overall"
+      ? `${completedRoundsList.length} round${completedRoundsList.length !== 1 ? "s" : ""} completed`
+      : view === "current-round"
+        ? "Current round"
+        : "Round standings";
+
   return (
-    <div className="m-4 max-w-5xl space-y-6">
-      <div className="card">
-        <h2 className="section-header flex items-center gap-3 mb-2">
-          <span className="text-3xl">🏆</span>
-          Tournament Leaderboard
-        </h2>
-        <p className="text-white/40 text-sm">
-          {view === "overall"
-            ? isPointsPerRound
-              ? `Points standings across ${
-                  completedRoundsList.length
-                } completed round${completedRoundsList.length !== 1 ? "s" : ""}`
-              : `Overall standings across ${
-                  completedRoundsList.length
-                } completed round${completedRoundsList.length !== 1 ? "s" : ""}`
-            : view === "current-round"
-              ? "Current round standings"
-              : "Round-specific standings"}
-        </p>
-      </div>
+    <div className="m-4 max-w-5xl space-y-4 leaderboard-broadcast">
+      <BroadcastHeader
+        tournamentName="Leaderboard"
+        subtitle={subtitleText}
+        isLive={hasLiveRound}
+        roundInfo={
+          view === "overall"
+            ? `${completedRoundsList.length} Rd${completedRoundsList.length !== 1 ? "s" : ""}`
+            : undefined
+        }
+      />
 
       {/* Filters */}
       <LeaderboardFilters
@@ -593,251 +598,58 @@ export const TournamentLeaderboard = ({ tour }: TournamentLeaderboardProps) => {
           />
         </div>
       ) : (
-        /* Standard Individual Tournament Leaderboard (top 10) */
-        <div className="space-y-3">
-          {playersWithScores.slice(0, 10).map((entry, index) => {
-            // Use pre-calculated values instead of calling expensive functions in the loop
-            const stablefordPoints =
-              playerStablefordPoints.get(entry.player.id) || 0;
-            const matchesWon = playerMatchesWon.get(entry.player.id) || 0;
-
-            // Determine display score
-            const displayScore = hasHandicaps
-              ? (entry.netScore ?? entry.totalScore)
-              : entry.totalScore;
-
-            return (
-              <div
-                key={entry.player.id}
-                className={`p-4 sm:p-5 bg-white/5 border-2 rounded-xl transition-all ${
-                  index === 0
-                    ? "border-yellow-400"
-                    : index === 1
-                      ? "border-white/35"
-                      : index === 2
-                        ? "border-orange-300"
-                        : "border-white/10 hover:border-white/15"
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  {/* Position Badge with Movement Arrow */}
-                  <div className="flex flex-col items-center flex-shrink-0">
-                    {index < 3 ? (
-                      <span className="text-2xl">
-                        {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
-                      </span>
-                    ) : (
-                      entry.position
-                    )}
-                    {/* Movement Arrow */}
-                    {entry.positionChange !== undefined &&
-                      entry.positionChange !== 0 && (
-                        <div
-                          className={`text-xs font-bold mt-1 flex items-center gap-0.5 ${
-                            entry.positionChange > 0
-                              ? "text-emerald-400"
-                              : "text-red-400"
-                          }`}
-                        >
-                          <span className="text-base">
-                            {entry.positionChange > 0 ? "↑" : "↓"}
-                          </span>
-                          <span>{Math.abs(entry.positionChange)}</span>
-                        </div>
-                      )}
-                    {entry.positionChange === 0 && (
-                      <div className="text-xs font-medium mt-1 text-white/30">
-                        −
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Player Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="font-bold text-lg text-white truncate">
-                        {entry.player.name}
-                      </h3>
-                      {entry.isCaptain && <span className="text-base">👑</span>}
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-white/50">
-                      {entry.player.handicap !== undefined && (
-                        <span className="flex items-center gap-1">
-                          <span className="text-white/30">HC</span>
-                          {entry.player.handicap}
-                        </span>
-                      )}
-
-                      {entry.team && (
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: entry.team.color }}
-                          />
-                          <span>{entry.team.name}</span>
-                        </div>
-                      )}
-
-                      <span className="text-white/30">
-                        {entry.roundsPlayed} round
-                        {entry.roundsPlayed !== 1 ? "s" : ""}
-                      </span>
-
-                      {/* Show "Thru X holes" for active rounds */}
-                      {view === "current-round" &&
-                        (() => {
-                          const activeRound = roundsToInclude[0];
-                          if (
-                            activeRound &&
-                            activeRound.status === "in-progress"
-                          ) {
-                            const playerScores =
-                              activeRound.scores[entry.player.id];
-                            if (playerScores) {
-                              // Count non-zero scores to determine holes completed
-                              const holesCompleted = playerScores.scores.filter(
-                                (score) => score !== null && score > 0,
-                              ).length;
-                              if (holesCompleted > 0 && holesCompleted < 18) {
-                                return (
-                                  <span className="text-emerald-400 font-medium flex items-center gap-1">
-                                    <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                                    Thru {holesCompleted}
-                                  </span>
-                                );
-                              }
-                            }
-                          }
-                          return null;
-                        })()}
-                    </div>
-                  </div>
-
-                  {/* Score Display - FORMAT AWARE */}
-                  <div className="text-right flex-shrink-0">
-                    {isPointsPerRound && view === "overall" ? (
-                      // Points Per Round Format
-                      <>
-                        <div className="text-3xl font-bold text-amber-400 mb-1">
-                          {entry.tournamentPoints ?? 0}
-                        </div>
-                        <div className="text-xs text-white/40">
-                          {entry.totalScore} strokes
-                        </div>
-                        <div className="text-xs text-amber-400 font-medium mt-1">
-                          Tournament Points
-                        </div>
-                      </>
-                    ) : hasSomeStableford ? (
-                      // Stableford Format
-                      <>
-                        <div className="text-3xl font-bold text-emerald-400 mb-1">
-                          {stablefordPoints}
-                        </div>
-                        <div className="text-xs text-white/40">
-                          {entry.totalScore} strokes
-                        </div>
-                        <div className="text-xs text-emerald-400 font-medium mt-1">
-                          Stableford Points
-                        </div>
-                      </>
-                    ) : isMatchPlay ? (
-                      // Match Play Format
-                      <>
-                        <div className="text-3xl font-bold text-white mb-1">
-                          {matchesWon}
-                        </div>
-                        <div className="text-xs text-white/40">Matches Won</div>
-                        {entry.totalScore > 0 && (
-                          <div className="text-xs text-white/30 mt-1">
-                            {entry.totalScore} total strokes
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      // Stroke Play Format
-                      <>
-                        <div
-                          className={`text-3xl font-bold mb-1 ${
-                            hasHandicaps && entry.netToPar !== undefined
-                              ? entry.netToPar < 0
-                                ? "text-emerald-400"
-                                : entry.netToPar > 0
-                                  ? "text-red-400"
-                                  : "text-white"
-                              : entry.totalToPar < 0
-                                ? "text-emerald-400"
-                                : entry.totalToPar > 0
-                                  ? "text-red-400"
-                                  : "text-white"
-                          }`}
-                        >
-                          {displayScore}
-                        </div>
-                        <div className="text-xs text-white/40">
-                          {entry.totalScore} strokes
-                          {entry.netScore && entry.handicapStrokes
-                            ? ` (-${entry.handicapStrokes} HC)`
-                            : ""}
-                        </div>
-                        <div
-                          className={`text-xs font-medium mt-1 ${
-                            hasHandicaps && entry.netToPar !== undefined
-                              ? entry.netToPar < 0
-                                ? "text-emerald-400"
-                                : entry.netToPar > 0
-                                  ? "text-red-400"
-                                  : "text-white/50"
-                              : entry.totalToPar < 0
-                                ? "text-emerald-400"
-                                : entry.totalToPar > 0
-                                  ? "text-red-400"
-                                  : "text-white/50"
-                          }`}
-                        >
-                          {hasHandicaps && entry.netToPar !== undefined
-                            ? `${entry.netToPar > 0 ? "+" : ""}${
-                                entry.netToPar
-                              } vs Par (Net)`
-                            : `${entry.totalToPar > 0 ? "+" : ""}${
-                                entry.totalToPar
-                              } vs Par`}
-                        </div>
-                        {/* Today's Score (for Overall view) */}
-                        {view === "overall" && entry.currentRoundScore && (
-                          <div className="text-xs text-white/30 mt-1.5 pt-1.5 border-t border-white/10">
-                            Today:{" "}
-                            <span
-                              className={`font-medium ${
-                                entry.currentRoundToPar !== undefined
-                                  ? entry.currentRoundToPar < 0
-                                    ? "text-emerald-400"
-                                    : entry.currentRoundToPar > 0
-                                      ? "text-red-400"
-                                      : "text-white/50"
-                                  : "text-white/50"
-                              }`}
-                            >
-                              {entry.currentRoundScore}
-                              {entry.currentRoundToPar !== undefined &&
-                                ` (${entry.currentRoundToPar > 0 ? "+" : ""}${
-                                  entry.currentRoundToPar
-                                })`}
-                            </span>
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
+        /* Standard Individual Tournament Leaderboard - Broadcast Style */
+        <div className="rounded-xl border border-white/10 overflow-hidden bg-white/[0.02]">
+          {/* Column headers */}
+          <div className="flex items-center gap-3 px-3 py-2 sm:px-4 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-white/30 border-b border-white/10 bg-white/[0.03]">
+            <div className="w-8 text-center">Pos</div>
+            <div className="w-5" />
+            <div className="flex-1">Player</div>
+            {isPointsPerRound && view === "overall" ? (
+              <>
+                <div className="min-w-[40px] text-right">Pts</div>
+                <div className="min-w-[36px] text-right">Strk</div>
+              </>
+            ) : hasSomeStableford ? (
+              <>
+                <div className="min-w-[40px] text-right">Stb</div>
+                <div className="min-w-[36px] text-right">Strk</div>
+              </>
+            ) : isMatchPlay ? (
+              <div className="min-w-[40px] text-right">Won</div>
+            ) : (
+              <>
+                <div className="min-w-[44px] text-right">
+                  {hasHandicaps ? "Net" : "Par"}
                 </div>
-              </div>
-            );
-          })}
+                <div className="min-w-[36px] text-right">Strk</div>
+                {view === "overall" && (
+                  <div className="min-w-[36px] text-right hidden sm:block">Today</div>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Rows */}
+          {playersWithScores.slice(0, 10).map((entry, index) => (
+            <LeaderboardRow
+              key={entry.player.id}
+              entry={entry}
+              index={index}
+              hasSomeStableford={hasSomeStableford}
+              isMatchPlay={isMatchPlay}
+              hasHandicaps={hasHandicaps}
+              isPointsPerRound={isPointsPerRound}
+              view={view}
+              roundsToInclude={roundsToInclude}
+              stablefordPoints={playerStablefordPoints.get(entry.player.id) || 0}
+              matchesWon={playerMatchesWon.get(entry.player.id) || 0}
+            />
+          ))}
 
           {/* Show more players indicator */}
           {playersWithScores.length > 10 && (
-            <div className="text-center py-4 text-sm text-white/40">
+            <div className="text-center py-3 text-xs text-white/30 border-t border-white/10 bg-white/[0.02]">
               Showing top 10 of {playersWithScores.length} players
             </div>
           )}
