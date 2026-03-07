@@ -701,8 +701,7 @@ export const CreateRoundPage = () => {
                             : "",
                         })
                       }
-                      style={{ minWidth: "3.5rem" }}
-                      className={`relative inline-flex h-7 w-14 flex-none items-center rounded-full transition-colors ${
+                      className={`toggle-switch relative inline-flex h-7 w-14 flex-none items-center rounded-full transition-colors ${
                         formData.useManualPar ? "bg-emerald-600" : "bg-gray-300"
                       }`}
                     >
