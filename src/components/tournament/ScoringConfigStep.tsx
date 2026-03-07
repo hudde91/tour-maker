@@ -320,7 +320,8 @@ export const ScoringConfigStep = ({
               <button
                 type="button"
                 onClick={handleTeamPointsToggle}
-                className={`relative w-14 h-7 shrink-0 rounded-full transition-colors ${
+                style={{ minWidth: "3.5rem" }}
+                className={`relative w-14 h-7 flex-none rounded-full transition-colors ${
                   config.teamPointsEnabled
                     ? "bg-emerald-500"
                     : "bg-white/20"
