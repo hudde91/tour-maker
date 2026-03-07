@@ -5,7 +5,17 @@ import { useAuth } from "../contexts/AuthContext";
 import { useUserProfile, useUpdateHandicap } from "../hooks/useUserProfile";
 import { useTours } from "../hooks/useTours";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
-import { Home, User, Pencil, Check, X, Trophy, Target, TrendingUp, Award } from "lucide-react";
+import {
+  Home,
+  User,
+  Pencil,
+  Check,
+  X,
+  Trophy,
+  Target,
+  TrendingUp,
+  Award,
+} from "lucide-react";
 import { BottomNav } from "../components/BottomNav";
 import { Link } from "react-router-dom";
 import { PlusCircle, Settings } from "lucide-react";
@@ -15,7 +25,7 @@ export const ProfilePage = () => {
   useDocumentTitle("My Profile");
   const { user, loading: authLoading } = useAuth();
   const { data: profile, isLoading: profileLoading } = useUserProfile(
-    user?.uid ?? null
+    user?.uid ?? null,
   );
   const { data: tours = [] } = useTours();
   const updateHandicap = useUpdateHandicap();
@@ -66,7 +76,7 @@ export const ProfilePage = () => {
         totalStrokes += playerScore.totalScore;
 
         const holesPlayed = playerScore.scores.filter(
-          (s) => s !== null && s > 0
+          (s) => s !== null && s > 0,
         ).length;
         totalHoles += holesPlayed;
 
@@ -84,7 +94,9 @@ export const ProfilePage = () => {
     });
 
     const averageScore =
-      roundsPlayed > 0 ? Math.round((totalStrokes / roundsPlayed) * 10) / 10 : null;
+      roundsPlayed > 0
+        ? Math.round((totalStrokes / roundsPlayed) * 10) / 10
+        : null;
 
     return {
       tournamentsPlayed,
@@ -97,7 +109,7 @@ export const ProfilePage = () => {
 
   const handleEditHandicap = () => {
     setHandicapInput(
-      profile?.handicap != null ? profile.handicap.toString() : ""
+      profile?.handicap != null ? profile.handicap.toString() : "",
     );
     setIsEditingHandicap(true);
   };
@@ -105,7 +117,7 @@ export const ProfilePage = () => {
   const handleCancelEdit = () => {
     setIsEditingHandicap(false);
     setHandicapInput(
-      profile?.handicap != null ? profile.handicap.toString() : ""
+      profile?.handicap != null ? profile.handicap.toString() : "",
     );
   };
 
@@ -115,7 +127,10 @@ export const ProfilePage = () => {
     const normalized = handicapInput.replace(",", ".").trim();
     const handicapValue = normalized ? parseFloat(normalized) : undefined;
 
-    if (handicapValue !== undefined && (handicapValue < 0 || handicapValue > 54 || isNaN(handicapValue))) {
+    if (
+      handicapValue !== undefined &&
+      (handicapValue < 0 || handicapValue > 54 || isNaN(handicapValue))
+    ) {
       showToast("Handicap must be between 0 and 54", "error");
       return;
     }
@@ -202,12 +217,14 @@ export const ProfilePage = () => {
   ];
 
   // Handicap ring percentage (0-54 scale, lower = better = more filled)
-  const handicapPercent = profile?.handicap != null
-    ? Math.max(0, Math.min(100, (1 - profile.handicap / 54) * 100))
-    : 0;
+  const handicapPercent =
+    profile?.handicap != null
+      ? Math.max(0, Math.min(100, (1 - profile.handicap / 54) * 100))
+      : 0;
 
   const circumference = 2 * Math.PI * 52;
-  const strokeDashoffset = circumference - (handicapPercent / 100) * circumference;
+  const strokeDashoffset =
+    circumference - (handicapPercent / 100) * circumference;
 
   return (
     <div className="min-h-screen pb-24">
@@ -217,11 +234,13 @@ export const ProfilePage = () => {
         breadcrumbs={breadcrumbs}
       />
 
-      <div className="pb-8 w-full max-w-6xl mx-auto space-y-6">
+      <div className="pb-8 w-full max-w-6xl mx-auto space-y-6 p-4">
         {/* Player Card - Sports Trading Card Style */}
-        <div className="relative overflow-hidden rounded-2xl border border-white/10"
+        <div
+          className="relative overflow-hidden rounded-2xl border border-white/10"
           style={{
-            background: "linear-gradient(135deg, rgba(5, 150, 105, 0.15) 0%, rgba(6, 182, 212, 0.08) 50%, rgba(16, 185, 129, 0.1) 100%)",
+            background:
+              "linear-gradient(135deg, rgba(5, 150, 105, 0.15) 0%, rgba(6, 182, 212, 0.08) 50%, rgba(16, 185, 129, 0.1) 100%)",
           }}
         >
           {/* Top accent gradient */}
@@ -231,16 +250,23 @@ export const ProfilePage = () => {
             <div className="flex items-start gap-4 sm:gap-6">
               {/* Avatar with Handicap Ring */}
               <div className="relative flex-shrink-0">
-                <svg className="w-28 h-28 sm:w-32 sm:h-32 -rotate-90" viewBox="0 0 120 120">
+                <svg
+                  className="w-28 h-28 sm:w-32 sm:h-32 -rotate-90"
+                  viewBox="0 0 120 120"
+                >
                   <circle
-                    cx="60" cy="60" r="52"
+                    cx="60"
+                    cy="60"
+                    r="52"
                     fill="none"
                     stroke="rgba(255,255,255,0.06)"
                     strokeWidth="6"
                   />
                   {profile?.handicap != null && (
                     <circle
-                      cx="60" cy="60" r="52"
+                      cx="60"
+                      cy="60"
+                      r="52"
                       fill="none"
                       stroke="url(#handicapGradient)"
                       strokeWidth="6"
@@ -251,7 +277,13 @@ export const ProfilePage = () => {
                     />
                   )}
                   <defs>
-                    <linearGradient id="handicapGradient" x1="0" y1="0" x2="1" y2="1">
+                    <linearGradient
+                      id="handicapGradient"
+                      x1="0"
+                      y1="0"
+                      x2="1"
+                      y2="1"
+                    >
                       <stop offset="0%" stopColor="#10b981" />
                       <stop offset="100%" stopColor="#06b6d4" />
                     </linearGradient>
@@ -274,17 +306,24 @@ export const ProfilePage = () => {
 
               {/* Player Info */}
               <div className="flex-1 min-w-0 pt-2">
-                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight truncate"
-                  style={{ fontFamily: "'Poppins', 'Inter', system-ui, sans-serif" }}
+                <h2
+                  className="text-xl sm:text-2xl font-bold text-white tracking-tight truncate"
+                  style={{
+                    fontFamily: "'Poppins', 'Inter', system-ui, sans-serif",
+                  }}
                 >
                   {profile?.playerName || user.displayName || "Player"}
                 </h2>
-                <p className="text-sm text-white/40 mt-0.5 truncate">{user.email}</p>
+                <p className="text-sm text-white/40 mt-0.5 truncate">
+                  {user.email}
+                </p>
 
                 {/* Handicap badge */}
                 <div className="mt-3 flex items-center gap-3">
                   <div className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-1.5 border border-white/10">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">HC</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                      HC
+                    </span>
                     <span className="text-lg font-bold text-white">
                       {profile?.handicap != null ? profile.handicap : "--"}
                     </span>
@@ -302,7 +341,11 @@ export const ProfilePage = () => {
 
                 {profile?.createdAt && (
                   <p className="text-[11px] text-white/25 mt-2">
-                    Member since {new Date(profile.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                    Member since{" "}
+                    {new Date(profile.createdAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      year: "numeric",
+                    })}
                   </p>
                 )}
               </div>
@@ -378,21 +421,44 @@ export const ProfilePage = () => {
           <div className="rounded-xl border border-white/10 overflow-hidden bg-white/[0.02]">
             <div className="px-4 py-3 border-b border-white/10 bg-white/[0.03]">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <svg
+                  className="w-4 h-4 text-emerald-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
                 </svg>
                 Career Summary
               </h3>
             </div>
             <div className="divide-y divide-white/6">
-              <StatRow label="Total Holes Played" value={stats.totalHoles.toLocaleString()} />
-              <StatRow label="Tournaments Entered" value={stats.tournamentsPlayed} />
+              <StatRow
+                label="Total Holes Played"
+                value={stats.totalHoles.toLocaleString()}
+              />
+              <StatRow
+                label="Tournaments Entered"
+                value={stats.tournamentsPlayed}
+              />
               <StatRow label="Rounds Completed" value={stats.roundsPlayed} />
               {stats.bestRoundScore && (
-                <StatRow label="Personal Best (18 holes)" value={stats.bestRoundScore} highlight />
+                <StatRow
+                  label="Personal Best (18 holes)"
+                  value={stats.bestRoundScore}
+                  highlight
+                />
               )}
               {stats.averageScore && (
-                <StatRow label="Average Round Score" value={stats.averageScore} />
+                <StatRow
+                  label="Average Round Score"
+                  value={stats.averageScore}
+                />
               )}
             </div>
           </div>
@@ -410,7 +476,10 @@ export const ProfilePage = () => {
             <p className="text-sm text-white/30 mb-4 max-w-sm mx-auto">
               Join a tournament and complete rounds to start tracking your stats
             </p>
-            <Link to="/create" className="btn-primary inline-flex items-center gap-2">
+            <Link
+              to="/create"
+              className="btn-primary inline-flex items-center gap-2"
+            >
               <PlusCircle size={16} />
               Create Tournament
             </Link>
@@ -441,7 +510,8 @@ const StatCard = ({
         {label}
       </span>
     </div>
-    <div className="text-2xl sm:text-3xl font-bold text-white"
+    <div
+      className="text-2xl sm:text-3xl font-bold text-white"
       style={{ fontFamily: "'Poppins', 'Inter', system-ui, sans-serif" }}
     >
       {value}

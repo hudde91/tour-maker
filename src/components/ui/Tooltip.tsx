@@ -87,7 +87,7 @@ export const Tooltip = ({
         <div
           ref={tooltipRef}
           className={`absolute z-50 ${positionClasses[position]} animate-in fade-in duration-200`}
-          style={{ maxWidth }}
+          style={{ maxWidth, minWidth: "140px" }}
         >
           <div className="bg-slate-800 text-white text-sm rounded-lg px-3 py-2 shadow-lg">
             {content}
