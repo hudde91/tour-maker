@@ -701,15 +701,15 @@ export const CreateRoundPage = () => {
                             : "",
                         })
                       }
-                      className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors ${
-                        formData.useManualPar ? "bg-emerald-600" : "bg-gray-200"
+                      className={`relative inline-flex h-7 w-14 shrink-0 items-center rounded-full transition-colors ${
+                        formData.useManualPar ? "bg-emerald-600" : "bg-gray-300"
                       }`}
                     >
                       <span
                         className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
                           formData.useManualPar
-                            ? "translate-x-6"
-                            : "translate-x-0.5"
+                            ? "translate-x-8"
+                            : "translate-x-1"
                         }`}
                       />
                     </button>
