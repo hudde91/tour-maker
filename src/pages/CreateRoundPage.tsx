@@ -701,14 +701,14 @@ export const CreateRoundPage = () => {
                             : "",
                         })
                       }
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        formData.useManualPar ? "bg-emerald-600" : "bg-gray-200"
+                      className={`toggle-switch relative inline-flex h-7 w-14 flex-none items-center rounded-full transition-colors ${
+                        formData.useManualPar ? "bg-emerald-600" : "bg-gray-300"
                       }`}
                     >
                       <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white/5 transition-transform ${
+                        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
                           formData.useManualPar
-                            ? "translate-x-6"
+                            ? "translate-x-8"
                             : "translate-x-1"
                         }`}
                       />
