@@ -67,6 +67,8 @@ export const createMockTour = (overrides?: Partial<Tour>): Tour => ({
   id: nanoid(),
   name: 'Test Tour',
   format: 'individual',
+  ownerId: 'test-owner',
+  participantIds: ['test-owner'],
   players: [],
   rounds: [],
   isActive: true,

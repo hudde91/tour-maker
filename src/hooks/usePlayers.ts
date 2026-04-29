@@ -1,6 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Player } from "../types";
-import { addPlayer, updatePlayer, removePlayer } from "../lib/firestore";
+import {
+  addPlayer,
+  joinTour,
+  updatePlayer,
+  removePlayer,
+} from "../lib/firestore";
 import { invalidateTourCache } from "../lib/cache";
 import { nanoid } from "nanoid";
 
@@ -38,6 +43,24 @@ export const useRemovePlayer = (tourId: string) => {
     mutationFn: async (playerId: string) => {
       await removePlayer(tourId, playerId);
       return playerId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
+      invalidateTourCache(tourId);
+    },
+  });
+};
+
+export const useJoinTour = (tourId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (user: {
+      userId: string;
+      playerName: string;
+      handicap?: number;
+    }) => {
+      await joinTour(tourId, user);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tours"] });

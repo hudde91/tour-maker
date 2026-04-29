@@ -1,11 +1,27 @@
-import { Outlet, useParams } from "react-router-dom";
+import { Navigate, Outlet, useParams } from "react-router-dom";
 import { Home, Users, ClipboardList, Trophy, Settings } from "lucide-react";
 import { BottomNav } from "../BottomNav";
 import { useTour } from "../../hooks/useTours";
+import { useAuth } from "../../contexts/AuthContext";
 
 export const TourLayout = () => {
   const { tourId } = useParams<{ tourId: string }>();
-  const { data: tour } = useTour(tourId!);
+  const { user, loading: authLoading } = useAuth();
+  const { data: tour, isLoading: tourLoading } = useTour(tourId!);
+
+  // Funnel non-participants (and signed-out visitors) through the join flow
+  // so old `/tour/:id` share links keep working.
+  if (!authLoading && !user) {
+    return <Navigate to={`/tour/${tourId}/join`} replace />;
+  }
+  if (
+    user &&
+    !tourLoading &&
+    tour &&
+    !tour.participantIds.includes(user.uid)
+  ) {
+    return <Navigate to={`/tour/${tourId}/join`} replace />;
+  }
 
   const activeRoundsCount =
     tour?.rounds.filter((r) => r.status === "in-progress").length || 0;

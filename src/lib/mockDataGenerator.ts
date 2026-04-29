@@ -291,6 +291,8 @@ export function generateMockTournament(options: MockTournamentOptions): Tour {
     format,
     createdAt: new Date(Date.now() - roundCount * 86400000).toISOString(),
     shareableUrl: nanoid(10),
+    ownerId: 'mock-owner',
+    participantIds: ['mock-owner'],
     players,
     teams,
     rounds,

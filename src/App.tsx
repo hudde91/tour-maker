@@ -7,6 +7,7 @@ import { CreateRoundPage } from "./pages/CreateRoundPage";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import { TourLayout } from "./components/ui/TourLayout";
 import { TourLeaderboardPage } from "./pages/TourLeaderboardPage";
+import { TourJoinPage } from "./pages/TourJoinPage";
 import { TourPlayersPage } from "./pages/TourPlayersPage";
 import { TourRoundsPage } from "./pages/TourRoundsPage";
 import { TourSettingsPage } from "./pages/TourSettingsPage";
@@ -42,6 +43,7 @@ function App() {
             <Route path="settings" element={<TourSettingsPage />} />
           </Route>
 
+          <Route path="/tour/:tourId/join" element={<TourJoinPage />} />
           <Route
             path="/tour/:tourId/create-round"
             element={<CreateRoundPage />}

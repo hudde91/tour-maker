@@ -18,6 +18,17 @@ service cloud.firestore {
                     && request.resource.data.ownerId == request.auth.uid;
       allow update: if request.auth != null
                     && resource.data.ownerId == request.auth.uid;
+
+      // Self-join: an authenticated non-participant can add themselves to the
+      // tour. They may only modify participantIds and players, must add their
+      // own uid to participantIds, and may not change ownerId.
+      allow update: if request.auth != null
+                    && !(request.auth.uid in resource.data.participantIds)
+                    && request.auth.uid in request.resource.data.participantIds
+                    && request.resource.data.diff(resource.data)
+                         .affectedKeys().hasOnly(['participantIds', 'players'])
+                    && request.resource.data.ownerId == resource.data.ownerId;
+
       allow delete: if request.auth != null
                     && resource.data.ownerId == request.auth.uid;
 

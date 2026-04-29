@@ -14,6 +14,7 @@ import {
   type Unsubscribe,
   type DocumentData,
 } from "firebase/firestore";
+import { nanoid } from "nanoid";
 import { db } from "./firebase";
 import type {
   Tour,
@@ -116,7 +117,7 @@ export async function createTour(
     format: data.format,
     isActive: true,
     archived: false,
-    shareableUrl: `${window.location.origin}/tour/${id}`,
+    shareableUrl: `${window.location.origin}/tour/${id}/join`,
     createdAt: new Date().toISOString(),
     players: [],
     teams: [],
@@ -240,6 +241,37 @@ export async function removePlayer(tourId: string, playerId: string): Promise<vo
     }
 
     transaction.update(tourDoc(tourId), updates);
+  });
+}
+
+/**
+ * Self-join: add the current user to a tour they're not yet part of.
+ * Mirrors addPlayer's logic but is callable by a non-owner; the matching
+ * Firestore rule only allows updates that add the caller's own uid.
+ */
+export async function joinTour(
+  tourId: string,
+  user: { userId: string; playerName: string; handicap?: number }
+): Promise<void> {
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(tourDoc(tourId));
+    if (!snap.exists()) throw new Error("Tour not found");
+    const data = snap.data();
+
+    const participantIds: string[] = data.participantIds || [];
+    if (participantIds.includes(user.userId)) return;
+
+    const players: Player[] = data.players || [];
+    const player: Player = stripUndefined({
+      id: nanoid(),
+      name: user.playerName,
+      userId: user.userId,
+      handicap: user.handicap,
+    });
+    players.push(player);
+    participantIds.push(user.userId);
+
+    transaction.update(tourDoc(tourId), { players, participantIds });
   });
 }
 
@@ -1034,6 +1066,8 @@ async function assembleTour(tourId: string, data: DocumentData): Promise<Tour> {
     format: data.format,
     createdAt: data.createdAt,
     shareableUrl: data.shareableUrl || "",
+    ownerId: data.ownerId,
+    participantIds: data.participantIds || [],
     players: data.players || [],
     teams: data.teams || [],
     rounds,
@@ -1051,6 +1085,8 @@ function assembleTourSync(tourId: string, data: DocumentData, roundDocs: Documen
     format: data.format,
     createdAt: data.createdAt,
     shareableUrl: data.shareableUrl || "",
+    ownerId: data.ownerId,
+    participantIds: data.participantIds || [],
     players: data.players || [],
     teams: data.teams || [],
     rounds: roundDocs.map((d) => docToRound(d.id, d)),

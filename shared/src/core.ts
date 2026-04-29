@@ -142,6 +142,8 @@ export interface Tour {
   format: TourFormat;
   createdAt: string;
   shareableUrl: string;
+  ownerId: string;
+  participantIds: string[];
   players: Player[];
   teams?: Team[];
   rounds: Round[];

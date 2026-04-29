@@ -55,7 +55,7 @@ export const TourSettingsPage = () => {
   const [editScoringConfig, setEditScoringConfig] = useState<ScoringConfig>({ ...DEFAULT_SCORING_CONFIG });
 
   const handleShareTournament = () => {
-    const url = `${window.location.origin}/tour/${tourId}`;
+    const url = `${window.location.origin}/tour/${tourId}/join`;
     navigator.clipboard.writeText(url);
     showToast("Tournament link copied to clipboard!", "success");
   };
