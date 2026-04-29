@@ -78,6 +78,15 @@ export const FormatExplainer = ({
       example: "Hole 1 ties - no winner. Hole 2: A wins (gets 2 skins worth).",
       bestFor: "Fun competitive rounds with betting",
     },
+    "irish-drunk-golf": {
+      name: "Irish Drunk Golf",
+      icon: "🍺",
+      description:
+        "Regular stroke play with a drinking penalty per hole. Hole-in-one and eagles let you hand sips out — par is 1 sip, bogey 2, double 4, triple+ finishes your beer. Lowest score (and last one standing) wins.",
+      example:
+        "Bogey on hole 1 → 2 sips. Birdie on hole 2 → no sips. Triple on hole 3 → finish your beer 💀.",
+      bestFor: "Casual rounds with mates, post-work fun",
+    },
     "alternate-shot": {
       name: "Alternate Shot",
       icon: "🔄",

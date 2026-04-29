@@ -51,6 +51,13 @@ export const GOLF_FORMATS: Record<
     teamCompatible: false,
     icon: "💰",
   },
+  "irish-drunk-golf": {
+    name: "Irish Drunk Golf",
+    description:
+      "Stroke play with a twist — every score earns you sips of beer. Lowest score (and clearest head) wins.",
+    teamCompatible: false,
+    icon: "🍺",
+  },
   "foursomes-match-play": {
     name: "Foursomes",
     description:

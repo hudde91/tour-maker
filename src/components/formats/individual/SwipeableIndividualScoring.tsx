@@ -1,6 +1,7 @@
 import { HoleNavigation } from "@/components/scoring/HoleNavigation";
 import { LiveLeaderboard } from "@/components/scoring/LiveLeaderboard";
 import { SkinsLeaderboard } from "@/components/scoring/SkinsLeaderboard";
+import { SipsBadge } from "@/components/scoring/SipsBadge";
 import { ScoreCelebration, getCelebrationType, CelebrationType } from "@/components/scoring/ScoreCelebration";
 import { getScoreInfo } from "@/lib/scoreUtils";
 import { storage } from "@/lib/storage";
@@ -718,6 +719,11 @@ const PlayerScoreCard = ({
             </div>
           </div>
         </div>
+        {round.format === "irish-drunk-golf" && localScore > 0 && (
+          <div className="mt-4">
+            <SipsBadge score={localScore} par={par} variant="prominent" />
+          </div>
+        )}
       </div>
 
       <div className="card">

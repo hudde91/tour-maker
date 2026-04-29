@@ -3,6 +3,7 @@ import { Tour, Player, Round } from "../../types/core";
 import { storage } from "../../lib/storage";
 import { isRoundCompleted } from "../../lib/roundUtils";
 import { calculateDetailedPlayerStats } from "../../lib/playerStatsUtils";
+import { computeRoundSips, formatSipsTotal } from "../../lib/sipsUtils";
 import PlayerScorecardHeader from "./PlayerScorecardHeader";
 import PlayerScoreGrid9 from "./PlayerScoreGrid9";
 import { RoundStatistics } from "./RoundStatistics";
@@ -140,14 +141,29 @@ export const PlayerScorecard = ({
                       </span>
                     )}
                   </div>
-                  <div className="text-xs text-white/50">
-                    Total strokes:{" "}
-                    <span className="font-semibold">
-                      {(() => {
-                        const s = round.scores?.[player.id]?.totalScore;
-                        return s && s > 0 ? s : "—";
-                      })()}
+                  <div className="text-xs text-white/50 flex items-center gap-3">
+                    <span>
+                      Total strokes:{" "}
+                      <span className="font-semibold">
+                        {(() => {
+                          const s = round.scores?.[player.id]?.totalScore;
+                          return s && s > 0 ? s : "—";
+                        })()}
+                      </span>
                     </span>
+                    {round.format === "irish-drunk-golf" &&
+                      (() => {
+                        const { sips, finishedBeers } = computeRoundSips(
+                          round.scores?.[player.id],
+                          round
+                        );
+                        if (sips === 0 && finishedBeers === 0) return null;
+                        return (
+                          <span className="inline-flex items-center gap-1 bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded-full font-semibold">
+                            🍺 {formatSipsTotal(sips, finishedBeers)}
+                          </span>
+                        );
+                      })()}
                   </div>
                 </div>
 
