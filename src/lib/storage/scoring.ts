@@ -81,6 +81,142 @@ export const calculateBestBallRoundLeaderboard = (
 };
 
 /**
+ * Strategy that picks a team's score for one hole from teammates' individual
+ * scores. Returns 0 (skipped) when no valid scores exist for that hole.
+ */
+export type TeamHoleScoreStrategy = (args: {
+  holeScores: number[];
+  holeIndex: number;
+  totalHoles: number;
+}) => number;
+
+const minOf = (xs: number[]): number =>
+  xs.reduce((a, b) => (a < b ? a : b), xs[0]);
+const maxOf = (xs: number[]): number =>
+  xs.reduce((a, b) => (a > b ? a : b), xs[0]);
+
+/** Best ball + worst ball summed per hole. */
+export const bestPlusWorstStrategy: TeamHoleScoreStrategy = ({ holeScores }) => {
+  if (holeScores.length === 0) return 0;
+  if (holeScores.length === 1) return holeScores[0] * 2;
+  return minOf(holeScores) + maxOf(holeScores);
+};
+
+/** Best on odd display holes (hole 1, 3, ...), worst on even display holes. */
+export const alternatingBestWorstStrategy: TeamHoleScoreStrategy = ({
+  holeScores,
+  holeIndex,
+}) => {
+  if (holeScores.length === 0) return 0;
+  return holeIndex % 2 === 0 ? minOf(holeScores) : maxOf(holeScores);
+};
+
+/** First third best, middle third worst, last third best+worst combined. */
+export const sixSixSixStrategy: TeamHoleScoreStrategy = ({
+  holeScores,
+  holeIndex,
+  totalHoles,
+}) => {
+  if (holeScores.length === 0) return 0;
+  const third = Math.min(2, Math.floor((holeIndex * 3) / totalHoles));
+  if (third === 0) return minOf(holeScores);
+  if (third === 1) return maxOf(holeScores);
+  return bestPlusWorstStrategy({ holeScores, holeIndex, totalHoles });
+};
+
+/**
+ * The par baseline for a hole given a strategy. Combined holes (where both
+ * best and worst contribute) count par twice, so to-par stays honest.
+ */
+const countedParForHole = (
+  strategy: TeamHoleScoreStrategy,
+  holeIndex: number,
+  totalHoles: number,
+  holePar: number
+): number => {
+  if (strategy === bestPlusWorstStrategy) return holePar * 2;
+  if (strategy === sixSixSixStrategy) {
+    const third = Math.min(2, Math.floor((holeIndex * 3) / totalHoles));
+    return third === 2 ? holePar * 2 : holePar;
+  }
+  return holePar;
+};
+
+/**
+ * Generic team-leaderboard calculator: picks each team's hole score from
+ * teammates' individual scores using the given strategy. Used by
+ * best-worst-combined, best-worst-alternating, and 6-6-6.
+ */
+export const calculateAggregatedRoundLeaderboard = (
+  tour: Tour,
+  round: Round,
+  strategy: TeamHoleScoreStrategy
+): TeamLeaderboardEntry[] => {
+  const teamEntries: TeamLeaderboardEntry[] = [];
+
+  const totalHoles =
+    (typeof round.holes === "number" && round.holes > 0
+      ? round.holes
+      : round.holeInfo?.length) ?? 18;
+
+  const getHolePar = (idx: number): number =>
+    round.holeInfo?.[idx]?.par ?? 4;
+
+  tour.teams!.forEach((team) => {
+    const teamPlayers = tour.players.filter((p) => p.teamId === team.id);
+
+    let teamTotalScore = 0;
+    let countedPar = 0;
+
+    for (let h = 0; h < totalHoles; h++) {
+      const holeScores = teamPlayers
+        .map((p) => round.scores[p.id]?.scores?.[h])
+        .filter((s): s is number =>
+          typeof s === "number" && Number.isFinite(s) && s > 0
+        );
+      if (holeScores.length === 0) continue;
+      const holeScore = strategy({
+        holeScores,
+        holeIndex: h,
+        totalHoles,
+      });
+      if (holeScore > 0) {
+        teamTotalScore += holeScore;
+        countedPar += countedParForHole(
+          strategy,
+          h,
+          totalHoles,
+          getHolePar(h)
+        );
+      }
+    }
+
+    const playersWithScores = teamPlayers.filter((player) =>
+      (round.scores[player.id]?.scores ?? []).some(
+        (v) => typeof v === "number" && Number.isFinite(v) && v > 0
+      )
+    ).length;
+
+    const teamTotalToPar =
+      countedPar > 0 ? teamTotalScore - countedPar : 0;
+
+    teamEntries.push({
+      team,
+      totalScore: teamTotalScore > 0 ? teamTotalScore : 0,
+      totalToPar: teamTotalToPar,
+      netScore: undefined,
+      netToPar: undefined,
+      totalHandicapStrokes: undefined,
+      playersWithScores,
+      totalPlayers: teamPlayers.length,
+      position: 0,
+    });
+  });
+
+  return sortAndPositionTeams(teamEntries);
+};
+
+/**
  * Calculate scramble leaderboard for a single round
  */
 export const calculateScrambleRoundLeaderboard = (
@@ -233,6 +369,41 @@ export const calculateTournamentTeamLeaderboard = (tour: Tour): TeamLeaderboardE
             }
             break;
 
+          case "best-worst-combined":
+          case "best-worst-alternating":
+          case "six-six-six": {
+            const totalHoles = round.holes || round.holeInfo?.length || 18;
+            const strategy =
+              round.format === "best-worst-combined"
+                ? bestPlusWorstStrategy
+                : round.format === "best-worst-alternating"
+                  ? alternatingBestWorstStrategy
+                  : sixSixSixStrategy;
+            let countedPar = 0;
+            for (let hole = 0; hole < totalHoles; hole++) {
+              const holeScores = teamPlayers
+                .map((p) => round.scores[p.id]?.scores?.[hole])
+                .filter(
+                  (s): s is number =>
+                    typeof s === "number" && Number.isFinite(s) && s > 0
+                );
+              if (holeScores.length === 0) continue;
+              roundTeamScore += strategy({
+                holeScores,
+                holeIndex: hole,
+                totalHoles,
+              });
+              countedPar += countedParForHole(
+                strategy,
+                hole,
+                totalHoles,
+                round.holeInfo?.[hole]?.par ?? 4
+              );
+            }
+            roundTeamToPar = roundTeamScore - countedPar;
+            break;
+          }
+
           default:
             // Sum individual player scores
             teamPlayers.forEach((player) => {
@@ -345,6 +516,24 @@ export const calculateTeamLeaderboard = (
         return calculateBestBallRoundLeaderboard(tour, round);
       case "scramble":
         return calculateScrambleRoundLeaderboard(tour, round);
+      case "best-worst-combined":
+        return calculateAggregatedRoundLeaderboard(
+          tour,
+          round,
+          bestPlusWorstStrategy
+        );
+      case "best-worst-alternating":
+        return calculateAggregatedRoundLeaderboard(
+          tour,
+          round,
+          alternatingBestWorstStrategy
+        );
+      case "six-six-six":
+        return calculateAggregatedRoundLeaderboard(
+          tour,
+          round,
+          sixSixSixStrategy
+        );
       default:
         return calculateIndividualRoundLeaderboard(tour, round);
     }
@@ -595,7 +784,10 @@ export const calculateTournamentPoints = (
     const isTeamRound =
       round.format === "scramble" ||
       round.format === "best-ball" ||
-      round.format === "alternate-shot";
+      round.format === "alternate-shot" ||
+      round.format === "best-worst-combined" ||
+      round.format === "best-worst-alternating" ||
+      round.format === "six-six-six";
 
     if (isTeamRound && tour.teams && tour.teams.length > 0 && scoringConfig.teamPointsEnabled) {
       // For team rounds, determine team placements and award points to each player on the team
@@ -667,6 +859,29 @@ const calculateTeamRoundPlacements = (
       }
       if (totalBestBall > 0) {
         teamScores.push({ teamId: team.id, score: totalBestBall });
+      }
+    } else if (
+      round.format === "best-worst-combined" ||
+      round.format === "best-worst-alternating" ||
+      round.format === "six-six-six"
+    ) {
+      const totalHoles = round.holeInfo?.length || round.holes || 18;
+      const strategy =
+        round.format === "best-worst-combined"
+          ? bestPlusWorstStrategy
+          : round.format === "best-worst-alternating"
+            ? alternatingBestWorstStrategy
+            : sixSixSixStrategy;
+      let total = 0;
+      for (let h = 0; h < totalHoles; h++) {
+        const holeScores = teamPlayers
+          .map((p) => round.scores[p.id]?.scores?.[h])
+          .filter((s): s is number => typeof s === "number" && s > 0);
+        if (holeScores.length === 0) continue;
+        total += strategy({ holeScores, holeIndex: h, totalHoles });
+      }
+      if (total > 0) {
+        teamScores.push({ teamId: team.id, score: total });
       }
     } else {
       // Sum individual scores

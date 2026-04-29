@@ -52,6 +52,33 @@ export const FormatExplainer = ({
       example: "On hole 1: A shoots 4, B shoots 5, C shoots 6. Team scores 4.",
       bestFor: "Competitive team play, club championships",
     },
+    "best-worst-combined": {
+      name: "Best Ball vs. Worst Ball (Combined)",
+      icon: "⚖️",
+      description:
+        "Each player plays their own ball. The team's hole score is the best ball plus the worst ball — both your stars and your strugglers count.",
+      example:
+        "On hole 1: A shoots 4, B shoots 5, C shoots 7. Team scores 4 + 7 = 11.",
+      bestFor: "Mixed-ability teams who want every shot to matter",
+    },
+    "best-worst-alternating": {
+      name: "Best Ball vs. Worst Ball (Alternating)",
+      icon: "🔁",
+      description:
+        "Each player plays their own ball. Best ball counts on odd holes, worst ball counts on even holes — the strategy shifts every hole.",
+      example:
+        "Hole 1 (best): team takes the 4. Hole 2 (worst): team takes the 7.",
+      bestFor: "Teams who want a constantly changing risk profile",
+    },
+    "six-six-six": {
+      name: "6-6-6",
+      icon: "🎲",
+      description:
+        "The round is split into thirds. The first third counts best ball, the middle third counts worst ball, and the final third counts the best + worst combined.",
+      example:
+        "On an 18-hole round: holes 1-6 = best ball, holes 7-12 = worst ball, holes 13-18 = combined.",
+      bestFor: "Variety-loving groups who want one round to feel like three games",
+    },
     "foursomes-match-play": {
       name: "Foursome (Alternate Shot)",
       icon: "🔄",

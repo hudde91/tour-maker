@@ -41,6 +41,42 @@ export const getFormatConfig = (round: Round): FormatConfig => {
         requiresTeams: true,
       };
 
+    case "best-worst-combined":
+      return {
+        type: "best-ball",
+        displayName: "Best Ball vs. Worst Ball (Combined)",
+        description:
+          "Each hole's team score is best ball + worst ball — both your hero and your hot mess count.",
+        isTeamBased: true,
+        allowsHoleByHole: true,
+        allowsTotalScore: true,
+        requiresTeams: true,
+      };
+
+    case "best-worst-alternating":
+      return {
+        type: "best-ball",
+        displayName: "Best Ball vs. Worst Ball (Alternating)",
+        description:
+          "Best ball counts on odd holes, worst ball counts on even holes.",
+        isTeamBased: true,
+        allowsHoleByHole: true,
+        allowsTotalScore: true,
+        requiresTeams: true,
+      };
+
+    case "six-six-six":
+      return {
+        type: "best-ball",
+        displayName: "6-6-6",
+        description:
+          "Round split into thirds: best ball, then worst ball, then combined.",
+        isTeamBased: true,
+        allowsHoleByHole: true,
+        allowsTotalScore: true,
+        requiresTeams: true,
+      };
+
     case "alternate-shot":
       return {
         type: "alternate-shot",

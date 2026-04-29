@@ -39,6 +39,27 @@ export const GOLF_FORMATS: Record<
     teamCompatible: true,
     icon: "⭐",
   },
+  "best-worst-combined": {
+    name: "Best Ball vs. Worst Ball (Combined)",
+    description:
+      "Each team's hole score is its best ball + worst ball — both extremes count.",
+    teamCompatible: true,
+    icon: "⚖️",
+  },
+  "best-worst-alternating": {
+    name: "Best Ball vs. Worst Ball (Alternating)",
+    description:
+      "Best ball counts on odd holes, worst ball on even holes — strategy shifts every hole.",
+    teamCompatible: true,
+    icon: "🔁",
+  },
+  "six-six-six": {
+    name: "6-6-6",
+    description:
+      "Three formats in one round: best ball for 6 holes, worst ball for 6, combined for 6.",
+    teamCompatible: true,
+    icon: "🎲",
+  },
   "alternate-shot": {
     name: "Alternate Shot",
     description: "Partners take turns hitting the same ball",
