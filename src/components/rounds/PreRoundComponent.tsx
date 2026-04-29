@@ -4,6 +4,7 @@ import {
   FormatConfig,
   validateFormatSetup,
 } from "../../lib/roundFormatManager";
+import { useTourRole } from "../../hooks/useTourRole";
 
 interface PreRoundComponentProps {
   tour: Tour;
@@ -22,6 +23,7 @@ export const PreRoundComponent = ({
   isStarting,
   onCaptainPairing,
 }: PreRoundComponentProps) => {
+  const { isOwner } = useTourRole(tour);
   const validationErrors = validateFormatSetup(tour, round);
   const canStart = validationErrors.length === 0 && tour.players.length >= 2;
 
@@ -275,28 +277,34 @@ export const PreRoundComponent = ({
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Link
               to={`/tour/${tour.id}/rounds`}
               className="btn-secondary flex-1 text-center"
             >
               Back to Tournament
             </Link>
-            <button
-              onClick={onStartRound}
-              disabled={
-                !canStart ||
-                isStarting ||
-                (isRyderCupFormat && !hasMatchesCreated)
-              }
-              className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isStarting
-                ? "Starting Round..."
-                : isRyderCupFormat && !hasMatchesCreated
-                ? "Set Up Matches First"
-                : `Start ${formatConfig.displayName} Round`}
-            </button>
+            {isOwner ? (
+              <button
+                onClick={onStartRound}
+                disabled={
+                  !canStart ||
+                  isStarting ||
+                  (isRyderCupFormat && !hasMatchesCreated)
+                }
+                className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isStarting
+                  ? "Starting Round..."
+                  : isRyderCupFormat && !hasMatchesCreated
+                  ? "Set Up Matches First"
+                  : `Start ${formatConfig.displayName} Round`}
+              </button>
+            ) : (
+              <div className="btn-secondary flex-1 text-center opacity-60 cursor-default">
+                Waiting for owner to start
+              </div>
+            )}
           </div>
         </div>
       </div>

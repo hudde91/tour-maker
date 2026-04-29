@@ -5,6 +5,7 @@ import { CreateTourPage } from "./pages/CreateTourPage";
 import { RoundPage } from "./pages/RoundPage";
 import { CreateRoundPage } from "./pages/CreateRoundPage";
 import ErrorBoundary from "./components/common/ErrorBoundary";
+import { TourGate } from "./components/ui/TourGate";
 import { TourLayout } from "./components/ui/TourLayout";
 import { TourLeaderboardPage } from "./pages/TourLeaderboardPage";
 import { TourJoinPage } from "./pages/TourJoinPage";
@@ -46,16 +47,35 @@ function App() {
           <Route path="/tour/:tourId/join" element={<TourJoinPage />} />
           <Route
             path="/tour/:tourId/create-round"
-            element={<CreateRoundPage />}
+            element={
+              <TourGate>
+                <CreateRoundPage />
+              </TourGate>
+            }
           />
-          <Route path="/tour/:tourId/round/:roundId" element={<RoundPage />} />
+          <Route
+            path="/tour/:tourId/round/:roundId"
+            element={
+              <TourGate>
+                <RoundPage />
+              </TourGate>
+            }
+          />
           <Route
             path="/tour/:tourId/round/:roundId/pairing"
-            element={<RyderCupPairingPage />}
+            element={
+              <TourGate>
+                <RyderCupPairingPage />
+              </TourGate>
+            }
           />
           <Route
             path="/tour/:tourId/team/:teamId"
-            element={<TeamDashboard />}
+            element={
+              <TourGate>
+                <TeamDashboard />
+              </TourGate>
+            }
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

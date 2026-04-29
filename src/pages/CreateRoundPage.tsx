@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { Navigate, useParams, useNavigate } from "react-router-dom";
 import { useTour } from "../hooks/useTours";
+import { useTourRole } from "../hooks/useTourRole";
 import { useCreateRound } from "../hooks/useRounds";
 import { useSaveCourse } from "../hooks/useSavedCourses";
 import { PlayFormat, RoundSettings, SavedCourse, GOLF_FORMATS } from "../types";
@@ -27,6 +28,7 @@ export const CreateRoundPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
   const navigate = useNavigate();
   const { data: tour, isLoading } = useTour(tourId!);
+  const { isOwner } = useTourRole(tour);
   const createRound = useCreateRound(tourId!);
   const saveCourse = useSaveCourse();
 
@@ -324,6 +326,10 @@ export const CreateRoundPage = () => {
         </div>
       </div>
     );
+  }
+
+  if (!isOwner) {
+    return <Navigate to={`/tour/${tourId}/rounds`} replace />;
   }
 
   const renderStepContent = () => {

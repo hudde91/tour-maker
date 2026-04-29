@@ -14,6 +14,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { TourFormat, ScoringConfig } from "@/types";
 import { DEFAULT_SCORING_CONFIG } from "@/types";
 import { ScoringConfigStep } from "@/components/tournament/ScoringConfigStep";
+import { useTourRole } from "@/hooks/useTourRole";
 import {
   Settings,
   XCircle,
@@ -38,6 +39,7 @@ export const TourSettingsPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
   const navigate = useNavigate();
   const { data: tour, isLoading } = useTour(tourId!);
+  const { isOwner } = useTourRole(tour);
   const deleteTour = useDeleteTour();
   const updateTourDetails = useUpdateTourDetails();
   const toggleArchive = useToggleTourArchive();
@@ -235,10 +237,27 @@ export const TourSettingsPage = () => {
       />
 
       <div className="pb-8 w-full max-w-6xl mx-auto space-y-6">
+        {!isOwner && (
+          <div className="card border-amber-500/30 bg-amber-500/5">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-amber-300 mb-1">
+                  Participant view
+                </h3>
+                <p className="text-sm text-amber-300/80">
+                  Only the tournament owner can change settings, add players,
+                  or create rounds.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="card-elevated">
           <div className="flex items-center justify-between mb-4">
             <h2 className="section-header">Tournament Information</h2>
-            {!isEditingDetails && (
+            {isOwner && !isEditingDetails && (
               <button
                 onClick={startEditingDetails}
                 className="text-emerald-400 hover:text-emerald-400 font-semibold text-sm flex items-center gap-1"
@@ -363,69 +382,71 @@ export const TourSettingsPage = () => {
           )}
         </div>
 
-        <div className="card">
-          <h2 className="section-header mb-4">Tournament Format</h2>
+        {isOwner && (
+          <div className="card">
+            <h2 className="section-header mb-4">Tournament Format</h2>
 
-          <div className="mb-4 p-3 bg-blue-500/15 border border-blue-500/30 rounded-lg">
-            <p className="text-sm text-blue-300">
-              <strong>Note:</strong> Changing the tournament format may affect
-              existing teams and rounds. Proceed with caution.
-            </p>
-          </div>
+            <div className="mb-4 p-3 bg-blue-500/15 border border-blue-500/30 rounded-lg">
+              <p className="text-sm text-blue-300">
+                <strong>Note:</strong> Changing the tournament format may affect
+                existing teams and rounds. Proceed with caution.
+              </p>
+            </div>
 
-          <div className="space-y-2">
-            {["individual", "team", "ryder-cup"].map((format) => (
-              <button
-                key={format}
-                onClick={() => handleFormatChange(format as TourFormat)}
-                disabled={tour.format === format}
-                className={`w-full flex items-center justify-between p-4 rounded-lg transition-colors text-left ${
-                  tour.format === format
-                    ? "bg-emerald-500/15 border-2 border-emerald-500"
-                    : "hover:bg-white/10 border-2 border-transparent"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      tour.format === format
-                        ? "bg-emerald-500/20"
-                        : "bg-white/10"
-                    }`}
-                  >
-                    {format === "individual" ? (
-                      <User className="w-5 h-5 text-white/50" />
-                    ) : format === "team" ? (
-                      <Users className="w-5 h-5 text-white/50" />
-                    ) : (
-                      <Trophy className="w-5 h-5 text-white/50" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-white capitalize">
-                      {format.replace("-", " ")}
+            <div className="space-y-2">
+              {["individual", "team", "ryder-cup"].map((format) => (
+                <button
+                  key={format}
+                  onClick={() => handleFormatChange(format as TourFormat)}
+                  disabled={tour.format === format}
+                  className={`w-full flex items-center justify-between p-4 rounded-lg transition-colors text-left ${
+                    tour.format === format
+                      ? "bg-emerald-500/15 border-2 border-emerald-500"
+                      : "hover:bg-white/10 border-2 border-transparent"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        tour.format === format
+                          ? "bg-emerald-500/20"
+                          : "bg-white/10"
+                      }`}
+                    >
+                      {format === "individual" ? (
+                        <User className="w-5 h-5 text-white/50" />
+                      ) : format === "team" ? (
+                        <Users className="w-5 h-5 text-white/50" />
+                      ) : (
+                        <Trophy className="w-5 h-5 text-white/50" />
+                      )}
                     </div>
-                    <div className="text-sm text-white/40">
-                      {format === "individual"
-                        ? "Solo tournament"
-                        : format === "team"
-                          ? "Team-based tournament"
-                          : "Ryder Cup tournament"}
+                    <div>
+                      <div className="font-semibold text-white capitalize">
+                        {format.replace("-", " ")}
+                      </div>
+                      <div className="text-sm text-white/40">
+                        {format === "individual"
+                          ? "Solo tournament"
+                          : format === "team"
+                            ? "Team-based tournament"
+                            : "Ryder Cup tournament"}
+                      </div>
                     </div>
                   </div>
-                </div>
-                {tour.format === format && (
-                  <Check className="w-5 h-5 text-emerald-400" strokeWidth={3} />
-                )}
-              </button>
-            ))}
+                  {tour.format === format && (
+                    <Check className="w-5 h-5 text-emerald-400" strokeWidth={3} />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="section-header">Scoring Configuration</h2>
-            {!isEditingScoring && (
+            {isOwner && !isEditingScoring && (
               <button
                 onClick={startEditingScoring}
                 className="text-emerald-400 hover:text-emerald-400 font-semibold text-sm flex items-center gap-1"
@@ -543,46 +564,48 @@ export const TourSettingsPage = () => {
               </svg>
             </button>
 
-            <button
-              onClick={handleToggleArchive}
-              disabled={toggleArchive.isPending}
-              className="w-full flex items-center justify-between p-4 hover:bg-white/10 rounded-lg transition-colors text-left disabled:opacity-50"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center">
-                  {tour.archived ? (
-                    <FolderOpen className="w-5 h-5 text-amber-400" />
-                  ) : (
-                    <Archive className="w-5 h-5 text-amber-400" />
-                  )}
-                </div>
-                <div>
-                  <div className="font-semibold text-white">
-                    {tour.archived
-                      ? "Unarchive Tournament"
-                      : "Archive Tournament"}
-                  </div>
-                  <div className="text-sm text-white/40">
-                    {tour.archived
-                      ? "Make tournament active again"
-                      : "Move to archive (can be restored later)"}
-                  </div>
-                </div>
-              </div>
-              <svg
-                className="w-5 h-5 text-white/30"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {isOwner && (
+              <button
+                onClick={handleToggleArchive}
+                disabled={toggleArchive.isPending}
+                className="w-full flex items-center justify-between p-4 hover:bg-white/10 rounded-lg transition-colors text-left disabled:opacity-50"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center">
+                    {tour.archived ? (
+                      <FolderOpen className="w-5 h-5 text-amber-400" />
+                    ) : (
+                      <Archive className="w-5 h-5 text-amber-400" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-white">
+                      {tour.archived
+                        ? "Unarchive Tournament"
+                        : "Archive Tournament"}
+                    </div>
+                    <div className="text-sm text-white/40">
+                      {tour.archived
+                        ? "Make tournament active again"
+                        : "Move to archive (can be restored later)"}
+                    </div>
+                  </div>
+                </div>
+                <svg
+                  className="w-5 h-5 text-white/30"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            )}
 
             <button
               disabled
@@ -646,6 +669,7 @@ export const TourSettingsPage = () => {
           </div>
         </div>
 
+        {isOwner && (
         <div className="card border-red-500/30">
           <h2 className="section-header text-red-400 mb-4 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5" />
@@ -696,6 +720,7 @@ export const TourSettingsPage = () => {
             </p>
           </div>
         </div>
+        )}
 
         <div className="card border-white/15">
           <div className="text-center text-white/40 text-sm">

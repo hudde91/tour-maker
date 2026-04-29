@@ -1,5 +1,6 @@
 import { RoundCard } from "@/components/rounds/RoundCard";
 import { useTour } from "@/hooks/useTours";
+import { useTourRole } from "@/hooks/useTourRole";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -16,6 +17,7 @@ import {
 export const TourRoundsPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
   const { data: tour, isLoading } = useTour(tourId!);
+  const { isOwner } = useTourRole(tour);
   useDocumentTitle(tour ? `${tour.name} - Rounds` : "Rounds");
   const navigate = useNavigate();
 
@@ -80,14 +82,16 @@ export const TourRoundsPage = () => {
         subtitle={subtitle}
         breadcrumbs={breadcrumbs}
         actions={
-          <Link
-            to={`/tour/${tourId}/create-round`}
-            className="flex items-center gap-2 bg-white/5 bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm shadow-lg"
-            data-testid="create-round-button"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Round</span>
-          </Link>
+          isOwner ? (
+            <Link
+              to={`/tour/${tourId}/create-round`}
+              className="flex items-center gap-2 bg-white/5 bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm shadow-lg"
+              data-testid="create-round-button"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Round</span>
+            </Link>
+          ) : null
         }
       />
 
@@ -96,13 +100,21 @@ export const TourRoundsPage = () => {
           <EmptyState
             icon={<GolfFlag className="w-12 h-12 text-white/30" />}
             title="No Rounds Yet"
-            description="Create your first round to start playing golf in this tournament"
-            action={{
-              label: "Create First Round",
-              onClick: () => navigate(`/tour/${tourId}/create-round`),
-              variant: "primary",
-              testId: "create-first-round-button",
-            }}
+            description={
+              isOwner
+                ? "Create your first round to start playing golf in this tournament"
+                : "The tournament owner hasn't created any rounds yet."
+            }
+            action={
+              isOwner
+                ? {
+                    label: "Create First Round",
+                    onClick: () => navigate(`/tour/${tourId}/create-round`),
+                    variant: "primary",
+                    testId: "create-first-round-button",
+                  }
+                : undefined
+            }
             size="large"
           />
         ) : (

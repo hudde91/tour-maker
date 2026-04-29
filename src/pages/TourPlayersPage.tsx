@@ -3,6 +3,7 @@ import { PlayerScorecard } from "@/components/players/PlayerScorecard";
 import { CreateTeamSheet } from "@/components/teams/CreateTeamSheet";
 import { TeamCard } from "@/components/teams/TeamCard";
 import { useTour } from "@/hooks/useTours";
+import { useTourRole } from "@/hooks/useTourRole";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -22,6 +23,7 @@ import {
 export const TourPlayersPage = () => {
   const { tourId } = useParams<{ tourId: string }>();
   const { data: tour, isLoading } = useTour(tourId!);
+  const { isOwner } = useTourRole(tour);
   useDocumentTitle(tour ? `${tour.name} - Players` : "Players");
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [showCreateTeam, setShowCreateTeam] = useState(false);
@@ -103,14 +105,16 @@ export const TourPlayersPage = () => {
         subtitle={subtitle}
         breadcrumbs={breadcrumbs}
         actions={
-          <button
-            onClick={() => setShowAddPlayer(true)}
-            className="flex items-center gap-2 bg-white/5 bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm shadow-lg"
-            data-testid="add-player-button"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Add Player</span>
-          </button>
+          isOwner ? (
+            <button
+              onClick={() => setShowAddPlayer(true)}
+              className="flex items-center gap-2 bg-white/5 bg-opacity-20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium transition-all hover:bg-opacity-30 text-sm shadow-lg"
+              data-testid="add-player-button"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Player</span>
+            </button>
+          ) : null
         }
       />
 
@@ -125,28 +129,38 @@ export const TourPlayersPage = () => {
                   {tour.teams?.length !== 1 ? "s" : ""}
                 </p>
               </div>
-              <button
-                onClick={() => setShowCreateTeam(true)}
-                className="btn-secondary text-sm"
-                data-testid="add-team-button"
-              >
-                <div className="flex items-center">
-                  <Building2 className="w-4 h-4 mr-2" />
-                  Add Team
-                </div>
-              </button>
+              {isOwner && (
+                <button
+                  onClick={() => setShowCreateTeam(true)}
+                  className="btn-secondary text-sm"
+                  data-testid="add-team-button"
+                >
+                  <div className="flex items-center">
+                    <Building2 className="w-4 h-4 mr-2" />
+                    Add Team
+                  </div>
+                </button>
+              )}
             </div>
 
             {!tour.teams || tour.teams.length === 0 ? (
               <EmptyState
                 icon={<Building2 className="w-8 h-8 text-white/30" />}
                 title="No Teams Created"
-                description="Create teams to organize your tournament competition"
-                action={{
-                  label: "Add First Team",
-                  onClick: () => setShowCreateTeam(true),
-                  variant: "primary",
-                }}
+                description={
+                  isOwner
+                    ? "Create teams to organize your tournament competition"
+                    : "The tournament owner hasn't created any teams yet."
+                }
+                action={
+                  isOwner
+                    ? {
+                        label: "Add First Team",
+                        onClick: () => setShowCreateTeam(true),
+                        variant: "primary",
+                      }
+                    : undefined
+                }
                 size="medium"
               />
             ) : (
@@ -213,12 +227,20 @@ export const TourPlayersPage = () => {
             <EmptyState
               icon={<Users className="w-8 h-8 text-white/30" />}
               title="No Players Yet"
-              description="Add players to get your tournament started"
-              action={{
-                label: "Add First Player",
-                onClick: () => setShowAddPlayer(true),
-                variant: "primary",
-              }}
+              description={
+                isOwner
+                  ? "Add players to get your tournament started"
+                  : "The tournament owner hasn't added any players yet."
+              }
+              action={
+                isOwner
+                  ? {
+                      label: "Add First Player",
+                      onClick: () => setShowAddPlayer(true),
+                      variant: "primary",
+                    }
+                  : undefined
+              }
               size="medium"
             />
           ) : isTeamFormat ? (

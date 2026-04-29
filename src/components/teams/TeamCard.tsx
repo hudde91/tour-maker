@@ -7,6 +7,7 @@ import {
   useAssignPlayerToTeam,
   useSetTeamCaptain,
 } from "../../hooks/useTeams";
+import { useTourRole } from "../../hooks/useTourRole";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 interface TeamCardProps {
@@ -15,6 +16,7 @@ interface TeamCardProps {
 }
 
 export const TeamCard = ({ team, tour }: TeamCardProps) => {
+  const { isOwner } = useTourRole(tour);
   const updateTeam = useUpdateTeam(tour.id);
   const deleteTeam = useDeleteTeam(tour.id);
   const assignPlayer = useAssignPlayerToTeam(tour.id);
@@ -127,7 +129,7 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
             </div>
 
             <div className="flex-1 min-w-0">
-              {isEditing ? (
+              {isEditing && isOwner ? (
                 <input
                   type="text"
                   value={editName}
@@ -179,25 +181,29 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
             >
               <span className="text-base">📊</span>
             </Link>
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className="p-2 text-white/30 hover:text-white/50 hover:bg-white/10 rounded-lg transition-colors"
-              title="Edit team"
-            >
-              <span className="text-base">✏️</span>
-            </button>
-            <button
-              onClick={handleDeleteTeam}
-              className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
-              title="Delete team"
-            >
-              <span className="text-base">🗑️</span>
-            </button>
+            {isOwner && (
+              <>
+                <button
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="p-2 text-white/30 hover:text-white/50 hover:bg-white/10 rounded-lg transition-colors"
+                  title="Edit team"
+                >
+                  <span className="text-base">✏️</span>
+                </button>
+                <button
+                  onClick={handleDeleteTeam}
+                  className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+                  title="Delete team"
+                >
+                  <span className="text-base">🗑️</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
 
         {/* Captain Management Section */}
-        {teamPlayers.length > 0 && (
+        {isOwner && teamPlayers.length > 0 && (
           <div className="card-spacing border-t border-white/10">
             <button
               onClick={() => setShowCaptainSelect(!showCaptainSelect)}
@@ -275,22 +281,24 @@ export const TeamCard = ({ team, tour }: TeamCardProps) => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() =>
-                    handleRemovePlayerClick(player.id, player.name)
-                  }
-                  className="text-xs bg-red-500/15 hover:bg-red-500/25 text-red-400 px-3 py-1 rounded-full font-medium transition-colors border border-red-500/30"
-                  title="Remove from team"
-                >
-                  Remove
-                </button>
-              </div>
+              {isOwner && (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() =>
+                      handleRemovePlayerClick(player.id, player.name)
+                    }
+                    className="text-xs bg-red-500/15 hover:bg-red-500/25 text-red-400 px-3 py-1 rounded-full font-medium transition-colors border border-red-500/30"
+                    title="Remove from team"
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
             </div>
           ))}
 
           {/* Add Player Section */}
-          {unassignedPlayers.length > 0 && (
+          {isOwner && unassignedPlayers.length > 0 && (
             <div className="pt-3 border-t border-white/10">
               <button
                 onClick={() => setShowPlayerAssignment(!showPlayerAssignment)}
