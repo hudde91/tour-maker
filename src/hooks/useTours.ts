@@ -5,12 +5,14 @@ import { Tour, TourFormat, Player, ScoringConfig } from "../types";
 import {
   getTours,
   getTour,
+  getUserProfile,
   createTour,
   updateTourDetails,
   updateTourFormat,
   toggleTourArchive,
   deleteTour,
   addPlayer,
+  ensureOwnerIsPlayer,
   subscribeTour,
   updateScoringConfig,
 } from "../lib/firestore";
@@ -75,6 +77,16 @@ export const useCreateTour = () => {
           await addPlayer(id, player);
         }
       }
+
+      // Make sure the owner is in the players array even if the caller didn't
+      // pass them explicitly (e.g. the Ryder Cup wizard, or a user without a
+      // saved profile). Idempotent — no-op if already added above.
+      const profile = await getUserProfile(user.uid);
+      await ensureOwnerIsPlayer(id, {
+        userId: user.uid,
+        playerName: profile?.playerName || user.displayName || "Owner",
+        handicap: profile?.handicap,
+      });
 
       const tour = await getTour(id);
       if (!tour) throw new Error("Failed to create tour");

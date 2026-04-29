@@ -275,6 +275,40 @@ export async function joinTour(
   });
 }
 
+/**
+ * Idempotently add the tour owner to the `players` array. The owner is in
+ * `participantIds` from creation but isn't a Player by default — without this,
+ * their scorecards never appear and `tour.players.find(p => p.userId === ...)`
+ * lookups (used by ProfilePage stats, etc.) return nothing.
+ *
+ * Safe to call repeatedly; no-op if the caller is already a player or isn't
+ * the tour's owner.
+ */
+export async function ensureOwnerIsPlayer(
+  tourId: string,
+  owner: { userId: string; playerName: string; handicap?: number }
+): Promise<void> {
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(tourDoc(tourId));
+    if (!snap.exists()) return;
+    const data = snap.data();
+    if (data.ownerId !== owner.userId) return;
+
+    const players: Player[] = data.players || [];
+    if (players.some((p) => p.userId === owner.userId)) return;
+
+    const player: Player = stripUndefined({
+      id: nanoid(),
+      name: owner.playerName,
+      userId: owner.userId,
+      handicap: owner.handicap,
+    });
+    players.push(player);
+
+    transaction.update(tourDoc(tourId), { players });
+  });
+}
+
 // ============================================================
 // TEAMS (stored in tour document as an array)
 // ============================================================

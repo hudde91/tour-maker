@@ -3,11 +3,15 @@ import { Home, Users, ClipboardList, Trophy, Settings } from "lucide-react";
 import { BottomNav } from "../BottomNav";
 import { useTour } from "../../hooks/useTours";
 import { useAuth } from "../../contexts/AuthContext";
+import { useEnsureOwnerIsPlayer } from "../../hooks/useEnsureOwnerIsPlayer";
 
 export const TourLayout = () => {
   const { tourId } = useParams<{ tourId: string }>();
   const { user, loading: authLoading } = useAuth();
   const { data: tour, isLoading: tourLoading } = useTour(tourId!);
+
+  // Backfill the owner into `tour.players` if a previous flow skipped it.
+  useEnsureOwnerIsPlayer(tour);
 
   // Funnel non-participants (and signed-out visitors) through the join flow
   // so old `/tour/:id` share links keep working.
