@@ -4,6 +4,7 @@ import { BottomNav } from "../BottomNav";
 import { useTour } from "../../hooks/useTours";
 import { useAuth } from "../../contexts/AuthContext";
 import { useEnsureOwnerIsPlayer } from "../../hooks/useEnsureOwnerIsPlayer";
+import { useReconcileTeamCaptains } from "../../hooks/useReconcileTeamCaptains";
 
 export const TourLayout = () => {
   const { tourId } = useParams<{ tourId: string }>();
@@ -12,6 +13,9 @@ export const TourLayout = () => {
 
   // Backfill the owner into `tour.players` if a previous flow skipped it.
   useEnsureOwnerIsPlayer(tour);
+
+  // Self-heal teams whose captain isn't in `team.playerIds` (old addTeam bug).
+  useReconcileTeamCaptains(tour);
 
   // Funnel non-participants (and signed-out visitors) through the join flow
   // so old `/tour/:id` share links keep working.

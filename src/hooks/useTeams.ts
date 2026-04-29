@@ -22,7 +22,7 @@ export const useCreateTeam = (tourId: string) => {
         id: nanoid(),
         name: teamData.name,
         color: teamData.color,
-        playerIds: [],
+        playerIds: teamData.captainId ? [teamData.captainId] : [],
         captainId: teamData.captainId || "",
       };
       await addTeam(tourId, team);

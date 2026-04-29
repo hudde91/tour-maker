@@ -320,12 +320,16 @@ export async function addTeam(tourId: string, team: Team): Promise<void> {
     const teams: Team[] = snap.data().teams || [];
     teams.push(team);
 
-    // If captain specified, update player's teamId
+    // If captain specified, update player's teamId AND make sure the captain
+    // is also in the team's playerIds (the rest of the UI keys off playerIds).
     if (team.captainId) {
       const players: Player[] = snap.data().players || [];
       const pIdx = players.findIndex((p) => p.id === team.captainId);
       if (pIdx >= 0) {
         players[pIdx].teamId = team.id;
+        if (!team.playerIds.includes(team.captainId)) {
+          team.playerIds = [...team.playerIds, team.captainId];
+        }
         transaction.update(tourDoc(tourId), { teams, players });
         return;
       }
